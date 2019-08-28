@@ -70,105 +70,117 @@ public class ui_textH {
     public static final int UI_workingclones = 47;
     public static final int UI_typeok = 48;
 
+    //#ifdef MESS
+    public static final int UI_comp1 = 49;
+    public static final int UI_comp2 = 50;
+    //#endif
+        
     /* main menu */
-    public static final int UI_inputgeneral = 49;
-    public static final int UI_dipswitches = 50;
-    public static final int UI_analogcontrols = 51;
-    public static final int UI_calibrate = 52;
-    public static final int UI_bookkeeping = 53;
-    public static final int UI_inputspecific = 54;
-    public static final int UI_gameinfo = 55;
-    public static final int UI_history = 56;
-    public static final int UI_resetgame = 57;
-    public static final int UI_returntogame = 58;
-    public static final int UI_cheat = 59;
-    public static final int UI_memorycard = 60;
+    public static final int UI_inputgeneral = 51;
+    public static final int UI_dipswitches = 52;
+    public static final int UI_analogcontrols = 53;
+    public static final int UI_calibrate = 54;
+    public static final int UI_bookkeeping = 55;
+    public static final int UI_inputspecific = 56;
+    public static final int UI_gameinfo = 57;
+    public static final int UI_history = 58;
+    public static final int UI_resetgame = 59;
+    public static final int UI_returntogame = 60;
+    
+    //#ifdef MESS
+    public static final int UI_imageinfo = 61;
+    public static final int UI_filemanager = 62;
+    public static final int UI_tapecontrol = 63;
+    //#endif
+        
+    public static final int UI_cheat = 64;
+    public static final int UI_memorycard = 65;
 
     /* input stuff */
-    public static final int UI_keyjoyspeed = 61;
-    public static final int UI_reverse = 62;
-    public static final int UI_sensitivity = 63;
+    public static final int UI_keyjoyspeed = 66;
+    public static final int UI_reverse = 67;
+    public static final int UI_sensitivity = 68;
 
     /* stats */
-    public static final int UI_tickets = 64;
-    public static final int UI_coin = 65;
-    public static final int UI_locked = 66;
+    public static final int UI_tickets = 69;
+    public static final int UI_coin = 70;
+    public static final int UI_locked = 71;
 
     /* memory card */
-    public static final int UI_loadcard = 67;
-    public static final int UI_ejectcard = 68;
-    public static final int UI_createcard = 69;
-    public static final int UI_resetcard = 70;
-    public static final int UI_loadfailed = 71;
-    public static final int UI_loadok = 72;
-    public static final int UI_cardejected = 73;
-    public static final int UI_cardcreated = 74;
-    public static final int UI_cardcreatedfailed = 75;
-    public static final int UI_cardcreatedfailed2 = 76;
-    public static final int UI_carderror = 77;
+    public static final int UI_loadcard = 72;
+    public static final int UI_ejectcard = 73;
+    public static final int UI_createcard = 74;
+    public static final int UI_resetcard = 75;
+    public static final int UI_loadfailed = 76;
+    public static final int UI_loadok = 77;
+    public static final int UI_cardejected = 78;
+    public static final int UI_cardcreated = 79;
+    public static final int UI_cardcreatedfailed = 80;
+    public static final int UI_cardcreatedfailed2 = 81;
+    public static final int UI_carderror = 82;
 
     /* cheat stuff */
-    public static final int UI_enablecheat = 78;
-    public static final int UI_addeditcheat = 79;
-    public static final int UI_startcheat = 80;
-    public static final int UI_continuesearch = 81;
-    public static final int UI_viewresults = 82;
-    public static final int UI_restoreresults = 83;
-    public static final int UI_memorywatch = 84;
-    public static final int UI_generalhelp = 85;
-    public static final int UI_options = 86;
-    public static final int UI_reloaddatabase = 87;
-    public static final int UI_watchpoint = 88;
-    public static final int UI_disabled = 89;
-    public static final int UI_cheats = 90;
-    public static final int UI_watchpoints = 91;
-    public static final int UI_moreinfo = 92;
-    public static final int UI_moreinfoheader = 93;
-    public static final int UI_cheatname = 94;
-    public static final int UI_cheatdescription = 95;
-    public static final int UI_cheatactivationkey = 96;
-    public static final int UI_code = 97;
-    public static final int UI_max = 98;
-    public static final int UI_set = 99;
-    public static final int UI_conflict_found = 100;
-    public static final int UI_no_help_available = 101;
+    public static final int UI_enablecheat = 83;
+    public static final int UI_addeditcheat = 84;
+    public static final int UI_startcheat = 85;
+    public static final int UI_continuesearch = 86;
+    public static final int UI_viewresults = 87;
+    public static final int UI_restoreresults = 88;
+    public static final int UI_memorywatch = 89;
+    public static final int UI_generalhelp = 90;
+    public static final int UI_options = 91;
+    public static final int UI_reloaddatabase = 92;
+    public static final int UI_watchpoint = 93;
+    public static final int UI_disabled = 94;
+    public static final int UI_cheats = 95;
+    public static final int UI_watchpoints = 96;
+    public static final int UI_moreinfo = 97;
+    public static final int UI_moreinfoheader = 98;
+    public static final int UI_cheatname = 99;
+    public static final int UI_cheatdescription = 100;
+    public static final int UI_cheatactivationkey = 101;
+    public static final int UI_code = 102;
+    public static final int UI_max = 103;
+    public static final int UI_set = 104;
+    public static final int UI_conflict_found = 105;
+    public static final int UI_no_help_available = 106;
 
     /* watchpoint stuff */
-    public static final int UI_watchlength = 102;
-    public static final int UI_watchdisplaytype = 103;
-    public static final int UI_watchlabeltype = 104;
-    public static final int UI_watchlabel = 105;
-    public static final int UI_watchx = 106;
-    public static final int UI_watchy = 107;
-    public static final int UI_watch = 108;
+    public static final int UI_watchlength = 107;
+    public static final int UI_watchdisplaytype = 108;
+    public static final int UI_watchlabeltype = 109;
+    public static final int UI_watchlabel = 110;
+    public static final int UI_watchx = 111;
+    public static final int UI_watchy = 112;
+    public static final int UI_watch = 113;
 
-    public static final int UI_hex = 109;
-    public static final int UI_decimal = 110;
-    public static final int UI_binary = 111;
+    public static final int UI_hex = 114;
+    public static final int UI_decimal = 115;
+    public static final int UI_binary = 116;
 
     /* search stuff */
-    public static final int UI_search_lives = 112;
-    public static final int UI_search_timers = 113;
-    public static final int UI_search_energy = 114;
-    public static final int UI_search_status = 115;
-    public static final int UI_search_slow = 116;
-    public static final int UI_search_speed = 117;
-    public static final int UI_search_speed_fast = 118;
-    public static final int UI_search_speed_medium = 119;
-    public static final int UI_search_speed_slow = 120;
-    public static final int UI_search_speed_veryslow = 121;
-    public static final int UI_search_speed_allmemory = 122;
-    public static final int UI_search_select_memory_areas = 123;
-    public static final int UI_search_matches_found = 124;
-    public static final int UI_search_noinit = 125;
-    public static final int UI_search_nosave = 126;
-    public static final int UI_search_done = 127;
-    public static final int UI_search_OK = 128;
-    public static final int UI_search_select_value = 129;
-    public static final int UI_search_all_values_saved = 130;
-    public static final int UI_search_one_match_found_added = 131;
+    public static final int UI_search_lives = 117;
+    public static final int UI_search_timers = 118;
+    public static final int UI_search_energy = 119;
+    public static final int UI_search_status = 120;
+    public static final int UI_search_slow = 121;
+    public static final int UI_search_speed = 122;
+    public static final int UI_search_speed_fast = 123;
+    public static final int UI_search_speed_medium = 124;
+    public static final int UI_search_speed_slow = 125;
+    public static final int UI_search_speed_veryslow = 126;
+    public static final int UI_search_speed_allmemory = 127;
+    public static final int UI_search_select_memory_areas = 128;
+    public static final int UI_search_matches_found = 129;
+    public static final int UI_search_noinit = 130;
+    public static final int UI_search_nosave = 131;
+    public static final int UI_search_done = 132;
+    public static final int UI_search_OK = 133;
+    public static final int UI_search_select_value = 134;
+    public static final int UI_search_all_values_saved = 135;
+    public static final int UI_search_one_match_found_added = 136;
 
-    public static final int UI_last_entry = 132;
+    public static final int UI_last_entry = 137;
 
     public static class lang_struct {
 

@@ -292,6 +292,11 @@ public class driverH {
     public static final int GAME_IMPERFECT_SOUND = 0x0400;/* sound is known to be wrong */
     public static final int NOT_A_DRIVER = 0x4000;/* set by the fake "root" driver_0 and by "containers" */
 
+    // MESS
+    public static final int GAME_COMPUTER               = 0x8000;  /* Driver is a computer (needs full keyboard) */
+    public static final int GAME_COMPUTER_MODIFIED      = 0x0800;	/* Official? Hack */
+    public static final int GAME_ALIAS                  = NOT_A_DRIVER;	/* Driver is only an alias for an existing model */
+    // end MESS
 
  /* monitor parameters to be used with the GAME() macro */
     public static final int ROT0 = 0x0;

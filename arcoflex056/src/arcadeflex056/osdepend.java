@@ -7,6 +7,7 @@ import static arcadeflex036.config.*;
 import static arcadeflex056.fronthlp.*;
 import static mame056.driver.drivers;
 import static mame056.mame.*;
+import static mess056.msdos.load_image;
 
 /**
  * This file is relative to msdos.c in mame
@@ -313,10 +314,10 @@ public class osdepend {
 	    		}
 		    }
 	
-    /*TODO*///		#ifdef MESS
-    /*TODO*///		/* This function has been added to MESS.C as load_image() */
-    /*TODO*///		load_image(argc, argv, j, game_index);
-    /*TODO*///		#endif
+    		if (settings.MESS){
+                    /* This function has been added to MESS.C as load_image() */
+                    load_image(argc, argv, j, game_index);
+                }
     
     	/* parse generic (os-independent) options */
 	    /*TODO*///parse_cmdline (argc, argv, game_index, override_path);

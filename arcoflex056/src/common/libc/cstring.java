@@ -222,4 +222,23 @@ public class cstring {
     public static int stricmp(String str1, String str2) {
         return str1.compareToIgnoreCase(str2);
     }
+    
+    /**
+     * Locate first occurrence of character in string Returns a pointer to the first occurrence of character in the C string str.
+     * @param str
+     * @param ch
+     * @return 
+     */
+    public static String strchr(String str,char ch)
+    {
+        int found = str.indexOf(ch);
+        if(found==-1)//not found
+        {
+            return null;
+        }
+        else
+        {
+            return Integer.toString(found);//return in String
+        }
+    }
 }

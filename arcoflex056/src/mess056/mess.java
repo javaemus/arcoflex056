@@ -21,7 +21,12 @@ import static arcadeflex056.osdepend.logerror;
 import static arcadeflex056.fileio.*;
 import static common.libc.cstring.*;
 import static common.libc.cstdio.*;
+import mame056.commonH.mame_bitmap;
+import static mame056.inptportH.*;
+import static mame056.input.*;
+import static mame056.inputH.*;
 import static mame056.mame.*;
+import static mame056.usrintrf.*;
 
 public class mess
 {
@@ -39,7 +44,7 @@ public class mess
 	static String renamed_image;
 	
 	public static class image_info {
-		String name;
+		String name = null;
 		int crc;
 		int length;
 		String longname;
@@ -141,7 +146,7 @@ public class mess
 /*TODO*///	
 	public static Object image_fopen(int type, int id, int filetype, int read_or_write)
     {
-        //System.out.println("image_fopen");
+        System.out.println("image_fopen "+filetype);
         image_info img = images[type][id];
 	    String sysname;
 	    Object file;
@@ -436,21 +441,23 @@ public class mess
 /*TODO*///			return devices[type].shortname;
 /*TODO*///		return "UNKNOWN";
 /*TODO*///	}
-/*TODO*///	
-/*TODO*///	/* Return a name for a device of type 'type' with id 'id' */
-/*TODO*///	const char *device_typename_id(int type, int id)
-/*TODO*///	{
-/*TODO*///		static char typename_id[40][31+1];
-/*TODO*///		static int which = 0;
-/*TODO*///		if (type < IO_COUNT)
-/*TODO*///		{
-/*TODO*///			which = (which + 1) % 40;
-/*TODO*///			/* for the average user counting starts at #1 ;-) */
-/*TODO*///			sprintf(typename_id[which], "%s #%d", devices[type].name, id+1);
-/*TODO*///			return typename_id[which];
-/*TODO*///		}
-/*TODO*///		return "UNKNOWN";
-/*TODO*///	}
+	
+	static String[] typename_id_dev = new String[40];
+	static int which_dev = 0;
+                
+        /* Return a name for a device of type 'type' with id 'id' */
+	public static String device_typename_id(int type, int id)
+	{
+		if (type < IO_COUNT)
+		{
+                    which_dev = ++which_dev % 40;
+                    /* for the average user counting starts at #1 ;-) */
+                    typename_id_dev[which_dev] = sprintf("%s #%d", devices[type].name, id + 1);
+                    //System.out.println("Returning "+typename_id_dev[which_dev]);
+                    return typename_id_dev[which_dev];
+		}
+		return "UNKNOWN";
+	}
 
 		/*
 		 * Return the number of filenames for a device of type 'type'.
@@ -469,6 +476,7 @@ public class mess
 	     */
 	    public static String device_filename(int type, int id)
 	    {
+                System.out.println("device_filename: "+type+", "+id+", "+images[type][id].name);
 	        if (type >= IO_COUNT)
 	            return null;
 	        if (id < count[type])
@@ -549,60 +557,60 @@ public class mess
 /*TODO*///			return images[type][id].length;
 /*TODO*///		return 0;
 /*TODO*///	}
-/*TODO*///	
-/*TODO*///	/*
-/*TODO*///	 * Return the 'id'th long name for a device of type 'type',
-/*TODO*///	 * NULL if not enough image names of that type are available.
-/*TODO*///	 */
-/*TODO*///	const char *device_longname(int type, int id)
-/*TODO*///	{
-/*TODO*///		if (type >= IO_COUNT)
-/*TODO*///			return NULL;
-/*TODO*///		if (id < count[type])
-/*TODO*///			return images[type][id].longname;
-/*TODO*///		return NULL;
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	/*
-/*TODO*///	 * Return the 'id'th manufacturer name for a device of type 'type',
-/*TODO*///	 * NULL if not enough image names of that type are available.
-/*TODO*///	 */
-/*TODO*///	const char *device_manufacturer(int type, int id)
-/*TODO*///	{
-/*TODO*///		if (type >= IO_COUNT)
-/*TODO*///			return NULL;
-/*TODO*///		if (id < count[type])
-/*TODO*///			return images[type][id].manufacturer;
-/*TODO*///		return NULL;
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	/*
-/*TODO*///	 * Return the 'id'th release year for a device of type 'type',
-/*TODO*///	 * NULL if not enough image names of that type are available.
-/*TODO*///	 */
-/*TODO*///	const char *device_year(int type, int id)
-/*TODO*///	{
-/*TODO*///		if (type >= IO_COUNT)
-/*TODO*///			return NULL;
-/*TODO*///		if (id < count[type])
-/*TODO*///			return images[type][id].year;
-/*TODO*///		return NULL;
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	/*
-/*TODO*///	 * Return the 'id'th playable info for a device of type 'type',
-/*TODO*///	 * NULL if not enough image names of that type are available.
-/*TODO*///	 */
-/*TODO*///	const char *device_playable(int type, int id)
-/*TODO*///	{
-/*TODO*///		if (type >= IO_COUNT)
-/*TODO*///			return NULL;
-/*TODO*///		if (id < count[type])
-/*TODO*///			return images[type][id].playable;
-/*TODO*///		return NULL;
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	
+	
+	/*
+	 * Return the 'id'th long name for a device of type 'type',
+	 * NULL if not enough image names of that type are available.
+	 */
+	public static String device_longname(int type, int id)
+	{
+		if (type >= IO_COUNT)
+			return null;
+		if (id < count[type])
+			return images[type][id].longname;
+		return null;
+	}
+	
+	/*
+	 * Return the 'id'th manufacturer name for a device of type 'type',
+	 * NULL if not enough image names of that type are available.
+	 */
+	public static String device_manufacturer(int type, int id)
+	{
+		if (type >= IO_COUNT)
+			return null;
+		if (id < count[type])
+			return images[type][id].manufacturer;
+		return null;
+	}
+	
+	/*
+	 * Return the 'id'th release year for a device of type 'type',
+	 * NULL if not enough image names of that type are available.
+	 */
+	public static String device_year(int type, int id)
+	{
+		if (type >= IO_COUNT)
+			return null;
+		if (id < count[type])
+			return images[type][id].year;
+		return null;
+	}
+	
+	/*
+	 * Return the 'id'th playable info for a device of type 'type',
+	 * NULL if not enough image names of that type are available.
+	 */
+	public static String device_playable(int type, int id)
+	{
+		if (type >= IO_COUNT)
+			return null;
+		if (id < count[type])
+			return images[type][id].playable;
+		return null;
+	}
+	
+	
 /*TODO*///	/*
 /*TODO*///	 * Return the 'id'th extrainfo info for a device of type 'type',
 /*TODO*///	 * NULL if not enough image names of that type are available.
@@ -628,30 +636,24 @@ public class mess
             int i,j;
 	
             logerror("Distributing Images to Devices...\n");
-            //System.out.println("Distributing Images to Devices...");
-            
 		/* Set names to NULL */
 		for (i=0;i<IO_COUNT;i++)
 			for (j=0;j<MAX_INSTANCES;j++)
 				images[i][j].name = null;
-	//System.out.println("options.image_count "+options.image_count);
+	
 		for( i = 0; i < options.image_count; i++ )
 		{
 			int type = options.image_files[i].type;
-                        //System.out.println("i: "+i);
-                        //System.out.println("count[type]: "+count[type]);
-                        //System.out.println("OPTIONS NAME: "+options.image_files[i].name);
-                        //System.out.println("OPTIONS TYPE: "+options.image_files[i].type);
+	
 			if (type < IO_COUNT)
 			{
 				/* Add a filename to the arrays of names */
-				if( options.image_files[i].name != null)
+				if( options.image_files[i].name != null )
 				{
 					images[type][count[type]].name = dupe(options.image_files[i].name);
-                                        //System.out.println("IMAGES: "+images[type][count[type]].name);
-					if( images[type][count[type]].name == null)
+					if( images[type][count[type]].name == null )
 					{
-						printf(" ERROR - dupe() failed\n");
+						mess_printf(" ERROR - dupe() failed\n");
 						return 1;
 					}
 				}
@@ -659,7 +661,7 @@ public class mess
 			}
 			else
 			{
-				printf(" Invalid Device type %d for %s\n", type, options.image_files[i].name);
+				mess_printf(" Invalid Device type %d for %s\n", type, options.image_files[i].name);
 				return 1;
 			}
 		}
@@ -689,8 +691,9 @@ public class mess
 	 ****************************************************************************/
 	public static int init_devices(GameDriver game)
 	{
-		GameDriver gamedrv = game;
-		IODevice[] dev = gamedrv.dev;
+            System.out.println("init_devices");
+                GameDriver gamedrv = game;
+		//IODevice[] dev = gamedrv.dev;
 		int i,id;
 		int dev_ptr = 0;
 	
@@ -699,7 +702,7 @@ public class mess
 		/* Check that the driver supports all devices requested (options struct)*/
 		for( i = 0; i < options.image_count; i++ )
 		{
-			if (supported_device(dev, options.image_files[i].type)==0)
+			if (supported_device(gamedrv.dev, options.image_files[i].type)==0)
 			{
 				mess_printf(" ERROR: Device [%s] is not supported by this system\n",device_typename(options.image_files[i].type));
 				return 1;
@@ -714,26 +717,28 @@ public class mess
 		floppy_drives_init();
 	
 		/* initialize --all-- devices */
-		while( dev[dev_ptr].count != 0 )
+                System.out.println("N Dev.["+dev_ptr+"]: "+gamedrv.dev[dev_ptr].count);
+		while( gamedrv.dev[dev_ptr].count != 0 )
 		{
 			/* all instances */
-			for( id = 0; id < dev[dev_ptr].count; id++ )
+			for( id = 0; id < gamedrv.dev[dev_ptr].count; id++ )
 			{
-				mess_printf("Initialising %s device #%d\n",device_typename(dev[dev_ptr].type), id + 1);
+				mess_printf("Initialising %s device #%d\n",device_typename(gamedrv.dev[dev_ptr].type), id + 1);
 				/********************************************************************
 				 * CALL INITIALISE DEVICE
 				 ********************************************************************/
 				/* if this device supports initialize (it should!) */
-				if( dev[dev_ptr].init != null )
+                                System.out.println("CALL INITIALISE DEVICE: "+gamedrv.dev[dev_ptr].init);
+				if( gamedrv.dev[dev_ptr].init != null )
 				{
 					int result;
 	
 					/* initialize */
-					result = dev[dev_ptr].init.handler(id);
+					result = gamedrv.dev[dev_ptr].init.handler(id);
 	
 					if( result != INIT_PASS)
 					{
-						mess_printf("Driver Reports Initialisation [for %s device] failed\n",device_typename(dev[dev_ptr].type));
+						mess_printf("Driver Reports Initialisation [for %s device] failed\n",device_typename(gamedrv.dev[dev_ptr].type));
 						mess_printf("Ensure image is valid and exists and (if needed) can be created\n");
 						mess_printf("Also remember that some systems cannot boot without a valid image!\n");
 						return 1;
@@ -741,14 +746,14 @@ public class mess
 	
 					/* init succeeded */
 					/* if floppy, perform common init */
-					if ((dev[dev_ptr].type == IO_FLOPPY) && (device_filename(dev[dev_ptr].type, id) != null))
+					if ((gamedrv.dev[dev_ptr].type == IO_FLOPPY) && (device_filename(gamedrv.dev[dev_ptr].type, id) != null))
 					{
 						floppy_device_common_init(id);
 					}
 				}
 				else
 				{
-					mess_printf(" %s does not support init!\n", device_typename(dev[dev_ptr].type));
+					mess_printf(" %s does not support init!\n", device_typename(gamedrv.dev[dev_ptr].type));
 				}
 			}
 			dev_ptr++;
@@ -943,8 +948,87 @@ public class mess
 /*TODO*///	}
 /*TODO*///	#endif
 /*TODO*///	
-/*TODO*///	
-/*TODO*///	int displayimageinfo(struct mame_bitmap *bitmap, int selected)
+/*TODO*///
+        public static int displayimageinfo(mame_bitmap bitmap, int selected)
+        {
+                        //char buf[2048], *dst = buf;
+        String dst = "";
+        int type, id, sel = selected - 1;
+
+        dst += sprintf("%s\n\n", Machine.gamedrv.description);
+
+        for (type = 0; type < IO_COUNT; type++) {
+            for (id = 0; id < device_count(type); id++) {
+                String name = device_filename(type, id);
+                if (name != null) {
+                    String info;
+                    dst += sprintf("%s: %s\n", device_typename_id(type, id), device_filename(type, id));
+                    info = device_longname(type, id);
+                    if (info != null) {
+                        dst += sprintf("%s\n", info);
+                    }
+                    info = device_manufacturer(type, id);
+                    if (info != null) {
+                        dst += sprintf("%s", info);
+                        info = /*stripspace*/ (device_year(type, id));
+                        if ((info != null) && (info.length() != 0)) {
+                            dst += sprintf(", %s", info);
+                        }
+                        dst += sprintf("\n");
+                    }
+                    info = device_playable(type, id);
+                    if (info != null) {
+                        dst += sprintf("%s\n", info);
+                    }
+// why is extrainfo printed? only MSX and NES use it that i know of ... Cowering
+//				info = device_extrainfo(type,id);
+//				if( info )
+//					dst += sprintf(dst,"%s\n", info);
+                } else {
+                    dst += sprintf("%s: ---\n", device_typename_id(type, id));
+                }
+            }
+        }
+
+        if (sel == -1) {
+            /* startup info, print MAME version and ask for any key */
+
+            dst += "\n\tPress any key to Begin";
+            ui_drawbox(bitmap, 0, 0, Machine.uiwidth, Machine.uiheight);
+            ui_displaymessagewindow(bitmap, dst);
+
+            sel = 0;
+            if (code_read_async() != CODE_NONE
+                    || code_read_async() != CODE_NONE) {
+                sel = -1;
+            }
+        } else {
+            /* menu system, use the normal menu keys */
+            dst += "\n\t\u001A Return to Main Menu \u001B";
+
+            ui_displaymessagewindow(bitmap, dst);
+
+            if ((input_ui_pressed(IPT_UI_SELECT)) != 0) {
+                sel = -1;
+            }
+
+            if ((input_ui_pressed(IPT_UI_CANCEL)) != 0) {
+                sel = -1;
+            }
+
+            if ((input_ui_pressed(IPT_UI_CONFIGURE)) != 0) {
+                sel = -2;
+            }
+        }
+
+        if (sel == -1 || sel == -2) {
+            /* tell updatescreen() to clean after us */
+            schedule_full_refresh();
+        }
+
+        return sel + 1;
+    }
+/*TODO*///	public static int displayimageinfo(struct mame_bitmap *bitmap, int selected)
 /*TODO*///	{
 /*TODO*///		char buf[2048], *dst = buf;
 /*TODO*///		int type, id, sel = selected - 1;
@@ -1063,72 +1147,72 @@ public class mess
 	
 	}
 	/*
-	    * Copy the image names from options.image_files[] to
-	    * the array of filenames we keep here, depending on the
-	    * type identifier of each image.
-	     */
-	    public static int get_filenames() {
-	        IODevice[] dev = Machine.gamedrv.dev;
-	        int dev_ptr = 0;
-	        int i;
+    * Copy the image names from options.image_files[] to
+    * the array of filenames we keep here, depending on the
+    * type identifier of each image.
+     */
+    public static int get_filenames() {
+        IODevice[] dev = Machine.gamedrv.dev;
+        int dev_ptr = 0;
+        int i;
 
-	        for (i = 0; i < options.image_count; i++) {
-	            int type = options.image_files[i].type;
+        for (i = 0; i < options.image_count; i++) {
+            int type = options.image_files[i].type;
 
-	            if (type < IO_COUNT) {
-	                /*TODO*///			/* Add a filename to the arrays of names */
-	/*TODO*///			if( images[type] )
-	/*TODO*///				images[type] = realloc(images[type],(count[type]+1)*sizeof(struct image_info));
-	/*TODO*///			else
-	/*TODO*///				images[type] = malloc(sizeof(struct image_info));
-	/*TODO*///			if( !images[type] )
-	/*TODO*///				return 1;
-	/*TODO*///			memset(&images[type][count[type]], 0, sizeof(struct image_info));
-	/*TODO*///			if( options.image_files[i].name )
-	/*TODO*///			{
-	/*TODO*///				images[type][count[type]].name = dupe(options.image_files[i].name);
-	/*TODO*///				if( !images[type][count[type]].name )
-	/*TODO*///					return 1;
-	/*TODO*///			}
-	/*TODO*///			logerror("%s #%d: %s\n", typename[type], count[type]+1, images[type][count[type]].name);
-	/*TODO*///			count[type]++;
-	//TODO below code needs to be tested
-	                images[type][count[type]] = new image_info();
-	                if (options.image_files[i].name != null) {
-	                    images[type][count[type]].name = options.image_files[i].name;
-	                    if (images[type][count[type]].name == null) {
-	                        return 1;
-	                    }
-	                }
-	                //logerror("%s #%d: %s\n", typename[type], count[type] + 1, images[type][count[type]].name);
-	                count[type]++;
-	            } else {
-	                logerror("Invalid IO_ type %d for %s\n", type, options.image_files[i].name);
-	                return 1;
-	            }
-	        }
+            if (type < IO_COUNT) {
+                /*TODO*///			/* Add a filename to the arrays of names */
+/*TODO*///			if( images[type] )
+/*TODO*///				images[type] = realloc(images[type],(count[type]+1)*sizeof(struct image_info));
+/*TODO*///			else
+/*TODO*///				images[type] = malloc(sizeof(struct image_info));
+/*TODO*///			if( !images[type] )
+/*TODO*///				return 1;
+/*TODO*///			memset(&images[type][count[type]], 0, sizeof(struct image_info));
+/*TODO*///			if( options.image_files[i].name )
+/*TODO*///			{
+/*TODO*///				images[type][count[type]].name = dupe(options.image_files[i].name);
+/*TODO*///				if( !images[type][count[type]].name )
+/*TODO*///					return 1;
+/*TODO*///			}
+/*TODO*///			logerror("%s #%d: %s\n", typename[type], count[type]+1, images[type][count[type]].name);
+/*TODO*///			count[type]++;
+//TODO below code needs to be tested
+                images[type][count[type]] = new image_info();
+                if (options.image_files[i].name != null) {
+                    images[type][count[type]].name = options.image_files[i].name;
+                    if (images[type][count[type]].name == null) {
+                        return 1;
+                    }
+                }
+                /*TODO*///logerror("%s #%d: %s\n", typename[type], count[type] + 1, images[type][count[type]].name);
+                count[type]++;
+            } else {
+                logerror("Invalid IO_ type %d for %s\n", type, options.image_files[i].name);
+                return 1;
+            }
+        }
 
-	        /* Does the driver have any IODevices defined? */
-	        if (dev != null) {
-	            while (dev[dev_ptr].count != 0) {
-	                int type = dev[dev_ptr].type;
-	                /*TODO*///                while (count[type] < dev[dev_ptr].count) {
-	/*TODO*///                    throw new UnsupportedOperationException("unimplemented");
-	                /*TODO*///				/* Add an empty slot name the arrays of names */
-	/*TODO*///				if( images[type] )
-	/*TODO*///					images[type] = realloc(images[type],(count[type]+1)*sizeof(struct image_info));
-	/*TODO*///				else
-	/*TODO*///					images[type] = malloc(sizeof(struct image_info));
-	/*TODO*///				if( !images[type] )
-	/*TODO*///					return 1;
-	/*TODO*///				memset(&images[type][count[type]], 0, sizeof(struct image_info));
-	/*TODO*///				count[type]++;
-	/*TODO*///                }
-	                dev_ptr++;
-	            }
-	        }
+        /* Does the driver have any IODevices defined? */
+        if (dev != null) {
+            while (dev[dev_ptr].count != 0) {
+                int type = dev[dev_ptr].type;
+                /*TODO*///                while (count[type] < dev[dev_ptr].count) {
+/*TODO*///                    throw new UnsupportedOperationException("unimplemented");
+                /*TODO*///				/* Add an empty slot name the arrays of names */
+/*TODO*///				if( images[type] )
+/*TODO*///					images[type] = realloc(images[type],(count[type]+1)*sizeof(struct image_info));
+/*TODO*///				else
+/*TODO*///					images[type] = malloc(sizeof(struct image_info));
+/*TODO*///				if( !images[type] )
+/*TODO*///					return 1;
+/*TODO*///				memset(&images[type][count[type]], 0, sizeof(struct image_info));
+/*TODO*///				count[type]++;
+/*TODO*///                }
+                dev_ptr++;
+            }
+        }
 
-	        /* everything was fine */
-	        return 0;
-	    }	
+        /* everything was fine */
+        return 0;
+    }	
 }

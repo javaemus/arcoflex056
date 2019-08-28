@@ -32,8 +32,11 @@ import static mame056.version.*;
 import static mame056.driver.*;
 import static arcadeflex056.video.*;
 
+import static mess056.mess.*;
+
 //to refactor
 import static arcadeflex036.sound.*;
+import arcadeflex056.settings;
 
 public class usrintrf {
 
@@ -1952,6 +1955,16 @@ public class usrintrf {
 
             buf = ui_getstring(UI_knownproblems);
             buf += "\n\n";
+            
+            if (settings.MESS){
+                if ((Machine.gamedrv.flags & GAME_COMPUTER) != 0)
+                {
+                        buf = ui_getstring (UI_comp1);
+                        buf += "\n\n";
+                        buf += ui_getstring (UI_comp2);
+                        buf += "\n";
+                }
+            }
 
             if ((Machine.gamedrv.flags & GAME_IMPERFECT_COLORS) != 0) {
                 buf += ui_getstring(UI_imperfectcolors);
@@ -2051,6 +2064,13 @@ public class usrintrf {
         while (displaygameinfo(bitmap, 0) == 1) {
             update_video_and_audio();
             /*TODO*///      osd_poll_joysticks();
+        }
+        
+        if (settings.MESS){
+            while (displayimageinfo(bitmap,0) == 1)
+            {
+                    update_video_and_audio();
+            }
         }
 
         erase_screen(bitmap);
@@ -2560,6 +2580,7 @@ public class usrintrf {
 /*TODO*///#endif
 /*TODO*///#endif
 /*TODO*///
+    
     public static final int UI_SWITCH = 0;
     public static final int UI_DEFCODE = 1;
     public static final int UI_CODE = 2;
@@ -2567,11 +2588,16 @@ public class usrintrf {
     public static final int UI_CALIBRATE = 4;
     public static final int UI_STATS = 5;
     public static final int UI_GAMEINFO = 6;
-    public static final int UI_HISTORY = 7;
-    public static final int UI_CHEAT = 8;
-    public static final int UI_RESET = 9;
-    public static final int UI_MEMCARD = 10;
-    public static final int UI_EXIT = 11;
+    
+    public static final int UI_IMAGEINFO = 7;
+    public static final int UI_FILEMANAGER = 8;
+    public static final int UI_TAPECONTROL = 9;
+    
+    public static final int UI_HISTORY = 10;
+    public static final int UI_CHEAT = 11;
+    public static final int UI_RESET = 12;
+    public static final int UI_MEMCARD = 13;
+    public static final int UI_EXIT = 14;
 
     public static final int MAX_SETUPMENU_ITEMS = 20;
     static String[] menu_item = new String[MAX_SETUPMENU_ITEMS];
@@ -2673,6 +2699,17 @@ public class usrintrf {
                 case UI_GAMEINFO:
                     res = displaygameinfo(bitmap, sel >> SEL_BITS);
                     break;
+                case UI_IMAGEINFO:
+                        res = displayimageinfo(bitmap, sel >> SEL_BITS);
+                        break;
+                case UI_FILEMANAGER:
+                /*TODO*///        res = filemanager(bitmap, sel >> SEL_BITS);
+                    System.out.println("filemanager needs to be implemented!!!!");
+                        break;
+                case UI_TAPECONTROL:
+                /*TODO*///        res = tapecontrol(bitmap, sel >> SEL_BITS);
+                    System.out.println("tapecontrol needs to be implemented!!!!");
+                        break;
                 case UI_HISTORY:
                     res = displayhistory(bitmap, sel >> SEL_BITS);
                     break;

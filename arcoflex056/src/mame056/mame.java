@@ -258,11 +258,11 @@ public class mame {
         }
         
         if (settings.MESS) {
-			if (gamedrv.rom==null)
-			{
-				logerror("Going to load_next tag\n");
-				return load_next();
-			}
+		if (init_devices(gamedrv) != 0)
+		{
+			logerror("init_devices failed\n");
+			return out_free();
+		}
         }
 
         if (readroms() != 0) {
@@ -293,15 +293,6 @@ public class mame {
         return 0;
     }
     
-    static int load_next() {
-    	if (init_devices(gamedrv) != 0)
-		{
-			logerror("init_devices failed\n");
-			return out_free();
-		}
-    	return 0;
-    }
-
     static int out_free() {
         input_port_free(Machine.input_ports);
         Machine.input_ports = null;
