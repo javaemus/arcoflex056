@@ -717,8 +717,7 @@ public class mess
 		floppy_drives_init();
 	
 		/* initialize --all-- devices */
-                System.out.println("N Dev.["+dev_ptr+"]: "+gamedrv.dev[dev_ptr].count);
-		while( gamedrv.dev[dev_ptr].count != 0 )
+                while( gamedrv.dev[dev_ptr].count != 0 )
 		{
 			/* all instances */
 			for( id = 0; id < gamedrv.dev[dev_ptr].count; id++ )
