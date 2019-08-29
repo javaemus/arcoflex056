@@ -2482,10 +2482,10 @@ public class memory {
 
             /* allow overrides */
             if (opbasefunc != null) {
-                throw new UnsupportedOperationException("Unsupported");
-                /*TODO*///		pc = (*opbasefunc)(pc);															
-/*TODO*///		if (pc == ~0)																	
-/*TODO*///			return; 
+                //throw new UnsupportedOperationException("Unsupported");
+                pc = opbasefunc.handler(pc);															
+                if (pc == ~0)																	
+                    return; 
             }
 
             /* perform the lookup */

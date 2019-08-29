@@ -281,7 +281,9 @@ public class cpuintrfH {
 
     /*TODO*///#define		activecpu_get_sp()			activecpu_get_reg(REG_SP)
 /*TODO*///#define		activecpu_set_pc(val)		activecpu_set_reg(REG_PC, val)
-/*TODO*///#define		activecpu_set_sp(val)		activecpu_set_reg(REG_SP, val)
+    public static void activecpu_set_sp(int val){
+        activecpu_set_reg(REG_SP, val);
+    }
 /*TODO*///
 /*TODO*///#define		cpunum_get_previouspc(cpu)	cpunum_get_reg(cpu, REG_PREVIOUSPC)
 /*TODO*///#define		cpunum_get_pc(cpu)			cpunum_get_reg(cpu, REG_PC)
@@ -304,7 +306,10 @@ public class cpuintrfH {
         return activecpu_get_reg(regnum);
     }
 
-    /*TODO*///#define		cpu_set_reg					activecpu_set_reg
+    public static void cpu_set_reg(int regnum, int data) {
+        activecpu_set_reg(regnum, data);
+    }
+    
     public static int cpu_getpreviouspc() {
         return activecpu_get_previouspc();
     }

@@ -43,6 +43,10 @@ import WIP.mame056.sound._5220intf;
 import mame056.sound._2413intf;
 import WIP.mame056.sound.astrocde;
 
+// MESS Sound Chips
+import mess056.sound.speaker;
+import mess056.sound.wave;
+
 public class sndintrf {
 
     static int cleared_value = 0x00;
@@ -730,7 +734,61 @@ public class sndintrf {
                 /*TODO*///		0,
                 /*TODO*///		0
                 /*TODO*///	},
-                new Dummy_snd()
+                new Dummy_snd(),
+                /*TODO*///#ifdef MESS
+                /*TODO*///#if (HAS_BEEP)
+		/*TODO*///{
+		/*TODO*///	SOUND_BEEP,
+		/*TODO*///	"Beep",
+		/*TODO*///	beep_num,
+		/*TODO*///	0,
+		/*TODO*///	beep_sh_start,
+		/*TODO*///	beep_sh_stop,
+		/*TODO*///	beep_sh_update,
+		/*TODO*///	0
+		/*TODO*///},
+                new Dummy_snd(),
+                /*TODO*///#endif
+                /*TODO*///#if (HAS_SPEAKER)
+		/*TODO*///{
+		/*TODO*///	SOUND_SPEAKER,
+		/*TODO*///	"Speaker",
+		/*TODO*///	speaker_num,
+		/*TODO*///	0,
+		/*TODO*///	speaker_sh_start,
+		/*TODO*///	speaker_sh_stop,
+		/*TODO*///	speaker_sh_update,
+		/*TODO*///	0
+		/*TODO*///},
+                new speaker(),
+                /*TODO*///#endif
+                /*TODO*///#if (HAS_TIA)
+                /*TODO*///{
+		/*TODO*///	SOUND_TIA,
+		/*TODO*///	"TIA",
+		/*TODO*///	0,
+		/*TODO*///	TIA_clock,
+		/*TODO*///	tia_sh_start,
+		/*TODO*///	tia_sh_stop,
+		/*TODO*///	tia_sh_update,
+		/*TODO*///	0
+		/*TODO*///},
+                new Dummy_snd(),
+                /*TODO*///#endif
+                /*TODO*///#if (HAS_WAVE)
+		/*TODO*///{
+		/*TODO*///	SOUND_WAVE,
+		/*TODO*///	"Cassette",
+		/*TODO*///	wave_num,
+		/*TODO*///	0,
+		/*TODO*///	wave_sh_start,
+		/*TODO*///	wave_sh_stop,
+		/*TODO*///	wave_sh_update,
+		/*TODO*///	0
+		/*TODO*///},
+                new wave()
+                /*TODO*///#endif
+                /*TODO*///#endif
             };
 
     public static int sound_start() {

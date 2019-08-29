@@ -192,10 +192,10 @@ public class inputH {
 
 
  /* Wrapper for compatibility */
- /*TODO*///#define KEYCODE_OTHER CODE_OTHER
-/*TODO*///#define JOYCODE_OTHER CODE_OTHER
-/*TODO*///#define KEYCODE_NONE CODE_NONE
-/*TODO*///#define JOYCODE_NONE CODE_NONE
+    public static final int KEYCODE_OTHER   = CODE_OTHER;
+    public static final int JOYCODE_OTHER   = CODE_OTHER;
+    public static final int KEYCODE_NONE    = CODE_NONE;
+    public static final int JOYCODE_NONE    = CODE_NONE;
 
     /*TODO*////* Wrappers for compatibility */
 /*TODO*///#define keyboard_name                   code_name

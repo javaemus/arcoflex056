@@ -21,6 +21,8 @@ package mess056;
 import mame056.driverH.GameDriver;
 
 import static mess056.systems.coleco.*;
+import static mess056.systems.spectrum.*;
+import static mess056.systems.zx.*;
 
 public class system {
 	/*TODO*///	
@@ -413,14 +415,14 @@ public class system {
 	/*TODO*///	
 	/*TODO*///		/* SINCLAIR */
 	/*TODO*///	
-	/*TODO*///		DRIVER( zx80 )		/* Sinclair ZX-80								  */
-	/*TODO*///		DRIVER( zx81 )		/* Sinclair ZX-81								  */
+	driver_zx80,		/* Sinclair ZX-80								  */
+	driver_zx81,		/* Sinclair ZX-81								  */
 	/*TODO*///		DRIVER( ts1000 )	/* Timex Sinclair 1000							  */
-	/*TODO*///		DRIVER( aszmic )	/* ASZMIC ZX-81 ROM swap						  */
+	driver_aszmic,          /* ASZMIC ZX-81 ROM swap						  */
 	/*TODO*///		DRIVER( pc8300 )	/* Your Computer - PC8300						  */
 	/*TODO*///		DRIVER( pow3000 )	/* Creon Enterprises - Power 3000				  */
 	/*TODO*///	
-	/*TODO*///		DRIVER( spectrum )	/* 1982 ZX Spectrum 							  */
+	driver_spectrum,	/* 1982 ZX Spectrum 							  */
 	/*TODO*///		DRIVER( specpls4 )	/* 2000 ZX Spectrum +4							  */
 	/*TODO*///		DRIVER( specbusy )	/* 1994 ZX Spectrum (BusySoft Upgrade v1.18)			  */
 	/*TODO*///		DRIVER( specpsch )	/* 19?? ZX Spectrum (Maly's Psycho Upgrade)			  */
@@ -434,17 +436,18 @@ public class system {
 	/*TODO*///		DRIVER( ts2068 )	/* 1983 TS2068									  */
 	/*TODO*///		DRIVER( uk2086 )	/* 1986 UK2086									  */
 	/*TODO*///	
-	/*TODO*///		DRIVER( spec128 )	/* 1986 ZX Spectrum 128"                          */
+	driver_spec128,          /* 1986 ZX Spectrum 128"                          */
 	/*TODO*///		DRIVER( spec128s )	/* 1985 ZX Spectrum 128 (Spain) 				  */
-	/*TODO*///		DRIVER( specpls2 )	/* 1986 ZX Spectrum +2							  */
+	driver_specpls2,	/* 1986 ZX Spectrum +2							  */
 	/*TODO*///		DRIVER( specpl2a )	/* 1987 ZX Spectrum +2a 						  */
-	/*TODO*///		DRIVER( specpls3 )	/* 1987 ZX Spectrum +3							  */
+	driver_specpls3,	/* 1987 ZX Spectrum +3							  */
 	/*TODO*///	
 	/*TODO*///		DRIVER( specp2fr )	/* 1986 ZX Spectrum +2 (France) 				  */
 	/*TODO*///		DRIVER( specp2sp )	/* 1986 ZX Spectrum +2 (Spain)					  */
 	/*TODO*///		DRIVER( specp3sp )	/* 1987 ZX Spectrum +3 (Spain)					  */
 	/*TODO*///		DRIVER( specpl3e )	/* 2000 ZX Spectrum +3e 						  */
 	/*TODO*///	
+        driver_pentagon,
 	/*TODO*///		/* sinclair pc200 professional series ibmxt compatible*/
 	/*TODO*///	
 	/*TODO*///		/* SHARP */

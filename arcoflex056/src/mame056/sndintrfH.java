@@ -77,8 +77,15 @@ public class sndintrfH {
     public static final int SOUND_IREMGA20 = 44;
     public static final int SOUND_ES5505 = 45;
     public static final int SOUND_ES5506 = 46;
+    
+    //#ifdef MESS
+    public static final int SOUND_BEEP = 47;
+    public static final int SOUND_SPEAKER = 48;
+    public static final int SOUND_TIA = 49;
+    public static final int SOUND_WAVE = 50;
+    //#endif
 
-    public static final int SOUND_COUNT = 47;
+    public static final int SOUND_COUNT = 51;
 
     /* structure for SOUND_CUSTOM sound drivers */
     public static class CustomSound_interface {
