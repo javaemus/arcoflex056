@@ -25,6 +25,7 @@ import static mess056.systems.spectrum.*;
 import static mess056.systems.zx.*;
 import static mess056.systems.a2600.*;
 import static mess056.systems.amstrad.*;
+import static mess056.systems.coupe.*;
 
 public class system {
 	/*TODO*///	
@@ -201,7 +202,7 @@ public class system {
 	/*TODO*///		DRIVER( z88 )		/*												  */
 	/*TODO*///	
 	driver_cpc464,	/* Amstrad (Schneider in Germany) 1984			  */
-	/*TODO*///		DRIVER( cpc664 )	/* Amstrad (Schneider in Germany) 1985			  */
+	driver_cpc664,	/* Amstrad (Schneider in Germany) 1985			  */
 	driver_cpc6128,	/* Amstrad (Schneider in Germany) 1985			  */
 	/*TODO*///	/*	DRIVER( cpc464p )*/ /* Amstrad CPC464  Plus - 1987					  */
 	/*TODO*///	/*	DRIVER( cpc6128p )*//* Amstrad CPC6128 Plus - 1987					  */
@@ -707,9 +708,9 @@ public class system {
 	/*TODO*///		DRIVER( nascom2a )	/* 1979 Nascom 2								  */
 	/*TODO*///	
 	/*TODO*///	
-	/*TODO*///		/* MILES GORDON TECHNOLOGY */
-	/*TODO*///		DRIVER( coupe ) 	/* 1989 Sam Coupe 256K RAM						  */
-	/*TODO*///		DRIVER( coupe512 )	/* 1989 Sam Coupe 512K RAM						  */
+			/* MILES GORDON TECHNOLOGY */
+	driver_coupe, 	/* 1989 Sam Coupe 256K RAM						  */
+	driver_coupe512,	/* 1989 Sam Coupe 512K RAM						  */
 	/*TODO*///	
 	/*TODO*///		/* MOTOROLA */
 	/*TODO*///	TESTDRIVER( mekd2 )     /* 1977 Motorola Evaluation Kit                   */

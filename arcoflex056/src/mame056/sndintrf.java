@@ -42,6 +42,7 @@ import WIP.mame056.sound.hc55516;
 import WIP.mame056.sound._5220intf;
 import mame056.sound._2413intf;
 import WIP.mame056.sound.astrocde;
+import mame056.sound.saa1099;
 
 // MESS Sound Chips
 import mess056.sound.speaker;
@@ -695,7 +696,7 @@ public class sndintrf {
                 /*TODO*///		0,
                 /*TODO*///		0
                 /*TODO*///	},
-                new Dummy_snd(),
+                new saa1099(),
                 /*TODO*///#endif
                 /*TODO*///#if (HAS_IREMGA20)
                 /*TODO*///	{
