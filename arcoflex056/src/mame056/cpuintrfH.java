@@ -81,8 +81,24 @@ public class cpuintrfH {
     public static final int CPU_PSXCPU = 64;
     public static final int CPU_ASAP = 65;
     public static final int CPU_UPD7810 = 66;
+    
+    /* MESS CPUs */
+    public static final int CPU_APEXC = 67;
+    public static final int CPU_ARM = 68;
+    public static final int CPU_CDP1802 = 69;
+    public static final int CPU_CP1600 = 70;
+    public static final int CPU_F8 = 71;
+    public static final int CPU_G65816 = 72;
+    public static final int CPU_LH5801 = 73;
+    public static final int CPU_PDP1 = 74;
+    public static final int CPU_SATURN = 75;
+    public static final int CPU_SC61860 = 76;
+    public static final int CPU_SH2 = 77;
+    public static final int CPU_SPC700 = 78;
+    public static final int CPU_Z80GB = 79;
+    public static final int CPU_Z80_MSX = 80;
 
-    public static final int CPU_COUNT = 67;
+    public static final int CPU_COUNT = 81;
 
     /**
      * ***********************************
@@ -286,10 +302,16 @@ public class cpuintrfH {
     }
 /*TODO*///
 /*TODO*///#define		cpunum_get_previouspc(cpu)	cpunum_get_reg(cpu, REG_PREVIOUSPC)
-/*TODO*///#define		cpunum_get_pc(cpu)			cpunum_get_reg(cpu, REG_PC)
-/*TODO*///#define		cpunum_get_sp(cpu)			cpunum_get_reg(cpu, REG_SP)
+    public static int cpunum_get_pc(int cpu){
+        return cpunum_get_reg(cpu, REG_PC);
+    }
+    public static void cpunum_get_sp(int cpu){
+        cpunum_get_reg(cpu, REG_SP);
+    }
 /*TODO*///#define		cpunum_set_pc(cpu, val)		cpunum_set_reg(cpu, REG_PC, val)
-/*TODO*///#define		cpunum_set_sp(cpu, val)		cpunum_set_reg(cpu, REG_SP, val)
+    public static void cpunum_set_sp(int cpu, int val){
+        cpunum_set_reg(cpu, REG_SP, val);
+    }
 
     /* this is kind of gross - is it necessary */
     public static int cpu_geturnpc(){

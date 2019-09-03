@@ -30,6 +30,7 @@ import mame056.cpu.m6502.n2a03;
 import mame056.cpu.i8085.i8085;
 import mame056.cpu.i8085.i8080;
 import mame056.cpu.z8000.z8000;
+import mame056.cpu.z80.z80_MSX;
 
 public class cpuintrf {
 
@@ -296,6 +297,21 @@ public class cpuintrf {
             /*TODO*///#if (HAS_UPD7810)
             /*TODO*///#define upd7810_ICount upd7810_icount
             new dummy_cpu(),/*TODO*///	CPU0(UPD7810,  upd7810,  2,  0,1.00,UPD7810_INTF1,  8, 16,	  0,16,LE,1, 4	),
+            /* MESS*/
+            new dummy_cpu(),/*TODO*///	CPU0(APEXC,    apexc,	 0,  0,1.00,-1,			   32,18bedw, 0,18,LE,1, 1	),
+            new dummy_cpu(),/*TODO*///	CPU0(ARM,	   arm, 	 2,  0,1.00,ARM_FIRQ,	   32,26ledw, 0,26,LE,4, 4	),
+            new dummy_cpu(),/*TODO*///	CPU0(CDP1802,  cdp1802,  1,  0,1.00,CDP1802_IRQ,    8, 16,	  0,16,BE,1, 3	),
+            new dummy_cpu(),/*TODO*///	CPU0(CP1600,   cp1600,	 0,  0,1.00,-1,			    8, 16,	  0,16,LE,1, 3	),
+            new dummy_cpu(),/*TODO*///	CPU4(F8,	   f8,		 1,  0,1.00,F8_INT_INTR,    8, 16,	  0,16,LE,1, 3	),
+            new dummy_cpu(),/*TODO*///	CPU0(G65816,  g65816,	 1,  0,1.00,G65816_INT_IRQ, 8, 24,	  0,24,BE,1, 3	),
+            new dummy_cpu(),/*TODO*///	CPU0(LH5801,   lh5801,	 1,  0,1.00,LH5801_IRQ,	    8, 17,	  0,17,BE,1, 5	),
+            new dummy_cpu(),/*TODO*///	CPU0(PDP1,	   pdp1,	 0,  0,1.00,-1,			    8, 16,	  0,18,LE,1, 3	),
+            new dummy_cpu(),/*TODO*///	CPU0(SATURN,   saturn,	 1,  0,1.00,SATURN_INT_IRQ, 8,20,	  0,20,LE,1, 21 ),
+            new dummy_cpu(),/*TODO*///	CPU0(SC61860,  sc61860,  1,  0,1.00,-1,			    8, 16,	  0,16,BE,1, 4	),
+            new dummy_cpu(),/*TODO*///	CPU4(SH2,	   sh2, 	16,  0,1.00, 0, 		   32,32bedw,   0,32,BE,2, 2  ),
+            new dummy_cpu(),/*TODO*///	CPU0(SPC700,   spc700,	 0,  0,1.00,-1,			    8, 16,	  0,16,LE,1, 3	),
+            new dummy_cpu(),/*TODO*///	CPU0(Z80GB,    z80gb,	 5,255,1.00,0,			    8, 16,	  0,16,LE,1, 4	),
+            new z80_MSX()/*TODO*///	CPU1(Z80_MSX,  z80_msx,	 1,255,1.00,-1000,    8, 16,	  0,16,LE,1, 4	),
             };
     /*TODO*///
 /*TODO*////*************************************
@@ -618,7 +634,7 @@ public class cpuintrf {
 /*TODO*///}
 /*TODO*///
 /*TODO*///
-/*TODO*///void activecpu_set_cycle_tbl(int which, void *new_table)
+/*TODO*///public static void activecpu_set_cycle_tbl(int which, void *new_table)
 /*TODO*///{
 /*TODO*///	VERIFY_ACTIVECPU_VOID(activecpu_set_cycle_tbl);
 /*TODO*///	(*cpu[activecpu].intf.set_cycle_table)(which, new_table);
@@ -871,29 +887,29 @@ public class cpuintrf {
 /*TODO*///	return (cpu_active_context[cpu[cpunum].family] == cpunum) ? NULL : cpu[cpunum].context;
 /*TODO*///}
 /*TODO*///
-/*TODO*///
-/*TODO*////*--------------------------
-/*TODO*/// 	Get/set cycle table
-/*TODO*///--------------------------*/
-/*TODO*///
-/*TODO*///void *cpunum_get_cycle_table(int cpunum, int which)
-/*TODO*///{
-/*TODO*///	void *result;
-/*TODO*///	VERIFY_CPUNUM(NULL, cpunum_get_cycle_table);
-/*TODO*///	cpuintrf_push_context(cpunum);
-/*TODO*///	result = (*cpu[cpunum].intf.get_cycle_table)(which);
-/*TODO*///	cpuintrf_pop_context();
-/*TODO*///	return result;
-/*TODO*///}
-/*TODO*///
-/*TODO*///
-/*TODO*///void cpunum_set_cycle_tbl(int cpunum, int which, void *new_table)
-/*TODO*///{
-/*TODO*///	VERIFY_CPUNUM_VOID(cpunum_set_cycle_tbl);
-/*TODO*///	cpuintrf_push_context(cpunum);
-/*TODO*///	(*cpu[cpunum].intf.set_cycle_table)(which, new_table);
-/*TODO*///	cpuintrf_pop_context();
-/*TODO*///}
+
+    /*--------------------------
+            Get/set cycle table
+    --------------------------*/
+
+    public static int[] cpunum_get_cycle_table(int cpunum, int which)
+    {
+            int[] result;
+    /*TODO*///	VERIFY_CPUNUM(NULL, cpunum_get_cycle_table);
+            cpuintrf_push_context(cpunum);
+            result = cpu[cpunum].intf.get_cycle_table(which);
+            cpuintrf_pop_context();
+            return result;
+    }
+
+
+    public static void cpunum_set_cycle_tbl(int cpunum, int which, int[] new_table)
+    {
+    /*TODO*///	VERIFY_CPUNUM_VOID(cpunum_set_cycle_tbl);
+            cpuintrf_push_context(cpunum);
+            cpu[cpunum].intf.set_cycle_table(which, new_table);
+            cpuintrf_pop_context();
+    }
     /*--------------------------
             Get/set registers
     --------------------------*/

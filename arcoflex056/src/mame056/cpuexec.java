@@ -713,7 +713,7 @@ public class cpuexec {
      *
      ************************************
      */
-    static int cycles_currently_ran() {
+    public static int cycles_currently_ran() {
         int activecpu = cpu_getactivecpu();
         if (activecpu < 0) {
             logerror("cycles_currently_ran() called with no active cpu!\n");

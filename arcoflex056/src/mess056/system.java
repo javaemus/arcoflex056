@@ -23,6 +23,8 @@ import mame056.driverH.GameDriver;
 import static mess056.systems.coleco.*;
 import static mess056.systems.spectrum.*;
 import static mess056.systems.zx.*;
+import static mess056.systems.a2600.*;
+import static mess056.systems.amstrad.*;
 
 public class system {
 	/*TODO*///	
@@ -92,7 +94,7 @@ public class system {
 	/*TODO*///	/* for pong style games look into docs/pong.txt */
 	/*TODO*///	
 	/*TODO*///		/* ATARI */
-	/*TODO*///		DRIVER( a2600 ) 	/* Atari 2600						*/
+            driver_a2600, 	/* Atari 2600						*/
 	/*TODO*///		DRIVER( a5200 ) 	/* Atari 5200						*/
 	/*TODO*///		DRIVER( a7800 ) 	/* Atari 7800						*/
 	/*TODO*///		DRIVER( lynx )		/* Atari Lynx Handheld					*/
@@ -198,12 +200,12 @@ public class system {
 	/*TODO*///	
 	/*TODO*///		DRIVER( z88 )		/*												  */
 	/*TODO*///	
-	/*TODO*///		DRIVER( cpc464 )	/* Amstrad (Schneider in Germany) 1984			  */
+	driver_cpc464,	/* Amstrad (Schneider in Germany) 1984			  */
 	/*TODO*///		DRIVER( cpc664 )	/* Amstrad (Schneider in Germany) 1985			  */
-	/*TODO*///		DRIVER( cpc6128 )	/* Amstrad (Schneider in Germany) 1985			  */
+	driver_cpc6128,	/* Amstrad (Schneider in Germany) 1985			  */
 	/*TODO*///	/*	DRIVER( cpc464p )*/ /* Amstrad CPC464  Plus - 1987					  */
 	/*TODO*///	/*	DRIVER( cpc6128p )*//* Amstrad CPC6128 Plus - 1987					  */
-	/*TODO*///		DRIVER( kccomp )	/* VEB KC compact								  */
+	driver_kccomp,	/* VEB KC compact								  */
 	/*TODO*///	
 	/*TODO*///		DRIVER( pcw8256 )	/* 198? PCW8256 								  */
 	/*TODO*///		DRIVER( pcw8512 )	/* 198? PCW8512 								  */

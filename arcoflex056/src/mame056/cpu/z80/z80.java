@@ -14,10 +14,13 @@ import static mame056.cpuintrfH.*;
 import static mame056.memory.*;
 import static mame056.memoryH.*;
 import static arcadeflex056.osdepend.*;
+import arcadeflex056.settings;
 
 public class z80 extends cpu_interface {
 
     public static int[] z80_ICount = new int[1];
+    
+    public static boolean isZ80_MSX = false;
 
     public z80() {
         cpu_num = CPU_Z80;
@@ -401,6 +404,11 @@ public class z80 extends cpu_interface {
      */
     public static /*UINT8*/ int ROP() {
         int pc = Z80.PC & 0xFFFF;
+        
+        if (isZ80_MSX){
+            if ( (pc & 0x1fff) == 0 ) change_pc16 (pc);
+        }
+            
         Z80.PC = (Z80.PC + 1) & 0xFFFF;
         return cpu_readop(pc) & 0xFF;
     }
@@ -414,14 +422,23 @@ public class z80 extends cpu_interface {
      */
     public static /*UINT8*/ int ARG() {
         int pc = Z80.PC & 0xFFFF;
+        
+        if (isZ80_MSX)
+		if ( (pc & 0x1fff) == 0) change_pc16 (pc);
+	
         Z80.PC = (Z80.PC + 1 & 0xFFFF);
         return cpu_readop_arg(pc) & 0xFF;
     }
 
     public static int /*UINT32*/ ARG16() {
-        int pc = Z80.PC & 0xFFFF;
-        Z80.PC = (Z80.PC + 2) & 0xFFFF;
-        return (cpu_readop_arg(pc) | (cpu_readop_arg((pc + 1) & 0xffff) << 8)) & 0xFFFF;
+        if (isZ80_MSX){
+		int ret = ARG();
+		return ret | ((ARG()&0xffff) << 8);
+        } else {
+            int pc = Z80.PC & 0xFFFF;
+            Z80.PC = (Z80.PC + 2) & 0xFFFF;
+            return (cpu_readop_arg(pc) | (cpu_readop_arg((pc + 1) & 0xffff) << 8)) & 0xFFFF;
+        }
     }
 
     /**
@@ -4186,7 +4203,10 @@ public class z80 extends cpu_interface {
 /*TODO*///				r->AF.b.l & 0x01 ? 'C':'.');
 /*TODO*///			break;
             case CPU_INFO_NAME:
-                return "Z80";
+                if (isZ80_MSX)
+                    return "Z80-MSX";
+                else
+                    return "Z80";
             case CPU_INFO_FAMILY:
                 return "Zilog Z80";
             case CPU_INFO_VERSION:

@@ -45,6 +45,7 @@ public static int detect_image_type(int game_index, int type, String arg)
 	{
 		logerror("User specified %s for %s\n", device_typename(type), arg);
 		/* the user specified a device type */
+                System.out.println(device_typename(type)+" en posicion "+options.image_count+"="+arg);
 		options.image_files[options.image_count].type = type;
 		options.image_files[options.image_count].name = arg;
 		options.image_count++;
@@ -214,6 +215,7 @@ public static int detect_image_type(int game_index, int type, String arg)
 	 * of images.
          */
         for (i = j + 1; i < argc; i++) {
+            System.out.println("argumento["+i+"]: "+argv[i]);
             /* skip options and their additional arguments */
  /* this should really look up the structure values for easy maintenance */
             if (argv[i].startsWith("-"))//(argv[i][0] == '-')
@@ -272,6 +274,7 @@ public static int detect_image_type(int game_index, int type, String arg)
 /*TODO*///
                 /*TODO*///} /* use normal command line argument! */ else 
                 if (type != IO_END) {
+                    System.out.println("Loading image - No alias used");
                     logerror("Loading image - No alias used\n");
                     res = detect_image_type(game_index, type, argv[i]);
                     type = IO_END;
