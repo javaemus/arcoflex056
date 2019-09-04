@@ -1194,4 +1194,8 @@ public class cpuintrf {
 /*TODO*///}
 /*TODO*///#endif
 /*TODO*///    
+    
+    public static void SETIRQLINE(int index, int line, int state) {
+        cpu[index].intf.set_irq_line(line, state);
+    }
 }

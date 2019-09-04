@@ -274,7 +274,7 @@ public class amstrad
 	}
 	
 	/* load image */
-	public static int amstrad_load(int type, int id, UBytePtr ptr)
+	public static UBytePtr amstrad_load(int type, int id, UBytePtr ptr)
 	{
 		Object file;
 	
@@ -283,7 +283,7 @@ public class amstrad
 		if (file != null)
 		{
 			int datasize;
-			UBytePtr data;
+			//UBytePtr data;
 	
 			/* get file size */
 			datasize = osd_fsize(file);
@@ -291,15 +291,17 @@ public class amstrad
 			if (datasize!=0)
 			{
 				/* malloc memory for this data */
-				data = new UBytePtr(datasize);
+				ptr = new UBytePtr(datasize);
 	
-				if (data!=null)
+				if (ptr!=null)
 				{
 					/* read whole file */
-					osd_fread(file, data, datasize);
+					osd_fread(file, ptr, datasize);
 	
 					System.out.println("amstrad_load");
-                                        ptr = new UBytePtr(data);
+                                        //System.out.println(ptr);
+                                        //System.out.println(ptr.memory);
+                                        //ptr = new UBytePtr(data);
 	
 					/* close file */
 					osd_fclose(file);
@@ -307,14 +309,14 @@ public class amstrad
 					logerror("File loaded!\r\n");
 	
 					/* ok! */
-					return 1;
+					return ptr;
 				}
 				osd_fclose(file);
 	
 			}
 		}
 	
-		return 0;
+		return null;
 	}
 	
 	/* load snapshot */
@@ -327,11 +329,14 @@ public class amstrad
 	
 		/* filename specified */
 		snapshot_loaded = 0;
+                snapshot = new UBytePtr();
 	
 		/* load and verify image */
-		if (amstrad_load(IO_SNAPSHOT,id,snapshot) != 0)
+		if ((snapshot=amstrad_load(IO_SNAPSHOT,id,snapshot)) != null)
 		{
 			snapshot_loaded = 1;
+                        //System.out.println(snapshot);
+                        //System.out.println(snapshot.memory);
 			if (memcmp(snapshot.memory, 0, "MV - SNA", 8)==0)
 				return INIT_PASS;
 			else

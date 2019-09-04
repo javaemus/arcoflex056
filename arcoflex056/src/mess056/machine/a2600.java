@@ -163,7 +163,7 @@ public class a2600
 	public static int TIA_player_0_tick = 8;
 	public static int TIA_player_1_tick = 8;
 	
-	public static int[] PF_Data = new int[160];
+	public static int[] PF_Data = new int[160 * 2];
 	
 	public static TIA tia = new TIA();
 	
@@ -877,7 +877,7 @@ public class a2600
 			break;
 	
 		case CXCLR:						/* 0x2C Clear Collision Latches */
-			break;
+			//break;
 	
 	
 			/*TODO*///ROM.write(offset, data);

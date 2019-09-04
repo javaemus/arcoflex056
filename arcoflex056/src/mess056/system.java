@@ -26,6 +26,7 @@ import static mess056.systems.zx.*;
 import static mess056.systems.a2600.*;
 import static mess056.systems.amstrad.*;
 import static mess056.systems.coupe.*;
+import static mess056.systems.sms.*;
 
 public class system {
 	/*TODO*///	
@@ -112,8 +113,8 @@ public class system {
 	/*TODO*///	//      DRIVER (vboy)		/* Nintendo Virtual Boy 				*/
 	/*TODO*///	
 	/*TODO*///		/* SEGA */
-	/*TODO*///		DRIVER( gamegear )	/* Sega Game Gear Handheld				*/
-	/*TODO*///		DRIVER( sms )		/* Sega Sega Master System				*/
+	driver_gamegear,	/* Sega Game Gear Handheld				*/
+	driver_sms,		/* Sega Sega Master System				*/
 	/*TODO*///		DRIVER( genesis )	/* Sega Genesis/MegaDrive				*/
 	/*TODO*///	    DRIVER( saturn )	/* Sega Saturn							*/
 	/*TODO*///	
