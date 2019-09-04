@@ -55,12 +55,13 @@ public class coupe {
 	
 	public static void drawMode4_line(mame_bitmap bitmap,int y)
 	{
+            //System.out.println("drawMode4_line");
 		int x;
 		int tmp=0;
 	
 		for (x=0;x<256;)
 		{
-			tmp=new UBytePtr(sam_screen, (x/2) + (y*128)).read();
+			tmp=(sam_screen).read((x/2) + (y*128));
                         if (MONO){
                             if ((tmp>>4) != 0)
                             {
@@ -97,12 +98,13 @@ public class coupe {
 	
 	public static void drawMode3_line(mame_bitmap bitmap,int y)
 	{
+            System.out.println("drawMode3_line");
 		int x;
 		int tmp=0;
 	
 		for (x=0;x<512;)
 		{
-			tmp=new UBytePtr(sam_screen, (x/4) + (y*128)).read();
+			tmp=(sam_screen).read((x/4) + (y*128));
                         if (MONO){
                             if ((tmp>>6) != 0)
                                     plot_pixel.handler(bitmap,x,y,Machine.pens[127]);
@@ -139,6 +141,7 @@ public class coupe {
 	
 	public static void drawMode2_line(mame_bitmap bitmap,int y)
 	{
+            System.out.println("drawMode2_line");
 		int x,b,scrx;
 		int tmp=0;
 		int ink,pap;
@@ -149,7 +152,7 @@ public class coupe {
 		scrx=0;
 		for (x=0;x<256/8;x++)
 		{
-			tmp=new UBytePtr(sam_screen, x + (y*32)).read();
+			tmp=(sam_screen).read(x + (y*32));
                         if (MONO) {
                             ink=127;
                             pap=0;
@@ -177,6 +180,7 @@ public class coupe {
 	
 	public static void drawMode1_line(mame_bitmap bitmap,int y)
 	{
+            //System.out.println("drawMode1_line");
 		int x,b,scrx,scry;
 		int tmp=0;
 		int ink,pap;
@@ -188,7 +192,7 @@ public class coupe {
 		scry=((y&7) * 8) + ((y&0x38)>>3) + (y&0xC0);
 		for (x=0;x<256/8;x++)
 		{
-			tmp=new UBytePtr(sam_screen, x + (y*32)).read();
+			tmp=sam_screen.read(x + (y*32));
                         if (MONO) {
                             ink=127;
                             pap=0;

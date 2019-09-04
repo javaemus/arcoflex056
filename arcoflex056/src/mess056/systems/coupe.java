@@ -104,14 +104,14 @@ public class coupe {
 			if (CURLINE == LINE_INT)
 			{
 				/* No other interrupts can occur - NOT CORRECT!!! */
-	            STAT=0x1E;
+                                STAT=0x1E;
 				cpu_cause_interrupt(0, Z80_IRQ_INT);
 				interrupted=1;
 			}
 		}
 	
 		/* scan line on screen so draw last scan line (may need to alter this slightly!!) */
-	    if (CURLINE!=0 && (CURLINE-1) < 192)
+                if (CURLINE!=0 && (CURLINE-1) < 192)
 		{
 			switch ((VMPR & 0x60)>>5)
 			{
@@ -468,11 +468,13 @@ public class coupe {
 			coupe_palette[a*3+1]=(char) green;
 			coupe_palette[a*3+2]=(char) blue;
                         
-                        System.out.println("("+red+", "+green+", "+blue+")");
+                        //System.out.println("("+red+", "+green+", "+blue+")");
+                        
+                        
 	
 			coupe_colortable[a]=(char) a;
 		}
-	
+                
 		memcpy(palette,coupe_palette,coupe_palette.length);
 		memcpy(colortable,coupe_colortable,coupe_colortable.length);
             }

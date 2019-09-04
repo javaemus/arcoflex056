@@ -257,6 +257,11 @@ public class mame {
             }
         }
         
+        if (readroms() != 0) {
+            logerror("readroms failed\n");
+            return out_free();
+        }
+        
         if (settings.MESS) {
 		if (init_devices(gamedrv) != 0)
 		{
@@ -265,10 +270,7 @@ public class mame {
 		}
         }
 
-        if (readroms() != 0) {
-            logerror("readroms failed\n");
-            return out_free();
-        }
+        
 
 
         /* Mish:  Multi-session safety - set spriteram size to zero before memory map is set up */

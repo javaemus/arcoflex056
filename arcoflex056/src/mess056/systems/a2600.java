@@ -833,13 +833,14 @@ public class a2600
 	
 	    /* sound hardware */
 	    0, 0, 0, 0,
-	    new MachineSound[] {
-	        new MachineSound(
-	            SOUND_TIA,
-	            tia_interface
-	        )
+	    /*TODO*///new MachineSound[] {
+	    /*TODO*///    new MachineSound(
+	    /*TODO*///        SOUND_TIA,
+	    /*TODO*///        tia_interface
+	    /*TODO*///    )
 	
-	    }
+	    /*TODO*///}
+            null
 	
 	);
 	

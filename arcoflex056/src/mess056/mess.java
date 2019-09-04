@@ -146,7 +146,7 @@ public class mess
 /*TODO*///	
 	public static Object image_fopen(int type, int id, int filetype, int read_or_write)
     {
-        System.out.println("image_fopen "+filetype);
+        //System.out.println("image_fopen "+filetype);
         image_info img = images[type][id];
 	    String sysname;
 	    Object file;
@@ -181,7 +181,7 @@ public class mess
 	
 	        file = osd_fopen(sysname, img.name, filetype, read_or_write);
 	        /* file found, break out */
-	        System.out.println("file==null " + file);
+	        //System.out.println("file==null " + file);
 	        if (file != null) {
 	            break;
 	        }
@@ -476,7 +476,7 @@ public class mess
 	     */
 	    public static String device_filename(int type, int id)
 	    {
-                System.out.println("device_filename: "+type+", "+id+", "+images[type][id].name);
+                //System.out.println("device_filename: "+type+", "+id+", "+images[type][id].name);
 	        if (type >= IO_COUNT)
 	            return null;
 	        if (id < count[type])
@@ -634,6 +634,8 @@ public class mess
         public static int distribute_images()
         {
             int i,j;
+            
+            System.out.println("Distributing Images to Devices...");
 	
             logerror("Distributing Images to Devices...\n");
 		/* Set names to NULL */
@@ -689,78 +691,76 @@ public class mess
 	 *  Call the init() functions for all devices of a driver
 	 *  ith all user specified image names.
 	 ****************************************************************************/
-	public static int init_devices(GameDriver game)
-	{
-            System.out.println("init_devices");
-                GameDriver gamedrv = game;
-		//IODevice[] dev = gamedrv.dev;
-		int i,id;
-		int dev_ptr = 0;
-	
-		logerror("Initialising Devices...\n");
-	
-		/* Check that the driver supports all devices requested (options struct)*/
-		for( i = 0; i < options.image_count; i++ )
-		{
-			if (supported_device(gamedrv.dev, options.image_files[i].type)==0)
-			{
-				mess_printf(" ERROR: Device [%s] is not supported by this system\n",device_typename(options.image_files[i].type));
-				return 1;
-			}
-		}
-	
-		/* Ok! All devices are supported.  Now distribute them to the appropriate device..... */
-		if (distribute_images() == 1)
-			return 1;
-	
-		/* Initialise all floppy drives here if the device is Setting can be overriden by the drivers and UI */
-		floppy_drives_init();
-	
-		/* initialize --all-- devices */
-                while( gamedrv.dev[dev_ptr].count != 0 )
-		{
-			/* all instances */
-			for( id = 0; id < gamedrv.dev[dev_ptr].count; id++ )
-			{
-				mess_printf("Initialising %s device #%d\n",device_typename(gamedrv.dev[dev_ptr].type), id + 1);
-				/********************************************************************
-				 * CALL INITIALISE DEVICE
-				 ********************************************************************/
-				/* if this device supports initialize (it should!) */
-                                System.out.println("CALL INITIALISE DEVICE: "+gamedrv.dev[dev_ptr].init);
-				if( gamedrv.dev[dev_ptr].init != null )
-				{
-					int result;
-	
-					/* initialize */
-					result = gamedrv.dev[dev_ptr].init.handler(id);
-	
-					if( result != INIT_PASS)
-					{
-						mess_printf("Driver Reports Initialisation [for %s device] failed\n",device_typename(gamedrv.dev[dev_ptr].type));
-						mess_printf("Ensure image is valid and exists and (if needed) can be created\n");
-						mess_printf("Also remember that some systems cannot boot without a valid image!\n");
-						return 1;
-					}
-	
-					/* init succeeded */
-					/* if floppy, perform common init */
-					if ((gamedrv.dev[dev_ptr].type == IO_FLOPPY) && (device_filename(gamedrv.dev[dev_ptr].type, id) != null))
-					{
-						floppy_device_common_init(id);
-					}
-				}
-				else
-				{
-					mess_printf(" %s does not support init!\n", device_typename(gamedrv.dev[dev_ptr].type));
-				}
-			}
-			dev_ptr++;
-		}
-		mess_printf("Device Initialision Complete!\n");
-		return 0;
-	}
+	public static int init_devices(GameDriver game) {
+        //  throw new UnsupportedOperationException("unimplemented");
+        GameDriver gamedrv = game;
+        IODevice[] dev = gamedrv.dev;
+        int dev_ptr = 0;
+        int id;
+        
+        /* Initialise all floppy drives here if the device is Setting can be overriden by the drivers and UI */
+    	floppy_drives_init();
 
+        /* initialize all devices */
+        while (dev[dev_ptr].count != 0) {
+
+            /* try and check for valid image and compute 'partial' CRC
+		   for imageinfo if possible */
+            if (dev[dev_ptr].id != null) {
+                for (id = 0; id < dev[dev_ptr].count; id++) {
+                    int result;
+
+                    /* initialize */
+                    logerror("%s id (%s)\n", device_typename_id(dev[dev_ptr].type, id), device_filename(dev[dev_ptr].type, id) != null ? device_filename(dev[dev_ptr].type, id) : "NULL");
+                    result = (dev[dev_ptr].id).handler(id);
+                    logerror("%s id returns %d\n", device_typename_id(dev[dev_ptr].type, id), result);
+
+                    if (result != ID_OK && device_filename(dev[dev_ptr].type, id) != null) {
+                        printf("%s id failed (%s)\n", device_typename_id(dev[dev_ptr].type, id), device_filename(dev[dev_ptr].type, id));
+                        /* HJB: I think we can't abort if a device->id function fails _yet_, because
+ * we first would have to clean up every driver to use the correct return values.
+ * device->init will fail if a file really can't be loaded.
+                         */
+ /*					return 1; */
+                    }
+                    
+                    
+                }
+            } else {
+                logerror("%s does not support id!\n", device_typename(dev[dev_ptr].type));
+            }
+
+            /* if this device supports initialize (it should!) */
+            if (dev[dev_ptr].init != null) {
+                /* all instances */
+                for (id = 0; id < dev[dev_ptr].count; id++) {
+                    int result;
+                    
+                    /* init succeeded */
+    				/* if floppy, perform common init */
+    				if ((dev[dev_ptr].type == IO_FLOPPY) & (device_filename(dev[dev_ptr].type, id) != null))
+    				{
+    					floppy_device_common_init(id);
+    				}
+
+                    /* initialize */
+                    logerror("%s init (%s)\n", device_typename_id(dev[dev_ptr].type, id), device_filename(dev[dev_ptr].type, id) != null ? device_filename(dev[dev_ptr].type, id) : "NULL");
+                    result = (dev[dev_ptr].init).handler(id);
+                    logerror("%s init returns %d\n", device_typename_id(dev[dev_ptr].type, id), result);
+
+                    if (result != INIT_OK && device_filename(dev[dev_ptr].type, id) != null) {
+                        printf("%s init failed (%s)\n", device_typename_id(dev[dev_ptr].type, id), device_filename(dev[dev_ptr].type, id));
+                        return 1;
+                    }
+                }
+            } else {
+                logerror("%s does not support init!\n", device_typename(dev[dev_ptr].type));
+            }
+            dev_ptr++;
+        }
+        return 0;
+    }
+    
 	/*
 	 * Call the exit() functions for all devices of a
 	 * driver for all images.
@@ -1151,7 +1151,7 @@ public class mess
     * type identifier of each image.
      */
     public static int get_filenames() {
-        IODevice[] dev = Machine.gamedrv.dev;
+         IODevice[] dev = Machine.gamedrv.dev;
         int dev_ptr = 0;
         int i;
 
@@ -1183,7 +1183,7 @@ public class mess
                         return 1;
                     }
                 }
-                /*TODO*///logerror("%s #%d: %s\n", typename[type], count[type] + 1, images[type][count[type]].name);
+                //logerror("%s #%d: %s\n", typename[type], count[type] + 1, images[type][count[type]].name);
                 count[type]++;
             } else {
                 logerror("Invalid IO_ type %d for %s\n", type, options.image_files[i].name);

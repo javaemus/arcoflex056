@@ -68,7 +68,7 @@ public class mameH {
 	 * The types are defined in mess.h (IO_...)
 	 */
 	public static class ImageFile {
-		public String name;
+		public String name="";
 		public int type;
 	};
 	//#endif

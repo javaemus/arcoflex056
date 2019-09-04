@@ -43,7 +43,7 @@ public class coleco {
     public static io_initPtr coleco_init_cart = new io_initPtr() {
         public int handler(int id) {
             Object cartfile = null;
-            UBytePtr cartdata;
+            UBytePtr cartdata = new UBytePtr();
             int init_result = INIT_FAIL;
 
             /* A cartridge isn't strictly mandatory for the coleco */
@@ -56,6 +56,8 @@ public class coleco {
                 logerror("Coleco - Unable to locate cartridge: %s\n", device_filename(IO_CARTSLOT, id));
                 return INIT_FAIL;
             }
+            
+            System.out.println(cartfile);
 
             /* All seems OK */
             cartdata = new UBytePtr(memory_region(REGION_CPU1), 0x8000);

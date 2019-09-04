@@ -45,7 +45,6 @@ public static int detect_image_type(int game_index, int type, String arg)
 	{
 		logerror("User specified %s for %s\n", device_typename(type), arg);
 		/* the user specified a device type */
-                System.out.println(device_typename(type)+" en posicion "+options.image_count+"="+arg);
 		options.image_files[options.image_count].type = type;
 		options.image_files[options.image_count].name = arg;
 		options.image_count++;
@@ -173,7 +172,6 @@ public static int detect_image_type(int game_index, int type, String arg)
         logerror("Requested device is %s\n", tchar);
 
         if (stricmp(tchar, "-cartridge") == 0 || stricmp(tchar, "-cart") == 0) {
-            System.out.println("Es un cartucho!");
             return (IO_CARTSLOT);
         } else if (stricmp(tchar, "-floppydisk") == 0 || stricmp(tchar, "-flop") == 0) {
             return (IO_FLOPPY);
@@ -189,8 +187,8 @@ public static int detect_image_type(int game_index, int type, String arg)
             return (IO_SNAPSHOT);
         } else if (stricmp(tchar, "-quickload") == 0 || stricmp(tchar, "-quik") == 0) {
             return (IO_QUICKLOAD);
-        /*TODO*///} else if (stricmp(tchar, "-alias") == 0) {
-        /*TODO*///    return (IO_ALIAS);
+        //} else if (stricmp(tchar, "-alias") == 0) {
+        //    return (IO_ALIAS);
         } /* all other switches set type to -1 */ else {
             logerror("Requested Device not supported!!\n");
             return -1;
@@ -198,10 +196,7 @@ public static int detect_image_type(int game_index, int type, String arg)
     }
 
     public static int load_image(int argc, String[] argv, int j, int game_index) {
-        
         String driver = drivers[game_index].name;
-        System.out.println("Loading image " + driver);
-        
         for (int im = 0; im < MAX_IMAGES; im++) { //init image files (consoleflex stuff)
             options.image_files[im] = new ImageFile();
         }
@@ -215,7 +210,6 @@ public static int detect_image_type(int game_index, int type, String arg)
 	 * of images.
          */
         for (i = j + 1; i < argc; i++) {
-            System.out.println("argumento["+i+"]: "+argv[i]);
             /* skip options and their additional arguments */
  /* this should really look up the structure values for easy maintenance */
             if (argv[i].startsWith("-"))//(argv[i][0] == '-')
@@ -223,18 +217,18 @@ public static int detect_image_type(int game_index, int type, String arg)
 
                 type = requested_device_type(argv[i]);
 
-                /*TODO*///if (type != IO_ALIAS) {
+                //if (type != IO_ALIAS) {
 
-                /*TODO*///    if (type > IO_END && system_supports_device(game_index, type) == 0) {
-                /*TODO*///        logerror("Specified Device (%s) not supported by this system\n", argv[i]);
-                /*TODO*///        type = -1;
+                    if (type > IO_END && system_supports_device(game_index, type) == 0) {
+                        logerror("Specified Device (%s) not supported by this system\n", argv[i]);
+                        type = -1;
                         /* strip device if systems doesnt support it */
-                /*TODO*///    }
-                /*TODO*///}
+                    }
+                //}
 
             } else if (type != -1) /* only enter when valid option, otherwise get next */ {
-                /*TODO*///if (type == IO_ALIAS) {
-                /*TODO*///    throw new UnsupportedOperationException("unimplemented");
+               // if (type == IO_ALIAS) {
+               //     throw new UnsupportedOperationException("unimplemented");
                     /*TODO*///				/* check if this is an alias for a set of images */
 /*TODO*///				char *alias = get_alias(driver, argv[i]);
 /*TODO*///
@@ -272,9 +266,8 @@ public static int detect_image_type(int game_index, int type, String arg)
 /*TODO*///
 /*TODO*///				}
 /*TODO*///
-                /*TODO*///} /* use normal command line argument! */ else 
-                if (type != IO_END) {
-                    System.out.println("Loading image - No alias used");
+             //   } /* use normal command line argument! */ else 
+             if (type != IO_END) {
                     logerror("Loading image - No alias used\n");
                     res = detect_image_type(game_index, type, argv[i]);
                     type = IO_END;
