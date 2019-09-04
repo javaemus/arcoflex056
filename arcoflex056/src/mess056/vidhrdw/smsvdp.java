@@ -344,7 +344,7 @@ public class smsvdp
 	    	int tile = nametable.read(i);
 	
 	    	/*TODO*///#ifndef LSB_FIRST
-	    	/*TODO*///tile = ((nametable[i] & 0xff) << 8) | (nametable[i] >> 8);
+	    	/*TODO*///tile = ((nametable.read(i) & 0xff) << 8) | (nametable.read(i) >> 8);
 	    	/*TODO*///#endif
 	
 	        charindex = (tile & 0x07FF);
