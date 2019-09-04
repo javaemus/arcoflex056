@@ -57,6 +57,7 @@ import static mame056.sndintrfH.*;
 import static mess056.includes.flopdrvH.*;
 import static mess056.includes.flopdrvH.floppy_type.FLOPPY_DRIVE_SS_40;
 import static mess056.machine.flopdrv.*;
+import static mess056.machine.dsk.*;
 
 import static mess056.machine.amstrad.*;
 import static mess056.vidhrdw.amstrad.*;
@@ -2971,26 +2972,26 @@ public class amstrad
 			null						/* output_chunk */ 
                 );
 	
-	/*TODO*///static IODevice AMSTRAD_IO_DISK = new IODevice
-	/*TODO*///	( 
-	/*TODO*///		IO_FLOPPY,					/* type */ 
-	/*TODO*///		2,							/* count */ 
-	/*TODO*///		"dsk0",                    /* file extensions */ 
-	/*TODO*///		IO_RESET_NONE,				/* reset if file changed */ 
-	/*TODO*///		0, 
-	/*TODO*///		amstrad_floppy_init,			/* init */ 
-	/*TODO*///		dsk_floppy_exit,			/* exit */ 
-	/*TODO*///		null,						/* info */ 
-	/*TODO*///		null,						/* open */ 
-	/*TODO*///		null,						/* close */ 
-	/*TODO*///		floppy_status,              /* status */ 
-	/*TODO*///		null,                       /* seek */ 
-	/*TODO*///		null,						/* tell */ 
-	/*TODO*///		null,						/* input */ 
-	/*TODO*///		null,						/* output */ 
-	/*TODO*///		null,						/* input_chunk */ 
-	/*TODO*///		null						/* output_chunk */ 
-	/*TODO*///	);
+	static IODevice AMSTRAD_IO_DISK = new IODevice
+		( 
+			IO_FLOPPY,					/* type */ 
+			2,							/* count */ 
+			"dsk0",                    /* file extensions */ 
+			IO_RESET_NONE,				/* reset if file changed */ 
+			null, 
+			amstrad_floppy_init,			/* init */ 
+			dsk_floppy_exit,			/* exit */ 
+			null,						/* info */ 
+			null,						/* open */ 
+			null,						/* close */ 
+			floppy_status,              /* status */ 
+			null,                       /* seek */ 
+			null,						/* tell */ 
+			null,						/* input */ 
+			null,						/* output */ 
+			null,						/* input_chunk */ 
+			null						/* output_chunk */ 
+		);
 	
 /*TODO*///	static IODevice AMSTRAD_IO_CASSETTE =
 /*TODO*///		IO_CASSETTE_WAVE(1,"wav0",null,amstrad_cassette_init,amstrad_cassette_exit);
@@ -3001,7 +3002,7 @@ public class amstrad
 	static IODevice io_cpc6128[] =
 	{
 		AMSTRAD_IO_SNAPSHOT,
-/*TODO*///		AMSTRAD_IO_DISK,
+		AMSTRAD_IO_DISK,
 /*TODO*///		AMSTRAD_IO_CASSETTE,
 /*TODO*///		AMSTRAD_IO_PRINTER,
 		new IODevice(IO_END)
@@ -3014,7 +3015,7 @@ public class amstrad
 	static IODevice io_cpcplus[] =
 	{
 		AMSTRAD_IO_SNAPSHOT,
-/*TODO*///		AMSTRAD_IO_DISK,
+		AMSTRAD_IO_DISK,
 /*TODO*///		AMSTRAD_IO_CASSETTE,
 /*TODO*///		AMSTRAD_IO_PRINTER,
 		new IODevice(

@@ -25,6 +25,8 @@ import static mame056.memoryH.*;
 
 import static mess056.includes.coupeH.*;
 import static mess056.includes.basicdskH.*;
+import static mess056.machine.wd179x.*;
+import static mess056.includes.wd179xH.*;
 import static mess056.vidhrdw.coupe.*;
 import static mess056.messH.*;
 import static mess056.machine.basicdsk.*;
@@ -163,7 +165,7 @@ public class coupe {
 	
 	    coupe_update_memory();
 	
-	    /*TODO*///wd179x_init(WD_TYPE_177X,null);
+	    wd179x_init(WD_TYPE_177X,null);
 	}
 	
 	public static InitMachinePtr coupe_init_machine_256 = new InitMachinePtr() {
@@ -184,7 +186,7 @@ public class coupe {
 	
 	public static void coupe_shutdown_machine()
 	{
-		/*TODO*///wd179x_exit();
+		wd179x_exit();
 	}
 	
 	/*************************************

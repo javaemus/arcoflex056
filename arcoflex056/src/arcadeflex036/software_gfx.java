@@ -147,6 +147,8 @@ public class software_gfx extends java.awt.Frame implements Runnable, ImageProdu
             localGraphics2D.drawImage(this._image, this._insets.left - (int) (i * 0.07), this._insets.top, i + (int) (i * 0.14), j, null);
         } else if (Machine.gamedrv.source_file.equals("cps1.java")) {
             localGraphics2D.drawImage(this._image, this._insets.left - (int) (i * 0.085), this._insets.top - (int) (j * 0.215), i + (int) (i * 0.167), j + (int) (j * 0.43), null);
+        //} else if (Machine.gamedrv.source_file.equals("amstrad.java")) {
+        //    localGraphics2D.drawImage(this._image, this._insets.left - (int) (i * 0.085), this._insets.top - (int) (j * 0.215), i + (int) (i * 0.167), j + (int) (j * 0.43), null);
         } else {
             localGraphics2D.drawImage(this._image, this._insets.left, this._insets.top, i, j, null);
         }
@@ -212,6 +214,8 @@ public class software_gfx extends java.awt.Frame implements Runnable, ImageProdu
             }
         } else if (Machine.gamedrv.source_file.equals("raiden.java")) {
             super.setSize(width * 2 + this._insets.left + this._insets.right - (int) (width * 0.14), height * 2 + this._insets.top + this._insets.bottom);
+        } else if (Machine.gamedrv.source_file.equals("amstrad.java")) {
+            super.setSize(width + this._insets.left + this._insets.right, height * 2 + this._insets.top + this._insets.bottom);
         } else {
             super.setSize(width * 2 + this._insets.left + this._insets.right, height * 2 + this._insets.top + this._insets.bottom);
         }

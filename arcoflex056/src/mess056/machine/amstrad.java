@@ -52,6 +52,7 @@ import static mess056.vidhrdw.m6845H.*;
 import static mame056.machine._8255ppi.*;
 import static mame056.machine._8255ppiH.*;
 import static mame056.osdependH.*;
+import static mess056.machine.dsk.*;
 
 public class amstrad
 {
@@ -64,9 +65,8 @@ public class amstrad
                 if (device_filename(IO_FLOPPY, id)==null)
 			return INIT_PASS;
 	
-		/*TODO*///return dsk_floppy_load(id);
-                
-                return 0;
+		return dsk_floppy_load(id);
+               
             }
         };
 	

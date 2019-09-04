@@ -65,6 +65,7 @@ import static mess056.device.*;
 import static mess056.deviceH.*;
 import static mess056.machine.basicdsk.*;
 import static mess056.machine.flopdrv.*;
+import static mess056.machine.wd179x.*;
 import static mess056.messH.*;
 
 /**
@@ -212,24 +213,24 @@ public class coupe {
 		{
 		case DSK1_PORT+0:	/* This covers the total range of ports for 1 floppy controller */
 	    case DSK1_PORT+4:
-			/*TODO*///wd179x_set_side((offset >> 2) & 1);
-			/*TODO*///return wd179x_status_r(0);
-                        return 0xff;
+			wd179x_set_side((offset >> 2) & 1);
+			return wd179x_status_r.handler(0);
+                        
 		case DSK1_PORT+1:
 	    case DSK1_PORT+5:
-			/*TODO*///wd179x_set_side((offset >> 2) & 1);
-                        /*TODO*///return wd179x_track_r(0);
-                        return 0xff;
+			wd179x_set_side((offset >> 2) & 1);
+                        return wd179x_track_r.handler(0);
+                        
 		case DSK1_PORT+2:
 	    case DSK1_PORT+6:
-			/*TODO*///wd179x_set_side((offset >> 2) & 1);
-                        /*TODO*///return wd179x_sector_r(0);
-                        return 0xff;
+			wd179x_set_side((offset >> 2) & 1);
+                        return wd179x_sector_r.handler(0);
+                        
 		case DSK1_PORT+3:
 		case DSK1_PORT+7:
-			/*TODO*///wd179x_set_side((offset >> 2) & 1);
-                        /*TODO*///return wd179x_data_r(0);
-                        return 0xff;
+			wd179x_set_side((offset >> 2) & 1);
+                        return wd179x_data_r.handler(0);
+                        
 		case LPEN_PORT:
 			return LPEN;
 		case STAT_PORT:
@@ -266,26 +267,26 @@ public class coupe {
 		{
 		case DSK1_PORT+0:							// This covers the total range of ports for 1 floppy controller
 	    case DSK1_PORT+4:
-			/*TODO*///wd179x_set_side((offset >> 2) & 1);
-                        /*TODO*///wd179x_command_w(0, data);
+			wd179x_set_side((offset >> 2) & 1);
+                        wd179x_command_w.handler(0, data);
 			break;
 	    case DSK1_PORT+1:
 	    case DSK1_PORT+5:
 			/* Track byte requested on address line */
-			/*TODO*///wd179x_set_side((offset >> 2) & 1);
-                        /*TODO*///wd179x_track_w(0, data);
+			wd179x_set_side((offset >> 2) & 1);
+                        wd179x_track_w.handler(0, data);
 			break;
 	    case DSK1_PORT+2:
 	    case DSK1_PORT+6:
 			/* Sector byte requested on address line */
-			/*TODO*///wd179x_set_side((offset >> 2) & 1);
-                        /*TODO*///wd179x_sector_w(0, data);
+			wd179x_set_side((offset >> 2) & 1);
+                        wd179x_sector_w.handler(0, data);
 	        break;
 	    case DSK1_PORT+3:
 		case DSK1_PORT+7:
 			/* Data byte requested on address line */
-			/*TODO*///wd179x_set_side((offset >> 2) & 1);
-                        /*TODO*///wd179x_data_w(0, data);
+			wd179x_set_side((offset >> 2) & 1);
+                        wd179x_data_w.handler(0, data);
 			break;
 		case CLUT_PORT:
 			CLUT[(offset >> 8)&0x0F]=data&0x7F;		// set CLUT data
@@ -466,6 +467,8 @@ public class coupe {
 			coupe_palette[a*3+0]=(char) red;
 			coupe_palette[a*3+1]=(char) green;
 			coupe_palette[a*3+2]=(char) blue;
+                        
+                        System.out.println("("+red+", "+green+", "+blue+")");
 	
 			coupe_colortable[a]=(char) a;
 		}
