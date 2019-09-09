@@ -103,31 +103,42 @@ public class dsk
         }
 	
 	/* load image */
-	public static int dsk_load(int type, int id, UBytePtr ptr)
+	public static int dsk_load(int type, int id)
 	{
+            //System.out.println("dsk_load!!!! "+id);
 		Object file;
 	
 		file = image_fopen(type, id, OSD_FILETYPE_IMAGE_R, OSD_FOPEN_READ);
 	
 		if (file != null)
 		{
+                    //System.out.println("no es nulo");
 			int datasize;
-			UBytePtr data = new UBytePtr();
+			//UBytePtr data = new UBytePtr();
 	
 			/* get file size */
 			datasize = osd_fsize(file);
+                        
+                        //System.out.println(datasize);
 	
 			if (datasize!=0)
 			{
 				/* malloc memory for this data */
-				data = new UBytePtr(datasize);
+				ptr2 = new UBytePtr(datasize);
 	
-				if (data!=null)
+				if (ptr2!=null)
 				{
 					/* read whole file */
-					osd_fread(file, data, datasize);
+					osd_fread(file, ptr2, datasize);
 	
-					ptr = new UBytePtr(data);
+					//ptr = new UBytePtr(data);
+                                        //ptr = data;
+                                        /*System.out.println("Leido");
+                                        System.out.println(data.memory);
+                                        System.out.println("Leido 2");
+                                        System.out.println(ptr.memory);*/
+                                        
+                                        //System.out.println(ptr.memory);
 	
 					/* close file */
 					osd_fclose(file);
@@ -153,28 +164,42 @@ public class dsk
 		return IMAGE_VERIFY_FAIL;
 	}
 	
-	
+	static UBytePtr ptr2 = null;
+        
 	/* load floppy */
-	public static int dsk_floppy_load(int id)
-	{
-		//dsk_drive *thedrive = &drives[id];
+	public static io_initPtr dsk_floppy_load = new io_initPtr() {
+            public int handler(int id) {
+                dsk_drive thedrive = drives[id];
+                
 	
 		/* load disk image */
-		if (dsk_load(IO_FLOPPY,id,drives[id].data) != 0)
+		if (dsk_load(IO_FLOPPY,id) != 0)
 		{
-			if (drives[id].data != null)
+                    //System.out.println("Paso2");
+                    //System.out.println(ptr);
+                    //System.out.println(ptr.memory);
+			if (ptr2 != null)
 			{
-				dsk_disk_image_init(drives[id]); /* initialise dsk */
-	            floppy_drive_set_disk_image_interface(id,dsk_floppy_interface);
-	            if(dsk_floppy_verify(drives[id].data) == IMAGE_VERIFY_PASS)
-	            	return INIT_PASS;
-	            else
-	            	return INIT_PASS;
+                            //System.out.println("Paso3");
+                            thedrive.data = new UBytePtr(ptr2);
+				dsk_disk_image_init(thedrive); /* initialise dsk */
+                                drives[id] = thedrive;
+                                //System.out.println("Paso4");
+                                floppy_drive_set_disk_image_interface(id,dsk_floppy_interface);
+                                //System.out.println("Paso5");
+                                if(dsk_floppy_verify(thedrive.data) == IMAGE_VERIFY_PASS){
+                                    //System.out.println("Paso6");
+                                    return INIT_PASS;
+                                }else{
+                                    //System.out.println("Paso7");
+                                    return INIT_PASS;
+                                }
 			}
 		}
 	
 		return INIT_PASS;
-	}
+            }
+        };
 	
 	public static int dsk_save(int type, int id, UBytePtr ptr)
 	{
@@ -402,14 +427,19 @@ public class dsk
 	
 	public static void dsk_disk_image_init(dsk_drive thedrive)
 	{
+            //System.out.println(thedrive.data.memory);
 		/*-----------------27/02/00 11:26-------------------
 		 clear offsets
 		--------------------------------------------------*/
 		memset(thedrive.track_offsets, 0, dsk_MAX_TRACKS*dsk_MAX_SIDES);
 		memset(thedrive.sector_offsets, 0, 20);
+                
+                //System.out.println(thedrive.data);
+                //System.out.println(thedrive.data.memory);
 	
 		if (memcmp(thedrive.data.memory,"MV - CPC".toCharArray(),8)==0)
 		{
+                    System.out.println("MV - CPC");
 			thedrive.disk_image_type = 0;
 	
 			/* standard disk image */
@@ -419,6 +449,7 @@ public class dsk
 		else
 		if (memcmp(thedrive.data.memory,"EXTENDED".toCharArray(),8)==0)
 		{
+                    System.out.println("EXTENDED");
 			thedrive.disk_image_type = 1;
 	
 			/* extended disk image */

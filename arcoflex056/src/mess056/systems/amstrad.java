@@ -69,6 +69,8 @@ import static mess056.vidhrdw.m6845H.*;
 import static mess056.eventlst.*;
 import static mess056.eventlstH.*;
 import static mess056.includes.amstradH.*;
+import static mess056.includes.nec765H.*;
+import static mess056.machine.nec765.*;
 
 public class amstrad
 {
@@ -341,11 +343,11 @@ public class amstrad
 	);
 	
 	/* Amstrad NEC765 interface doesn't use interrupts or DMA! */
-	/*TODO*///static nec765_interface amstrad_nec765_interface =
-	/*TODO*///{
-	/*TODO*///	null,
-	/*TODO*///	null
-	/*TODO*///};
+	static nec765_interface amstrad_nec765_interface = new nec765_interface
+        (
+		null,
+		null
+	);
 	
 	/* pointers to current ram configuration selected for banks */
 	static UBytePtr[] AmstradCPC_RamBanks = new UBytePtr[4];
@@ -631,14 +633,14 @@ public class amstrad
 				case 2:
 					{
 						/* read status */
-						/*TODO*///data = nec765_status_r(0);
+						data = nec765_status_r.handler(0);
 					}
 					break;
 	
 				case 3:
 					{
 						/* read data register */
-						/*TODO*///data = nec765_data_r(0);
+						data = nec765_data_r.handler(0);
 					}
 					break;
 	
@@ -787,7 +789,7 @@ public class amstrad
 	
 				case 3:
 					{
-						/*TODO*///nec765_data_w(0,data);
+						nec765_data_w.handler(0,data);
 					}
 					break;
 	
@@ -2352,7 +2354,7 @@ public class amstrad
 	
 		cpu_irq_line_vector_w(0, 0,0x0ff);
 	
-		/*TODO*///nec765_init(&amstrad_nec765_interface,NEC765A/*?*/);
+		nec765_init(amstrad_nec765_interface,NEC765A/*?*/);
 	
 		floppy_drive_set_geometry(0, FLOPPY_DRIVE_SS_40);
 		floppy_drive_set_geometry(1, FLOPPY_DRIVE_SS_40);
@@ -2387,7 +2389,7 @@ public class amstrad
 	
 	public static void amstrad_shutdown_machine()
 	{
-		/*TODO*///nec765_stop();
+		nec765_stop();
 	
 		if (Amstrad_Memory!=null)
 		{

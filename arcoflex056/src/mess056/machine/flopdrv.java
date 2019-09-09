@@ -66,8 +66,8 @@ public class flopdrv
 	
 			/* initialise flags */
 			pDrive.flags = FLOPPY_DRIVE_HEAD_AT_TRACK_0;
-			/*TODO*///pDrive.index_pulse_callback = null;
-			/*TODO*///pDrive.ready_state_change_callback = null;
+			pDrive.index_pulse_callback = null;
+			pDrive.ready_state_change_callback = null;
 			pDrive.index_timer = null;
 	
 			if (i==0)
@@ -128,7 +128,7 @@ public class flopdrv
 	
 			pDrive = drives[id];
 	
-			/*TODO*///if (pDrive.index_pulse_callback)
+			if (pDrive.index_pulse_callback != null)
 				pDrive.index_pulse_callback.handler(id);
 		}
             }
@@ -244,7 +244,7 @@ public class flopdrv
 			if ((flag & FLOPPY_DRIVE_READY) != 0)
 			{
 				/* trigger state change callback */
-				/*TODO*///if (drives[id].ready_state_change_callback)
+				if (drives[id].ready_state_change_callback != null)
 					drives[id].ready_state_change_callback.handler(id, new_state);
 			}
 		}
@@ -456,7 +456,7 @@ public class flopdrv
 		}
 	
 		/* inform disk image of step operation so it can cache information */
-		/*TODO*///if (pDrive.interface.seek_callback)
+		/*TODO*///if (pDrive.interface.seek_callback != null)
 			pDrive.f_interface.seek_callback(id, pDrive.current_track);
 	
 	}
@@ -485,7 +485,7 @@ public class flopdrv
 		/* get id */
 		if (spt!=0)
 		{
-			/*TODO*///if (drives[drive].interface.get_id_callback)
+			/*if (drives[drive].interface.get_id_callback)
 			/*TODO*///{
 				drives[drive].f_interface.get_id_callback(drive, id, drives[drive].id_index, side);
 			/*TODO*///}

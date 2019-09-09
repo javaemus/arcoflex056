@@ -4203,9 +4203,9 @@ public class z80 extends cpu_interface {
 /*TODO*///				r->AF.b.l & 0x01 ? 'C':'.');
 /*TODO*///			break;
             case CPU_INFO_NAME:
-                if (isZ80_MSX)
-                    return "Z80-MSX";
-                else
+                //if (isZ80_MSX)
+                //    return "Z80-MSX";
+                //else
                     return "Z80";
             case CPU_INFO_FAMILY:
                 return "Zilog Z80";

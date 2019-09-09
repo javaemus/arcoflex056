@@ -65,7 +65,7 @@ public class amstrad
                 if (device_filename(IO_FLOPPY, id)==null)
 			return INIT_PASS;
 	
-		return dsk_floppy_load(id);
+		return dsk_floppy_load.handler(id);
                
             }
         };

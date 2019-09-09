@@ -138,6 +138,9 @@ import static mess056.includes.spectrumH.TIMEX_CART_TYPE.TIMEX_CART_DOCK;
 import static mess056.messH.*;
 import static mess056.sound.waveH.*;
 import static mess056.sound.wave.*;
+import static mess056.includes.nec765H.*;
+import static mess056.machine.dsk.*;
+import static mess056.machine.nec765.*;
 
 public class spectrum
 {
@@ -615,11 +618,11 @@ public class spectrum
 	public static int spectrum_plus3_port_1ffd_data = -1;
 	
 	
-	/*TODO*///static nec765_interface spectrum_plus3_nec765_interface =
-	/*TODO*///{
-	/*TODO*///		NULL,
-	/*TODO*///		NULL
-	/*TODO*///};
+	static nec765_interface spectrum_plus3_nec765_interface = new nec765_interface
+        (
+			null,
+			null
+	);
 	
 	
 	static int spectrum_plus3_memory_selections[]=
@@ -632,8 +635,8 @@ public class spectrum
 	
 	public static WriteHandlerPtr spectrum_plus3_port_3ffd_w = new WriteHandlerPtr() {
             public void handler(int offset, int data) {
-                /*TODO*///if ((~readinputport(16) & 0x20) != 0)
-		/*TODO*///	nec765_data_w(0,data);
+                if ((~readinputport(16) & 0x20) != 0)
+			nec765_data_w.handler(0,data);
             }
         };
 	{
@@ -642,19 +645,19 @@ public class spectrum
 	
 	public static ReadHandlerPtr spectrum_plus3_port_3ffd_r = new ReadHandlerPtr() {
             public int handler(int offset) {
-                /*TODO*///if ((readinputport(16) & 0x20) != 0)
+                if ((readinputport(16) & 0x20) != 0)
                                 return 0xff;
-                /*TODO*///else
-                /*TODO*///                return nec765_data_r(0);
+                else
+                                return nec765_data_r.handler(0);
             }
         };
 	
 	public static ReadHandlerPtr spectrum_plus3_port_2ffd_r = new ReadHandlerPtr() {
             public int handler(int offset) {
-                /*TODO*///if ((readinputport(16) & 0x20) != 0)
+                if ((readinputport(16) & 0x20) != 0)
                                 return 0xff;
-                /*TODO*///else
-                /*TODO*///                return nec765_status_r(0);
+                else
+                                return nec765_status_r.handler(0);
             }
         };
 	
@@ -889,7 +892,7 @@ public class spectrum
 			memory_set_bankhandler_w(7, 0, MWA_BANK7);
 			memory_set_bankhandler_w(8, 0, MWA_BANK8);
 	
-			/*TODO*///nec765_init(&spectrum_plus3_nec765_interface, NEC765A);
+			nec765_init(spectrum_plus3_nec765_interface, NEC765A);
 	
 			floppy_drive_set_geometry(0, FLOPPY_DRIVE_SS_40);
 			floppy_drive_set_geometry(1, FLOPPY_DRIVE_SS_40);
@@ -905,7 +908,7 @@ public class spectrum
 	
 	public static void spectrum_plus3_exit_machine()
 	{
-		/*TODO*///nec765_stop();
+		nec765_stop();
 		spectrum_free_ram();
 	}
 	
@@ -2918,25 +2921,25 @@ public class spectrum
                                 null,				/* output */
                                 null,				/* input_chunk */
                                 null				/* output_chunk */),
-		/*TODO*///new IODevice(
-		/*TODO*///	IO_FLOPPY,			/* type */
-		/*TODO*///	2,					/* count */
-		/*TODO*///	"dsk\0",            /* file extensions */
-		/*TODO*///	IO_RESET_NONE,		/* reset if file changed */
-		/*TODO*///	null,
-		/*TODO*///	dsk_floppy_load,	/* init */
-		/*TODO*///	dsk_floppy_exit,	/* exit */
-		/*TODO*///	null,				/* info */
-		/*TODO*///	null,				/* open */
-		/*TODO*///	null,				/* close */
-	        /*TODO*///        floppy_status,                  /* status */
-		/*TODO*///	null,				/* seek */
-                /*TODO*///        null,                           /* tell */
-		/*TODO*///	null,				/* input */
-		/*TODO*///	null,				/* output */
-		/*TODO*///	null,				/* input_chunk */
-		/*TODO*///	null				/* output chunk */
-                /*TODO*///        ),
+		new IODevice(
+			IO_FLOPPY,			/* type */
+			2,					/* count */
+			"dsk\0",            /* file extensions */
+			IO_RESET_NONE,		/* reset if file changed */
+			null,
+			dsk_floppy_load,	/* init */
+			dsk_floppy_exit,	/* exit */
+			null,				/* info */
+			null,				/* open */
+			null,				/* close */
+	                floppy_status,                  /* status */
+			null,				/* seek */
+                        null,                           /* tell */
+			null,				/* input */
+			null,				/* output */
+			null,				/* input_chunk */
+			null				/* output chunk */
+                        ),
 		new IODevice(IO_END)
 	};
 	
