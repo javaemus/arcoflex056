@@ -611,19 +611,19 @@ public class mess
 	}
 	
 	
-/*TODO*///	/*
-/*TODO*///	 * Return the 'id'th extrainfo info for a device of type 'type',
-/*TODO*///	 * NULL if not enough image names of that type are available.
-/*TODO*///	 */
-/*TODO*///	const char *device_extrainfo(int type, int id)
-/*TODO*///	{
-/*TODO*///		if (type >= IO_COUNT)
-/*TODO*///			return NULL;
-/*TODO*///		if (id < count[type])
-/*TODO*///			return images[type][id].extrainfo;
-/*TODO*///		return NULL;
-/*TODO*///	}
-/*TODO*///	
+	/*
+	 * Return the 'id'th extrainfo info for a device of type 'type',
+	 * NULL if not enough image names of that type are available.
+	 */
+	public static String device_extrainfo(int type, int id)
+	{
+		if (type >= IO_COUNT)
+			return null;
+		if (id < count[type])
+			return images[type][id].extrainfo;
+		return null;
+	}
+	
         /*****************************************************************************
          *  --Distribute images to their respective Devices--
          *  Copy the Images specified at the CLI from options.image_files[] to the

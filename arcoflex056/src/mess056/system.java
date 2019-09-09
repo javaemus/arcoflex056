@@ -27,6 +27,7 @@ import static mess056.systems.a2600.*;
 import static mess056.systems.amstrad.*;
 import static mess056.systems.coupe.*;
 import static mess056.systems.sms.*;
+import static mess056.systems.lynx.*;
 
 public class system {
 	/*TODO*///	
@@ -99,9 +100,9 @@ public class system {
             driver_a2600, 	/* Atari 2600						*/
 	/*TODO*///		DRIVER( a5200 ) 	/* Atari 5200						*/
 	/*TODO*///		DRIVER( a7800 ) 	/* Atari 7800						*/
-	/*TODO*///		DRIVER( lynx )		/* Atari Lynx Handheld					*/
-	/*TODO*///		DRIVER( lynxa )		/* Atari Lynx Handheld alternate rom save		*/
-	/*TODO*///		DRIVER( lynx2 )		/* Atari Lynx II Handheld redesigned, no additions      */
+            driver_lynx,	/* Atari Lynx Handheld					*/
+            driver_lynxa,	/* Atari Lynx Handheld alternate rom save		*/
+            driver_lynx2,	/* Atari Lynx II Handheld redesigned, no additions      */
 	/*TODO*///	//	DRIVER( jaguar )	/* Atari Jaguar 					*/
 	/*TODO*///	
 	/*TODO*///		/* NINTENDO */

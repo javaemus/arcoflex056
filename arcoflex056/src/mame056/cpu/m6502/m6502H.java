@@ -246,7 +246,7 @@ public class m6502H {
 /*TODO*///#define M65SC02_NMI_STATE				M6502_NMI_STATE
 /*TODO*///#define M65SC02_IRQ_STATE				M6502_IRQ_STATE
 /*TODO*///
-/*TODO*///#define M65SC02_IRQ_LINE				M6502_IRQ_LINE
+    public static int M65SC02_IRQ_LINE				= M6502_IRQ_LINE;
 /*TODO*///
 /*TODO*///#define m65sc02_ICount					m6502_ICount
 /*TODO*///

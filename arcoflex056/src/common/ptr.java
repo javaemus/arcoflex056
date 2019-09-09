@@ -381,5 +381,10 @@ public class ptr {
         public void write(int i, int i0) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
+
+        public void write(int i) {
+            memory[offset] = (byte) (i & 0xff);
+            memory[offset + 1] = (byte) ((i >>> 8) & 0xff);
+        }
     }
 }
