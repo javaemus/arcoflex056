@@ -192,7 +192,9 @@ public class spectrum
 	
 		if ((Changed & (1<<3))!=0)
 		{
-			/* write cassette data */
+			// Sounds while saving
+                        speaker_level_w(0,(data>>3) & 0x01);
+                        /* write cassette data */
 			device_output(IO_CASSETTE, 0, (data & (1<<3))!=0 ? -32768: 32767);
 		}
 	

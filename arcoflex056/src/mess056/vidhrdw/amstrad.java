@@ -575,6 +575,9 @@ public class amstrad
 					x++;
 	
 					data = data<<1;
+                                        
+                                        // hack
+                                        data = data & 0xFF;
 	
 					cpcpen = Mode0Lookup[data];
 					messpen = amstrad_render_colours[cpcpen];
@@ -606,6 +609,9 @@ public class amstrad
 	                
 	
 					data = data<<1;
+                                        
+                                        // hack
+                                        data = data & 0xFF;
 	
 					cpcpen = Mode0Lookup[data];
 					messpen = amstrad_render_colours[cpcpen];
