@@ -42,7 +42,7 @@ public class cpuexec {
 /*TODO*/// *
 /*TODO*/// *************************************/
 /*TODO*///
-/*TODO*///#define VERIFY_ACTIVECPU(retval, name)						
+/*TODO*///public static int VERIFY_ACTIVECPU(retval, name)						
 /*TODO*///	int activecpu = cpu_getactivecpu();						
 /*TODO*///	if (activecpu < 0)										
 /*TODO*///	{														
@@ -50,7 +50,7 @@ public class cpuexec {
 /*TODO*///		return retval;										
 /*TODO*///	}
 /*TODO*///
-/*TODO*///#define VERIFY_ACTIVECPU_VOID(name)							
+/*TODO*///# VERIFY_ACTIVECPU_VOID(name)							
 /*TODO*///	int activecpu = cpu_getactivecpu();						
 /*TODO*///	if (activecpu < 0)										
 /*TODO*///	{														
@@ -83,8 +83,8 @@ public class cpuexec {
         int vblankint_countdown;/* number of vblank callbacks left until we interrupt */
         int vblankint_multiplier;/* number of vblank callbacks per interrupt */
         Object vblankint_timer;/* reference to elapsed time counter */
-        double vblankint_period;/* timing period of the VBLANK interrupt */
-        Object timedint_timer;/* reference to this CPU's timer */
+        public double vblankint_period;/* timing period of the VBLANK interrupt */
+        public Object timedint_timer;/* reference to this CPU's timer */
         double timedint_period;/* timing period of the timed interrupt */
 
         public static cpuinfo[] create(int n) {
@@ -766,27 +766,27 @@ public class cpuexec {
         return cpu_exec[activecpu].totalcycles + cycles_currently_ran();
     }
 
-    /*TODO*///
-/*TODO*///
-/*TODO*///
-/*TODO*////*************************************
-/*TODO*/// *
-/*TODO*/// *	Return cycles until next interrupt
-/*TODO*/// *	handler call
-/*TODO*/// *
-/*TODO*/// *************************************/
-/*TODO*///
-/*TODO*///int cpu_geticount(void)
-/*TODO*///{
-/*TODO*///	int result;
-/*TODO*///
-/*TODO*////* remove me - only used by mamedbg, m92 */
-/*TODO*///	VERIFY_ACTIVECPU(0, cpu_geticount);
-/*TODO*///	result = TIME_TO_CYCLES(activecpu, cpu[activecpu].vblankint_period - timer_timeelapsed(cpu[activecpu].vblankint_timer));
-/*TODO*///	return (result < 0) ? 0 : result;
-/*TODO*///}
-/*TODO*///
-/*TODO*///
+    
+
+
+    /*************************************
+     *
+     *	Return cycles until next interrupt
+     *	handler call
+     *
+     *************************************/
+
+    public static int cpu_geticount()
+    {
+            int result;
+
+    /* remove me - only used by mamedbg, m92 */
+    /*TODO*///	VERIFY_ACTIVECPU(0, cpu_geticount);
+            result = TIME_TO_CYCLES(activecpu, cpu_exec[activecpu].vblankint_period - timer_timeelapsed(cpu_exec[activecpu].vblankint_timer));
+            return (result < 0) ? 0 : result;
+    }
+
+
 /*TODO*///
 /*TODO*////*************************************
 /*TODO*/// *

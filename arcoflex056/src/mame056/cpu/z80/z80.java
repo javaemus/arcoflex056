@@ -6227,4 +6227,24 @@ public class z80 extends cpu_interface {
         xycb_f8, xycb_f9, xycb_fa, xycb_fb, xycb_fc, xycb_fd, xycb_fe, xycb_ff
     };
 
+        /****************************************************************************
+	 * Get a pointer to a cycle count table
+	 ****************************************************************************/
+	
+	public static int[] z80_get_cycle_table (int which)
+	{
+		if (which >= 0 && which <= Z80_TABLE_xycb)
+			return cc[which];
+		return null;
+	}
+	
+	/****************************************************************************
+	 * Set a new cycle count table
+	 ****************************************************************************/
+	public static void z80_set_cycle_table (int which, int[] new_table)
+	{
+		if (which >= 0 && which <= Z80_TABLE_ex)
+			cc[which] = new_table;
+	}
+        
 }

@@ -13,11 +13,11 @@ import mess056.includes.flopdrvH.DENSITY;
  */
 public class wd179xH {
     
-    public static int WD179X_IRQ_CLR	= 0;
-    public static int WD179X_IRQ_SET	= 1;
+    public static final int WD179X_IRQ_CLR	= 0;
+    public static final int WD179X_IRQ_SET	= 1;
     /* R Nabet : added events for the DRQ pin... */
-    public static int WD179X_DRQ_CLR	= 2;
-    public static int WD179X_DRQ_SET	= 3;
+    public static final int WD179X_DRQ_CLR	= 2;
+    public static final int WD179X_DRQ_SET	= 3;
 
 
     public static int TYPE_I		= 1;

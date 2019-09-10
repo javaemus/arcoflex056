@@ -1431,26 +1431,27 @@ public class fileio {
         }
     }
 
-    /*TODO*///
-/*TODO*///char *osd_basename (char *filename)
-/*TODO*///{
-/*TODO*///	char *c;
-/*TODO*///
-/*TODO*///	if (!filename)
-/*TODO*///		return NULL;
-/*TODO*///
-/*TODO*///	c = filename + strlen(filename);
-/*TODO*///
-/*TODO*///	while (c != filename)
-/*TODO*///	{
-/*TODO*///		c--;
-/*TODO*///		if (*c == '\\' || *c == '/' || *c == ':')
-/*TODO*///			return (c+1);
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	return filename;
-/*TODO*///}
-/*TODO*///
+    
+    public static String osd_basename (String filename)
+    {
+            String c;
+            
+            if (filename==null)
+                    return null;
+
+            c = filename + strlen(filename);
+            int _c = c.length();
+
+            while (!c.equals(filename))
+            {
+                    _c--;
+                    if (c.charAt(_c) == '\\' || c.charAt(_c) == '/' || c.charAt(_c) == ':')
+                            return (c+1);
+            }
+
+            return filename;
+    }
+
 /*TODO*///char *osd_dirname (char *filename)
 /*TODO*///{
 /*TODO*///	char *dirname;

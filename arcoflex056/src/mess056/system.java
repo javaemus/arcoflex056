@@ -28,6 +28,7 @@ import static mess056.systems.amstrad.*;
 import static mess056.systems.coupe.*;
 import static mess056.systems.sms.*;
 import static mess056.systems.lynx.*;
+import static mess056.systems.msx.*;
 
 public class system {
 	/*TODO*///	
@@ -690,7 +691,7 @@ public class system {
 	/*TODO*///		DRIVER( superbrd )	/* 1979 Superboard II							  */
 	/*TODO*///	
 	/*TODO*///		/* ASCII & MICROSOFT */
-	/*TODO*///		DRIVER( msx )		/* 1983 MSX 									  */
+	driver_msx,		/* 1983 MSX 									  */
 	/*TODO*///		DRIVER( msxj )		/* 1983 MSX Jap 								  */
 	/*TODO*///		DRIVER( msxkr ) 	/* 1983 MSX Korean								  */
 	/*TODO*///		DRIVER( msxuk ) 	/* 1983 MSX UK									  */

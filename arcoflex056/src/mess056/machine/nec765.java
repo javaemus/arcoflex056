@@ -419,6 +419,7 @@ public class nec765
 		}
 		else
 		{
+                    System.out.println("nec765_timer_callback");
 			nec765_timer_callback.handler(fdc.timer_type);
 		}
 	}
@@ -818,9 +819,12 @@ public class nec765
 	static void nec765_get_next_id(chrn_id id)
 	{
 		/* get next id from disc */
+            //System.out.println("Antes: "+id.data_id);
 		floppy_drive_get_next_id(fdc.drive, fdc.side,id);
 	
 		fdc.sector_id = id.data_id;
+                
+                //System.out.println("Despues: "+id.data_id);
 	
 		/* set correct data type */
 		fdc.data_type = NEC765_DAM_DATA;
@@ -1014,6 +1018,8 @@ public class nec765
 			data_size = nec765_n_to_bytes(fdc.nec765_command_bytes[5]);
 	
 			floppy_drive_read_sector_data(fdc.drive, fdc.side, fdc.sector_id,nec765_data_buffer,data_size);
+                        //System.out.println("nec765_data_buffer");
+                        //System.out.println(nec765_data_buffer);
 	
 	        nec765_setup_execution_phase_read(nec765_data_buffer, data_size);
 		}
@@ -1046,6 +1052,7 @@ public class nec765
 	
 	static void nec765_read_a_track()
 	{
+            System.out.println("nec765_read_a_track");
 		int data_size;
 	
 		/* SKIP not allowed with this command! */
@@ -1876,6 +1883,8 @@ public class nec765
 					if (floppy_drive_get_flag_state(fdc.drive, FLOPPY_DRIVE_DISK_INSERTED) != 0)
 					{
 						int index_count = 0;
+                                                
+                                                System.out.println("READY!!!!");
 	
 						/* floppy drive is ready and disc is inserted */
 	
@@ -1893,6 +1902,8 @@ public class nec765
 							if (floppy_drive_get_next_id(fdc.drive, fdc.side,id) != 0)
 							{
 								/* got an id - quit */
+                                                            System.out.println("GOT an ID!!!!");
+                                                            System.out.println(id.data_id);
 								break;
 							}
 	

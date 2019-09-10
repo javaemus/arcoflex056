@@ -62,13 +62,13 @@ public class flopdrv
 		as not present - override in driver if more are to be made available */
 		for (i=0; i<MAX_DRIVES; i++)
 		{
-			floppy_drive pDrive = drives[i];
+			//floppy_drive pDrive = drives[i];
 	
 			/* initialise flags */
-			pDrive.flags = FLOPPY_DRIVE_HEAD_AT_TRACK_0;
-			pDrive.index_pulse_callback = null;
-			pDrive.ready_state_change_callback = null;
-			pDrive.index_timer = null;
+			drives[i].flags = FLOPPY_DRIVE_HEAD_AT_TRACK_0;
+			drives[i].index_pulse_callback = null;
+			drives[i].ready_state_change_callback = null;
+			drives[i].index_timer = null;
 	
 			if (i==0)
 			{
@@ -84,12 +84,14 @@ public class flopdrv
 			/* all drives are double-sided 80 track - can be overriden in driver! */
 			floppy_drive_set_geometry(i, FLOPPY_DRIVE_DS_80);
 	
-			pDrive.fdd_unit = i;
+			drives[i].fdd_unit = i;
 	
 			/* initialise id index - not so important */
-			pDrive.id_index = 0;
+			drives[i].id_index = 0;
 			/* initialise track */
-			pDrive.current_track = 1;
+			drives[i].current_track = 1;
+                        
+                        //drives[i] = pDrive;
 		}
 	}
 	
@@ -103,16 +105,18 @@ public class flopdrv
 	
 		for (i=0; i<MAX_DRIVES; i++)
 		{
-			floppy_drive pDrive;
+			//floppy_drive pDrive;
 	
-			pDrive = drives[i];
+			//pDrive = drives[i];
 	
 			/* remove timer for index pulse */
-			if (pDrive.index_timer != null)
+			if (drives[i].index_timer != null)
 			{
-				timer_remove(pDrive.index_timer);
-				pDrive.index_timer = null;
+				timer_remove(drives[i].index_timer);
+				drives[i].index_timer = null;
 			}
+                        
+                        //drives[i] = pDrive;
 		}
 	
 	}
@@ -124,12 +128,14 @@ public class flopdrv
                 /* check it's in range */
 		if ((id>=0) && (id<MAX_DRIVES))
 		{
-			floppy_drive pDrive;
+			//floppy_drive pDrive;
 	
-			pDrive = drives[id];
+			//pDrive = drives[id];
 	
-			if (pDrive.index_pulse_callback != null)
-				pDrive.index_pulse_callback.handler(id);
+			if (drives[id].index_pulse_callback != null)
+				drives[id].index_pulse_callback.handler(id);
+                        
+                        //drives[id] = pDrive;
 		}
             }
         };
@@ -137,29 +143,33 @@ public class flopdrv
 	/* set the callback for the index pulse */
 	public static void floppy_drive_set_index_pulse_callback(int id, i_index_pulse_callback callback)
 	{
-		floppy_drive pDrive;
+		//floppy_drive pDrive;
 	
 		/* check it's in range */
 		if ((id<0) || (id>=MAX_DRIVES))
 			return;
 	
-		pDrive = drives[id];
+		//pDrive = drives[id];
 	
-		pDrive.index_pulse_callback = callback;
+		drives[id].index_pulse_callback = callback;
+                
+                //drives[id] = pDrive;
 	}
 	
 	
 	public static void floppy_drive_set_ready_state_change_callback(int id, i_ready_state_change_callback callback)
 	{
-		floppy_drive pDrive;
+		//floppy_drive pDrive;
 	
 		/* check it's in range */
 		if ((id<0) || (id>=MAX_DRIVES))
 			return;
 	
-		pDrive = drives[id];
+		//pDrive = drives[id];
 	
-		pDrive.ready_state_change_callback = callback;
+		drives[id].ready_state_change_callback = callback;
+                
+                //drives[id] = pDrive;
 	}
 	
 	/*************************************************************************/
@@ -172,13 +182,13 @@ public class flopdrv
 	*/
 	public static io_statusPtr floppy_status = new io_statusPtr() {
             public int handler(int id, int new_status) {
-                floppy_drive pDrive;
+                //floppy_drive pDrive;
 	
 		/* check it's in range */
 		if ((id<0) || (id>=MAX_DRIVES))
 			return 0;
 	
-		pDrive = drives[id];
+		//pDrive = drives[id];
 	
 		/* return current status only? */
 		if (new_status!=-1)
@@ -191,6 +201,8 @@ public class flopdrv
 			floppy_drive_set_flag_state(id, FLOPPY_DRIVE_CONNECTED, (new_status & FLOPPY_DRIVE_CONNECTED));
 			floppy_drive_set_flag_state(id, FLOPPY_DRIVE_DISK_WRITE_PROTECTED, (new_status & FLOPPY_DRIVE_DISK_WRITE_PROTECTED));
 		}
+                
+                //drives[id] = pDrive;
 	
 		/* return current status */
 		return floppy_drive_get_flag_state(id,0x0ff);
@@ -282,14 +294,14 @@ public class flopdrv
 			/* if timer already setup remove it */
 			if ((drive>=0) && (drive<MAX_DRIVES))
 			{
-				floppy_drive pDrive;
+				//floppy_drive pDrive;
 	
-				pDrive = drives[drive];
+				//pDrive = drives[drive];
 	
-				if (pDrive.index_timer!=null)
+				if (drives[drive].index_timer!=null)
 				{
-					timer_remove(pDrive.index_timer);
-					pDrive.index_timer = null;
+					timer_remove(drives[drive].index_timer);
+					drives[drive].index_timer = null;
 				}
 	
 				if (new_motor_state != 0)
@@ -298,12 +310,14 @@ public class flopdrv
 					/* check it's in range */
 	
 					/* setup timer to trigger at 300 times a second = 300rpm */
-					pDrive.index_timer = timer_pulse(TIME_IN_HZ(300), drive, floppy_drive_index_callback);
+					drives[drive].index_timer = timer_pulse(TIME_IN_HZ(300), drive, floppy_drive_index_callback);
 				}
 				else
 				{
 					/* on.off */
 				}
+                                
+                                //drives[drive] = pDrive;
 			}
 		}
 	
@@ -427,45 +441,48 @@ public class flopdrv
 	
 	public static void    floppy_drive_seek(int id, int signed_tracks)
 	{
-		floppy_drive pDrive;
+		//floppy_drive pDrive;
 	
 		if ((id<0) || (id>=MAX_DRIVES))
 			return;
 	
-		pDrive = drives[id];
+		//pDrive = drives[id];
 	
 		/* update position */
-		pDrive.current_track+=signed_tracks;
+		drives[id].current_track+=signed_tracks;
 	
-		if (pDrive.current_track<0)
+		if (drives[id].current_track<0)
 		{
-			pDrive.current_track = 0;
+			drives[id].current_track = 0;
 		}
 		else
-		if (pDrive.current_track>=pDrive.max_track)
+		if (drives[id].current_track>=drives[id].max_track)
 		{
-			pDrive.current_track = pDrive.max_track-1;
+			drives[id].current_track = drives[id].max_track-1;
 		}
 	
 		/* set track 0 flag */
-		pDrive.flags &= ~FLOPPY_DRIVE_HEAD_AT_TRACK_0;
+		drives[id].flags &= ~FLOPPY_DRIVE_HEAD_AT_TRACK_0;
 	
-		if (pDrive.current_track==0)
+		if (drives[id].current_track==0)
 		{
-			pDrive.flags |= FLOPPY_DRIVE_HEAD_AT_TRACK_0;
+			drives[id].flags |= FLOPPY_DRIVE_HEAD_AT_TRACK_0;
 		}
 	
 		/* inform disk image of step operation so it can cache information */
 		/*TODO*///if (pDrive.interface.seek_callback != null)
-			pDrive.f_interface.seek_callback(id, pDrive.current_track);
+			drives[id].f_interface.seek_callback(id, drives[id].current_track);
 	
+                        //drives[id] = pDrive;
 	}
 	
 	
 	/* this is not accurate. But it will do for now */
-	public static int	floppy_drive_get_next_id(int drive, int side, chrn_id id)
+	public static int floppy_drive_get_next_id(int drive, int side, chrn_id id)
 	{
 		int spt;
+                
+                
 	
 		/* get sectors per track */
 		spt = 0;
@@ -489,7 +506,17 @@ public class flopdrv
 			/*TODO*///{
 				drives[drive].f_interface.get_id_callback(drive, id, drives[drive].id_index, side);
 			/*TODO*///}
-                        System.out.println("id.R========="+id.R);
+                        /*System.out.println("id.R========="+id.R);
+                        System.out.println("id.C: "+id.C);
+                System.out.println("id.H: "+id.H);
+                System.out.println("id.R: "+id.R);
+                System.out.println("id.N: "+id.N);
+		
+                System.out.println("id.flags: "+id.flags);
+                System.out.println("id.data_id: "+id.data_id);
+                System.out.println("END=========");*/
+                        
+                        
 		}
 	
 		drives[drive].id_index++;
@@ -515,8 +542,10 @@ public class flopdrv
 	
 	public static void	floppy_drive_read_track_data_info_buffer(int drive, int side, char[] ptr, int length )
 	{
+            System.out.println("floppy_drive_read_track_data_info_buffer");
 		/*TODO*///if (drives[drive].interface.read_track_data_info_buffer)
 			drives[drive].f_interface.read_track_data_info_buffer(drive, side, ptr, length);
+            System.out.println("floppy_drive_read_track_data_info_buffer="+ptr);
 	}
 	
 	public static void	floppy_drive_format_sector(int drive, int side, int sector_index,int c,int h, int r, int n, int filler)
@@ -527,12 +556,12 @@ public class flopdrv
 	
 	public static void    floppy_drive_read_sector_data(int drive, int side, int index1, char[] pBuffer, int length)
 	{
-            System.out.println("floppy_drive_read_sector_data!!!!!");
+            //System.out.println("floppy_drive_read_sector_data!!!!!");
 		/*TODO*///if (drives[drive].interface.read_sector_data_into_buffer)
                 
 			drives[drive].f_interface.read_sector_data_into_buffer(drive, side, index1, pBuffer,length);
                         
-                        System.out.println(" floppy_drive_read_sector_data FIN "+pBuffer);
+                        //System.out.println(" floppy_drive_read_sector_data FIN "+pBuffer[0]+pBuffer[1]);
 	}
 	
 	public static void    floppy_drive_write_sector_data(int drive, int side, int index1, char[] pBuffer,int length, int ddam)

@@ -181,21 +181,25 @@ public class dsk
 			if (ptr2 != null)
 			{
                             //System.out.println("Paso3");
-                            thedrive.data = new UBytePtr(ptr2);
+                            drives[id].data = new UBytePtr(ptr2);
 				dsk_disk_image_init(thedrive); /* initialise dsk */
                                 drives[id] = thedrive;
                                 //System.out.println("Paso4");
                                 floppy_drive_set_disk_image_interface(id,dsk_floppy_interface);
                                 //System.out.println("Paso5");
-                                if(dsk_floppy_verify(thedrive.data) == IMAGE_VERIFY_PASS){
+                                if(dsk_floppy_verify(drives[id].data) == IMAGE_VERIFY_PASS){
                                     //System.out.println("Paso6");
+                                    drives[id] = thedrive;
                                     return INIT_PASS;
                                 }else{
+                                    drives[id] = thedrive;
                                     //System.out.println("Paso7");
                                     return INIT_PASS;
                                 }
 			}
 		}
+                
+                drives[id] = thedrive;
 	
 		return INIT_PASS;
             }
@@ -376,6 +380,7 @@ public class dsk
 				track_size = track_size_high_byte<<8;
 	
 				thedrive.track_offsets[offs] = track_offset;
+                                //System.out.println("track_offsets["+offs+"]="+track_offset);
 				track_offset+=track_size;
 			}
 	
@@ -454,6 +459,7 @@ public class dsk
 	
 			/* extended disk image */
 			dsk_extended_dsk_init_track_offsets(thedrive);
+                        System.out.println("thedrive.track_offsets[2]==>"+thedrive.track_offsets[2]);
 		}
 	}
 	
@@ -494,13 +500,14 @@ public class dsk
 	
 		/* get offset to track header in image */
 		track_offset = get_track_offset(drive, side);
+                System.out.println("track_offset="+track_offset);
 	
 		/* track exists? */
 		if (track_offset==0)
 			return;
 	
 		/* yes */
-		data = get_floppy_data(drive);
+		data = new UBytePtr(get_floppy_data(drive));
 	
 		if (data==null)
 			return;
@@ -513,8 +520,14 @@ public class dsk
 		id.H = track_header.read(id_offset + 1);
 		id.R = track_header.read(id_offset + 2);
 		id.N = track_header.read(id_offset + 3);
+                //System.out.println("id.C: "+id.C);
+                //System.out.println("id.H: "+id.H);
+                //System.out.println("id.R: "+id.R);
+                //System.out.println("id.N: "+id.N);
 		id.flags = 0;
 		id.data_id = id_index;
+                //System.out.println("id.flags: "+id.flags);
+                //System.out.println("id.data_id: "+id.data_id);
 	
 		if ((track_header.read(id_offset + 5) & 0x040) != 0)
 		{
@@ -639,8 +652,12 @@ public class dsk
 		if (pSectorData!=null)
 		{
 			memcpy(ptr, pSectorData.memory, length);
+                        System.out.println("not null");
+                        //System.out.println(pSectorData.memory);
 	
-		}
+		} else {
+                    System.out.println("es null");
+                }
 	}
 	
 	public static int dsk_get_sectors_per_track(int drive, int side)

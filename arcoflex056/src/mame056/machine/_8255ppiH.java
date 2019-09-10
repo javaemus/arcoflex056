@@ -13,6 +13,16 @@ public class _8255ppiH
 
     public static int MAX_8255 = 4;
     
+    public static abstract interface PortReadHandlerPtr {
+
+        public abstract int handler(int chip);
+    }
+
+    public static abstract interface PortWriteHandlerPtr {
+
+        public abstract void handler(int chip, int data);
+    }
+    
     public static class ppi8255_interface
     {
             public int num;							 /* number of PPIs to emulate */

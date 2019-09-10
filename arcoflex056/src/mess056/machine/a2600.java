@@ -163,7 +163,7 @@ public class a2600
 	public static int TIA_player_0_tick = 8;
 	public static int TIA_player_1_tick = 8;
 	
-	public static int[] PF_Data = new int[160 * 2];
+	public static int[] PF_Data = new int[161];
 	
 	public static TIA tia = new TIA();
 	
@@ -604,7 +604,7 @@ public class a2600
 				logerror("TIA_w - WSYNC \n");
 			//#ifndef USE_SCANLINE_WSYNC
 			//	timer_reset(HSYNC_timer, TIME_IN_CYCLES(76, 0));
-			//	a2600_main_cb(0);
+			//	a2600_main_cb.handler(0);
 			//#else
 				TIA_wsync = 1;
 				cpu_spinuntil_trigger(WSYNC_TRIGGER);
@@ -1025,7 +1025,7 @@ public class a2600
 			}
 		}
 		/*TODO*///#ifndef USE_SCANLINE_WSYNC
-		/*TODO*///currentline++;
+		currentline++;
 		/*TODO*///#endif
 	
 	/*bail:*/
@@ -1596,10 +1596,10 @@ public class a2600
 	  Fake Scanline Interrupt - for timing only
 	
 	***************************************************************************/
-	public static int a2600_scanline_int()
-	{
-	
-		/* Increment the Scanline Counter */
+	public static InterruptPtr a2600_scanline_int = new InterruptPtr() {
+            @Override
+            public int handler() {
+                /* Increment the Scanline Counter */
 		currentline++;
 	
 		/* Restart the CPU if WSYNC has been written to and reset wsync */
@@ -1617,7 +1617,8 @@ public class a2600
 	
 		/* Fake Interrupt - return ignore */
 		return ignore_interrupt.handler();
-	}
-	//#endif
+            }
+        };
+	
 	
 }
