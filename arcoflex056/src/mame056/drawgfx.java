@@ -1637,40 +1637,15 @@ public class drawgfx {
 /*TODO*///				memcpy(((UINT32 *)dest.line[y]) + sx,sp,(ex-sx+1)*4);
 /*TODO*///		}
         } else if (dest.depth == 15 || dest.depth == 16) {
-            if ((pen >> 8) == (pen & 0xff)) {
-                for (y = sy; y <= ey; y++) {
-                    if (y >= Machine.uiymin) {
-                        UShortPtr z = new UShortPtr(dest.line[y], sx);
-                        for (int i = 0; i < (ex - sx + 1) * 2; i++) {
-                            z.write(i, (char) (pen & 0xff));////memset(((UINT16 *)dest.line[y]) + sx,pen&0xff,(ex-sx+1)*2);
-                        }
-                    }
+            
+            for (y = sy; y <= ey; y++) {
+                //memset(&dest->line[y][sx],pen,ex-sx+1);
+                for (int k = 0; k < ex - sx + 1; k++) {
+                    new UShortPtr(dest.line[y]).write(sx + k, (char) pen);
                 }
-            } else {
-
-                UShortPtr sp = new UShortPtr(dest.line[sy]);
-                int x;
-
-                for (x = sx; x <= ex; x++) {
-                    sp.write(x, (char) pen);
-                }
-                sp.inc(sx);
-
-                for (y = sy + 1; y <= ey; y++) {
-                    UShortPtr z = new UShortPtr(dest.line[y], sx);
-                    for (int i = 0; i < (ex - sx + 1) * 2; i++) {
-                        z.write(i, sp.read(i));
-                    }
-                }
-
             }
         } else {
-            for (y = sy; y <= ey; y++) {
-                if (y >= Machine.uiymin) {
-                    memset(dest.line[y], sx, pen, ex - sx + 1);
-                }
-            }
-
+            throw new UnsupportedOperationException("Unsupported");
         }
     }
     /*TODO*///
