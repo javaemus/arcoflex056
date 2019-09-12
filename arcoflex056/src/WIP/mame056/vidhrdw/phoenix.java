@@ -15,8 +15,7 @@ package WIP.mame056.vidhrdw;
 import static arcadeflex056.fucPtr.*;
 import static common.ptr.*;
 import static mame056.tilemapH.*;
-//import static mame056.tilemapC.*;
-import static mame037b11.mame.tilemapC.*;
+import static mame056.tilemapC.*;
 import static mame056.cpuintrfH.*;
 import static mame056.cpuintrf.*;
 import static mame056.cpuexec.*;
@@ -384,14 +383,12 @@ public class phoenix
 	
 	public static VhUpdatePtr phoenix_vh_screenrefresh = new VhUpdatePtr() { public void handler(mame_bitmap bitmap,int full_refresh) 
 	{
-		/*TODO*///tilemap_draw(bitmap,bg_tilemap,0,0);
-                tilemap_draw(bitmap,bg_tilemap,0);
-		/*TODO*///tilemap_draw(bitmap,fg_tilemap,0,0);
-                tilemap_draw(bitmap,fg_tilemap,0);
+		tilemap_draw(bitmap,bg_tilemap,0,0);
+                tilemap_draw(bitmap,fg_tilemap,0,0);
                 
                 // HACK - ONLY for tilemaps 0.37. REMOVE in 0.56
-                tilemap_update(ALL_TILEMAPS);	
-		tilemap_render(ALL_TILEMAPS);
+                //tilemap_update(ALL_TILEMAPS);	
+		//tilemap_render(ALL_TILEMAPS);
                 // END HACK
 	} };
 }

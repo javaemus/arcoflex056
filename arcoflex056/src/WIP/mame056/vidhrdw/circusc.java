@@ -15,8 +15,7 @@ package WIP.mame056.vidhrdw;
 import static arcadeflex056.fucPtr.*;
 import static common.ptr.*;
 import static mame056.tilemapH.*;
-//import static mame056.tilemapC.*;
-import static mame037b11.mame.tilemapC.*;
+import static mame056.tilemapC.*;
 import static mame056.cpuintrfH.*;
 import static mame056.cpuintrf.*;
 import static mame056.cpuexec.*;
@@ -222,6 +221,10 @@ public class circusc
 	
 	public static VhUpdatePtr circusc_vh_screenrefresh = new VhUpdatePtr() { public void handler(mame_bitmap bitmap,int full_refresh) 
 	{
+                // HACK
+                //fillbitmap(bitmap,Machine.pens[0],Machine.visible_area);
+                // end HACK
+                
 		int i;
 	
 		for (i = 0;i < 10;i++)
@@ -229,10 +232,9 @@ public class circusc
 		for (i = 10;i < 32;i++)
 			tilemap_set_scrolly(bg_tilemap,i,circusc_scroll.read());
 	
-		/*TODO*///tilemap_draw(bitmap,bg_tilemap,1,0);
-                tilemap_draw(bitmap,bg_tilemap,1);
-		draw_sprites(bitmap);
-		/*TODO*///tilemap_draw(bitmap,bg_tilemap,0,0);
-                tilemap_draw(bitmap,bg_tilemap,0);
+		tilemap_draw(bitmap,bg_tilemap,1,0);
+                draw_sprites(bitmap);
+		tilemap_draw(bitmap,bg_tilemap,0,0);
+                
 	} };
 }

@@ -19,8 +19,7 @@ import static mame056.mame.*;
 import static mame056.vidhrdw.generic.*;
 import static arcadeflex056.osdepend.logerror;
 import static mame056.tilemapH.*;
-//import static mame056.tilemapC.*;
-import static mame037b11.mame.tilemapC.*;
+import static mame056.tilemapC.*;
 
 public class baraduke
 {
@@ -287,11 +286,11 @@ public class baraduke
 		flipscreen = spriteram.read(0x07f6)& 0x01;
 		tilemap_set_flip(ALL_TILEMAPS,flipscreen!=0 ? (TILEMAP_FLIPY | TILEMAP_FLIPX) : 0);
 	
-		/*TODO*///tilemap_draw(bitmap,tilemap[1],TILEMAP_IGNORE_TRANSPARENCY,0);
-                tilemap_draw(bitmap,tilemap[1],TILEMAP_IGNORE_TRANSPARENCY);
+		tilemap_draw(bitmap,tilemap[1],TILEMAP_IGNORE_TRANSPARENCY,0);
+                
 		draw_sprites(bitmap,0);
-		/*TODO*///tilemap_draw(bitmap,tilemap[0],0,0);
-                tilemap_draw(bitmap,tilemap[0],0);
+		tilemap_draw(bitmap,tilemap[0],0,0);
+                
 		draw_sprites(bitmap,1);
 	
 		for (offs = 0x400 - 1; offs > 0; offs--)
@@ -335,12 +334,10 @@ public class baraduke
 		flipscreen = spriteram.read(0x07f6)& 0x01;
 		tilemap_set_flip(ALL_TILEMAPS,flipscreen!=0 ? (TILEMAP_FLIPY | TILEMAP_FLIPX) : 0);
 	
-		/*TODO*///tilemap_draw(bitmap,tilemap[0],TILEMAP_IGNORE_TRANSPARENCY,0);
-                tilemap_draw(bitmap,tilemap[0],TILEMAP_IGNORE_TRANSPARENCY);
-		draw_sprites(bitmap,0);
-		/*TODO*///tilemap_draw(bitmap,tilemap[1],0,0);
-                tilemap_draw(bitmap,tilemap[1],0);
-		draw_sprites(bitmap,1);
+		tilemap_draw(bitmap,tilemap[0],TILEMAP_IGNORE_TRANSPARENCY,0);
+                draw_sprites(bitmap,0);
+		tilemap_draw(bitmap,tilemap[1],0,0);
+                draw_sprites(bitmap,1);
 		for (offs = 0x400 - 1; offs > 0; offs--)
 		{
 			int mx,my,sx,sy;

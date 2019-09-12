@@ -28,8 +28,7 @@ import static mame056.palette.*;
 import static mame056.vidhrdw.generic.*;
 
 import static arcadeflex056.osdepend.logerror;
-/*TODO*///import static mame056.tilemapC.*;
-import static mame037b11.mame.tilemapC.*;
+import static mame056.tilemapC.*;
 import static mame056.tilemapH.*;
 
 public class gng
@@ -88,17 +87,9 @@ public class gng
 		if (fg_tilemap==null || bg_tilemap==null)
 			return 1;
 	
-		/*TODO*///tilemap_set_transparent_pen(fg_tilemap,3);
-                if (fg_tilemap != null && bg_tilemap != null) {
-                    fg_tilemap.transparent_pen = 3;
-
-                    bg_tilemap.u32_transmask[0] = 0xff; /* split type 0 is totally transparent in front half */
-
-                    bg_tilemap.u32_transmask[1] = 0x01; /* split type 1 has pen 1 transparent in front half */
-
-                    return 0;
-                }
-                return 1;
+		tilemap_set_transparent_pen(fg_tilemap,3);
+                
+                return 0;
 	} };
 	
 	
@@ -185,14 +176,10 @@ public class gng
 	
 	public static VhUpdatePtr gng_vh_screenrefresh = new VhUpdatePtr() { public void handler(mame_bitmap bitmap,int full_refresh) 
 	{
-		tilemap_update(ALL_TILEMAPS);
-	
-		tilemap_render(ALL_TILEMAPS);
-                
-                tilemap_draw(bitmap,bg_tilemap,TILEMAP_BACK);
+		tilemap_draw(bitmap,bg_tilemap,TILEMAP_BACK, 0);
 		draw_sprites(bitmap);
-		tilemap_draw(bitmap,bg_tilemap,TILEMAP_FRONT);
-		tilemap_draw(bitmap,fg_tilemap,0);
+		tilemap_draw(bitmap,bg_tilemap,TILEMAP_FRONT, 0);
+		tilemap_draw(bitmap,fg_tilemap,0, 0);
 	} };
 	
 	public static VhEofCallbackPtr gng_eof_callback = new VhEofCallbackPtr() {

@@ -18,8 +18,7 @@ import static WIP.mame056.drivers.ddrible.ddrible_int_enable_1;
 import static arcadeflex056.fucPtr.*;
 import static common.ptr.*;
 import static mame056.tilemapH.*;
-//import static mame056.tilemapC.*;
-import static mame037b11.mame.tilemapC.*;
+import static mame056.tilemapC.*;
 import static mame056.cpuintrfH.*;
 import static mame056.cpuintrf.*;
 import static mame056.cpuexec.*;
@@ -282,12 +281,11 @@ public class ddrible
 		tilemap_set_scrolly(fg_tilemap,0,ddribble_vregs[0][0]);
 		tilemap_set_scrolly(bg_tilemap,0,ddribble_vregs[1][0]);
 	
-		/*TODO*///tilemap_draw(bitmap,bg_tilemap,0,0);
-                tilemap_draw(bitmap,bg_tilemap,0);
+		tilemap_draw(bitmap,bg_tilemap,0,0);
                 
 		ddribble_draw_sprites(bitmap,ddrible_spriteram_1,0x07d,2,ddribble_vregs[0][4] & 0x08);
 		ddribble_draw_sprites(bitmap,ddrible_spriteram_2,0x140,3,ddribble_vregs[1][4] & 0x08);
-		/*TODO*///tilemap_draw(bitmap,fg_tilemap,0,0);
-                tilemap_draw(bitmap,fg_tilemap,0);
+		tilemap_draw(bitmap,fg_tilemap,0,0);
+                
 	} };
 }

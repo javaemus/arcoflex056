@@ -306,6 +306,6 @@ public class mitchell
 	{
 		fillbitmap(bitmap,Machine.pens[0],Machine.visible_area);
 		tilemap_draw(bitmap,bg_tilemap,0,0);
-		draw_sprites(bitmap);
+                draw_sprites(bitmap);
 	} };
 }

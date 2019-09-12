@@ -15,8 +15,7 @@ package WIP.mame056.vidhrdw;
 import static arcadeflex056.fucPtr.*;
 import static common.ptr.*;
 import static mame056.tilemapH.*;
-//import static mame056.tilemapC.*;
-import static mame037b11.mame.tilemapC.*;
+import static mame056.tilemapC.*;
 import static mame056.cpuintrfH.*;
 import static mame056.cpuintrf.*;
 import static mame056.cpuexec.*;
@@ -198,9 +197,9 @@ public class stfight
 		if (fg_tilemap==null || bg_tilemap==null || tx_tilemap==null)
 			return 1;
 	
-		/*TODO*///tilemap_set_transparent_pen(fg_tilemap,0x0F);
-                fg_tilemap.transparent_pen = 0x0F;
-		/*TODO*///tilemap_set_transparent_pen(tx_tilemap,256);
+		tilemap_set_transparent_pen(fg_tilemap,0x0F);
+                //fg_tilemap.transparent_pen = 0x0F;
+		tilemap_set_transparent_pen(tx_tilemap,256);
                 tx_tilemap.transparent_pen = 256;
 	
 		return 0;
@@ -339,21 +338,18 @@ public class stfight
 		fillbitmap(priority_bitmap,0,null);
 	
 		fillbitmap(bitmap,Machine.pens[0],new rectangle(Machine.visible_area));	/* in case bg_tilemap is disabled */
-                /*TODO*///tilemap_draw(bitmap,bg_tilemap,0,0);
-                tilemap_draw(bitmap,bg_tilemap,0);
-		/*TODO*///tilemap_draw(bitmap,fg_tilemap,0,1);
-                tilemap_draw(bitmap,fg_tilemap,1);
-	
+                tilemap_draw(bitmap,bg_tilemap,0,0);
+                tilemap_draw(bitmap,fg_tilemap,0,1);
+                
 		/* Draw sprites (may be obscured by foreground layer) */
 		if ((stfight_vh_latch_ram.read(0x07) & 0x40) != 0)
 			draw_sprites(bitmap);
 	
-		/*TODO*///tilemap_draw(bitmap,tx_tilemap,0,0);
-                tilemap_draw(bitmap,tx_tilemap,0);
+		tilemap_draw(bitmap,tx_tilemap,0,0);
                 
                 // HACK - ONLY for tilemaps 0.37. REMOVE in 0.56
-                tilemap_update(ALL_TILEMAPS);	
-		tilemap_render(ALL_TILEMAPS);
+                //tilemap_update(ALL_TILEMAPS);	
+		//tilemap_render(ALL_TILEMAPS);
                 // END HACK
 	} };
 }

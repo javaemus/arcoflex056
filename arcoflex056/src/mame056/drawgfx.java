@@ -1645,7 +1645,12 @@ public class drawgfx {
                 }
             }
         } else {
-            throw new UnsupportedOperationException("Unsupported");
+            for (y = sy; y <= ey; y++) {
+                //memset(&dest->line[y][sx],pen,ex-sx+1);
+                for (int k = 0; k < ex - sx + 1; k++) {
+                    new UBytePtr(dest.line[y]).write(sx + k, (char) pen);
+                }
+            }
         }
     }
     /*TODO*///

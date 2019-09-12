@@ -11,8 +11,7 @@ import static common.ptr.*;
 import static mame056.commonH.*;
 import static mame056.common.*;
 import static mame056.tilemapH.*;
-//import static mame056.tilemapC.*;
-import static mame037b11.mame.tilemapC.*;
+import static mame056.tilemapC.*;
 import static mame056.vidhrdw.generic.*;
 import static common.libc.cstring.*;
 import static mame056.drawgfxH.*;
@@ -251,13 +250,12 @@ public class grchamp
 		tilemap_set_scrollx( tilemap[2], 0, dx-(grchamp_vreg1[0x9]+ ((attributes&0x20)!=0?256:(grchamp_vreg1[0xa]*256))));
 		tilemap_set_scrolly( tilemap[2], 0, dy - grchamp_vreg1[0xb] );
 	
-		/*TODO*///tilemap_draw(bitmap,tilemap[0],0,0);
-                tilemap_draw(bitmap,tilemap[0],0);
-		/*TODO*///tilemap_draw(bitmap,tilemap[1],0,0);
-                tilemap_draw(bitmap,tilemap[1],0);
-		/*TODO*///tilemap_draw(bitmap,tilemap[2],0,0);
-                tilemap_draw(bitmap,tilemap[2],0);
-	}
+		tilemap_draw(bitmap,tilemap[0],0,0);
+                tilemap_draw(bitmap,tilemap[1],0,0);
+                tilemap_draw(bitmap,tilemap[1],0,0);
+		tilemap_draw(bitmap,tilemap[2],0,0);
+        }
+                
 	
 	static void draw_player_car( mame_bitmap bitmap )
 	{
@@ -474,8 +472,8 @@ public class grchamp
 		draw_tachometer( bitmap );
                 
                 // HACK - ONLY for tilemaps 0.37. REMOVE in 0.56
-                tilemap_update(ALL_TILEMAPS);	
-		tilemap_render(ALL_TILEMAPS);
+                //tilemap_update(ALL_TILEMAPS);	
+		//tilemap_render(ALL_TILEMAPS);
                 // END HACK
 	} };
 }

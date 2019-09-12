@@ -15,8 +15,7 @@ package WIP.mame056.vidhrdw;
 import static arcadeflex056.fucPtr.*;
 import static common.ptr.*;
 import static mame056.tilemapH.*;
-//import static mame056.tilemapC.*;
-import static mame037b11.mame.tilemapC.*;
+import static mame056.tilemapC.*;
 import static mame056.cpuintrfH.*;
 import static mame056.cpuintrf.*;
 import static mame056.cpuexec.*;
@@ -73,7 +72,7 @@ public class commando
 				color & 0x0f
 				,TILE_FLIPYX((color & 0x30) >> 4)
                 );
-                tile_info.flags = TILE_FLIPYX((color & 0x30) >> 4);
+                
             }
         };
 	
@@ -91,8 +90,8 @@ public class commando
 		if (fg_tilemap==null || bg_tilemap==null)
 			return 1;
 	
-		//tilemap_set_transparent_pen(fg_tilemap,3);
-                fg_tilemap.transparent_pen = 3;
+		tilemap_set_transparent_pen(fg_tilemap,3);
+                //fg_tilemap.transparent_pen = 3;
 	
 		return 0;
 	} };
@@ -190,12 +189,10 @@ public class commando
 	public static VhUpdatePtr commando_vh_screenrefresh = new VhUpdatePtr() { public void handler(mame_bitmap bitmap,int full_refresh) 
 	{
 		
-                tilemap_draw(bitmap,bg_tilemap,0);
+                tilemap_draw(bitmap,bg_tilemap,0,0);
 		draw_sprites(bitmap);
-		tilemap_draw(bitmap,fg_tilemap,0);
+		tilemap_draw(bitmap,fg_tilemap,0,0);
                 
-                tilemap_update(ALL_TILEMAPS);	
-		tilemap_render(ALL_TILEMAPS);
 	} };
 	
 	public static VhEofCallbackPtr commando_eof_callback = new VhEofCallbackPtr() {

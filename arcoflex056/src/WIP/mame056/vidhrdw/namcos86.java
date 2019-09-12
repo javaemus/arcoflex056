@@ -25,8 +25,7 @@ import static mame056.mame.*;
 import static mame056.vidhrdw.generic.*;
 import static arcadeflex056.osdepend.logerror;
 import static mame056.tilemapH.*;
-//import static mame056.tilemapC.*;
-import static mame037b11.mame.tilemapC.*;
+import static mame056.tilemapC.*;
 
 public class namcos86
 {
@@ -413,8 +412,7 @@ public class namcos86
 			for (i = 3;i >= 0;i--)
 			{
 				if (((xscroll[i] & 0x0e00) >> 9) == layer){
-					/*TODO*///tilemap_draw(bitmap,tilemap[i],0,0);
-                                        tilemap_draw(bitmap,tilemap[i],0);
+					tilemap_draw(bitmap,tilemap[i],0,0);                                        
                                 }
 			}
 	
@@ -422,8 +420,8 @@ public class namcos86
 		}
                 
                 // HACK - ONLY for tilemaps 0.37. REMOVE in 0.56
-                tilemap_update(ALL_TILEMAPS);	
-		tilemap_render(ALL_TILEMAPS);
+                //tilemap_update(ALL_TILEMAPS);	
+		//tilemap_render(ALL_TILEMAPS);
                 // END HACK
 	/*#if 0
 	{

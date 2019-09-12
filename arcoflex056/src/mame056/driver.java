@@ -253,6 +253,7 @@ import static WIP.mame056.drivers.hyhoo.*;
 import static WIP.mame056.drivers.cvs.*;
 import static WIP.mame056.drivers.circusc.*;
 import static WIP.mame056.drivers.ddrible.*;
+import static WIP.mame056.drivers.atetris.*;
 
 public class driver {
 
@@ -3217,11 +3218,11 @@ public class driver {
         /*TODO*///	driver_toobinp,	/* (proto)			(c) 1988 */
         /*TODO*///	driver_cyberbal,	/* 136064			(c) 1989 */
         /*TODO*///	driver_cyberba2,	/* 136064			(c) 1989 */
-        /*TODO*///	driver_atetcktl,	/* 136066			(c) 1989 */
-        /*TODO*///	driver_atetckt2,	/* 136066			(c) 1989 */
-        /*TODO*///	driver_atetris,	/* 136066			(c) 1988 */
-        /*TODO*///	driver_atetrisa,	/* 136066			(c) 1988 */
-        /*TODO*///	driver_atetrisb,	/* (bootleg) */
+        driver_atetcktl,	/* 136066			(c) 1989 */
+        driver_atetckt2,	/* 136066			(c) 1989 */
+        driver_atetris,	/* 136066			(c) 1988 */
+        driver_atetrisa,	/* 136066			(c) 1988 */
+        driver_atetrisb,	/* (bootleg) */
         /*TODO*///	driver_eprom,		/* 136069			(c) 1989 */
         /*TODO*///	driver_eprom2,	/* 136069			(c) 1989 */
         /*TODO*///	driver_skullxbo,	/* 136072			(c) 1989 */

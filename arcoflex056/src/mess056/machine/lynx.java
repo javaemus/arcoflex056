@@ -441,10 +441,11 @@ public class lynx
                 
                 boolean _end = false;
 	
+                y=blitter.y; hi=0;
                 
-                    for (; blitter.mem.memory.length < blitter.memory_accesses;){
+                    for (int _x=0 ; _x<256 ; _x++){
 		/*TODO*///for ( (y=blitter.y, hi=0); (blitter.memory_accesses++,i=blitter.mem.read(blitter.bitmap)); blitter.bitmap+=i ) {
-                        y=blitter.y; hi=0; blitter.memory_accesses++; i=blitter.mem.read(blitter.bitmap); blitter.bitmap+=i;
+                         blitter.memory_accesses++; i=blitter.mem.read(blitter.bitmap); blitter.bitmap+=i;
                                 
 			if (i==1) {
 			    // centered sprites sprdemo3, fat bobby, blockout

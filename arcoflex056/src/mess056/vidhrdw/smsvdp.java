@@ -191,6 +191,7 @@ public class smsvdp
 	    }
 	
 	    return ignore_interrupt.handler(); /* Z80_IGNORE_INT */
+            
             }
         };
 	
@@ -298,7 +299,7 @@ public class smsvdp
 
                     if((data & 0xF0) == 0x80)
                     {
-                        reg[(data & 0x0F)] = latch;
+                        reg[(data & 0x0F)] = latch&0xFF;
                         ntab = (reg[2] << 10) & 0x3800;
                         satb = (reg[5] <<  7) & 0x3F00;
                     }
@@ -332,9 +333,9 @@ public class smsvdp
 	    /* Check if display is disabled */
 	    if((reg[1] & 0x40)==0)
 	    {
-			linep = new UShortPtr( bitmap.line[line] );
+			
 			for (i = 0; i < 0x100; i++)
-				linep.write(i, (char) (0x10 + reg[7]));
+				new UShortPtr( bitmap.line[line] ).write(i, (char) (0x10 + reg[7]));
 	        return;
 	    }
 	
@@ -350,12 +351,11 @@ public class smsvdp
 	        charindex = (tile & 0x07FF);
 	        palselect = (tile >> 7) & 0x10;
 	
-		linep = new UShortPtr( bitmap.line[line] );
-	
+		
 	        for(x=0;x<8;x++)
 	        {
 		    color = cache[ (charindex << 6) + (v_row << 3) + (x)];
-		    linep.write((xscroll+(i<<3)+x) & 0xFF, (char) (color | palselect));
+		    (new UShortPtr( bitmap.line[line] )).write((xscroll+(i<<3)+x) & 0xFF, (char) (color | palselect));
 	        }
 	    }
 	
@@ -374,17 +374,16 @@ public class smsvdp
 	
 	            sl = (line - sy);
 	
-		    linep = new UShortPtr( bitmap.line[line] );
-	
+		    
 	            for(x=0;x<width;x++)
 	            {
 	                color = cache[(sn << 6)+(sl << 3) + (x)];
 			if ((nametable.read(((sx+x)&0xff)/8)&0x1000) != 0) {
-	  		  if (linep.read((sx+x)&0xff) == 0)
-			    linep.write((sx + x) & 0xFF, (char) (0x10 | color));
+	  		  if ((new UShortPtr( bitmap.line[line] )).read((sx+x)&0xff) == 0)
+			    (new UShortPtr( bitmap.line[line] )).write((sx + x) & 0xFF, (char) (0x10 | color));
 	 		} else {
 	  		  if (color != 0)
-			    linep.write((sx + x) & 0xFF, (char) (0x10 | color));
+			    (new UShortPtr( bitmap.line[line] )).write((sx + x) & 0xFF, (char) (0x10 | color));
 			}
 	            }
 	        }
@@ -392,9 +391,8 @@ public class smsvdp
 	
 	    if((reg[0] & 0x20) != 0)
 	    {
-			linep = new UShortPtr( bitmap.line[line] );
 			for (i = 0; i < 8; i++)
-				linep.write(i, (char) (0x10 + reg[7]));
+				(new UShortPtr( bitmap.line[line] )).write(i, (char) (0x10 + reg[7]));
 	    }
 	}
 	

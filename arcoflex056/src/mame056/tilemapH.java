@@ -10,7 +10,7 @@ import static mame056.commonH.*;
 import static mame056.drawgfxH.*;
 import static mame056.mame.*;
 
-import static mame037b11.mame.tilemapC.tile_info;
+import static mame056.tilemapC.tile_info;
 import mame056.tilemapC.DrawHandlerPtr;
 import mame056.tilemapC.DrawTileHandlerPtr;
 
@@ -79,7 +79,9 @@ public class tilemapH {
     }
 
     public static void SET_TILE_INFO(int GFX, int CODE, int COLOR, int FLAGS) {
+        //System.out.println("SET_TILE_INFO!");
         GfxElement gfx = Machine.gfx[(GFX)];
+        
         int _code = (CODE) % gfx.total_elements;
         tile_info.tile_number = _code;
         tile_info.pen_data = new UBytePtr(gfx.gfxdata, _code * gfx.char_modulo);
@@ -208,40 +210,40 @@ public class tilemapH {
         public struct_tilemap next;/* resource tracking */
         
         // old variables
-        public WriteHandlerPtr draw037;//void (*draw)( int, int );
-        public WriteHandlerPtr draw_opaque;//void (*draw_opaque)( int, int );
-        public int[] memory_offset_to_cached_index;
-        public int scroll_rows, scroll_cols;
-        public cached_tile_info[] cached_tile_info;
-        public char[] u8_priority;
-        public int[] u8_visible;
-        public int[] u8_dirty_vram;
-        public int[] u8_dirty_pixels;
-        public int[] rowscroll;
-        public int[] colscroll;
-        public UBytePtr[] priority_row;
-        public tilemap_mask foreground;
-        public tilemap_mask background;
-        public int pixmap_line_offset;
-        public int[] u32_transmask = new int[4];
+        //public WriteHandlerPtr draw037;//void (*draw)( int, int );
+        //public WriteHandlerPtr draw_opaque;//void (*draw_opaque)( int, int );
+        //public int[] memory_offset_to_cached_index;
+        //public int scroll_rows, scroll_cols;
+        //public cached_tile_info[] cached_tile_info;
+        //public char[] u8_priority;
+        //public int[] u8_visible;
+        //public int[] u8_dirty_vram;
+        //public int[] u8_dirty_pixels;
+        //public int[] rowscroll;
+        //public int[] colscroll;
+        //public UBytePtr[] priority_row;
+        //public tilemap_mask foreground;
+        //public tilemap_mask background;
+        //public int pixmap_line_offset;
+        //public int[] u32_transmask = new int[4];
     }
     
     // old method
-    public static class tilemap_mask {
+    //public static class tilemap_mask {
 
-        public mame_bitmap bitmask;
-        public int line_offset;
-        public char[]/*UINT8*/ u8_data;
-        public UBytePtr[] data_row;
-    }
+    //    public mame_bitmap bitmask;
+    //    public int line_offset;
+    //    public char[]/*UINT8*/ u8_data;
+    //    public UBytePtr[] data_row;
+    //}
     
     // old method
-    public static class cached_tile_info {
+    //public static class cached_tile_info {
 
-        public UBytePtr pen_data;
-        public IntArray pal_data;
-        public int u32_pen_usage;
-        public int u32_flags;
-    }
+    //    public UBytePtr pen_data;
+    //    public IntArray pal_data;
+    //    public int u32_pen_usage;
+    //    public int u32_flags;
+    //}
 }
 
