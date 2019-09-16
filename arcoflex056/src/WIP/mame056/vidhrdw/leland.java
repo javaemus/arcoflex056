@@ -272,10 +272,10 @@ public class leland
 			return;
 	
 		/* update all scanlines */
-		for (i = next_update_scanline; i < scanline; i++)
+		for (i = next_update_scanline; i < scanline/2; i++)
 			if (i < VIDEO_HEIGHT * 8/2)
 			{
-				UBytePtr scandata=new UBytePtr(VIDEO_WIDTH * 8);
+				UBytePtr scandata=new UBytePtr(VIDEO_WIDTH * 8 * 2);
 				UBytePtr dst = new UBytePtr(scandata);
 				UBytePtr src = new UBytePtr(leland_video_ram, i * 256);
                                 
@@ -286,7 +286,7 @@ public class leland
 					dst.writeinc(pix >> 4);
 					dst.writeinc(pix & 15);
 				}
-				draw_scanline8(fgbitmap, 0, i, VIDEO_WIDTH * 8, dst, null, -1);
+				draw_scanline16(fgbitmap, 0, i, VIDEO_WIDTH * 8/2, new UShortPtr(dst), null, -1);
 			}
 	
 		/* also update the DACs */

@@ -898,6 +898,7 @@ public class spectrum
 	
 			floppy_drive_set_geometry(0, FLOPPY_DRIVE_SS_40);
 			floppy_drive_set_geometry(1, FLOPPY_DRIVE_SS_40);
+                        
 	
 			/* Initial configuration */
 			spectrum_128_port_7ffd_data = 0;
@@ -2829,7 +2830,7 @@ public class spectrum
 			1,					/* count */
 			"sna\0z80\0",       /* file extensions */
 			IO_RESET_ALL,		/* reset if file changed */
-			null,
+			null, //spectrum_rom_id,
                         spectrum_snap_load,	/* init */
 			spectrum_snap_exit,	/* exit */
 			null,				/* info */

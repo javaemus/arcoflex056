@@ -1902,8 +1902,8 @@ public class nec765
 							if (floppy_drive_get_next_id(fdc.drive, fdc.side,id) != 0)
 							{
 								/* got an id - quit */
-                                                            System.out.println("GOT an ID!!!!");
-                                                            System.out.println(id.data_id);
+                                                            //System.out.println("GOT an ID!!!!");
+                                                            //System.out.println(id.data_id);
 								break;
 							}
 	

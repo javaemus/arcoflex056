@@ -125,6 +125,12 @@ public class spectrum
                 //spectrum_shutdown_machine();
             }
         };
+        
+        public static io_idPtr spectrum_rom_id = new io_idPtr() {
+            public int handler(int id) {
+                return 1;
+            }
+        };
 	
 	public static io_initPtr spectrum_snap_load = new io_initPtr()  {
             public int handler(int id) {

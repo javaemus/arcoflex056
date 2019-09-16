@@ -112,6 +112,10 @@ public class driverH {
            file != 0, read_or_write != 0 -> save nvram to disk
          */
         public nvramPtr nvram_handler;
+
+        public MachineDriver(MachineCPU[] machineCPU, int i, int DEFAULT_REAL_60HZ_VBLANK_DURATION, int i0, InitMachinePtr msx_ch_reset, int i1, int i2, rectangle rectangle, Object object, int TMS9928A_PALETTE_SIZE, int TMS9928A_COLORTABLE_SIZE, VhConvertColorPromPtr tms9928A_init_palette, int i3, Object object0, VhStartPtr msx_vh_start, VhStopPtr TMS9928A_stop, VhUpdatePtr TMS9928A_refresh, int i4, int i5, int i6, int i7, MachineSound[] machineSound, MachineSound machineSound0, MachineSound machineSound1, MachineSound machineSound2) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
     }
 
     /* VBlank is the period when the video beam is outside of the visible area and */

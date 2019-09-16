@@ -7823,6 +7823,153 @@ public class drawgfx {
 		dst = new UShortPtr(bitmap.line[0], dy * ty + tx);
         }
     }
+    
+    public static void draw_scanline16(
+		mame_bitmap bitmap,int x,int y,int length,
+		UShortPtr src,IntArray pens,int transparent_pen)
+    {
+	/* 8bpp destination */
+	if (bitmap.depth == 8)
+	{
+/*TODO*///		/* adjust in case we're oddly oriented */
+/*TODO*///		ADJUST_FOR_ORIENTATION(UINT8, Machine.orientation, bitmap, x, y);
+/*TODO*///
+/*TODO*///		/* with pen lookups */
+/*TODO*///		if (pens)
+/*TODO*///		{
+/*TODO*///			if (transparent_pen == -1)
+/*TODO*///				while (length--)
+/*TODO*///				{
+/*TODO*///					*dst = pens[*src++];
+/*TODO*///					dst += xadv;
+/*TODO*///				}
+/*TODO*///			else
+/*TODO*///				while (length--)
+/*TODO*///				{
+/*TODO*///					UINT32 spixel = *src++;
+/*TODO*///					if (spixel != transparent_pen)
+/*TODO*///						*dst = pens[spixel];
+/*TODO*///					dst += xadv;
+/*TODO*///				}
+/*TODO*///		}
+/*TODO*///
+/*TODO*///		/* without pen lookups */
+/*TODO*///		else
+/*TODO*///		{
+/*TODO*///			if (transparent_pen == -1)
+/*TODO*///				while (length--)
+/*TODO*///				{
+/*TODO*///					*dst = *src++;
+/*TODO*///					dst += xadv;
+/*TODO*///				}
+/*TODO*///			else
+/*TODO*///				while (length--)
+/*TODO*///				{
+/*TODO*///					UINT32 spixel = *src++;
+/*TODO*///					if (spixel != transparent_pen)
+/*TODO*///						*dst = spixel;
+/*TODO*///					dst += xadv;
+/*TODO*///				}
+/*TODO*///		}
+	}
+
+	/* 16bpp destination */
+	else if(bitmap.depth == 15 || bitmap.depth == 16)
+	{
+/*TODO*///		/* adjust in case we're oddly oriented */
+/*TODO*///		ADJUST_FOR_ORIENTATION(UINT16, Machine.orientation, bitmap, x, y);
+/*TODO*///
+            int dy = bitmap.line[1].offset / 2 - bitmap.line[0].offset / 2;
+            UShortPtr dst = new UShortPtr(bitmap.line[0], (y * dy + x) );
+            int xadv = 1;
+            
+		/* with pen lookups */
+		if (pens != null)
+		{
+/*TODO*///			if (transparent_pen == -1)
+/*TODO*///				while (length--)
+/*TODO*///				{
+/*TODO*///					*dst = pens[*src++];
+/*TODO*///					dst += xadv;
+/*TODO*///				}
+/*TODO*///			else
+/*TODO*///				while (length--)
+/*TODO*///				{
+/*TODO*///					UINT32 spixel = *src++;
+/*TODO*///					if (spixel != transparent_pen)
+/*TODO*///						*dst = pens[spixel];
+/*TODO*///					dst += xadv;
+/*TODO*///				}
+		}
+
+		/* without pen lookups */
+		else
+		{
+                    System.out.println("Vaminos!!!");
+			if (transparent_pen == -1)
+				while (length-- != 0)
+				{
+					dst.write(src.read(src.offset));
+                                        src.inc();
+					dst.inc( xadv/2 );
+				}
+			else
+				while (length-- != 0)
+				{
+					int spixel = src.read(src.offset);
+                                        src.inc();
+					if (spixel != transparent_pen)
+						dst.write((char) spixel);
+					dst.inc( xadv );
+				}
+		}
+	}
+/*TODO*///
+/*TODO*///	/* 32bpp destination */
+/*TODO*///	else
+/*TODO*///	{
+/*TODO*///		/* adjust in case we're oddly oriented */
+/*TODO*///		ADJUST_FOR_ORIENTATION(UINT32, Machine.orientation, bitmap, x, y);
+/*TODO*///
+/*TODO*///		/* with pen lookups */
+/*TODO*///		if (pens)
+/*TODO*///		{
+/*TODO*///			if (transparent_pen == -1)
+/*TODO*///				while (length--)
+/*TODO*///				{
+/*TODO*///					*dst = pens[*src++];
+/*TODO*///					dst += xadv;
+/*TODO*///				}
+/*TODO*///			else
+/*TODO*///				while (length--)
+/*TODO*///				{
+/*TODO*///					UINT32 spixel = *src++;
+/*TODO*///					if (spixel != transparent_pen)
+/*TODO*///						*dst = pens[spixel];
+/*TODO*///					dst += xadv;
+/*TODO*///				}
+/*TODO*///		}
+/*TODO*///
+/*TODO*///		/* without pen lookups */
+/*TODO*///		else
+/*TODO*///		{
+/*TODO*///			if (transparent_pen == -1)
+/*TODO*///				while (length--)
+/*TODO*///				{
+/*TODO*///					*dst = *src++;
+/*TODO*///					dst += xadv;
+/*TODO*///				}
+/*TODO*///			else
+/*TODO*///				while (length--)
+/*TODO*///				{
+/*TODO*///					UINT32 spixel = *src++;
+/*TODO*///					if (spixel != transparent_pen)
+/*TODO*///						*dst = spixel;
+/*TODO*///					dst += xadv;
+/*TODO*///				}
+/*TODO*///		}
+        
+    }
 
     public static void draw_scanline8(mame_bitmap bitmap, int x, int y, int length, UBytePtr src, IntArray pens, int transparent_pen) {
         /* 8bpp destination */

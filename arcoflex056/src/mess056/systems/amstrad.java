@@ -448,10 +448,10 @@ public class amstrad
 			cpu_setbank(16, new UBytePtr(AmstradCPC_RamBanks[3], 0x02000));
 	
 			/* multiface hardware enabled? */
-			if (multiface_hardware_enabled() != 0)
-			{
-				multiface_rethink_memory();
-			}
+			/*TODO*///if (multiface_hardware_enabled() != 0)
+			/*TODO*///{
+			/*TODO*///	multiface_rethink_memory();
+			/*TODO*///}
 		}
 	}
 	
@@ -2312,6 +2312,7 @@ public class amstrad
 	
 	public static void amstrad_common_init()
 	{
+            Amstrad_Reset();
 	
 		/* set all colours to black */
 		int i;
@@ -2325,7 +2326,7 @@ public class amstrad
 	
 		AmstradCPC_GA_RomConfiguration = 0;
 		amstrad_interrupt_timer = null;
-			amstrad_interrupt_timer = timer_pulse(TIME_IN_USEC(64), 0,amstrad_interrupt_timer_callback);
+		amstrad_interrupt_timer = timer_pulse(TIME_IN_USEC(64), 0,amstrad_interrupt_timer_callback);
 	
 		amstrad_52_divider = 0;
 		amstrad_52_divider_vsync_reset = 0;
@@ -2433,7 +2434,8 @@ public class amstrad
 		machine_name_and_refresh_rate = readinputport(10);
 		ppi_port_inputs[1] = ((machine_name_and_refresh_rate & 0x07)<<1) | (machine_name_and_refresh_rate & 0x010);
 	
-		multiface_init();
+		/*TODO*///multiface_init();
+                
             }
         };
 	
@@ -2566,7 +2568,7 @@ public class amstrad
 		PORT_BITX(0x008, IP_ACTIVE_LOW, IPT_KEYBOARD, "]", KEYCODE_TILDE, IP_JOY_NONE);
 		PORT_BITX(0x010, IP_ACTIVE_LOW, IPT_KEYBOARD, "F4", KEYCODE_4_PAD, IP_JOY_NONE);
 		PORT_BITX(0x020, IP_ACTIVE_LOW, IPT_KEYBOARD, "SHIFT", KEYCODE_LSHIFT, IP_JOY_NONE);
-			PORT_BITX(0x020, IP_ACTIVE_LOW, IPT_KEYBOARD, "SHIFT", KEYCODE_RSHIFT, IP_JOY_NONE);
+			//PORT_BITX(0x020, IP_ACTIVE_LOW, IPT_KEYBOARD, "SHIFT", KEYCODE_RSHIFT, IP_JOY_NONE);
 		PORT_BITX(0x040, IP_ACTIVE_LOW, IPT_KEYBOARD, "SLASH", IP_KEY_NONE, IP_JOY_NONE);
 		PORT_BITX(0x080, IP_ACTIVE_LOW, IPT_KEYBOARD, "CTRL", KEYCODE_LCONTROL, IP_JOY_NONE);
 	
@@ -2575,9 +2577,9 @@ public class amstrad
 		PORT_BITX(0x001, IP_ACTIVE_LOW, IPT_KEYBOARD, "^", KEYCODE_EQUALS, IP_JOY_NONE);
 		PORT_BITX(0x002, IP_ACTIVE_LOW, IPT_KEYBOARD, "=", KEYCODE_MINUS, IP_JOY_NONE);
 		PORT_BITX(0x004, IP_ACTIVE_LOW, IPT_KEYBOARD, "[", KEYCODE_OPENBRACE, IP_JOY_NONE);
-		PORT_BITX(0x008, IP_ACTIVE_LOW, IPT_KEYBOARD, "P", KEYCODE_P, IP_JOY_NONE);
+		PORT_BITX(0x008, IP_ACTIVE_LOW, IPT_KEYBOARD, ":", KEYCODE_P, IP_JOY_NONE);
 		PORT_BITX(0x010, IP_ACTIVE_LOW, IPT_KEYBOARD, ";", KEYCODE_COLON, IP_JOY_NONE);
-		PORT_BITX(0x020, IP_ACTIVE_LOW, IPT_KEYBOARD, ":", KEYCODE_QUOTE, IP_JOY_NONE);
+		PORT_BITX(0x020, IP_ACTIVE_LOW, IPT_KEYBOARD, "p", KEYCODE_QUOTE, IP_JOY_NONE);
 		PORT_BITX(0x040, IP_ACTIVE_LOW, IPT_KEYBOARD, "/", KEYCODE_SLASH, IP_JOY_NONE);
 		PORT_BITX(0x080, IP_ACTIVE_LOW, IPT_KEYBOARD, ".", KEYCODE_STOP, IP_JOY_NONE);
 	
@@ -2599,7 +2601,7 @@ public class amstrad
 		PORT_BITX(0x004, IP_ACTIVE_LOW, IPT_KEYBOARD, "U", KEYCODE_U, IP_JOY_NONE);
 		PORT_BITX(0x008, IP_ACTIVE_LOW, IPT_KEYBOARD, "Y", KEYCODE_Y, IP_JOY_NONE);
 		PORT_BITX(0x010, IP_ACTIVE_LOW, IPT_KEYBOARD, "H", KEYCODE_H, IP_JOY_NONE);
-		PORT_BITX(0x020, IP_ACTIVE_LOW, IPT_KEYBOARD, "J", KEYCODE_J, IP_JOY_NONE);
+		PORT_BITX(0x020, IP_ACTIVE_LOW, IPT_KEYBOARD, "J", KEYCODE_QUOTE, IP_JOY_NONE);
 		PORT_BITX(0x040, IP_ACTIVE_LOW, IPT_KEYBOARD, "N", KEYCODE_N, IP_JOY_NONE);
 		PORT_BITX(0x080, IP_ACTIVE_LOW, IPT_KEYBOARD, "SPACE", KEYCODE_SPACE, IP_JOY_NONE);
 	
@@ -2742,8 +2744,8 @@ public class amstrad
 		amstrad_init_machine,			   /* init machine */
 		//amstrad_shutdown_machine,
 		/* video hardware */
-		AMSTRAD_MONITOR_SCREEN_WIDTH, /* screen width */
-		AMSTRAD_MONITOR_SCREEN_HEIGHT,	/* screen height */
+		AMSTRAD_SCREEN_WIDTH,					   /* screen width */
+		AMSTRAD_SCREEN_HEIGHT,					   /* screen height */
 		new rectangle(0, (AMSTRAD_SCREEN_WIDTH - 1), 0, (AMSTRAD_SCREEN_HEIGHT - 1)),	/* rectangle: visible_area */
 		null,								   /*amstrad_gfxdecodeinfo, 			 *//* graphics
 											* decode info */
@@ -2958,7 +2960,7 @@ public class amstrad
 			IO_SNAPSHOT,				/* type */ 
 			1,							/* count */ 
 			"sna0",                    /* file extensions */ 
-			IO_RESET_ALL,				/* reset if file changed */ 
+			IO_RESET_NONE,				/* reset if file changed */ 
 			null, 
 			amstrad_snapshot_load,		/* init */ 
 			amstrad_snapshot_exit,		/* exit */ 

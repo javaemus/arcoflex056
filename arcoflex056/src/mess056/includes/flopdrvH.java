@@ -111,17 +111,9 @@ public class flopdrvH {
             /* index pulse timer */
             public timer_entry	index_timer;
             /* index pulse callback */
-            public i_index_pulse_callback index_pulse_callback=new i_index_pulse_callback() {
-                public void handler(int id) {
-                    // nothing to do
-                }
-            };
-
-            public i_ready_state_change_callback ready_state_change_callback=new i_ready_state_change_callback() {
-                public void handler(int drive, int state) {
-                    // nothing to do
-                }
-            };
+            public i_index_pulse_callback index_pulse_callback=null;
+            
+            public i_ready_state_change_callback ready_state_change_callback=null;
             
             /* physical real drive unit */
             public int fdd_unit;
@@ -131,36 +123,7 @@ public class flopdrvH {
             public int id_index;
             public chrn_id[] ids=new chrn_id[32];
 
-            public floppy_interface f_interface = new floppy_interface() {
-                public void seek_callback(int drive, int physical_track) {
-                    // nothing to do
-                }
-
-                public int get_sectors_per_track(int drive, int physical_side) {
-                    // nothing to do
-                    return 0;
-                }
-
-                public void get_id_callback(int drive, chrn_id id_chrn, int id_index, int physical_side) {
-                    // nothing to do
-                }
-
-                public void read_sector_data_into_buffer(int drive, int side, int data_id, char[] buf, int length) {
-                    // nothing to do
-                }
-
-                public void write_sector_data_from_buffer(int drive, int side, int data_id, char[] buf, int length, int ddam) {
-                    // nothing to do
-                }
-
-                public void read_track_data_info_buffer(int drive, int side, char[] ptr, int length) {
-                    // nothing to do
-                }
-
-                public void format_sector(int drive, int side, int sector_index, int c, int h, int r, int n, int filler) {
-                    // nothing to do
-                }
-            };
+            public floppy_interface f_interface = null;
     };
 
     /* a callback which will be executed if the ready state of the drive changes e.g. not ready.ready, ready.not ready */

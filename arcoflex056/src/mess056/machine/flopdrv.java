@@ -255,9 +255,12 @@ public class flopdrv
 		{
 			if ((flag & FLOPPY_DRIVE_READY) != 0)
 			{
+                                
 				/* trigger state change callback */
-				if (drives[id].ready_state_change_callback != null)
+				if (drives[id].ready_state_change_callback != null){
 					drives[id].ready_state_change_callback.handler(id, new_state);
+                                        //drives[id].flags = new_state;
+                                }
 			}
 		}
 	}
@@ -441,6 +444,7 @@ public class flopdrv
 	
 	public static void    floppy_drive_seek(int id, int signed_tracks)
 	{
+            
 		//floppy_drive pDrive;
 	
 		if ((id<0) || (id>=MAX_DRIVES))
@@ -468,6 +472,8 @@ public class flopdrv
 		{
 			drives[id].flags |= FLOPPY_DRIVE_HEAD_AT_TRACK_0;
 		}
+                
+                //System.out.println("floppy_drive_seek----"+drives[id].current_track);
 	
 		/* inform disk image of step operation so it can cache information */
 		/*TODO*///if (pDrive.interface.seek_callback != null)
@@ -558,7 +564,7 @@ public class flopdrv
 	{
             //System.out.println("floppy_drive_read_sector_data!!!!!");
 		/*TODO*///if (drives[drive].interface.read_sector_data_into_buffer)
-                
+                //System.out.println("floppy_drive_read_sector_data, index1="+index1);
 			drives[drive].f_interface.read_sector_data_into_buffer(drive, side, index1, pBuffer,length);
                         
                         //System.out.println(" floppy_drive_read_sector_data FIN "+pBuffer[0]+pBuffer[1]);

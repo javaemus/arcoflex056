@@ -252,7 +252,7 @@ public class lynx
 		/* basic machine hardware */
 		new MachineCPU[] {
 			new MachineCPU(
-				CPU_M6502, // vti core, integrated in vlsi, stz, but not bbr bbs
+				CPU_M65SC02, // vti core, integrated in vlsi, stz, but not bbr bbs
 				4000000,
 				lynx_readmem,lynx_writemem,null,null,
 				lynx_frame_int, 1

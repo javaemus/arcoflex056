@@ -33,6 +33,7 @@ import static mess056.machine.msx.*;
 import static mess056.messH.*;
 import static mame056.sound.dac.*;
 import static mame056.sound.dacH.*;
+import static mame056.sound.k051649H.*;
 import static mess056.device.*;
 import static mess056.deviceH.*;
 import static mess056.includes.msxH.*;
@@ -728,11 +729,11 @@ public class msx
 	    new WriteHandlerPtr[] { msx_psg_port_b_w }
 	);
 	
-	/*TODO*///static struct k051649_interface k051649_interface =
-	/*TODO*///{
-	/*TODO*///    1789773,  /* Clock */
-	/*TODO*///    25,         /* Volume */
-	/*TODO*///};
+	static k051649_interface k051649_interface = new k051649_interface
+	(
+	    1789773,  /* Clock */
+	    25         /* Volume */
+	);
 	
 	static DACinterface dac_interface = new DACinterface
         (
@@ -754,13 +755,14 @@ public class msx
 	
 	public static VhStartPtr msx_vh_start = new VhStartPtr() {
             public int handler() {
-                /*int i;
+                
+                int i;
 	
 		i = TMS9928A_start(TMS99x8A, 0x4000);
 		if (i == 0) TMS9928A_int_callback(msx_vdp_interrupt);
 	
-		return i;*/
-                return TMS9928A_start(TMS99x8A, 0x4000);
+		return i;
+                
             }
         };
 	
@@ -805,10 +807,10 @@ public class msx
 	            SOUND_AY8910,
 	            ay8910_interface
 	        ),
-	    /*TODO*///    {
-	    /*TODO*///        SOUND_K051649,
-	    /*TODO*///        &k051649_interface
-	    /*TODO*///    },
+                /*TODO*///new MachineSound(
+	        /*TODO*///    SOUND_K051649,
+	        /*TODO*///    k051649_interface
+	        /*TODO*///),
                 new MachineSound(
 	            SOUND_YM2413,
 	            ym2413_interface

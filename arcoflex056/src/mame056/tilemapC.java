@@ -620,7 +620,7 @@ public class tilemapC {
 
         //state_save_register_func_postload(tilemap_reset);
         tilemap_reset();
-        priority_bitmap = bitmap_alloc_depth( screen_width, screen_height, -8 );
+        priority_bitmap = bitmap_alloc_depth( screen_width, screen_height, -16 );
         if( priority_bitmap != null )
         {
                 priority_bitmap_pitch_line = (new UBytePtr(priority_bitmap.line[1]).read()) - (new UBytePtr(priority_bitmap.line[0]).read());
@@ -1113,7 +1113,7 @@ public class tilemapC {
 	
 			/* initialize defaults */
 			//memset( tile_info, 0x00, sizeof(tile_info) );
-                        //tile_info = new struct_tile_info();
+                        tile_info = new struct_tile_info();
 	
 			/* priority_bitmap_pitch_row is tilemap-specific */
 			priority_bitmap_pitch_row = priority_bitmap_pitch_line*tilemap.cached_tile_height;
@@ -1164,6 +1164,7 @@ public class tilemapC {
 					break;
 	
 				default:
+                                    System.out.println("OTROOOOOOOOOOOO");
 					//exit(1);
 					break;
 				}
@@ -1355,6 +1356,7 @@ public class tilemapC {
 					row += cons;
 				}
 			}
+                        dest=blit.screen_bitmap;
 		}
 	
 /*TODO*///profiler_mark(PROFILER_END);
