@@ -1884,7 +1884,7 @@ public class nec765
 					{
 						int index_count = 0;
                                                 
-                                                System.out.println("READY!!!!");
+                                                //System.out.println("READY!!!!");
 	
 						/* floppy drive is ready and disc is inserted */
 	

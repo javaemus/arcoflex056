@@ -2312,7 +2312,6 @@ public class amstrad
 	
 	public static void amstrad_common_init()
 	{
-            Amstrad_Reset();
 	
 		/* set all colours to black */
 		int i;
@@ -2435,7 +2434,6 @@ public class amstrad
 		ppi_port_inputs[1] = ((machine_name_and_refresh_rate & 0x07)<<1) | (machine_name_and_refresh_rate & 0x010);
 	
 		/*TODO*///multiface_init();
-                
             }
         };
 	
@@ -2577,9 +2575,9 @@ public class amstrad
 		PORT_BITX(0x001, IP_ACTIVE_LOW, IPT_KEYBOARD, "^", KEYCODE_EQUALS, IP_JOY_NONE);
 		PORT_BITX(0x002, IP_ACTIVE_LOW, IPT_KEYBOARD, "=", KEYCODE_MINUS, IP_JOY_NONE);
 		PORT_BITX(0x004, IP_ACTIVE_LOW, IPT_KEYBOARD, "[", KEYCODE_OPENBRACE, IP_JOY_NONE);
-		PORT_BITX(0x008, IP_ACTIVE_LOW, IPT_KEYBOARD, ":", KEYCODE_P, IP_JOY_NONE);
+		PORT_BITX(0x008, IP_ACTIVE_LOW, IPT_KEYBOARD, "P", KEYCODE_P, IP_JOY_NONE);
 		PORT_BITX(0x010, IP_ACTIVE_LOW, IPT_KEYBOARD, ";", KEYCODE_COLON, IP_JOY_NONE);
-		PORT_BITX(0x020, IP_ACTIVE_LOW, IPT_KEYBOARD, "p", KEYCODE_QUOTE, IP_JOY_NONE);
+		PORT_BITX(0x020, IP_ACTIVE_LOW, IPT_KEYBOARD, ":", KEYCODE_QUOTE, IP_JOY_NONE);
 		PORT_BITX(0x040, IP_ACTIVE_LOW, IPT_KEYBOARD, "/", KEYCODE_SLASH, IP_JOY_NONE);
 		PORT_BITX(0x080, IP_ACTIVE_LOW, IPT_KEYBOARD, ".", KEYCODE_STOP, IP_JOY_NONE);
 	
