@@ -329,7 +329,7 @@ public class mame {
         }
 
         /* reset the CPU system */
-        cpu_exit();
+        //cpu_exit();
 
         /* free the memory allocated for input ports definition */
         input_port_free(Machine.input_ports);

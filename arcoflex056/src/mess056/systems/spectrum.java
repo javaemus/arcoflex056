@@ -641,9 +641,6 @@ public class spectrum
 			nec765_data_w.handler(0,data);
             }
         };
-	{
-			
-	}
 	
 	public static ReadHandlerPtr spectrum_plus3_port_3ffd_r = new ReadHandlerPtr() {
             public int handler(int offset) {
@@ -812,12 +809,13 @@ public class spectrum
 		 {
 			 switch ((offset>>8) & 0xff)
 			 {
-					case 0xff: return spectrum_128_port_fffd_r.handler(offset);
-					case 0x2f: return spectrum_plus3_port_2ffd_r.handler(offset);
-					case 0x3f: return spectrum_plus3_port_3ffd_r.handler(offset);
 					case 0x1f: return spectrum_port_1f_r.handler(offset);
+                                        case 0x2f: return spectrum_plus3_port_2ffd_r.handler(offset);
+					case 0x3f: return spectrum_plus3_port_3ffd_r.handler(offset);
 					case 0x7f: return spectrum_port_7f_r.handler(offset);
 					case 0xdf: return spectrum_port_df_r.handler(offset);
+                                        case 0xff: return spectrum_128_port_fffd_r.handler(offset);
+					
 			 }
 		 }
 	
@@ -899,6 +897,8 @@ public class spectrum
 			floppy_drive_set_geometry(0, FLOPPY_DRIVE_SS_40);
 			floppy_drive_set_geometry(1, FLOPPY_DRIVE_SS_40);
                         
+                        //floppy_drive_set_flag_state(0, 0x0008, 1);
+                        //floppy_drive_set_flag_state(1, 0x0008, 1);
 	
 			/* Initial configuration */
 			spectrum_128_port_7ffd_data = 0;

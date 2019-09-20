@@ -277,6 +277,9 @@ public class dsk
 	
 		sides = file_loaded.read(0x031);
 		tracks = file_loaded.read(0x030);
+                
+                System.out.println("Sides: "+sides);
+		System.out.println("Tracks: "+tracks);
 	
 	
 		/* single sided? */
@@ -309,6 +312,8 @@ public class dsk
 	
 		/* get offset to track header in image */
 		track_offset = (int) thedrive.track_offsets[(track<<1) + side];
+                
+                
 	
 		if (track_offset!=0)
 		{
@@ -345,7 +350,7 @@ public class dsk
 		int track_size;
 		int tracks, sides;
 		int offs, skip, length;
-		UBytePtr file_loaded = new UBytePtr(thedrive.data);
+		UBytePtr file_loaded = new UBytePtr(thedrive.data, 0);
 	
 		sides = file_loaded.read(0x031);
                 System.out.println("Sides: "+sides);
@@ -399,6 +404,7 @@ public class dsk
 	
 		/* get offset to track header in image */
 		track_offset = (int) thedrive.track_offsets[(track<<1) + side];
+                System.out.println("Trrack_offset en init: "+track_offset);
 	
 		if (track_offset!=0)
 		{
@@ -466,11 +472,11 @@ public class dsk
 		if (memcmp(thedrive.data,"EXTENDED".toCharArray(),8)==0)
 		{
                     System.out.println("EXTENDED");
-			thedrive.disk_image_type = 1;
+			thedrive.disk_image_type = 0;
 	
 			/* extended disk image */
 			dsk_extended_dsk_init_track_offsets(thedrive);
-                        System.out.println("thedrive.track_offsets[1]==>"+thedrive.track_offsets[1]);
+                        
 		}
 	}
 	
@@ -643,6 +649,8 @@ public class dsk
 	
 		/* offset to track header in image */
 		track_offset = get_track_offset(drive, side);
+                
+                System.out.println("Track: "+track+" track_offset: "+track_offset);
 	
 		/* track exists? */
 		if (track_offset==0)
@@ -687,6 +695,7 @@ public class dsk
 		if (pSectorData!=null)
 		{
 			memcpy(pSectorData.memory, ptr, length);
+                        pSectorData.offset = 0;
 		}
 	
 		/* set ddam */
@@ -710,6 +719,7 @@ public class dsk
                         //System.out.println("not null ");
                         //System.out.println(pSectorData.memory);
                         //printSector(ptr);
+                        ptr.offset = 0;
 	
 		} else {
                     System.out.println("es null");

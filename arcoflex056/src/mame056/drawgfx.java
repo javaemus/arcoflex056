@@ -7876,11 +7876,14 @@ public class drawgfx {
 	/* 16bpp destination */
 	else if(bitmap.depth == 15 || bitmap.depth == 16)
 	{
+            System.out.println("draw_scanline16!!!!");
 /*TODO*///		/* adjust in case we're oddly oriented */
 /*TODO*///		ADJUST_FOR_ORIENTATION(UINT16, Machine.orientation, bitmap, x, y);
 /*TODO*///
             int dy = bitmap.line[1].offset / 2 - bitmap.line[0].offset / 2;
-            UShortPtr dst = new UShortPtr(bitmap.line[0], (y * dy + x) );
+            UBytePtr dst = new UBytePtr(bitmap.line[0], (y * dy + x) );
+            //System.out.println("Tama: "+dst.memory.length);
+            //System.out.println("offset: "+dst.offset);
             int xadv = 1;
             
 		/* with pen lookups */
@@ -7905,19 +7908,23 @@ public class drawgfx {
 		/* without pen lookups */
 		else
 		{
-                    System.out.println("Vaminos!!!");
+                    //src.offset = 0;
+                    //System.out.println("Vaminos!!!"+src.offset);
+                    //System.out.println("Vaminos2!!!"+src.read(src.offset));
+                    //System.out.println(dst.offset+"="+dst.memory.length);
+                    UBytePtr src2 = new UBytePtr(src.memory);
 			if (transparent_pen == -1)
 				while (length-- != 0)
 				{
-					dst.write(src.read(src.offset));
-                                        src.inc();
-					dst.inc( xadv/2 );
+					dst.write((char) src2.read16(src2.offset));
+                                        src2.inc(2);
+					dst.inc( xadv );
 				}
 			else
 				while (length-- != 0)
 				{
-					int spixel = src.read(src.offset);
-                                        src.inc();
+					int spixel = src2.read16(src2.offset);
+                                        src2.inc(2);
 					if (spixel != transparent_pen)
 						dst.write((char) spixel);
 					dst.inc( xadv );

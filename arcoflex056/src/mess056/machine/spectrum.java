@@ -234,8 +234,17 @@ public class spectrum
 			}
 		}
 		logerror("Snapshot loaded - new PC = %04x\n", cpu_get_reg(Z80_PC) & 0x0ffff);
+                
+                /* Hack for correct handling 0xffff interrupt vector */
+                //if (address == 0x0001)
+                //        if (cpunum_get_reg(0, REG_PREVIOUSPC)==0xffff)
+                //        {
+                //                cpunum_set_reg(0, Z80_PC, 0xfff4);
+                //                return 0xfff4;
+                //        }
+                //return address;
 	
-		return (cpu_get_reg(Z80_PC) & 0x0ffff);
+		return (cpunum_get_reg(0,Z80_PC) & 0x0ffff);
             }
             
         };
@@ -426,11 +435,12 @@ public class spectrum
 			spectrum_128_update_memory();
 		else
 		{
-			if ((spectrum_128_port_7ffd_data & 0x10) != 0)
+			if ((spectrum_128_port_7ffd_data & 0x10) != 0){
 				/* Page in Spec 48K basic ROM */
 				spectrum_plus3_port_1ffd_data = 0x04;
-			else
+                        } else{
 				spectrum_plus3_port_1ffd_data = 0;
+                        }
 			spectrum_plus3_update_memory();
 		}
 	}

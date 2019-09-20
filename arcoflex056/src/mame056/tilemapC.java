@@ -1187,7 +1187,7 @@ public class tilemapC {
 	
 			blit.tilemap_priority_code = priority;
                         
-                        System.out.println("rows="+rows+", cols="+cols);
+                        //System.out.println("rows="+rows+", cols="+cols);
 	
 			if( rows == 1 && cols == 1 )
 			{ /* XY scrolling playfield */
@@ -1958,11 +1958,11 @@ public class tilemapC {
             if( y1<blit.clip_top ) y1 = blit.clip_top;
             if( y2>blit.clip_bottom ) y2 = blit.clip_bottom;
             
-            System.out.println("Antes!");
+            //System.out.println("Antes!");
 
             if( x1<x2 && y1<y2 ) /* do nothing if totally clipped */
             {
-                System.out.println("Dentro!");
+                //System.out.println("Dentro!");
                     priority_bitmap_baseaddr = new UBytePtr(priority_bitmap.line[y1], xpos );
                     if( blit.screen_bitmap != null )
                     {
@@ -2040,7 +2040,7 @@ public class tilemapC {
 
                                                     if( transPrev == eWHOLLY_OPAQUE )
                                                     {
-                                                        System.out.println("OPAQUE!");
+                                                        //System.out.println("OPAQUE!");
                                                             i = y;
                                                             for(;;)
                                                             {
@@ -3145,13 +3145,13 @@ public class tilemapC {
     
     public static DrawTileHandlerPtr HandleTransparencyNone_raw = new DrawTileHandlerPtr() {
         public int handler(struct_tilemap tilemap, int x0, int y0, int flags) {
-            System.out.println("HandleTransparencyNone_raw_xx");
+            //System.out.println("HandleTransparencyNone_raw_xx");
             int tile_width = tilemap.cached_tile_width;
             int tile_height = tilemap.cached_tile_height;
-            mame_bitmap pixmap = tilemap.pixmap;
-            mame_bitmap transparency_bitmap = tilemap.transparency_bitmap;
+            //mame_bitmap pixmap = tilemap.pixmap;
+            //mame_bitmap transparency_bitmap = tilemap.transparency_bitmap;
             int pitch = tile_width + tile_info.skip;
-            PAL_INIT_raw();
+            PAL_INIT();
             IntArray pPenToPixel = new IntArray(tilemap.pPenToPixel, flags&(TILE_SWAPXY|TILE_FLIPY|TILE_FLIPX));
             UBytePtr pPenData = new UBytePtr(tile_info.pen_data);
             UBytePtr pSource;
@@ -3166,7 +3166,7 @@ public class tilemapC {
 
             if( (flags&TILE_4BPP) != 0)
             {
-                System.out.println("AA_raw");
+                System.out.println("AA_raw NOT IMPLEMENTE");
 /*TODO*///		for( ty=tile_height; ty!=0; ty-- )
 /*TODO*///		{
 /*TODO*///			pSource = pPenData;
@@ -3193,23 +3193,36 @@ public class tilemapC {
             }
             else
             {
-                System.out.println("BB_raw");
+                
+                //System.out.println("BB_raw "+tile_width+", "+tile_height);
+                int _y=0;
 		for( ty=tile_height; ty!=0; ty-- )
 		{
+                    
 			pSource = new UBytePtr(pPenData);
+                        int _x=0;
 			for( tx=tile_width; tx!=0; tx-- )
 			{
+                            
 				pen = pSource.readinc();
 				yx = pPenToPixel.read();
                                 pPenToPixel.offset++;
-				x = x0+(yx%MAX_TILESIZE);
-				y = y0+(yx/MAX_TILESIZE);
+				x = (x0+(yx))+_x;
+				y = (y0+(yx))+_y;
+                                //System.out.println("x "+x+" y "+y);
+                                //System.out.println(blit);
 				//*(x+(UINT16 *)pixmap.line[y]) = PAL_GET(pen);
-                                (new UShortPtr(pixmap.line[y])).write(x, (char) PAL_GET_raw(pen));
+                                (new UShortPtr(blit.screen_bitmap.line[y])).write(x, (char) PAL_GET(pen));
 				//((UINT8 *)transparency_bitmap.line[y])[x] = code_opaque;
-                                (new UBytePtr(transparency_bitmap.line[y])).write(x, code_opaque);
+                                (new UBytePtr(priority_bitmap.line[y])).write(x, code_opaque);
+                                
+                                //memcpy(new UBytePtr(dest0), new UBytePtr(source0), num_pixels);
+                                //memset(new UBytePtr(pmap0), tilemap_priority_code, num_pixels);
+                                _x++;
 			}
 			pPenData.inc(pitch);
+                        _y++;
+                        //System.out.println("-------------- y++ ");
 		}
             }
             return 0;

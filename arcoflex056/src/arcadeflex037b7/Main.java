@@ -9,7 +9,7 @@ import arcadeflex056.osdepend;
 public class Main {
 
     public static void main(String[] args) {
-        ConvertArguments("consoleflex", args);
+        ConvertArguments("arcadeflex", args);
         System.exit(osdepend.main(argc, argv));
     }
 }
