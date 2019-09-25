@@ -109,7 +109,7 @@ public class renegade
 			return 1;
 	
 		tilemap_set_transparent_pen(fg_tilemap,0);
-                //fg_tilemap.transparent_pen = 0;
+                fg_tilemap.transparent_pen = 0;
 		tilemap_set_scrolldx( bg_tilemap, 256, 0 );
 	
 		tilemap_set_scrolldy( fg_tilemap, 0, 16 );
@@ -164,7 +164,7 @@ public class renegade
 	public static VhUpdatePtr renegade_vh_screenrefresh = new VhUpdatePtr() { public void handler(mame_bitmap bitmap,int fullrefresh) 
 	{
                 // HACK
-                fillbitmap(bitmap,Machine.pens[0],Machine.visible_area);
+                //fillbitmap(bitmap,Machine.pens[0],Machine.visible_area);
                 // end HACK
                 
 		tilemap_set_scrollx( bg_tilemap, 0, renegade_scrollx );

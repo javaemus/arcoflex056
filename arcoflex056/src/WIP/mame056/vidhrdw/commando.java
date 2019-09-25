@@ -34,7 +34,8 @@ public class commando
 	
 	public static UBytePtr commando_fgvideoram=new UBytePtr(), commando_bgvideoram=new UBytePtr();
 	
-	static struct_tilemap fg_tilemap, bg_tilemap;
+	static struct_tilemap fg_tilemap;
+        static struct_tilemap bg_tilemap;
 	
 	
 	
@@ -56,7 +57,7 @@ public class commando
 				color & 0x0f
                                 ,TILE_FLIPYX((color & 0x30) >> 4)
                 );
-                tile_info.flags = TILE_FLIPYX((color & 0x30) >> 4);
+                //tile_info.flags = TILE_FLIPYX((color & 0x30) >> 4);
             }
         };
 	
@@ -91,8 +92,7 @@ public class commando
 			return 1;
 	
 		tilemap_set_transparent_pen(fg_tilemap,3);
-                //fg_tilemap.transparent_pen = 3;
-	
+                
 		return 0;
 	} };
 	

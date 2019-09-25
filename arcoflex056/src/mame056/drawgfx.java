@@ -8711,6 +8711,7 @@ public class drawgfx {
     }
 
     public static void blockmove_8toN_transcolor16(UBytePtr srcdata, int srcwidth, int srcheight, int srcmodulo, int leftskip, int topskip, int flipx, int flipy, UShortPtr dstdata, int dstwidth, int dstheight, int dstmodulo, IntArray paldata, UShortArray colortable, int transcolor) {
+        //System.out.println("blockmove_8toN_transcolor16");
         int ydir;
         if (flipy != 0) {
             dstdata.inc(dstmodulo * (dstheight - 1));
@@ -8747,7 +8748,7 @@ public class drawgfx {
             }
         } else {
             int end;
-
+//System.out.println("kkkkkkk="+transcolor);
             while (dstheight != 0) {
                 end = dstdata.offset / 2 + dstwidth;
                 while (dstdata.offset / 2 < end) {

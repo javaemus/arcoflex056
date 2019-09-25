@@ -224,6 +224,9 @@ public class circusc
                 // HACK
                 //fillbitmap(bitmap,Machine.pens[0],Machine.visible_area);
                 // end HACK
+            
+            //blit.screen_bitmap
+            //fillbitmap(priority_bitmap,0,null);
                 
 		int i;
 	
