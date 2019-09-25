@@ -2045,9 +2045,9 @@ public class tilemapC {
                                                             i = y;
                                                             for(;;)
                                                             {
-                                                                    //blit.draw_opaque.handler(new UShortPtr(dest0), new UShortPtr(source0), count, new UBytePtr(pmap0), tilemap_priority_code );
-                                                                    memcpy(new UShortPtr(dest0), new UShortPtr(source0), count);
-                                                                    memset(new UBytePtr(pmap0), tilemap_priority_code, count);
+                                                                    blit.draw_opaque.handler(new UShortPtr(dest0), new UShortPtr(source0), count, new UBytePtr(pmap0), tilemap_priority_code );
+                                                                    //memcpy(new UShortPtr(dest0), new UShortPtr(source0), count);
+                                                                    //memset(new UBytePtr(pmap0), tilemap_priority_code, count);
                                                                     if( ++i == y_next ) break;
 
                                                                     dest0.inc( blit.screen_bitmap_pitch_line );
