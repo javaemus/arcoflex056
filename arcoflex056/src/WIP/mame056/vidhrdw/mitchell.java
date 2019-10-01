@@ -98,6 +98,7 @@ public class mitchell
 			return 1;
 	
 		tilemap_set_transparent_pen(bg_tilemap,15);
+                bg_tilemap.transparent_pen = 15;
 	
 		/*
 			OBJ RAM
