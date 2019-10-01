@@ -12,6 +12,7 @@ import static mame056.commonH.*;
 import static mame056.common.*;
 import static mame056.tilemapH.*;
 import static mame056.tilemapC.*;
+//import static mame037b11.mame.tilemapC.*;
 import static mame056.vidhrdw.generic.*;
 import static common.libc.cstring.*;
 import static mame056.drawgfxH.*;
@@ -172,16 +173,16 @@ public class grchamp
 			work_bitmap = bitmap_alloc( 32,32 );
 			if( work_bitmap != null ){
                                 tilemap = new struct_tilemap[3];
-				tilemap[0] = tilemap_create(get_bg0_tile_info,get_memory_offset,TILEMAP_OPAQUE,8,8,64,32);
-				/*TODO*///tilemap[1] = tilemap_create(get_bg1_tile_info,get_memory_offset,TILEMAP_TRANSPARENT,8,8,64,32);
-                                tilemap[1] = tilemap_create(get_bg1_tile_info,get_memory_offset,TILEMAP_OPAQUE,8,8,64,32);
-				/*TODO*///tilemap[2] = tilemap_create(get_bg2_tile_info,get_memory_offset,TILEMAP_TRANSPARENT,8,8,64,32);
-                                tilemap[2] = tilemap_create(get_bg2_tile_info,get_memory_offset,TILEMAP_OPAQUE,8,8,64,32);
+				tilemap[0] = tilemap_create(get_bg0_tile_info,get_memory_offset,TILEMAP_TRANSPARENT,8,8,64,32);
+				tilemap[1] = tilemap_create(get_bg1_tile_info,get_memory_offset,TILEMAP_TRANSPARENT,8,8,64,32);
+                                //tilemap[1] = tilemap_create(get_bg1_tile_info,get_memory_offset,TILEMAP_OPAQUE,8,8,64,32);
+				tilemap[2] = tilemap_create(get_bg2_tile_info,get_memory_offset,TILEMAP_TRANSPARENT,8,8,64,32);
+                                //tilemap[2] = tilemap_create(get_bg2_tile_info,get_memory_offset,TILEMAP_OPAQUE,8,8,64,32);
 				if( tilemap[0]!=null && tilemap[1]!=null && tilemap[2]!=null )
 				{
-					/*TODO*///tilemap_set_transparent_pen( tilemap[1], 0 );
+					tilemap_set_transparent_pen( tilemap[1], 0 );
                                         tilemap[1].transparent_pen = 0;
-					/*TODO*///tilemap_set_transparent_pen( tilemap[2], 0 );
+					tilemap_set_transparent_pen( tilemap[2], 0 );
                                         tilemap[2].transparent_pen = 0;
                                         
 					return 0;
@@ -444,6 +445,11 @@ public class grchamp
 	}
 	
 	public static VhUpdatePtr grchamp_vh_screenrefresh = new VhUpdatePtr() { public void handler(mame_bitmap bitmap,int full_refresh) {
+            
+                
+                //tilemap_update(ALL_TILEMAPS);
+                //tilemap_render(ALL_TILEMAPS);
+            
 		int bFog = grchamp_videoreg0.read()&0x40;
 	
 		draw_background( bitmap ); /* 3 layers */

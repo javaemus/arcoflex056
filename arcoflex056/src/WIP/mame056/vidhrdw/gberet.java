@@ -23,6 +23,7 @@ import static mame056.drawgfxH.*;
 import static mame056.drawgfx.*;
 import static mame056.tilemapH.*;
 import static mame056.tilemapC.*;
+//import static mame037b11.mame.tilemapC.*;
 
 import static mame056.vidhrdw.generic.*;
 
@@ -315,6 +316,8 @@ public class gberet
 	
 	public static VhUpdatePtr gberet_vh_screenrefresh = new VhUpdatePtr() { public void handler(mame_bitmap bitmap,int full_refresh) 
 	{
+            //tilemap_update(ALL_TILEMAPS);
+            //tilemap_render(ALL_TILEMAPS);
                 
 		tilemap_draw(bitmap,bg_tilemap,TILEMAP_IGNORE_TRANSPARENCY|0,0);
 		tilemap_draw(bitmap,bg_tilemap,TILEMAP_IGNORE_TRANSPARENCY|1,0);

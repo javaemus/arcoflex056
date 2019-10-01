@@ -14,6 +14,7 @@ import static arcadeflex056.fucPtr.*;
 import static common.ptr.*;
 import static mame056.tilemapH.*;
 import static mame056.tilemapC.*;
+//import static mame037b11.mame.tilemapC.*;
 import static mame056.cpuintrfH.*;
 import static mame056.cpuintrf.*;
 import static mame056.cpuexec.*;
@@ -88,5 +89,7 @@ public class atetris
 	public static VhUpdatePtr atetris_vh_screenrefresh = new VhUpdatePtr() { public void handler(mame_bitmap bitmap,int full_refresh) 
 	{
 		tilemap_draw(bitmap, tilemap, 0,0);
+                //tilemap_update(ALL_TILEMAPS);
+                //tilemap_render(ALL_TILEMAPS);
 	} };
 }

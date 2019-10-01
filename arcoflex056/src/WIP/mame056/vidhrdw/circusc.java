@@ -16,6 +16,7 @@ import static arcadeflex056.fucPtr.*;
 import static common.ptr.*;
 import static mame056.tilemapH.*;
 import static mame056.tilemapC.*;
+//import static mame037b11.mame.tilemapC.*;
 import static mame056.cpuintrfH.*;
 import static mame056.cpuintrf.*;
 import static mame056.cpuexec.*;
@@ -121,6 +122,7 @@ public class circusc
 				circusc_videoram.read(tile_index) + ((attr & 0x20) << 3),
 				attr & 0x0f,
 				TILE_FLIPYX((attr & 0xc0) >> 6));
+                tile_info.flags = TILE_FLIPYX((attr & 0xc0) >> 6);
             }
         };
 	
@@ -227,6 +229,8 @@ public class circusc
             
             //blit.screen_bitmap
             //fillbitmap(priority_bitmap,0,null);
+            //tilemap_update(ALL_TILEMAPS);
+            //    tilemap_render(ALL_TILEMAPS);
                 
 		int i;
 	

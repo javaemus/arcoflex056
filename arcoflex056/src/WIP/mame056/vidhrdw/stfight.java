@@ -16,6 +16,7 @@ import static arcadeflex056.fucPtr.*;
 import static common.ptr.*;
 import static mame056.tilemapH.*;
 import static mame056.tilemapC.*;
+//import static mame037b11.mame.tilemapC.*;
 import static mame056.cpuintrfH.*;
 import static mame056.cpuintrf.*;
 import static mame056.cpuexec.*;
@@ -200,7 +201,7 @@ public class stfight
 		tilemap_set_transparent_pen(fg_tilemap,0x0F);
                 //fg_tilemap.transparent_pen = 0x0F;
 		tilemap_set_transparent_pen(tx_tilemap,256);
-                tx_tilemap.transparent_pen = 256;
+                //tx_tilemap.transparent_pen = 256;
 	
 		return 0;
 	} };
@@ -336,14 +337,18 @@ public class stfight
 	public static VhUpdatePtr stfight_vh_screenrefresh = new VhUpdatePtr() { public void handler(mame_bitmap bitmap,int full_refresh) 
 	{
 		//fillbitmap(priority_bitmap,0,null);
+                fillbitmap(priority_bitmap,0,new rectangle(Machine.visible_area));
+	
+		//fillbitmap(bitmap,Machine.pens[0],new rectangle(Machine.visible_area));	/* in case bg_tilemap is disabled */
 	
 		//fillbitmap(bitmap,Machine.pens[0],new rectangle(Machine.visible_area));	/* in case bg_tilemap is disabled */
                 tilemap_draw(bitmap,bg_tilemap,0,0);
                 tilemap_draw(bitmap,fg_tilemap,0,1);
                 
 		/* Draw sprites (may be obscured by foreground layer) */
-		if ((stfight_vh_latch_ram.read(0x07) & 0x40) != 0)
+		if ((stfight_vh_latch_ram.read(0x07) & 0x40) != 0){
 			draw_sprites(bitmap);
+                }
 	
 		tilemap_draw(bitmap,tx_tilemap,0,0);
                 

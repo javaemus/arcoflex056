@@ -267,6 +267,7 @@ public class ptr {
         }
 
         public void write(int index, char value) {
+            
             memory[offset + index * 2] = (char) (value & 0xFF);
             memory[offset + index * 2 + 1] = (char) ((value >> 8) & 0xFF);
         }

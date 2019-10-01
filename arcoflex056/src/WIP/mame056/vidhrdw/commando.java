@@ -16,6 +16,7 @@ import static arcadeflex056.fucPtr.*;
 import static common.ptr.*;
 import static mame056.tilemapH.*;
 import static mame056.tilemapC.*;
+//import static mame037b11.mame.tilemapC.*;
 import static mame056.cpuintrfH.*;
 import static mame056.cpuintrf.*;
 import static mame056.cpuexec.*;
@@ -92,6 +93,7 @@ public class commando
 			return 1;
 	
 		tilemap_set_transparent_pen(fg_tilemap,3);
+                        
                 
 		return 0;
 	} };

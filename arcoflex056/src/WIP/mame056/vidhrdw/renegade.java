@@ -27,6 +27,7 @@ import static mame056.vidhrdw.generic.*;
 
 import static arcadeflex056.osdepend.logerror;
 import static mame056.tilemapC.*;
+//import static mame037b11.mame.tilemapC.*;
 import static mame056.tilemapH.*;
 
 public class renegade
@@ -166,6 +167,9 @@ public class renegade
                 // HACK
                 //fillbitmap(bitmap,Machine.pens[0],Machine.visible_area);
                 // end HACK
+            
+                //tilemap_update(ALL_TILEMAPS);
+                //tilemap_render(ALL_TILEMAPS);
                 
 		tilemap_set_scrollx( bg_tilemap, 0, renegade_scrollx );
 		tilemap_set_scrolly( bg_tilemap, 0, 0 );

@@ -29,6 +29,7 @@ import static mame056.vidhrdw.generic.*;
 
 import static arcadeflex056.osdepend.logerror;
 import static mame056.tilemapC.*;
+//import static mame037b11.mame.tilemapC.*;
 import static mame056.tilemapH.*;
 
 public class gng
@@ -176,6 +177,9 @@ public class gng
 	
 	public static VhUpdatePtr gng_vh_screenrefresh = new VhUpdatePtr() { public void handler(mame_bitmap bitmap,int full_refresh) 
 	{
+                //tilemap_update(ALL_TILEMAPS);
+                //tilemap_render(ALL_TILEMAPS);
+            
 		tilemap_draw(bitmap,bg_tilemap,TILEMAP_BACK, 0);
 		draw_sprites(bitmap);
 		tilemap_draw(bitmap,bg_tilemap,TILEMAP_FRONT, 0);

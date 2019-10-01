@@ -39,6 +39,7 @@ import static mame056.timerH.*;
 import static arcadeflex056.osdepend.logerror;
 import static mame056.tilemapH.*;
 import static mame056.tilemapC.*;
+//import static mame037b11.mame.tilemapC.*;
 import static mame056.sound.oki6295.*;
 import static mame056.sound.oki6295H.*;
 
@@ -304,7 +305,9 @@ public class mitchell
 	
 	public static VhUpdatePtr pang_vh_screenrefresh = new VhUpdatePtr() { public void handler(mame_bitmap bitmap,int full_refresh) 
 	{
-		//fillbitmap(bitmap,Machine.pens[0],Machine.visible_area);
+		//tilemap_update(ALL_TILEMAPS);
+                //tilemap_render(ALL_TILEMAPS);
+                //fillbitmap(bitmap,Machine.pens[0],Machine.visible_area);
 		tilemap_draw(bitmap,bg_tilemap,0,0);
                 draw_sprites(bitmap);
 	} };
