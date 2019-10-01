@@ -73,6 +73,7 @@ public class namcos1
 	public static int MAX_SPRITES = 127;
 	
 	static struct_tilemap[] tilemap=new struct_tilemap[MAX_PLAYFIELDS];
+        
 	
 	public static class playfield {
 		int 	color;

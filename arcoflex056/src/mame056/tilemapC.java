@@ -1124,7 +1124,7 @@ public class tilemapC {
 				case 16:
 					blit.draw_masked = (blitmask_t)pdt16;
 					blit.draw_opaque = (blitopaque_8_t)pdo16;
-					blit.screen_bitmap_pitch_line /= 2;
+					//blit.screen_bitmap_pitch_line /= 2;
 					break;
 	
 				default:
@@ -2218,7 +2218,7 @@ public class tilemapC {
                     for( ty=tile_height; ty!=0; ty-- )
                     {
                             pSource = new UBytePtr(pPenData);
-                            for( tx=tile_width/2; tx!=0; tx-- )
+                            for( tx=tile_width; tx!=0; tx-- )
                             {
                                     data = pSource.readinc();
 
@@ -3214,7 +3214,7 @@ public class tilemapC {
 				//*(x+(UINT16 *)pixmap.line[y]) = PAL_GET(pen);
                                 
                                 //if (tilemap.pixmap.line[y] != null)
-                                    (new UShortPtr(tilemap.pixmap.line[y])).write(x, (char) PAL_GET(pen));
+                                    (new UShortPtr(tilemap.pixmap.line[y], x)).write( (char) PAL_GET(pen));
                                 
                                 //if (tilemap.transparency_bitmap.line[y] != null){
                                     //((UINT8 *)transparency_bitmap.line[y])[x] = code_opaque;
