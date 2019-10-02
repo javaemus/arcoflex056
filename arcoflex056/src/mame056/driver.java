@@ -254,6 +254,7 @@ import static WIP.mame056.drivers.cvs.*;
 import static WIP.mame056.drivers.circusc.*;
 import static WIP.mame056.drivers.ddrible.*;
 import static WIP.mame056.drivers.atetris.*;
+import static WIP.mame056.drivers.mrdo.*;
 
 public class driver {
 
@@ -911,13 +912,13 @@ public class driver {
         driver_ladybugb, /* bootleg */
         driver_snapjack, /* (c) */
         driver_cavenger, /* (c) 1981 */
-        /*TODO*///	driver_mrdo,		/* (c) 1982 */
-        /*TODO*///	driver_mrdot,		/* (c) 1982 + Taito license */
-        /*TODO*///	driver_mrdofix,	/* (c) 1982 + Taito license */
-        /*TODO*///	driver_mrlo,		/* bootleg */
-        /*TODO*///	driver_mrdu,		/* bootleg */
-        /*TODO*///	driver_mrdoy,		/* bootleg */
-        /*TODO*///	driver_yankeedo,	/* bootleg */
+        driver_mrdo,		/* (c) 1982 */
+        driver_mrdot,		/* (c) 1982 + Taito license */
+        driver_mrdofix,	/* (c) 1982 + Taito license */
+        driver_mrlo,		/* bootleg */
+        driver_mrdu,		/* bootleg */
+        driver_mrdoy,		/* bootleg */
+        driver_yankeedo,	/* bootleg */
         driver_docastle, /* (c) 1983 */
         driver_docastl2, /* (c) 1983 */
         driver_douni, /* (c) 1983 */

@@ -37,6 +37,8 @@ import static mess056.mess.*;
 //to refactor
 import static arcadeflex036.sound.*;
 import arcadeflex056.settings;
+import static arcadeflex056.settings.MESS;
+import static mess056.tapectrl.*;
 
 public class usrintrf {
 
@@ -2641,12 +2643,19 @@ public class usrintrf {
 /*TODO*///	{
 /*TODO*///		menu_item[menu_total] = ui_getstring (UI_calibrate); menu_action[menu_total++] = UI_CALIBRATE;
 /*TODO*///	}
-        menu_item[menu_total] = ui_getstring(UI_bookkeeping);
-        menu_action[menu_total++] = UI_STATS;
-        menu_item[menu_total] = ui_getstring(UI_gameinfo);
-        menu_action[menu_total++] = UI_GAMEINFO;
-        menu_item[menu_total] = ui_getstring(UI_history);
-        menu_action[menu_total++] = UI_HISTORY;
+        if (!MESS){
+            menu_item[menu_total] = ui_getstring(UI_bookkeeping);
+            menu_action[menu_total++] = UI_STATS;
+            menu_item[menu_total] = ui_getstring(UI_gameinfo);
+            menu_action[menu_total++] = UI_GAMEINFO;
+            menu_item[menu_total] = ui_getstring(UI_history);
+            menu_action[menu_total++] = UI_HISTORY;
+        } else {
+            menu_item[menu_total] = ui_getstring (UI_imageinfo); menu_action[menu_total++] = UI_IMAGEINFO;
+            menu_item[menu_total] = ui_getstring (UI_filemanager); menu_action[menu_total++] = UI_FILEMANAGER;
+            menu_item[menu_total] = ui_getstring (UI_tapecontrol); menu_action[menu_total++] = UI_TAPECONTROL;
+            menu_item[menu_total] = ui_getstring (UI_history); menu_action[menu_total++] = UI_HISTORY;
+        }
 
         if (options.cheat != 0) {
             menu_item[menu_total] = ui_getstring(UI_cheat);
@@ -2707,8 +2716,8 @@ public class usrintrf {
                     System.out.println("filemanager needs to be implemented!!!!");
                         break;
                 case UI_TAPECONTROL:
-                /*TODO*///        res = tapecontrol(bitmap, sel >> SEL_BITS);
-                    System.out.println("tapecontrol needs to be implemented!!!!");
+                        System.out.println("tapecontrol!!!!");
+                        res = tapecontrol(bitmap, sel >> SEL_BITS);                    
                         break;
                 case UI_HISTORY:
                     res = displayhistory(bitmap, sel >> SEL_BITS);
@@ -2750,6 +2759,9 @@ public class usrintrf {
                 case UI_CALIBRATE:
                 case UI_STATS:
                 case UI_GAMEINFO:
+                case UI_IMAGEINFO:
+                case UI_FILEMANAGER:
+                case UI_TAPECONTROL:
                 case UI_HISTORY:
                 case UI_CHEAT:
                 case UI_MEMCARD:

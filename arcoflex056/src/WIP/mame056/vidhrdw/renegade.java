@@ -84,7 +84,7 @@ public class renegade
 				source.read(0),
 				attributes>>5,
 				0);
-                tile_info.flags = 0;
+                //tile_info.flags = 0;
             }
         };
 	
@@ -97,7 +97,7 @@ public class renegade
 				(attributes&3)*256 + source.read(0),
 				attributes>>6,
 				0);
-                tile_info.flags = 0;
+                //tile_info.flags = 0;
             }
         };
 	
@@ -110,7 +110,7 @@ public class renegade
 			return 1;
 	
 		tilemap_set_transparent_pen(fg_tilemap,0);
-                fg_tilemap.transparent_pen = 0;
+                //fg_tilemap.transparent_pen = 0;
 		tilemap_set_scrolldx( bg_tilemap, 256, 0 );
 	
 		tilemap_set_scrolldy( fg_tilemap, 0, 16 );

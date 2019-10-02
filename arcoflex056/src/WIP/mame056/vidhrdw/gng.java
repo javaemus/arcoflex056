@@ -57,7 +57,7 @@ public class gng
 				gng_fgvideoram.read(tile_index) + ((attr & 0xc0) << 2),
 				attr & 0x0f,
 				TILE_FLIPYX((attr & 0x30) >> 4));
-                tile_info.flags = TILE_FLIPYX((attr & 0x30) >> 4);
+                //tile_info.flags = TILE_FLIPYX((attr & 0x30) >> 4);
             }
         };
 	
@@ -69,7 +69,8 @@ public class gng
 				gng_bgvideoram.read(tile_index) + ((attr & 0xc0) << 2),
 				attr & 0x07,
 				TILE_FLIPYX((attr & 0x30) >> 4) | TILE_SPLIT((attr & 0x08) >> 3));
-                tile_info.flags = TILE_FLIPYX((attr & 0x30) >> 4) | TILE_SPLIT((attr & 0x08) >> 3);
+                //tile_info.flags = TILE_FLIPYX((attr & 0x30) >> 4) | TILE_SPLIT((attr & 0x08) >> 3);
+                tile_info.priority = (attr & 0x80) >> 7;
             }
         };
 	

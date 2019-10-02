@@ -156,7 +156,7 @@ public class memory {
 
         UBytePtr rombase;/* ROM base pointer */
         UBytePtr rambase;/* RAM base pointer */
-        opbase_handlerPtr opbase;/* opcode base handler */
+        opbase_handlerPtr opbase = null;/* opcode base handler */
         memport_data mem = new memport_data();/* memory tables */
         memport_data port = new memport_data();/* port tables */
     }
@@ -203,6 +203,10 @@ public class memory {
 /*TODO*///static write8_handler 		wmemhandler8s[STATIC_COUNT];	/* copy of 8-bit static write memory handlers */
 /*TODO*///
     public static cpu_data[] cpudata = new cpu_data[MAX_CPU];/* data gathered for each CPU */
+    static {
+        for (int _i=0 ; _i<MAX_CPU ; _i++)
+            cpudata[_i] = new cpu_data();
+    }
     public static bank_data[] bankdata = new bank_data[MAX_BANKS];/* data gathered for each bank */
  /*TODO*///
 /*TODO*///offs_t encrypted_opcode_start[MAX_CPU],encrypted_opcode_end[MAX_CPU];
@@ -395,6 +399,7 @@ public class memory {
         if (cpunum == cpu_getactivecpu()) {
             opbasefunc = function;
         }
+        
         return old;
     }
 
