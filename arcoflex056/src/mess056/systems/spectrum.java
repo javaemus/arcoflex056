@@ -141,6 +141,7 @@ import static mess056.sound.wave.*;
 import static mess056.includes.nec765H.*;
 import static mess056.machine.dsk.*;
 import static mess056.machine.nec765.*;
+import static mess056.machine.wd179x.*;
 
 public class spectrum
 {
@@ -198,7 +199,7 @@ public class spectrum
 			device_output(IO_CASSETTE, 0, (data & (1<<3))!=0 ? -32768: 32767);
 		}
 	
-		PreviousFE = data;
+		PreviousFE = data & 0xFF;
             }
         };
 	
@@ -328,7 +329,7 @@ public class spectrum
 			if ((offset & 0xff)==0xdf)
 				return spectrum_port_df_r.handler(offset);
 	
-			logerror("Read from port: %04x\n", offset);
+			System.out.println("Read from port: %04x\n"+ offset);
 	
 			return 0xff;
             }
@@ -340,7 +341,7 @@ public class spectrum
 				spectrum_port_fe_w.handler(offset,data);
 			else
 			{
-				logerror("Write %02x to Port: %04x\n", data, offset);
+				System.out.println("Write %02x to Port: %04x\n"+ data+","+ offset);
 			}
             }
         };
@@ -405,7 +406,7 @@ public class spectrum
 					return;
 	
 			/* store new state */
-			spectrum_128_port_7ffd_data = data;
+			spectrum_128_port_7ffd_data = data&0xff;
 	
 			/* update memory */
 			spectrum_128_update_memory();
@@ -638,7 +639,7 @@ public class spectrum
 	public static WriteHandlerPtr spectrum_plus3_port_3ffd_w = new WriteHandlerPtr() {
             public void handler(int offset, int data) {
                 if ((~readinputport(16) & 0x20) != 0)
-			nec765_data_w.handler(0,data);
+			nec765_data_w.handler(0,data&0xff);
             }
         };
 	
@@ -647,7 +648,7 @@ public class spectrum
                 if ((readinputport(16) & 0x20) != 0)
                                 return 0xff;
                 else
-                                return nec765_data_r.handler(0);
+                                return nec765_data_r.handler(0)&0xff;
             }
         };
 	
@@ -656,7 +657,7 @@ public class spectrum
                 if ((readinputport(16) & 0x20) != 0)
                                 return 0xff;
                 else
-                                return nec765_status_r.handler(0);
+                                return nec765_status_r.handler(0)&0xff;
             }
         };
 	
@@ -762,7 +763,7 @@ public class spectrum
 					return;
 	
 			/* store new state */
-			spectrum_128_port_7ffd_data = data;
+			spectrum_128_port_7ffd_data = data&0xff;
 	
 			/* update memory */
 			spectrum_plus3_update_memory();
@@ -785,7 +786,7 @@ public class spectrum
 			floppy_drive_set_ready_state(0, 1, 1);
 			floppy_drive_set_ready_state(1, 1, 1);
 	
-			spectrum_plus3_port_1ffd_data = data;
+			spectrum_plus3_port_1ffd_data = data&0xff;
 	
 			/* disable paging? */
 			if ((spectrum_128_port_7ffd_data & 0x20)==0)
@@ -809,12 +810,12 @@ public class spectrum
 		 {
 			 switch ((offset>>8) & 0xff)
 			 {
-					case 0x1f: return spectrum_port_1f_r.handler(offset);
-                                        case 0x2f: return spectrum_plus3_port_2ffd_r.handler(offset);
-					case 0x3f: return spectrum_plus3_port_3ffd_r.handler(offset);
-					case 0x7f: return spectrum_port_7f_r.handler(offset);
-					case 0xdf: return spectrum_port_df_r.handler(offset);
-                                        case 0xff: return spectrum_128_port_fffd_r.handler(offset);
+					case 0x1f: return spectrum_port_1f_r.handler(offset)&0xff;
+                                        case 0x2f: return spectrum_plus3_port_2ffd_r.handler(offset)&0xff;
+					case 0x3f: return spectrum_plus3_port_3ffd_r.handler(offset)&0xff;
+					case 0x7f: return spectrum_port_7f_r.handler(offset)&0xff;
+					case 0xdf: return spectrum_port_df_r.handler(offset)&0xff;
+                                        case 0xff: return spectrum_128_port_fffd_r.handler(offset)&0xff;
 					
 			 }
 		 }
@@ -829,7 +830,7 @@ public class spectrum
 	public static WriteHandlerPtr spectrum_plus3_port_w = new WriteHandlerPtr() {
             public void handler(int offset, int data) {
 			if ((offset & 1)==0)
-					spectrum_port_fe_w.handler(offset,data);
+					spectrum_port_fe_w.handler(offset,data&0xff);
 	
 			/* the following is not decoded exactly, need to check
 			what is correct! */
@@ -837,20 +838,22 @@ public class spectrum
 			{
 					switch ((offset>>8) & 0xf0)
 					{
-							case 0x70:
-									spectrum_plus3_port_7ffd_w.handler(offset, data);
-									break;
-							case 0xb0:
-									spectrum_128_port_bffd_w.handler(offset, data);
-									break;
-							case 0xf0:
-									spectrum_128_port_fffd_w.handler(offset, data);
-									break;
 							case 0x10:
-									spectrum_plus3_port_1ffd_w.handler(offset, data);
+									spectrum_plus3_port_1ffd_w.handler(offset, data&0xff);
 									break;
 							case 0x30:
-									spectrum_plus3_port_3ffd_w.handler(offset, data);
+									spectrum_plus3_port_3ffd_w.handler(offset, data&0xff);
+                                                                        break;
+                                                        case 0x70:
+									spectrum_plus3_port_7ffd_w.handler(offset, data&0xff);
+									break;
+							case 0xb0:
+									spectrum_128_port_bffd_w.handler(offset, data&0xff);
+									break;
+							case 0xf0:
+									spectrum_128_port_fffd_w.handler(offset, data&0xff);
+									break;
+							
 							default:
 									logerror("Write %02x to +3 port: %04x\n", data, offset);
 					}
@@ -1625,7 +1628,7 @@ public class spectrum
 	
 	public static void	betadisk_exit()
 	{
-		/*TODO*///wd179x_exit();
+		wd179x_exit();
 	}
 	
 	/****************************************************************************************************/

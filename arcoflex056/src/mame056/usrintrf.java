@@ -716,7 +716,7 @@ public class usrintrf {
         displaytext(bitmap, dt);
 
         if (selected_long != 0) {
-            throw new UnsupportedOperationException("unimplemented");
+            //throw new UnsupportedOperationException("unimplemented");
             /*TODO*///		int long_dx;
 /*TODO*///		int long_dy;
 /*TODO*///		int long_x;
@@ -2714,9 +2714,9 @@ public class usrintrf {
                 case UI_FILEMANAGER:
                 /*TODO*///        res = filemanager(bitmap, sel >> SEL_BITS);
                     System.out.println("filemanager needs to be implemented!!!!");
+                    res=0;
                         break;
                 case UI_TAPECONTROL:
-                        System.out.println("tapecontrol!!!!");
                         res = tapecontrol(bitmap, sel >> SEL_BITS);                    
                         break;
                 case UI_HISTORY:

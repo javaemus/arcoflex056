@@ -20,7 +20,6 @@ public class tapectrl
 	
 	public static int tapecontrol(mame_bitmap bitmap, int selected)
 	{
-		
             String timepos="";
             int t0, t1;
 	    String[] menu_item = new String[40];
