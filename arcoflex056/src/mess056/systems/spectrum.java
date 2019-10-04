@@ -2849,23 +2849,23 @@ public class spectrum
             ),
 			IODEVICE_SPEC_QUICK,
 			new IODevice(
-                                IO_CASSETTE, 
-                                1,
-                                "wav\0tap\0", 
-                                IO_RESET_NONE, 
-                                null,
-                                spectrum_cassette_init, 
-                                null, //spectrum_cassette_exit
-                                wave_info,			/* info */						
-                wave_open,			/* open */						
-                wave_close, 		/* close */ 					
-                wave_status,		/* status */					
-                wave_seek,			/* seek */						
-                wave_tell,			/* tell */						
-                wave_input, 		/* input */ 					
-                wave_output,		/* output */					
-                wave_input_chunk,	/* input_chunk */				
-                wave_output_chunk	/* output_chunk */),
+                                IO_CASSETTE,
+                        1,
+                        "wav\0tap\0",
+                        IO_RESET_NONE,
+                        null,
+                        spectrum_cassette_init, 
+                        spectrum_cassette_exit,
+                        wave_info,			/* info */						
+                        wave_open,			/* open */						
+                        wave_close, 		/* close */ 					
+                        wave_status,		/* status */					
+                        wave_seek,			/* seek */						
+                        wave_tell,			/* tell */						
+                        wave_input, 		/* input */ 					
+                        wave_output,		/* output */					
+                        wave_input_chunk,	/* input_chunk */				
+                        wave_output_chunk),
 		new IODevice(
 			IO_CARTSLOT,		/* type */
 			1,					/* count */

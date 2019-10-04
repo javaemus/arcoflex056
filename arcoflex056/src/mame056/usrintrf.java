@@ -2717,7 +2717,9 @@ public class usrintrf {
                     res=0;
                         break;
                 case UI_TAPECONTROL:
-                        res = tapecontrol(bitmap, sel >> SEL_BITS);                    
+                    System.out.println("Pulso tapecontrol!");
+                        res = tapecontrol(bitmap, sel >> SEL_BITS);
+                        System.out.println("SALGO con "+res);
                         break;
                 case UI_HISTORY:
                     res = displayhistory(bitmap, sel >> SEL_BITS);
@@ -2736,6 +2738,8 @@ public class usrintrf {
             } else {
                 sel = (sel & SEL_MASK) | (res << SEL_BITS);
             }
+            
+            System.out.println("SALIDA FINAL "+sel + 1);
 
             return sel + 1;
         }

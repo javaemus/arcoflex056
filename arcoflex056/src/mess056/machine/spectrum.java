@@ -65,6 +65,7 @@ import static mess056.vidhrdw.border.*;
 import static mess056.eventlst.*;
 import static mess056.eventlstH.*;
 import static mess056.includes.spectrumH.TIMEX_CART_TYPE.TIMEX_CART_DOCK;
+import mess056.sound.waveH.wave_args;
 
 public class spectrum
 {
@@ -279,8 +280,7 @@ public class spectrum
 		int lo, hi, a_reg;
 		int load_addr, return_addr, af_reg, de_reg, sp_reg;
 		
-                //System.out.println("spectrum_tape_opbaseoverride");
-	
+                
 	/*        logerror("PC=%02x\n", address); */
 	
 		/* It is not always possible to trap the call to the actual load
@@ -314,7 +314,8 @@ public class spectrum
 			if ((address < 0x018d) || (address > 0x01aa))
 				return address;
 		}
-	
+                
+                
 		lo = pSnapshotData.read(TapePosition) & 0x0ff;
 		hi = pSnapshotData.read(TapePosition + 1) & 0x0ff;
 		tap_block_length = (hi << 8) | lo;
@@ -323,9 +324,11 @@ public class spectrum
 		 * flags are in the AF' register. */
 		af_reg = cpu_get_reg(Z80_AF2);
 		a_reg = (af_reg & 0xff00) >> 8;
-	
+                
+                
 		if ((a_reg == pSnapshotData.read(TapePosition + 2)) && ((af_reg & 0x0001) != 0))
 		{
+                    
 			/* Correct flag byte and carry flag set so try loading */
 			load_addr = cpu_get_reg(Z80_IX);
 			de_reg = cpu_get_reg(Z80_DE);
@@ -358,6 +361,7 @@ public class spectrum
 		}
 		else
 		{
+                    
 			/* Wrong flag byte or verify selected so reset carry flag to indicate failure */
 			cpu_set_reg(Z80_AF, af_reg & 0xfffe);
 			if ((af_reg & 0x0001) != 0)
@@ -366,7 +370,7 @@ public class spectrum
 			else
 				logerror("Failed to load tape block at offset %ld - verify selected\n", TapePosition);
 		}
-	
+                
 		TapePosition += (tap_block_length + 2);
 		if (TapePosition >= SnapshotDataSize)
 		{
@@ -392,24 +396,27 @@ public class spectrum
 				logerror("All tape blocks used! - disabling .TAP support\n");
 			}
 		}
-	
+                
+                
 		/* Leave the load routine by removing addresses from the stack
 		 * until one outside the load routine is found.
 		 * eg. SA/LD-RET at address 053f (00e5 on TS2068)
 		 */
 		do
 		{
-			return_addr = cpu_get_pc();
-			cpu_set_reg(Z80_PC, (return_addr & 0x0ffff));
-	
-			sp_reg = cpu_get_reg(Z80_SP);
-			sp_reg += 2;
-			cpu_set_reg(Z80_SP, (sp_reg & 0x0ffff));
-			activecpu_set_sp((sp_reg & 0x0ffff));
+			return_addr = (char)cpu_geturnpc();
+		cpu_set_reg(Z80_PC, (return_addr & 0x0ffff));
+
+		sp_reg = (char)cpu_get_reg(Z80_SP);
+		sp_reg += 2;
+		cpu_set_reg(Z80_SP, (sp_reg & 0x0ffff));
+		//cpu_set_sp((sp_reg & 0x0ffff));
+                       
 		}
 		while (((return_addr != 0x053f) && (return_addr < 0x0605) && (ts2068_port_f4_data == -1)) ||
 			   ((return_addr != 0x00e5) && (return_addr < 0x01aa) && (ts2068_port_f4_data != -1)));
 		logerror("Load return address=%04x, SP=%04x\n", return_addr, sp_reg);
+                
 		return return_addr;
             }
         };
@@ -1035,14 +1042,14 @@ public class spectrum
 	public static io_initPtr spectrum_cassette_init = new io_initPtr() {
             public int handler(int id) {
 		Object file;
-                cassette_args args;
+		cassette_args args = new cassette_args();
 	
 		if ((device_filename(IO_CASSETTE, id) != null) &&(stricmp(device_filename(IO_CASSETTE, id).substring(device_filename(IO_CASSETTE, id).length()-4), ".tap")==0))
 		{
 			int datasize;
-			UBytePtr data;
-
-			file = image_fopen(IO_CASSETTE, id, OSD_FILETYPE_IMAGE_R, 0);
+			UBytePtr data = new UBytePtr();
+	
+			file = image_fopen(IO_CASSETTE, id, OSD_FILETYPE_IMAGE_R, OSD_FOPEN_READ);
 			logerror(".TAP file found\n");
 			if (file != null)
 				datasize = osd_fsize(file);
@@ -1065,20 +1072,16 @@ public class spectrum
 					memory_set_opbase_handler(0, spectrum_tape_opbaseoverride);
 					spectrum_snapshot_type = SPECTRUM_TAPEFILE_TAP;
 					logerror(".TAP file successfully loaded\n");
-                                        System.out.println(".TAP file successfully loaded");
 					return INIT_PASS;
 				}
 			}
 			osd_fclose(file);
-                        System.out.println("Exit");
 			return INIT_FAIL;
 		}
 	
-		//memset(args, 0, sizeof(args));
-                args = new cassette_args();
+		args = new cassette_args();
 		args.create_smpfreq = 22050;	/* maybe 11025 Hz would be sufficient? */
 		return cassette_init(id, args);
-            //return INIT_PASS;
 	}};
 	
 	public static io_exitPtr spectrum_cassette_exit = new io_exitPtr() {

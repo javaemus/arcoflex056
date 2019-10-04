@@ -635,6 +635,7 @@ public class wave extends snd_interface {
     public static io_openPtr wave_open = new io_openPtr() {
 
         public int handler(int id, int mode, Object args) {
+            System.out.println("wave_open");
             struct_wave_file w = wave[id];
             wave_args wa = (wave_args) args;
             int result;
