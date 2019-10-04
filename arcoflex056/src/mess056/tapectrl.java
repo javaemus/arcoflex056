@@ -20,7 +20,6 @@ public class tapectrl
 	
 	public static int tapecontrol(mame_bitmap bitmap, int selected)
 	{
-            System.out.println("tapecontrol 1");
             String timepos="";
             int t0, t1;
 	    String[] menu_item = new String[40];
@@ -32,8 +31,6 @@ public class tapectrl
 	    int arrowize;
             int status;
             
-            System.out.println(device_count(IO_CASSETTE)==0);
-	
             if (device_count(IO_CASSETTE)==0) return 0;
 	
 	    total = 0;
@@ -50,8 +47,7 @@ public class tapectrl
             t1 = device_seek(IO_CASSETTE,id,0,SEEK_END);
             device_seek(IO_CASSETTE,id,t0,SEEK_SET);
             
-            System.out.println("A");
-
+            
             if( t1 != 0 )
                     sprintf(timepos, "%3d%%", t0*100/t1);
             else
@@ -100,9 +96,9 @@ public class tapectrl
 			ui_displaymenu(bitmap, menu_item,menu_subitem,flag,sel & 0xff,3);
 	        return sel + 1;
 	    }
-	System.out.println("B");
+	
 		ui_displaymenu(bitmap, menu_item,menu_subitem,flag,sel,arrowize);
-	System.out.println("C");
+	
 	    if (input_ui_pressed_repeat(IPT_UI_DOWN,8) != 0)
 	    {
 	        if (sel < total - 1) sel++;
@@ -141,50 +137,47 @@ public class tapectrl
 			/* tell updatescreen() to clean after us (in case the window changes size) */
 			schedule_full_refresh();
 	    }
-	System.out.println("D "+sel);
+	
 	    if (input_ui_pressed(IPT_UI_SELECT) != 0)
 	    {
 	        if (sel == total - 1){
 	            sel = -1;
-                    System.out.println("D 1");
+                    
                 } else
 	        {
-                    System.out.println("D 2");
+                    
 				status = device_status(IO_CASSETTE,id,-1);
-                                System.out.println("D 3");
+                                
 				switch (sel)
 				{
 				case 0:
-                                    System.out.println("case 0");
-	                id = (id + 1) % device_count(IO_CASSETTE);
+                                        id = (id + 1) % device_count(IO_CASSETTE);
 					break;
 				case 2:
-                                    System.out.println("case 2");
-					if ((status & 1) == 0)
+                                        if ((status & 1) == 0)
 						device_seek(IO_CASSETTE,id,0,SEEK_SET);
 					device_status(IO_CASSETTE,id,status & ~1);
 					break;
 				case 3:
-                                    System.out.println("case 3");
+                                    
 					device_status(IO_CASSETTE,id,status | 1);
 	                break;
 				case 4:
-                                    System.out.println("case 4");
+                                    
 					device_seek(IO_CASSETTE,id,-11025,SEEK_CUR);
 					break;
 				case 5:
-                                    System.out.println("case 5");
+                                    
 					device_seek(IO_CASSETTE,id,+11025,SEEK_CUR);
 					break;
 	            }
-                                System.out.println("F");
+                                
 	            /* tell updatescreen() to clean after us (in case the window changes size) */
 	            schedule_full_refresh();
 	        }
 	    }
             
-            System.out.println("Salida "+sel);
-	
+            
 	    if (input_ui_pressed(IPT_UI_CANCEL) != 0)
 	        sel = -1;
 	
@@ -197,8 +190,7 @@ public class tapectrl
 	        schedule_full_refresh();
 	    }
             
-            System.out.println("Salida 2");
-	
+            
 	    return sel + 1;
 	}
 	

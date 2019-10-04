@@ -48,6 +48,7 @@ import static mame056.cpuintrf.*;
 import static mame056.cpuintrfH.*;
 
 import static consoleflex056.funcPtr.*;
+import mame056.cpu.z80.z80;
 import static mame056.cpu.z80.z80H.*;
 import static mame056.mame.Machine;
 import static mame056.sound.ay8910.*;
@@ -204,8 +205,7 @@ public class spectrum
 	
 	public static opbase_handlerPtr spectrum_opbaseoverride=new opbase_handlerPtr(){
             public int handler(int address) {
-                /* clear op base override */
-		memory_set_opbase_handler(0, null);
+                memory_set_opbase_handler(0, null);
 	
 		if (pSnapshotData != null)
 		{
@@ -217,7 +217,6 @@ public class spectrum
 				{
 					/* .SNA */
 					spectrum_setup_sna(pSnapshotData, SnapshotDataSize);
-                                        SPECTRUM_SNAPSHOT_TYPE=SPECTRUM_SNAPSHOT_NONE;
 				}
 				break;
 	
@@ -225,7 +224,6 @@ public class spectrum
 				{
 					/* .Z80 */
 					spectrum_setup_z80(pSnapshotData, SnapshotDataSize);
-                                        SPECTRUM_SNAPSHOT_TYPE=SPECTRUM_SNAPSHOT_NONE;
 				}
 				break;
 	
@@ -235,17 +233,8 @@ public class spectrum
 			}
 		}
 		logerror("Snapshot loaded - new PC = %04x\n", cpu_get_reg(Z80_PC) & 0x0ffff);
-                
-                /* Hack for correct handling 0xffff interrupt vector */
-                //if (address == 0x0001)
-                //        if (cpunum_get_reg(0, REG_PREVIOUSPC)==0xffff)
-                //        {
-                //                cpunum_set_reg(0, Z80_PC, 0xfff4);
-                //                return 0xfff4;
-                //        }
-                //return address;
 	
-		return (cpunum_get_reg(0,Z80_PC) & 0x0ffff);
+		return (cpu_get_reg(Z80_PC) & 0x0ffff);
             }
             
         };
@@ -609,7 +598,7 @@ public class spectrum
 			addr += 2;
 			cpu_set_reg(Z80_SP, (addr & 0x0ffff));
 			activecpu_set_sp((addr & 0x0ffff));
-                    //z80.RETN();
+                        //z80.RETN();
 		}
 		else
 		{
@@ -646,6 +635,7 @@ public class spectrum
 			cpu_set_reg(Z80_PC, (hi << 8) | lo);
 		}
 		dump_registers();
+                
 	}
 	
 	
