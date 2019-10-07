@@ -591,14 +591,14 @@ public class spectrum
 		if (SnapshotDataSize == 49179)
 		{
 			/* get pc from stack */
-			addr = cpu_get_pc();
+			/*addr = cpu_get_pc();
 			cpu_set_reg(Z80_PC, (addr & 0x0ffff));
 	
 			addr = cpu_get_reg(Z80_SP);
 			addr += 2;
 			cpu_set_reg(Z80_SP, (addr & 0x0ffff));
-			activecpu_set_sp((addr & 0x0ffff));
-                        //z80.RETN();
+			activecpu_set_sp((addr & 0x0ffff));*/
+                        z80.RETN();
 		}
 		else
 		{

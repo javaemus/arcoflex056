@@ -531,7 +531,7 @@ public class nec765
 	
 			fdc.nec765_flags &= ~NEC765_SEEK_OPERATION_IS_RECALIBRATE;
 	
-			fdc.ncn = fdc.nec765_command_bytes[2];
+			fdc.ncn = fdc.nec765_command_bytes[2]&0xFF;
 	
 			/* get signed tracks */
 			signed_tracks = fdc.ncn - fdc.pcn[fdc.drive];
@@ -762,7 +762,7 @@ public class nec765
                 /*TODO*///#ifdef SUPER_VERBOSE
                 /*TODO*///	logerror("nec765 status r: %02x\n",fdc.FDC_main);
                 /*TODO*///#endif
-		return fdc.FDC_main;
+		return fdc.FDC_main&0xFF;
             }
         };
 	
@@ -779,7 +779,7 @@ public class nec765
 		if ((fdc.nec765_command_bytes[0] & (1<<5))!=0)
 		{
 			/* read data? */
-			if (fdc.command == 0x06)
+			if ((fdc.command&0xFF) == 0x06)
 			{
 				/* did we just find a sector with deleted data mark? */
 				if (fdc.data_type == NEC765_DAM_DELETED_DATA)
@@ -790,7 +790,7 @@ public class nec765
 			}
 			/* deleted data? */
 			else 
-			if (fdc.command == 0x0c)
+			if ((fdc.command&0xFF) == 0x0c)
 			{
 				/* did we just find a sector with data mark ? */
 				if (fdc.data_type == NEC765_DAM_DATA)
@@ -822,7 +822,7 @@ public class nec765
             //System.out.println("Antes: "+id.data_id);
 		floppy_drive_get_next_id(fdc.drive, fdc.side,id);
 	
-		fdc.sector_id = id.data_id;
+		fdc.sector_id = id.data_id&0xFF;
                 
                 //System.out.println("Despues: "+id.data_id);
 	
@@ -881,7 +881,7 @@ public class nec765
 					/* bad C value */
 					fdc.nec765_status[2] |= NEC765_ST2_WRONG_CYLINDER;
 	
-					if (id.C == 0x0ff)
+					if ((id.C&0xFF) == 0x0ff)
 					{
 						/* the C value is 0x0ff which indicates a bad track in the IBM soft-sectored
 						format */
@@ -902,7 +902,7 @@ public class nec765
 		while (index_count!=2);
 	
 		/* no data - specified sector ID was not found */
-	    fdc.nec765_status[1] |= NEC765_ST1_NO_DATA;
+                fdc.nec765_status[1] |= NEC765_ST1_NO_DATA;
 	  
 		return 0;
 	}
@@ -933,13 +933,13 @@ public class nec765
 	
 		nec765_setup_st0();
 	
-		fdc.nec765_result_bytes[0] = fdc.nec765_status[0];
-		fdc.nec765_result_bytes[1] = fdc.nec765_status[1];
-		fdc.nec765_result_bytes[2] = fdc.nec765_status[2];
-		fdc.nec765_result_bytes[3] = fdc.nec765_command_bytes[2]; /* C */
-		fdc.nec765_result_bytes[4] = fdc.nec765_command_bytes[3]; /* H */
-		fdc.nec765_result_bytes[5] = fdc.nec765_command_bytes[4]; /* R */
-		fdc.nec765_result_bytes[6] = fdc.nec765_command_bytes[5]; /* N */
+		fdc.nec765_result_bytes[0] = fdc.nec765_status[0]&0xFF;
+		fdc.nec765_result_bytes[1] = fdc.nec765_status[1]&0xFF;
+		fdc.nec765_result_bytes[2] = fdc.nec765_status[2]&0xFF;
+		fdc.nec765_result_bytes[3] = fdc.nec765_command_bytes[2]&0xFF; /* C */
+		fdc.nec765_result_bytes[4] = fdc.nec765_command_bytes[3]&0xFF; /* H */
+		fdc.nec765_result_bytes[5] = fdc.nec765_command_bytes[4]&0xFF; /* R */
+		fdc.nec765_result_bytes[6] = fdc.nec765_command_bytes[5]&0xFF; /* N */
 	
 		nec765_setup_result_phase(7);
 	}
@@ -949,17 +949,17 @@ public class nec765
 	
 		if ((floppy_drive_get_flag_state(fdc.drive, FLOPPY_DRIVE_READY)) == 0)
 		{
-			fdc.nec765_status[0] = 0x0c0 | (1<<4) | fdc.drive | (fdc.side<<2);
+			fdc.nec765_status[0] = (0x0c0 | (1<<4) | fdc.drive | (fdc.side<<2))&0xFF;
 			fdc.nec765_status[1] = 0x00;
 			fdc.nec765_status[2] = 0x00;
 	
-			fdc.nec765_result_bytes[0] = fdc.nec765_status[0];
-			fdc.nec765_result_bytes[1] = fdc.nec765_status[1];
-			fdc.nec765_result_bytes[2] = fdc.nec765_status[2];
-			fdc.nec765_result_bytes[3] = fdc.nec765_command_bytes[2]; /* C */
-			fdc.nec765_result_bytes[4] = fdc.nec765_command_bytes[3]; /* H */
-			fdc.nec765_result_bytes[5] = fdc.nec765_command_bytes[4]; /* R */
-			fdc.nec765_result_bytes[6] = fdc.nec765_command_bytes[5]; /* N */
+			fdc.nec765_result_bytes[0] = fdc.nec765_status[0]&0xFF;
+			fdc.nec765_result_bytes[1] = fdc.nec765_status[1]&0xFF;
+			fdc.nec765_result_bytes[2] = fdc.nec765_status[2]&0xFF;
+			fdc.nec765_result_bytes[3] = fdc.nec765_command_bytes[2]&0xFF; /* C */
+			fdc.nec765_result_bytes[4] = fdc.nec765_command_bytes[3]&0xFF; /* H */
+			fdc.nec765_result_bytes[5] = fdc.nec765_command_bytes[4]&0xFF; /* R */
+			fdc.nec765_result_bytes[6] = fdc.nec765_command_bytes[5]&0xFF; /* N */
 			nec765_setup_result_phase(7);
 			return;
 		}
@@ -1762,7 +1762,7 @@ public class nec765
 	/*TODO*///	logerror("DATA R: %02x\n", fdc.nec765_data_reg);
 	/*TODO*///#endif
 	
-		return fdc.nec765_data_reg;
+		return fdc.nec765_data_reg&0xFF;
             }
         };
 	

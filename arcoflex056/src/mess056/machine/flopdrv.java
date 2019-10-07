@@ -476,7 +476,7 @@ public class flopdrv
                 //System.out.println("floppy_drive_seek----"+drives[id].current_track);
 	
 		/* inform disk image of step operation so it can cache information */
-		/*TODO*///if (pDrive.interface.seek_callback != null)
+		if (drives[id].f_interface != null)
 			drives[id].f_interface.seek_callback(id, drives[id].current_track);
 	
                         //drives[id] = pDrive;
@@ -492,8 +492,10 @@ public class flopdrv
 	
 		/* get sectors per track */
 		spt = 0;
-		/*TODO*///if (drives[drive].interface.get_sectors_per_track)
-			spt = drives[drive].f_interface.get_sectors_per_track(drive, side);
+		if (drives[drive].f_interface != null){
+                    //System.out.println(drives[drive].f_interface);
+                    spt = drives[drive].f_interface.get_sectors_per_track(drive, side);
+                }
 	
 		/* set index */
 		if ((drives[drive].id_index==(spt-1)) || (spt==0))

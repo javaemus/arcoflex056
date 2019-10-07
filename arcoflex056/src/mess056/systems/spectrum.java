@@ -314,6 +314,14 @@ public class spectrum
                 return readinputport(15) | (0xff^0x1f);
             }
         };
+        
+        public static int[] spec_ports = new int[48 * 1024];
+        static {
+            int _longo = spec_ports.length;
+            
+            for (int _i=0 ; _i<_longo ; _i++)
+                    spec_ports[_i] = 0xFF;
+        }
 	
 	public static ReadHandlerPtr spectrum_port_r = new ReadHandlerPtr() {
             public int handler(int offset) {
@@ -329,9 +337,9 @@ public class spectrum
 			if ((offset & 0xff)==0xdf)
 				return spectrum_port_df_r.handler(offset);
 	
-			System.out.println("Read from port: %04x\n"+ offset);
+			//System.out.println("Read from port: %04x\n"+ offset);
 	
-			return 0xff;
+			return spec_ports[offset];
             }
         };
 	
@@ -341,7 +349,8 @@ public class spectrum
 				spectrum_port_fe_w.handler(offset,data);
 			else
 			{
-				System.out.println("Write %02x to Port: %04x\n"+ data+","+ offset);
+				//System.out.println("Write %02x to Port: %04x\n"+ data+","+ offset);
+                            spec_ports[offset] = data & 0xFF;
 			}
             }
         };
@@ -506,7 +515,7 @@ public class spectrum
 	
 		 logerror("Read from 128 port: %04x\n", offset);
 	
-		 return 0xff;
+		 return spec_ports[offset];
             }
         };
 	
@@ -536,6 +545,7 @@ public class spectrum
 			else
 			{
 				logerror("Write %02x to 128 port: %04x\n", data, offset);
+                                spec_ports[offset] = data & 0xFF;
 			}
             }
         };
@@ -822,7 +832,8 @@ public class spectrum
 	
 		 logerror("Read from +3 port: %04x\n", offset);
 	
-		 return 0xff;
+		 //return 0xff;
+                 return spec_ports[offset];
             }
         };
 	
@@ -861,6 +872,7 @@ public class spectrum
 			else
 			{
 				logerror("Write %02x to +3 port: %04x\n", data, offset);
+                                spec_ports[offset] = data & 0xFF;
 			}
             }
         };
