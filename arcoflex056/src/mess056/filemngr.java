@@ -21,7 +21,7 @@ import static mess056.utils.*;
 
 public class filemngr
 {
-	static String szCurrentDirectory = "software";
+	static String szCurrentDirectory = null;
         
 	static int count_chars_entered;
 	static String enter_string;
@@ -690,7 +690,8 @@ public class filemngr
         public static int osd_select_file(int sel, String filename)
 	{
                 javax.swing.JFileChooser jf = new JFileChooser();
-                jf.setCurrentDirectory(new File(osd_get_cwd() + "/" + Machine.gamedrv.name));
+                //jf.setCurrentDirectory(new File(osd_get_cwd() + "/" + Machine.gamedrv.name));
+                jf.setCurrentDirectory(new File(osd_get_cwd()));
                 int option = jf.showOpenDialog(null);
                 
                 Object selected_file = jf.getSelectedFile();
@@ -701,7 +702,8 @@ public class filemngr
                     if (selected_file != null){
                         filename = ((File)selected_file).getName().toString();
                         entered_filename = filename;
-                        //System.out.println("Loading "+filename);
+                        szCurrentDirectory = jf.getCurrentDirectory().getAbsolutePath();
+                        System.out.println("Loading "+szCurrentDirectory);
                         
                         return 1;
                     }
@@ -895,6 +897,9 @@ public class filemngr
 
         // OSD METHODS (windows/dirio class)
         public static String osd_get_cwd() {
+            if (szCurrentDirectory == null)
+                szCurrentDirectory = "software/" + Machine.gamedrv.name;
+            
             return szCurrentDirectory;
         }
 

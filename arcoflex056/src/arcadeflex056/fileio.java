@@ -17,6 +17,7 @@ import java.util.zip.ZipInputStream;
 import static mame056.mame.mame_highscore_enabled;
 
 import static mame056.osdependH.*;
+import static mess056.filemngr.osd_get_cwd;
 
 public class fileio {
 
@@ -743,7 +744,7 @@ public class fileio {
 /*TODO*///		pathv = softpathv;
                 pathc = 1;
                 pathv = new String[1];
-                pathv[0] = "software";
+                pathv[0] = osd_get_cwd();
                 logerror("osd_fopen: using softwarepath (%d directories)\n", pathc);
                 logerror("osd_fopen: using softwarepath (%d directories)\n", pathc);
 
@@ -857,7 +858,8 @@ public class fileio {
                         /* strip extension */
                         //extension = file.substring(Integer.parseInt(extension), file.length());//*extension++ = '\0';
                         if (found == 0) {
-                            name = sprintf("%s/%s/%s", dir_name, game, filename);
+                            //name = sprintf("%s/%s/%s", dir_name, game, filename);
+                            name = sprintf("%s/%s", dir_name, filename);
                             logerror("Trying %s\n", name);
                             //java code to emulate stat command (shadow)
                             osdepend.dlprogress.setFileName("loading file: " + name);
