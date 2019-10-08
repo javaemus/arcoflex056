@@ -237,37 +237,37 @@ public class dsk
 	{
             
             System.out.println("Save!!!!");
-		Object file;
+/*TODO*///		Object file;
 	
-		file = image_fopen(type, id, OSD_FILETYPE_IMAGE_R, OSD_FOPEN_RW);
+/*TODO*///		file = image_fopen(type, id, OSD_FILETYPE_IMAGE_R, OSD_FOPEN_RW);
 	
-		if (file != null)
-		{
-			int datasize;
-			UBytePtr data = null;
-	
-			/* get file size */
-			datasize = osd_fsize(file);
-	
-			if (datasize!=0)
-			{
-				data = new UBytePtr(ptr);
-				if (data!=null)
-				{
-					osd_fwrite(file, data, datasize);
-	
-					/* close file */
-					osd_fclose(file);
-	
-					/* ok! */
+/*TODO*///		if (file != null)
+/*TODO*///		{
+/*TODO*///			int datasize;
+/*TODO*///			UBytePtr data = null;
+/*TODO*///	
+/*TODO*///			/* get file size */
+/*TODO*///			datasize = osd_fsize(file);
+/*TODO*///	
+/*TODO*///			if (datasize!=0)
+/*TODO*///			{
+/*TODO*///				data = new UBytePtr(ptr);
+/*TODO*///				if (data!=null)
+/*TODO*///				{
+/*TODO*///					osd_fwrite(file, data, datasize);
+/*TODO*///	
+/*TODO*///					/* close file */
+/*TODO*///					osd_fclose(file);
+/*TODO*///	
+/*TODO*///					/* ok! */
 					return 1;
-				}
-				osd_fclose(file);
+/*TODO*///				}
+/*TODO*///				osd_fclose(file);
+/*TODO*///	
+/*TODO*///			}
+/*TODO*///		};
 	
-			}
-		};
-	
-		return 0;
+/*TODO*///		return 0;
 	}
 	
 	

@@ -22,6 +22,7 @@ import static arcadeflex056.fileio.*;
 import static common.libc.cstring.*;
 import static common.libc.cstdio.*;
 import mame056.commonH.mame_bitmap;
+import static mame056.cpuexec.machine_reset;
 import static mame056.inptportH.*;
 import static mame056.input.*;
 import static mame056.inputH.*;
@@ -395,17 +396,17 @@ public class mess
 		floppy_drive_set_flag_state(id, FLOPPY_DRIVE_CONNECTED, 1);
 	}
 
-/*TODO*///	/* common exit for all IO_FLOPPY devices */
-/*TODO*///	static void floppy_device_common_exit(int id)
-/*TODO*///	{
-/*TODO*///		logerror("floppy device common exit: id: %02x\n",id);
-/*TODO*///		/* disk removed */
-/*TODO*///		floppy_drive_set_flag_state(id, FLOPPY_DRIVE_DISK_INSERTED, 0);
-/*TODO*///		/* drive disconnected */
-/*TODO*///		floppy_drive_set_flag_state(id, FLOPPY_DRIVE_CONNECTED, 0);
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	
+	/* common exit for all IO_FLOPPY devices */
+	public static void floppy_device_common_exit(int id)
+	{
+		logerror("floppy device common exit: id: %02x\n",id);
+		/* disk removed */
+		floppy_drive_set_flag_state(id, FLOPPY_DRIVE_DISK_INSERTED, 0);
+		/* drive disconnected */
+		floppy_drive_set_flag_state(id, FLOPPY_DRIVE_CONNECTED, 0);
+	}
+	
+	
 /*TODO*///	/*
 /*TODO*///	 * Does the system support cassette (for tapecontrol)
 /*TODO*///	 * TRUE, FALSE return
@@ -841,78 +842,92 @@ public class mess
 	
 	}
 	
-/*TODO*///	/*
-/*TODO*///	 * Change the associated image filename for a device.
-/*TODO*///	 * Returns 0 if successful.
-/*TODO*///	 */
-/*TODO*///	int device_filename_change(int type, int id, const char *name)
-/*TODO*///	{
-/*TODO*///		const struct IODevice *dev = Machine->gamedrv->dev;
-/*TODO*///		struct image_info *img = &images[type][id];
-/*TODO*///	
-/*TODO*///		if( type >= IO_COUNT )
-/*TODO*///			return 1;
-/*TODO*///	
-/*TODO*///		while( dev->count && dev->type != type )
-/*TODO*///			dev++;
-/*TODO*///	
-/*TODO*///		if( id >= dev->count )
-/*TODO*///			return 1;
-/*TODO*///	
-/*TODO*///		if( dev->exit )
-/*TODO*///			dev->exit(id);
-/*TODO*///	
-/*TODO*///		/* if floppy, perform common exit */
-/*TODO*///		if (dev->type == IO_FLOPPY)
-/*TODO*///		{
-/*TODO*///			floppy_device_common_exit(id);
-/*TODO*///		}
-/*TODO*///	
-/*TODO*///		if( dev->init )
-/*TODO*///		{
-/*TODO*///			int result;
-/*TODO*///			/*
-/*TODO*///			 * set the new filename and reset all addition info, it will
-/*TODO*///			 * be inserted by osd_fopen() and the crc handling
-/*TODO*///			 */
-/*TODO*///			img->name = NULL;
-/*TODO*///			img->length = 0;
-/*TODO*///			img->crc = 0;
-/*TODO*///			if( name )
-/*TODO*///			{
-/*TODO*///				img->name = dupe(name);
-/*TODO*///				/* Check the name */
-/*TODO*///				if( !img->name )
-/*TODO*///					return 1;
-/*TODO*///				/* check the count - if it was 0, add new! */
-/*TODO*///				if (!device_count(type))
-/*TODO*///					count[type]++;
-/*TODO*///			}
-/*TODO*///	
-/*TODO*///			if( dev->reset_depth == IO_RESET_CPU )
-/*TODO*///				machine_reset();
-/*TODO*///			else
-/*TODO*///			if( dev->reset_depth == IO_RESET_ALL )
-/*TODO*///			{
-/*TODO*///				mess_keep_going = 1;
-/*TODO*///	
-/*TODO*///			}
-/*TODO*///	
-/*TODO*///			result = (*dev->init)(id);
-/*TODO*///			if( result != INIT_PASS)
-/*TODO*///				return 1;
-/*TODO*///	
-/*TODO*///			/* init succeeded */
-/*TODO*///			/* if floppy, perform common init */
-/*TODO*///			if (dev->type == IO_FLOPPY)
-/*TODO*///			{
-/*TODO*///				floppy_device_common_init(id);
-/*TODO*///			}
-/*TODO*///	
-/*TODO*///		}
-/*TODO*///		return 0;
-/*TODO*///	}
-/*TODO*///	
+	/*
+	 * Change the associated image filename for a device.
+	 * Returns 0 if successful.
+	 */
+	public static int device_filename_change(int type, int id, String name)
+	{
+                //System.out.println("device_filename_change");
+                //System.out.println("Type: "+type);
+                //System.out.println("Id: "+id);
+                //System.out.println("Name: "+name);
+                
+		IODevice[] dev = Machine.gamedrv.dev;
+                int _dev = 0;
+		//image_info img = images[type][id];
+	
+		if( type >= IO_COUNT )
+			return 1;
+	
+		while( dev[_dev].count !=0 && dev[_dev].type != type )
+			_dev++;
+                
+                //System.out.println("Dev: "+_dev);
+                //System.out.println("Dev Count: "+dev[_dev].count);
+	
+		if( id >= dev[_dev].count )
+			return 1;
+	
+		if( dev[_dev].exit != null )
+			dev[_dev].exit.handler(id);
+	
+		/* if floppy, perform common exit */
+		if (dev[_dev].type == IO_FLOPPY)
+		{
+			floppy_device_common_exit(id);
+		}
+                
+                //System.out.println("Dev Init: "+dev[_dev].init);
+	
+		if( dev[_dev].init != null )
+		{
+			int result;
+			/*
+			 * set the new filename and reset all addition info, it will
+			 * be inserted by osd_fopen() and the crc handling
+			 */
+			images[type][id].name = null;
+			images[type][id].length = 0;
+			images[type][id].crc = 0;
+			if( name != null )
+			{
+				images[type][id].name = dupe(name);
+                                //System.out.println("NAME: "+images[type][id].name);
+				/* Check the name */
+				if( images[type][id].name == null )
+					return 1;
+				/* check the count - if it was 0, add new! */
+				if (device_count(type)==0)
+					count[type]++;
+			}
+                        
+                        //System.out.println("Reset Depth: "+dev[_dev].reset_depth);
+	
+			if( dev[_dev].reset_depth == IO_RESET_CPU )
+				machine_reset();
+			else
+			if( dev[_dev].reset_depth == IO_RESET_ALL )
+			{
+				mess_keep_going = 1;
+	
+			}
+	
+			result = dev[_dev].init.handler(id);
+			if( result != 0)
+				return 1;
+	
+			/* init succeeded */
+			/* if floppy, perform common init */
+			if (dev[_dev].type == IO_FLOPPY)
+			{
+				floppy_device_common_init(id);
+			}
+	
+		}
+		return 0;
+	}
+	
 /*TODO*///	
 /*TODO*///	
 /*TODO*///	

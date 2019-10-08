@@ -136,6 +136,8 @@ public class spectrum
 	
 	public static io_initPtr spectrum_snap_load = new io_initPtr()  {
             public int handler(int id) {
+                System.out.println("spectrum_snap_load");
+                
 		Object file;
 	
 		file = image_fopen(IO_SNAPSHOT, id, OSD_FILETYPE_IMAGE_R, OSD_FOPEN_READ);

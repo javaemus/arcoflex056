@@ -942,7 +942,7 @@ public class amstrad
 	public static void amstrad_vh_update_mode(int Mode)
 	{
 		amstrad_current_mode = Mode;
-                System.out.println("amstrad_vh_update_mode "+amstrad_current_mode);
+                //System.out.println("amstrad_vh_update_mode "+amstrad_current_mode);
 	}
 	
 	/* execute crtc_execute_cycles of crtc */

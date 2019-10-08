@@ -199,12 +199,17 @@ public class inputH {
 
     /*TODO*////* Wrappers for compatibility */
 /*TODO*///#define keyboard_name                   code_name
-/*TODO*///#define keyboard_pressed                code_pressed
+    public static int keyboard_pressed(int code){
+        return code_pressed(code);
+    }
+    
     public static int keyboard_pressed_memory(int code) {
         return code_pressed_memory(code);
     }
     /*TODO*///#define keyboard_pressed_memory_repeat  code_pressed_memory_repeat
-/*TODO*///#define keyboard_read_async             code_read_async
+    public static int keyboard_read_async(){
+        return code_read_async();
+    }
     /**
      * Sequence code funtions
      */

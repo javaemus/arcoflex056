@@ -38,6 +38,7 @@ import static mess056.mess.*;
 import static arcadeflex036.sound.*;
 import arcadeflex056.settings;
 import static arcadeflex056.settings.MESS;
+import static mess056.filemngr.*;
 import static mess056.tapectrl.*;
 
 public class usrintrf {
@@ -2712,9 +2713,7 @@ public class usrintrf {
                         res = displayimageinfo(bitmap, sel >> SEL_BITS);
                         break;
                 case UI_FILEMANAGER:
-                /*TODO*///        res = filemanager(bitmap, sel >> SEL_BITS);
-                    System.out.println("filemanager needs to be implemented!!!!");
-                    res=0;
+                        res = filemanager(bitmap, sel >> SEL_BITS);                    
                         break;
                 case UI_TAPECONTROL:
                         res = tapecontrol(bitmap, sel >> SEL_BITS);
