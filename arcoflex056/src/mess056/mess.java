@@ -995,9 +995,9 @@ public class mess
                         dst += sprintf("%s\n", info);
                     }
 // why is extrainfo printed? only MSX and NES use it that i know of ... Cowering
-//				info = device_extrainfo(type,id);
-//				if( info )
-//					dst += sprintf(dst,"%s\n", info);
+				info = device_extrainfo(type,id);
+				if( info != null )
+					dst += sprintf(dst,"%s\n", info);
                 } else {
                     dst += sprintf("%s: ---\n", device_typename_id(type, id));
                 }

@@ -23,7 +23,7 @@ public class msxH {
     public static class MSX_CART {
         public int type,bank_mask;
         public int[] banks = new int[4];
-        public UBytePtr mem = new UBytePtr();
+        public UBytePtr mem = null;
         public String sramfile;
         public int pacsram;
     };
@@ -46,7 +46,7 @@ public class msxH {
         public int rtc_latch;
         /* disk */
         public int dsk_stat;
-        public UBytePtr disk = new UBytePtr();
+        public UBytePtr disk = null;
         
         public MSX() {
             for (int _i = 0; _i<MSX_MAX_CARTS ; _i++)

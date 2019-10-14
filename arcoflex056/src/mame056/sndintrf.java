@@ -43,6 +43,7 @@ import WIP.mame056.sound._5220intf;
 import mame056.sound._2413intf;
 import WIP.mame056.sound.astrocde;
 import mame056.sound.saa1099;
+import mame056.sound.k051649;
 
 // MESS Sound Chips
 import mess056.sound.speaker;
@@ -592,7 +593,7 @@ public class sndintrf {
                 /*TODO*///		0,
                 /*TODO*///		0
                 /*TODO*///	},
-                new Dummy_snd(),
+                new k051649(),
                 /*TODO*///#endif
                 /*TODO*///#if (HAS_K053260)
                 /*TODO*///    {
@@ -824,6 +825,7 @@ public class sndintrf {
         }
 
         while (Machine.drv.sound[totalsound].sound_type != 0 && totalsound < MAX_SOUND) {
+            
             if ((sndintf[Machine.drv.sound[totalsound].sound_type].start(Machine.drv.sound[totalsound])) != 0) {
                 return 1;//goto getout;
             }

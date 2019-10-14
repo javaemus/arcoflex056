@@ -703,7 +703,7 @@ public class filemngr
                         filename = ((File)selected_file).getName().toString();
                         entered_filename = filename;
                         szCurrentDirectory = jf.getCurrentDirectory().getAbsolutePath();
-                        System.out.println("Loading "+szCurrentDirectory);
+                        System.out.println("Loading "+szCurrentDirectory+"/"+filename);
                         
                         return 1;
                     }

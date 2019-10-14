@@ -29,6 +29,8 @@ import static mess056.systems.coupe.*;
 import static mess056.systems.sms.*;
 import static mess056.systems.lynx.*;
 import static mess056.systems.msx.*;
+import static mess056.systems.gb.*;
+import static mess056.systems.c16.*;
 
 public class system {
 	/*TODO*///	
@@ -110,7 +112,7 @@ public class system {
 	/*TODO*///		DRIVER( nes )		/* Nintendo Entertainment System			*/
 	/*TODO*///		DRIVER( nespal )	/* Nintendo Entertainment System			*/
 	/*TODO*///		DRIVER( famicom )
-	/*TODO*///		DRIVER( gameboy )	/* Nintendo GameBoy Handheld				*/
+	driver_gameboy,         /* Nintendo GameBoy Handheld				*/
 	/*TODO*///		DRIVER (snes)		/* Nintendo Super Nintendo				*/
 	/*TODO*///	//      DRIVER (vboy)		/* Nintendo Virtual Boy 				*/
 	/*TODO*///	
@@ -349,7 +351,7 @@ public class system {
 	/*TODO*///		DRIVER( cbm720se )	/* Commodore 720/B256HP Swedish/Finnish			  */
 	/*TODO*///	/*	DRIVER( cbm730 )*/	/* Commodore 730								  */
 	/*TODO*///	
-	/*TODO*///		DRIVER( c16 )		/* Commodore 16 								  */
+	driver_c16,		/* Commodore 16 								  */
 	/*TODO*///		DRIVER( c16hun )	/* Commodore 16 Novotrade (Hungarian Character Set)	  */
 	/*TODO*///		DRIVER( c16c )		/* Commodore 16  c1551							  */
 	/*TODO*///	TESTDRIVER( c16v )		/* Commodore 16  vc1541 						  */
@@ -699,7 +701,7 @@ public class system {
 	/*TODO*///		DRIVER( hotbit12 )	/* 198? ???									      */
 	/*TODO*///		DRIVER( expert10 )	/* 198? ???									      */
 	/*TODO*///		DRIVER( expert11 )	/* 198? ???									      */
-	/*TODO*///		DRIVER( msx2 ) 		/* 1985 MSX2									  */
+	driver_msx2, 		/* 1985 MSX2									  */
 	/*TODO*///		DRIVER( msx2a )		/* 1985 MSX2									  */
 	/*TODO*///		DRIVER( msx2j ) 	/* 1983 MSX2 Jap								  */
 	/*TODO*///	

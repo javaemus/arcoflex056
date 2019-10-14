@@ -136,7 +136,6 @@ public class spectrum
 	
 	public static io_initPtr spectrum_snap_load = new io_initPtr()  {
             public int handler(int id) {
-                System.out.println("spectrum_snap_load");
                 
 		Object file;
 	

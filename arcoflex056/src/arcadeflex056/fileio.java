@@ -1438,18 +1438,21 @@ public class fileio {
     {
             String c;
             
+            System.out.println("osd_basename: "+filename);
+            
             if (filename==null)
                     return null;
 
-            c = filename + strlen(filename);
-            int _c = c.length();
+            /*TODO*///c = filename + strlen(filename);
+            /*TODO*///System.out.println("C: "+c);
+            /*TODO*///int _c = c.length();
 
-            while (!c.equals(filename))
-            {
-                    _c--;
-                    if (c.charAt(_c) == '\\' || c.charAt(_c) == '/' || c.charAt(_c) == ':')
-                            return (c+1);
-            }
+            /*TODO*///while (!c.equals(filename))
+            /*TODO*///{
+            /*TODO*///        _c--;
+            /*TODO*///        if (c.charAt(_c) == '\\' || c.charAt(_c) == '/' || c.charAt(_c) == ':')
+            /*TODO*///                return (c+1);
+            /*TODO*///}
 
             return filename;
     }

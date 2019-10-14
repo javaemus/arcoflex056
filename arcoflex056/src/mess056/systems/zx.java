@@ -453,8 +453,9 @@ public class zx
 	
 	static char zx81_palette[] =
 	{
-		255,255,255,	/* white */
+		
 		  0,  0,  0,	/* black */
+            255,255,255,	/* white */
 	};
 	
 	static char ts1000_palette[] =

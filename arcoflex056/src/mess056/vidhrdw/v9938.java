@@ -505,15 +505,17 @@ public class v9938
 		_vdp.read_ahead = 0; _vdp.address_latch = 0; /* ??? */
 		_vdp.scanline = 0;
 		}
-/*TODO*///	
-/*TODO*///	static void v9938_exit ()
-/*TODO*///		{
-/*TODO*///		_vdp.vram = null;
-/*TODO*///		if (_vdp.vram_exp) _vdp.vram_exp=null;
-/*TODO*///		if (pal_indYJK != null)
-/*TODO*///			{ pal_indYJK = null; }
-/*TODO*///		}
-/*TODO*///	
+	
+	public static VhStopPtr v9938_exit = new VhStopPtr() {
+            @Override
+            public void handler() {
+                _vdp.vram = null;
+		if (_vdp.vram_exp != null) _vdp.vram_exp=null;
+		if (pal_indYJK != null)
+			{ pal_indYJK = null; }
+            }
+        };
+
 	static void v9938_check_int ()
 		{
 /*TODO*///		int n;
@@ -1228,12 +1230,13 @@ public class v9938
 /*TODO*///			pal_ind256[0] = ind256;
 /*TODO*///			}
 /*TODO*///		}
-/*TODO*///	
-/*TODO*///	void v9938_refresh (struct mame_bitmap *bmp, int fullrefresh)
-/*TODO*///		{
-/*TODO*///		/* already been rendered, since we're using scanline stuff */
-/*TODO*///		}
-/*TODO*///	
+	
+	public static VhUpdatePtr v9938_refresh = new VhUpdatePtr() {
+            public void handler(mame_bitmap bitmap, int full_refresh) {
+                /* already been rendered, since we're using scanline stuff */
+            }
+        };
+		
 /*TODO*///	/*
 /*TODO*///	
 /*TODO*///	From: awulms@inter.nl.net (Alex Wulms)

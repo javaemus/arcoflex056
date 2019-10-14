@@ -50,7 +50,7 @@ public class m6502H {
 /*TODO*///#define M6510_NMI_STATE 				M6502_NMI_STATE
 /*TODO*///#define M6510_IRQ_STATE 				M6502_IRQ_STATE
 /*TODO*///
-/*TODO*///#define M6510_IRQ_LINE					M6502_IRQ_LINE
+    public static int M6510_IRQ_LINE = M6502_IRQ_LINE;
 /*TODO*///
 /*TODO*///#define m6510_ICount					m6502_ICount
 /*TODO*///
@@ -213,7 +213,7 @@ public class m6502H {
 /*TODO*///#define M65C02_NMI_STATE				M6502_NMI_STATE
 /*TODO*///#define M65C02_IRQ_STATE				M6502_IRQ_STATE
 /*TODO*///
-/*TODO*///#define M65C02_IRQ_LINE					M6502_IRQ_LINE
+    public static int M65C02_IRQ_LINE = M6502_IRQ_LINE;
 /*TODO*///
 /*TODO*///#define m65c02_ICount					m6502_ICount
 /*TODO*///

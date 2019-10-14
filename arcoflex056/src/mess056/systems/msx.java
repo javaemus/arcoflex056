@@ -807,10 +807,10 @@ public class msx
 	            SOUND_AY8910,
 	            ay8910_interface
 	        ),
-                /*TODO*///new MachineSound(
-	        /*TODO*///    SOUND_K051649,
-	        /*TODO*///    k051649_interface
-	        /*TODO*///),
+                new MachineSound(
+	            SOUND_K051649,
+	            k051649_interface
+	        ),
                 new MachineSound(
 	            SOUND_YM2413,
 	            ym2413_interface
@@ -881,61 +881,61 @@ public class msx
 	/*TODO*///    }
 	/*TODO*///};
 	
-	/*TODO*///static struct MachineDriver machine_driver_msx2 =
-	/*TODO*///{
-	/*TODO*///    /* basic machine hardware */
-	/*TODO*///    {
-	/*TODO*///        {
-	/*TODO*///            CPU_Z80_MSX,
-	/*TODO*///            3579545,    /* 3.579545 Mhz */
-	/*TODO*///            readmem,writemem,readport2,writeport2,
-	/*TODO*///            msx2_interrupt,262
-	/*TODO*///        }
-	/*TODO*///    },
-	/*TODO*///    60, 0,
-	/*TODO*///    1,
-	/*TODO*///    msx2_ch_reset, /* init_machine */
-	/*TODO*///    msx2_ch_stop, /* stop_machine */
-	/*TODO*///
-	/*TODO*///    /* video hardware */
-	/*TODO*///    512 + 32, (212 + 16) * 2, { 0, 512 + 32 - 1, 0, (212 + 16) * 2 - 1 },
-	/*TODO*///    0,
-	/*TODO*///    512,
-	/*TODO*///	512,
-	/*TODO*///    v9938_init_palette,
-	/*TODO*///
-	/*TODO*///    VIDEO_UPDATE_BEFORE_VBLANK | VIDEO_TYPE_RASTER,
-	/*TODO*///    0,
-	/*TODO*///    msx2_vh_start,
-	/*TODO*///    v9938_exit,
-	/*TODO*///    v9938_refresh,
-	/*TODO*///
-	/*TODO*///    /* sound hardware */
-	/*TODO*///    0,0,0,0,
-	/*TODO*///    {
-	/*TODO*///        {
-	/*TODO*///            SOUND_AY8910,
-	/*TODO*///            &ay8910_interface
-	/*TODO*///        },
-	/*TODO*///        {
-	/*TODO*///            SOUND_K051649,
-	/*TODO*///            &k051649_interface
-	/*TODO*///        },
-	/*TODO*///        {
-	/*TODO*///            SOUND_YM2413,
-	/*TODO*///            &ym2413_interface
-	/*TODO*///        },
-	/*TODO*///        {
-	/*TODO*///            SOUND_DAC,
-	/*TODO*///            &dac_interface
-	/*TODO*///        },
-	/*TODO*///        {
-	/*TODO*///            SOUND_WAVE,
-	/*TODO*///            &wave_interface
-	/*TODO*///        }
-	/*TODO*///    },
-	/*TODO*///	msx2_nvram
-	/*TODO*///};
+	static MachineDriver machine_driver_msx2 = new MachineDriver
+	(
+	    /* basic machine hardware */
+            new MachineCPU[] {
+                    new MachineCPU(
+                        CPU_Z80_MSX,
+                        3579545,    /* 3.579545 Mhz */
+                        readmem,writemem,readport2,writeport2,
+                        msx2_interrupt,262
+                    )
+	    },
+	    60, 0,
+	    1,
+	    msx2_ch_reset, /* init_machine */
+	    //msx2_ch_stop, /* stop_machine */
+	
+	    /* video hardware */
+	    512 + 32, (212 + 16) * 2, new rectangle( 0, 512 + 32 - 1, 0, (212 + 16) * 2 - 1 ),
+	    null,
+	    512,
+		512,
+	    v9938_init_palette,
+	
+	    VIDEO_UPDATE_BEFORE_VBLANK | VIDEO_TYPE_RASTER,
+	    null,
+	    msx2_vh_start,
+	    v9938_exit,
+	    v9938_refresh,
+	
+	    /* sound hardware */
+	    0,0,0,0,
+	    new MachineSound[] {
+	        new MachineSound(
+	            SOUND_AY8910,
+	            ay8910_interface
+	        ),
+	        new MachineSound(
+	            SOUND_K051649,
+	            k051649_interface
+	        ),
+	        new MachineSound(
+	            SOUND_YM2413,
+	            ym2413_interface
+	        ),
+	        new MachineSound(
+	            SOUND_DAC,
+	            dac_interface
+	        ),
+	        new MachineSound(
+	            SOUND_WAVE,
+	            wave_interface
+	        )
+	    },
+		msx2_nvram
+	);
 	
 	/***************************************************************************
 	
@@ -1077,7 +1077,8 @@ public class msx
 	/*TODO*///COMP( 1985, expert10, msx,    msx,     expert10, msx,   "Gradiente",         "XP-800 Expert 1.0" )
 	/*TODO*///COMP( 1985, expert11, msx,    msx,     expert11, msx,   "Gradiente",         "XP-800 Expert 1.1" )
 	/*TODO*///COMPX( 1985, msx2,    msx,    msx2,    msx2,      msx2,   "ASCII & Microsoft", "MSX 2", GAME_NOT_WORKING )
-	/*TODO*///COMPX( 1985, msx2a,   msx,    msx2,    msx2,      msx2,   "ASCII & Microsoft", "MSX 2 (BASIC 2.1)", GAME_NOT_WORKING )
+	public static GameDriver driver_msx2 = new GameDriver("1985", "msx2", "msx.java", rom_msx2, null, machine_driver_msx2, input_ports_msx2, null, io_msx, "ASCII & Microsoft", "MSX 2");
+        /*TODO*///COMPX( 1985, msx2a,   msx,    msx2,    msx2,      msx2,   "ASCII & Microsoft", "MSX 2 (BASIC 2.1)", GAME_NOT_WORKING )
 	/*TODO*///COMPX( 1985, msx2j,  msx,    msx2,     msx2j,     msx2,   "ASCII & Microsoft", "MSX 2 (Japan)", GAME_NOT_WORKING )
 	
 }

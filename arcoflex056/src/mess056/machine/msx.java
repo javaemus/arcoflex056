@@ -45,6 +45,7 @@ import static mame056.sound._2413intf.*;
 import static mame056.sound._2413intfH.*;
 import static mame056.sound.dac.*;
 import static mame056.sound.dacH.*;
+import static mame056.sound.k051649.*;
 import static mame056.timer.*;
 import static mame056.timerH.*;
 import static mess056.device.*;
@@ -136,8 +137,8 @@ public class msx
 	public static io_initPtr msx_load_rom = new io_initPtr() {
             public int handler(int id) {
                 Object F;
-	    UBytePtr pmem=new UBytePtr(), m=new UBytePtr();
-	    int size,size_aligned,n,p,type=0,i;
+	    UBytePtr pmem=null, m=new UBytePtr();
+	    int size,size_aligned,n,p,type=-1,i;
 	    String pext="";
             UBytePtr buf=new UBytePtr(PAC_HEADER_LEN + 2);
 	    
@@ -223,7 +224,13 @@ public class msx
 	            msx1.cart[id].mem = null;
 	            return 1;
 	        }
-	        if (size < 0x10000) memset (new UBytePtr(pmem, size), 0xff, 0x10000 - size);
+	        if (size < 0x10000){
+                    System.out.println(size);
+                    System.out.println(0x10000);
+                    pmem = new UBytePtr(size);
+                    System.out.println(pmem.memory.length);
+                    memset (pmem, 0xff, 0x10000 - size);
+                }
 	        if (size > 0x10000) size = 0x10000;
 	    }
 	
@@ -293,12 +300,12 @@ public class msx
 	            {
 	                /* shift up 16kB; custom memcpy so overlapping memory
 	                   isn't corrupted. ROM starts in page 1 (0x4000) */
-	                p = 1;
-	                n = 0xc000; m = new UBytePtr(pmem, 0xffff);
-	                while (n-- !=0) { 
-                            m.write( m.read() - 0x4000); 
-                            m.dec(); 
-                        }
+	                /*TODO*///p = 1;
+	                /*TODO*///n = 0xc000; m = new UBytePtr(pmem, 0xffff);
+	                /*TODO*///while (n-- !=0) { 
+                        /*TODO*///    m.write( m.read() - 0x4000); 
+                        /*TODO*///    m.dec(); 
+                        /*TODO*///}
 	                memset (pmem, 0xff, 0x4000);
 	            }
 	        }
@@ -561,7 +568,7 @@ public class msx
 		
 	public static INTCallbackPtr msx_vdp_interrupt = new INTCallbackPtr() {
             public void handler(int i) {
-                cpu_set_irq_line(0, 0, (i!=0 ? HOLD_LINE : CLEAR_LINE));
+                cpu_set_irq_line(0, 0, (i != 0 ? HOLD_LINE : CLEAR_LINE));
             }
         };
 	
@@ -601,11 +608,12 @@ public class msx
             }
         };
 	
-	public static void msx2_ch_reset ()
-	{
+	public static InitMachinePtr msx2_ch_reset = new InitMachinePtr() {
+            public void handler() {
 		v9938_reset ();
 		msx_ch_reset_core ();
-	}
+            }
+	};
 	
 	/* z80 stuff */
 	static int z80_table_num[] = { Z80_TABLE_op, Z80_TABLE_xy,
@@ -675,14 +683,15 @@ public class msx
 		tc8521_stop ();
 	}
 	
-	public static int msx2_interrupt ()
-	{
+	public static InterruptPtr msx2_interrupt = new InterruptPtr() {
+            public int handler() {
 		v9938_set_sprite_limit (readinputport (8) & 0x20);
 		v9938_set_resolution (readinputport (8) & 0x03);
 		v9938_interrupt ();
 	
 		return ignore_interrupt.handler();
-	}
+            }
+	};
 	
 	public static InterruptPtr msx_interrupt = new InterruptPtr() {
             public int handler() {
@@ -876,18 +885,19 @@ public class msx
             }
         };
 	
-	public static void msx2_nvram (Object file, int write_local)
-        {
-            if (file != null)
-            {
-                    if (write_local != 0){
-                            tc8521_save_stream (file);
-                    } else { 
-                            tc8521_load_stream (file);
-                    }
+	public static nvramPtr msx2_nvram = new nvramPtr() {
+            public void handler(Object file, int write_local) {
+                if (file != null)
+                {
+                        if (write_local != 0){
+                                tc8521_save_stream (file);
+                        } else { 
+                                tc8521_load_stream (file);
+                        }
+                }
             }
-        }
-	
+        };
+        
 	/*
 	** The evil disk functions ...
 	*/
@@ -1215,6 +1225,7 @@ public class msx
 	
 	static void msx_set_all_mem_banks ()
 	{
+            System.out.println("msx_set_all_mem_banks");
 	    int i;
 	
 		memory_set_bankhandler_r (4, 0, MRA_BANK4);
@@ -1294,24 +1305,24 @@ public class msx
 	            offset &= 0xff;
 	            if (offset < 0x80)
                     {
-                        /*TODO*///K051649_waveform_w (offset, data);
+                        K051649_waveform_w.handler(offset, data);
                         p =  new UBytePtr(msx1.cart[cart].mem,
                         (msx1.cart[cart].bank_mask + 1) * 0x2000);
                         for (n=0;n<8;n++) 
                             p.write(n*0x100+0x1800+(offset&0x7f), data);
                     }
-	            /*TODO*///else if (offset < 0x8a) K051649_frequency_w (offset - 0x80 , data);
-	            /*TODO*///else if (offset < 0x8f) K051649_volume_w (offset - 0x8a, data);
-	            /*TODO*///else if (offset == 0x8f) K051649_keyonoff_w (0, data);
+	            else if (offset < 0x8a) K051649_frequency_w.handler(offset - 0x80 , data);
+	            else if (offset < 0x8f) K051649_volume_w.handler(offset - 0x8a, data);
+	            else if (offset == 0x8f) K051649_keyonoff_w.handler(0, data);
 	        }
 	        /* quick sound cartridge hack */
 	        else if ( (offset >= 0x7800) && (offset < 0x8000) )
 	        {
 	            offset &= 0xff;
-	            /*TODO*///if (offset < 0xa0) K052539_waveform_w (offset, data);
-	            /*TODO*///else if (offset < 0xaa) K051649_frequency_w (offset - 0xa0 , data);
-	            /*TODO*///else if (offset < 0xaf) K051649_volume_w (offset - 0xaa, data);
-	            /*TODO*///else if (offset == 0xaf) K051649_keyonoff_w (0, data);
+	            if (offset < 0xa0) K052539_waveform_w.handler(offset, data);
+	            else if (offset < 0xaa) K051649_frequency_w.handler(offset - 0xa0 , data);
+	            else if (offset < 0xaf) K051649_volume_w.handler(offset - 0xaa, data);
+	            else if (offset == 0xaf) K051649_keyonoff_w.handler(0, data);
 	        }
 	        break;
 	    case 3: /* Konami4 without SCC */

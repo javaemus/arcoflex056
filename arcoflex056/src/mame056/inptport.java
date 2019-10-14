@@ -1485,22 +1485,103 @@ public class inptport {
             return readinputport(3);
         } 
     };
-/*TODO*///READ16_HANDLER( input_port_4_word_r ) { return readinputport(4); }
-/*TODO*///READ16_HANDLER( input_port_5_word_r ) { return readinputport(5); }
-/*TODO*///READ16_HANDLER( input_port_6_word_r ) { return readinputport(6); }
-/*TODO*///READ16_HANDLER( input_port_7_word_r ) { return readinputport(7); }
-/*TODO*///READ16_HANDLER( input_port_8_word_r ) { return readinputport(8); }
-/*TODO*///READ16_HANDLER( input_port_9_word_r ) { return readinputport(9); }
-/*TODO*///READ16_HANDLER( input_port_10_word_r ) { return readinputport(10); }
-/*TODO*///READ16_HANDLER( input_port_11_word_r ) { return readinputport(11); }
-/*TODO*///READ16_HANDLER( input_port_12_word_r ) { return readinputport(12); }
-/*TODO*///READ16_HANDLER( input_port_13_word_r ) { return readinputport(13); }
-/*TODO*///READ16_HANDLER( input_port_14_word_r ) { return readinputport(14); }
-/*TODO*///READ16_HANDLER( input_port_15_word_r ) { return readinputport(15); }
-/*TODO*///READ16_HANDLER( input_port_16_word_r ) { return readinputport(16); }
-/*TODO*///READ16_HANDLER( input_port_17_word_r ) { return readinputport(17); }
-/*TODO*///READ16_HANDLER( input_port_18_word_r ) { return readinputport(18); }
-/*TODO*///READ16_HANDLER( input_port_19_word_r ) { return readinputport(19); }
+    
+    public static ReadHandlerPtr input_port_4_word_r = new ReadHandlerPtr() {
+        public int handler(int offset) {
+            return readinputport(4);
+        }
+    };
+    
+    public static ReadHandlerPtr input_port_5_word_r = new ReadHandlerPtr() {
+        public int handler(int offset) {
+            return readinputport(5);
+        } 
+    };
+    
+    public static ReadHandlerPtr input_port_6_word_r = new ReadHandlerPtr() {
+        public int handler(int offset) {
+            return readinputport(6);
+        } 
+    };
+    
+    public static ReadHandlerPtr input_port_7_word_r = new ReadHandlerPtr() {
+        public int handler(int offset) {
+            return readinputport(7);
+        } 
+    };
+    
+    public static ReadHandlerPtr input_port_8_word_r = new ReadHandlerPtr() {
+        public int handler(int offset) {
+            return readinputport(8);
+        } 
+    };
+
+    public static ReadHandlerPtr input_port_9_word_r = new ReadHandlerPtr() {
+        public int handler(int offset) {
+            return readinputport(9);
+        } 
+    };
+    
+    public static ReadHandlerPtr input_port_10_word_r = new ReadHandlerPtr() {
+        public int handler(int offset) {
+            return readinputport(10);
+        } 
+    };
+    
+    public static ReadHandlerPtr input_port_11_word_r = new ReadHandlerPtr() {
+        public int handler(int offset) {
+            return readinputport(11);
+        } 
+    };
+    
+    public static ReadHandlerPtr input_port_12_word_r = new ReadHandlerPtr() {
+        public int handler(int offset) {
+            return readinputport(12);
+        } 
+    };
+    
+    public static ReadHandlerPtr input_port_13_word_r = new ReadHandlerPtr() {
+        public int handler(int offset) {
+            return readinputport(13);
+        } 
+    };
+    
+    public static ReadHandlerPtr input_port_14_word_r = new ReadHandlerPtr() {
+        public int handler(int offset) {
+            return readinputport(14);
+        } 
+    };
+    
+    public static ReadHandlerPtr input_port_15_word_r = new ReadHandlerPtr() {
+        public int handler(int offset) {
+            return readinputport(15);
+        } 
+    };
+    
+    public static ReadHandlerPtr input_port_16_word_r = new ReadHandlerPtr() {
+        public int handler(int offset) {
+            return readinputport(16);
+        } 
+    };
+    
+    public static ReadHandlerPtr input_port_17_word_r = new ReadHandlerPtr() {
+        public int handler(int offset) {
+            return readinputport(17);
+        } 
+    };
+    
+    public static ReadHandlerPtr input_port_18_word_r = new ReadHandlerPtr() {
+        public int handler(int offset) {
+            return readinputport(18);
+        } 
+    };
+    
+    public static ReadHandlerPtr input_port_19_word_r = new ReadHandlerPtr() {
+        public int handler(int offset) {
+            return readinputport(19);
+        } 
+    };
+    
     /**
      * ************************************************************************
      */
