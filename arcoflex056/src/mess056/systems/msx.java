@@ -405,7 +405,7 @@ public class msx
 	
 	 MSX_DIPS();
 	
-	INPUT_PORTS_END(); }}; 
+	INPUT_PORTS_END();  }}; 
 	
 	static InputPortPtr input_ports_msxuk = new InputPortPtr(){ public void handler() { 
 	
@@ -778,7 +778,7 @@ public class msx
             /* basic machine hardware */
             new MachineCPU[] {
                     new MachineCPU(
-                        CPU_Z80_MSX,
+                        CPU_Z80,
                         3579545,    /* 3.579545 Mhz */
                         readmem,writemem,readport,writeport,
                         msx_interrupt,1
