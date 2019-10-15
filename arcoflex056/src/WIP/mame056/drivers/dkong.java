@@ -199,6 +199,7 @@ import static mame056.inptport.*;
 import static WIP.mame056.vidhrdw.dkong.*;
 import static WIP.mame056.sndhrdw.dkong.*;
 import static mame056.cpu.i8039.i8039H.*;
+import static mame056.cpu.m6502.m6502H.N2A03_DEFAULTCLOCK;
 import static mame056.cpu.s2650.s2650H.S2650_SENSE_PORT;
 import static mame056.drivers.scramble.*;
 
@@ -1050,7 +1051,10 @@ public class dkong
 	(
 		2,
 		new int[]{ REGION_CPU2, REGION_CPU3 },
-		new int[]{ 50, 50 }
+		new int[]{ 50, 50 },
+                (int) N2A03_DEFAULTCLOCK,
+                new WriteHandlerPtr[]{null},
+                new ReadHandlerPtr[]{null} 
         );
 	
 	

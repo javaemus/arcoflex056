@@ -418,11 +418,11 @@ public class common {
             for (i = 0; i < MAX_MEMORY_REGIONS; i++) {
                 if (Machine.memory_region[i] != null) {
                     if (Machine.memory_region[i].type == num) {
-                        Machine.memory_region[num].base = null;
+                        Machine.memory_region[i].base = null;
                         //memset(Machine.memory_region[i], 0, sizeof(Machine.memory_region[i]));
-                        Machine.memory_region[num].flags = 0;
-                        Machine.memory_region[num].length = 0;
-                        Machine.memory_region[num].type = 0;
+                        Machine.memory_region[i].flags = 0;
+                        Machine.memory_region[i].length = 0;
+                        Machine.memory_region[i].type = 0;
                         return;
                     }
                 }

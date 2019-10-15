@@ -79,6 +79,7 @@ import static mame056.sndintrfH.*;
 import static WIP.mame056.vidhrdw.vsnes.*;
 import static WIP.mame056.machine.vsnes.*;
 import static WIP.mame056.vidhrdw.ppu2c03b.*;
+import static mame056.cpu.m6502.m6502H.N2A03_DEFAULTCLOCK;
 import static mame056.sound.dac.*;
 import static mame056.sound.dacH.*;
 import static mame056.sound.nes_apu.*;
@@ -1448,7 +1449,10 @@ public class vsnes {
     static NESinterface nes_interface = new NESinterface(
             1,
             new int[]{REGION_CPU1},
-            new int[]{50}
+            new int[]{50},
+            (int) N2A03_DEFAULTCLOCK,
+            new WriteHandlerPtr[]{null},
+            new ReadHandlerPtr[]{null}
     );
 
     static DACinterface nes_dac_interface = new DACinterface(
@@ -1459,7 +1463,10 @@ public class vsnes {
     static NESinterface nes_dual_interface = new NESinterface(
             2,
             new int[]{REGION_CPU1, REGION_CPU2},
-            new int[]{25, 25}
+            new int[]{25, 25},
+            (int) N2A03_DEFAULTCLOCK,
+            new WriteHandlerPtr[]{null},
+            new ReadHandlerPtr[]{null}
     );
 
     static DACinterface nes_dual_dac_interface = new DACinterface(

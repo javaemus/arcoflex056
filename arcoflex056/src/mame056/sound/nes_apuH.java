@@ -27,30 +27,36 @@
  */
 package mame056.sound;
 
+import static arcadeflex056.fucPtr.*;
+
 public class nes_apuH {
     
-        public static int MAX_NESPSG = 2;
-        
-        public static double N2A03_DEFAULTCLOCK = (21477272.724 / 12);
-	
-	/* AN EXPLANATION
-	 *
-	 * The NES APU is actually integrated into the Nintendo processor.
-	 * You must supply the same number of APUs as you do processors.
-	 * Also make sure to correspond the memory regions to those used in the
-	 * processor, as each is shared.
-	 */
-	public static class NESinterface
-	{
-	   public int num;                 /* total number of chips in the machine */
-	   public int[] region = new int[MAX_NESPSG];  /* DMC regions */
-	   public int[] volume = new int[MAX_NESPSG];
+        public static final int MAX_NESPSG = 2;
 
-            public NESinterface(int num, int[] region, int[] volume) {
-                this.num = num;
-                this.region = region;
-                this.volume = volume;
-            }
-            
-	};
+    /* AN EXPLANATION
+     *
+     * The NES APU is actually integrated into the Nintendo processor.
+     * You must supply the same number of APUs as you do processors.
+     * Also make sure to correspond the memory regions to those used in the
+     * processor, as each is shared.
+     */
+    public static class NESinterface {
+
+        public NESinterface(int num, int[] region, int[] volume,int baseclock, WriteHandlerPtr[] apu_callback_w, ReadHandlerPtr[] apu_callback_r) {
+            this.num = num;
+            this.region = region;
+            this.volume = volume;
+            this.baseclock=baseclock;
+            this.apu_callback_r = apu_callback_r;
+            this.apu_callback_w = apu_callback_w;
+        }
+        public int num;
+        /* total number of chips in the machine */
+
+        public int[] region;//[MAX_NESPSG];  /* DMC regions */
+        public int[] volume;//[MAX_NESPSG];
+        public int baseclock;
+        public WriteHandlerPtr[] apu_callback_w;//[MAX_NESPSG]; /* LBO */
+        public ReadHandlerPtr[] apu_callback_r;//[MAX_NESPSG]; /* LBO */
+    };
 }

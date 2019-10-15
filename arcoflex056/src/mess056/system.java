@@ -31,6 +31,7 @@ import static mess056.systems.lynx.*;
 import static mess056.systems.msx.*;
 import static mess056.systems.gb.*;
 import static mess056.systems.c16.*;
+import static mess056.systems.nes.*;
 
 public class system {
 	/*TODO*///	
@@ -108,10 +109,10 @@ public class system {
             driver_lynx2,	/* Atari Lynx II Handheld redesigned, no additions      */
 	/*TODO*///	//	DRIVER( jaguar )	/* Atari Jaguar 					*/
 	/*TODO*///	
-	/*TODO*///		/* NINTENDO */
-	/*TODO*///		DRIVER( nes )		/* Nintendo Entertainment System			*/
+        /* NINTENDO */
+        driver_nes,		/* Nintendo Entertainment System			*/
 	/*TODO*///		DRIVER( nespal )	/* Nintendo Entertainment System			*/
-	/*TODO*///		DRIVER( famicom )
+	driver_famicom,
 	driver_gameboy,         /* Nintendo GameBoy Handheld				*/
 	/*TODO*///		DRIVER (snes)		/* Nintendo Super Nintendo				*/
 	/*TODO*///	//      DRIVER (vboy)		/* Nintendo Virtual Boy 				*/

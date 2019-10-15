@@ -343,6 +343,7 @@ import static mame056.sound._2203intfH.*;
 import static mame056.vidhrdw.generic.*;
 
 import static arcadeflex056.fileio.*;
+import static mame056.cpu.m6502.m6502H.N2A03_DEFAULTCLOCK;
 import static mame056.palette.*;
 
 public class playch10
@@ -549,7 +550,10 @@ public class playch10
         (
 		1,
 		new int[]{ REGION_CPU2 },
-		new int[]{ 50 }
+		new int[]{ 50 },
+                (int) N2A03_DEFAULTCLOCK,
+                new WriteHandlerPtr[]{null},
+                new ReadHandlerPtr[]{null}
 	);
 	
 	static DACinterface nes_dac_interface = new DACinterface

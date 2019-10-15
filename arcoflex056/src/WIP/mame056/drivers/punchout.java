@@ -145,6 +145,7 @@ import static mame056.sound.sn76477.*;
 import static WIP.mame056.vidhrdw.punchout.*;
 
 import static arcadeflex056.osdepend.logerror;
+import static mame056.cpu.m6502.m6502H.N2A03_DEFAULTCLOCK;
 
 public class punchout
 {
@@ -704,7 +705,10 @@ public class punchout
         (
 		1,
 		new int[]{ REGION_CPU2 },
-		new int[]{ 50 }
+		new int[]{ 50 },
+                (int) N2A03_DEFAULTCLOCK,
+                new WriteHandlerPtr[]{null},
+                new ReadHandlerPtr[]{null}
 	);
 	
 	/* filename for speech sample files */

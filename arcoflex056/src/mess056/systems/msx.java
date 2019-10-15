@@ -22,6 +22,7 @@ import static mame056.inptport.*;
 import static mame056.inptportH.*;
 import static mame056.inputH.*;
 import static mame056.machine._8255ppi.*;
+import static mame056.machine._8255ppiH.*;
 import static mame056.memory.*;
 import static mame056.memoryH.*;
 import static mame056.sndintrfH.*;
