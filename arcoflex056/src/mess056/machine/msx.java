@@ -160,7 +160,7 @@ public class msx
 	    /* get mapper type */
 	    pext = device_extrainfo(IO_CARTSLOT, id);
             
-            System.out.println("pext="+pext);
+            //System.out.println("pext="+pext);
             
             if (pext==null 
                     /*TODO*///|| (1 != sscanf (pext, "%d", type) ) 
@@ -212,12 +212,21 @@ public class msx
 	
 	        logerror("Probed cartridge mapper %s\n", mapper_types[type]);
 	    }
+            
+            //System.out.println("TIPO: "+mapper_types[type]);
 	
 	    /* mapper type 0 always needs 64kB */
 	    if (type == 0)
 	    {
 	        size_aligned = 0x10000;
-	        pmem = new UBytePtr(pmem, 0x10000);
+                char[] _tempMEM = pmem.memory;
+	        pmem = new UBytePtr(0x10000);
+                
+                int _longo = _tempMEM.length;
+                
+                for (int _i=0 ; _i<_longo; _i++)
+                    pmem.memory[_i] = _tempMEM[_i];
+                
 	        if (pmem == null)
 	        {
 	            logerror("Realloc failed!\n");
@@ -225,11 +234,11 @@ public class msx
 	            return 1;
 	        }
 	        if (size < 0x10000){
-                    System.out.println(size);
-                    System.out.println(0x10000);
-                    pmem = new UBytePtr(size);
-                    System.out.println(pmem.memory.length);
-                    memset (pmem, 0xff, 0x10000 - size);
+                    //System.out.println(size);
+                    //System.out.println(0x10000);
+                    //pmem = new UBytePtr(size);
+                    //System.out.println(pmem.memory.length);
+                    memset (new UBytePtr(pmem, size), 0xff, 0x10000 - size);
                 }
 	        if (size > 0x10000) size = 0x10000;
 	    }
@@ -296,16 +305,21 @@ public class msx
 	        }
 	        else /*if (size <= 0xc000) */
 	        {
+                    //System.out.println("Size="+size);
 	            if (p != 0)
 	            {
 	                /* shift up 16kB; custom memcpy so overlapping memory
 	                   isn't corrupted. ROM starts in page 1 (0x4000) */
-	                /*TODO*///p = 1;
-	                /*TODO*///n = 0xc000; m = new UBytePtr(pmem, 0xffff);
-	                /*TODO*///while (n-- !=0) { 
-                        /*TODO*///    m.write( m.read() - 0x4000); 
-                        /*TODO*///    m.dec(); 
-                        /*TODO*///}
+	                p = 1;
+	                n = size-0x4000; m = new UBytePtr(pmem, 0xffff);
+                        int _cont=0;
+	                 while (n-- != 0) { 
+                             m.memory[m.offset] = m.memory[m.offset - 0x4000]; 
+                             m.dec(); 
+                         }
+                        //memcpy(pmem, m, );
+                        //pmem.offset=0x4000;
+                        //memcpy (new UBytePtr(pmem), new UBytePtr(pmem, 0x4000), 0xc000);
 	                memset (pmem, 0xff, 0x4000);
 	            }
 	        }
@@ -459,7 +473,7 @@ public class msx
 	                OSD_FILETYPE_MEMCARD, 0);
 	            if (F!=null &&
 	                (osd_fread(F, buf, PAC_HEADER_LEN) == PAC_HEADER_LEN) &&
-	                /*TODO*///(strncmp(buf, PAC_HEADER, PAC_HEADER_LEN)==0) &&
+	                (strncmp(buf.memory, PAC_HEADER, PAC_HEADER_LEN)==false) &&
 	                (osd_fread (F, new UBytePtr(pmem, 0x10000), 0x1ffe) == 0x1ffe) )
 	            {
 	               logerror("Cart #%d SRAM loaded\n", id);
@@ -620,7 +634,7 @@ public class msx
 		Z80_TABLE_ed, Z80_TABLE_cb, Z80_TABLE_xycb };
 	
         static int[][] old_z80_tables=new int[5][];
-        static int[]z80_table=null;
+        static int[][]z80_table=new int[5][];
 	
 	/*TODO*///static void msx_wd179x_int (int state);
 	
@@ -633,7 +647,7 @@ public class msx
 		msx1.dsk_stat = 0x7f;
 	
 	    /* adjust z80 cycles for the M1 wait state */
-	    z80_table = new int[0x500];
+	    z80_table = new int[5][0x500];
 	
 	    if (z80_table == null)
             	logerror ("Cannot malloc z80 cycle table, using default values\n");
@@ -644,9 +658,10 @@ public class msx
 				old_z80_tables[i] = z80_get_cycle_table(z80_table_num[i]);
 				for (n=0;n<256;n++)
                                 {
-                                    z80_table[i*0x100+n] = old_z80_tables[i][n] + (i > 1 ? 2 : 1);
+                                    z80_table[i][0x100+n] = old_z80_tables[i][n] + (i > 1 ? 2 : 1);
                                 }
 				/*TODO*///z80_set_cycle_table (i, z80_table + i*0x100);
+                                z80_set_cycle_table(i, z80_table[i*0x100]);
                     }
                 }
 	}
@@ -1225,8 +1240,7 @@ public class msx
 	
 	static void msx_set_all_mem_banks ()
 	{
-            System.out.println("msx_set_all_mem_banks");
-	    int i;
+            int i;
 	
 		memory_set_bankhandler_r (4, 0, MRA_BANK4);
 		memory_set_bankhandler_r (6, 0, MRA_BANK6);
