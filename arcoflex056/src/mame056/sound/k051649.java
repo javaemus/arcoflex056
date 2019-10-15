@@ -157,7 +157,7 @@ public class k051649  extends snd_interface {
 		int i,v,f,j,k;
 	
 		/* zap the contents of the mixer buffer */
-		mixer_buffer = new ShortPtr( length );
+		mixer_buffer = new ShortPtr( length * 2 );
 	
 		for (j=0; j<5; j++) {
 			v=voice[j].volume;
@@ -168,7 +168,7 @@ public class k051649  extends snd_interface {
 				char[] w = voice[j].waveform;			/* 19991207.CAB */
 				int c=(int) voice[j].counter;
 	
-				mix = mixer_buffer;
+				mix = new ShortPtr(mixer_buffer);
 	
 				/* add our contribution */
 				for (i = 0; i < length; i++)
@@ -188,8 +188,8 @@ public class k051649  extends snd_interface {
 		}
 	
 		/* mix it down */
-		mix = mixer_buffer;
-		for (i = 0; i < length; i++)
+		mix = new ShortPtr(mixer_buffer);
+		for (i = 0; i < length/2; i++)
 			buffer.writeinc((short) mixer_lookup.read(mix.readinc()));
             }
         };

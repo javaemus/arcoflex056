@@ -264,6 +264,7 @@ public class msx
 	    pext = strrchr (msx1.cart[id].sramfile, '.');
 	    /*TODO*///if (pext) *pext = 0;
 	    /* do some stuff for some types :)) */
+            System.out.println("Type: "+mapper_types[type]);
 	    switch (type) {
 	    case 0:
 	        /*
@@ -311,15 +312,11 @@ public class msx
 	                /* shift up 16kB; custom memcpy so overlapping memory
 	                   isn't corrupted. ROM starts in page 1 (0x4000) */
 	                p = 1;
-	                n = size-0x4000; m = new UBytePtr(pmem, 0xffff);
-                        int _cont=0;
-	                 while (n-- != 0) { 
-                             m.memory[m.offset] = m.memory[m.offset - 0x4000]; 
-                             m.dec(); 
-                         }
-                        //memcpy(pmem, m, );
-                        //pmem.offset=0x4000;
-                        //memcpy (new UBytePtr(pmem), new UBytePtr(pmem, 0x4000), 0xc000);
+	                n = 0xc000; m = new UBytePtr(pmem, 0xffff);
+	                while (n-- != 0) { 
+                            m.write( m.memory[m.offset - 0x4000] );
+                            m.dec(); 
+                        }
 	                memset (pmem, 0xff, 0x4000);
 	            }
 	        }
@@ -391,7 +388,15 @@ public class msx
 	        break;
 	    case 2: /* Konami SCC */
 	        /* we want an extra page that looks like the SCC page */
-	        pmem = new UBytePtr(pmem, size_aligned + 0x2000);
+                // pmem = new UBytePtr(pmem, size_aligned + 0x2000); // REALLOC
+                char[] _tempMEM = pmem.memory;
+	        pmem = new UBytePtr(size_aligned + 0x2000);
+                
+                int _longo = _tempMEM.length;
+                
+                for (int _i=0 ; _i<_longo; _i++)
+                    pmem.memory[_i] = _tempMEM[_i];
+	        
 	        if (pmem == null)
 	        {
 	            msx1.cart[id].mem = null;
