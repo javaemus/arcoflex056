@@ -23,6 +23,7 @@ package mess056.vidhrdw;
 import static arcadeflex056.fucPtr.*;
 import static arcadeflex056.osdepend.logerror;
 import static arcadeflex056.video.osd_skip_this_frame;
+import static common.libc.cstring.*;
 import static common.ptr.*;
 import static mame056.commonH.*;
 import static mame056.mame.*;
@@ -47,8 +48,8 @@ public class v9938
 		public UBytePtr vram = new UBytePtr(), vram_exp = new UBytePtr();
 		public int vram_size;
 	    /* interrupt */
-	    /*TODO*///public UINT8 INT;
-	    /*TODO*///void (*INTCallback)(int);
+                public int INT;
+                public INTCallbackPtr INTCallback;
 		public int scanline;
                 /* blinking */
                 public int blink, blink_count;
@@ -444,45 +445,45 @@ public class v9938
 			}
 		}
         };
-/*TODO*///	
-/*TODO*///	/***************************************************************************
-/*TODO*///	
-/*TODO*///		Init/stop/reset/Interrupt functions
-/*TODO*///	
-/*TODO*///	***************************************************************************/
-/*TODO*///	
+	
+	/***************************************************************************
+	
+		Init/stop/reset/Interrupt functions
+	
+	***************************************************************************/
+	
 	public static int v9938_init (int model, int vram_size, INTCallbackPtr callback )
-		{
-/*TODO*///		memset (&_vdp, 0, sizeof (_vdp) );
-/*TODO*///	
-/*TODO*///		_vdp.model = model;
-/*TODO*///		_vdp.vram_size = vram_size;
-/*TODO*///		_vdp.INTCallback = callback;
-/*TODO*///		_vdp.size_old = -1;
-/*TODO*///	
-/*TODO*///		/* allocate VRAM */
-/*TODO*///		_vdp.vram = malloc (0x20000);
-/*TODO*///		if (!_vdp.vram) return 1;
-/*TODO*///		memset (_vdp.vram, 0, 0x20000);
-/*TODO*///		if (_vdp.vram_size < 0x20000)
-/*TODO*///			{
-/*TODO*///			/* set unavailable RAM to 0xff */
-/*TODO*///			memset (_vdp.vram + _vdp.vram_size, 0xff, (0x20000 - _vdp.vram_size) );
-/*TODO*///			}
-/*TODO*///		/* do we have expanded memory? */
-/*TODO*///		if (_vdp.vram_size > 0x20000)
-/*TODO*///			{
-/*TODO*///			_vdp.vram_exp = malloc (0x10000);
-/*TODO*///			if (!_vdp.vram_exp)
-/*TODO*///				{
-/*TODO*///				free (_vdp.vram);
-/*TODO*///				return 1;
-/*TODO*///				}
-/*TODO*///			memset (_vdp.vram_exp, 0, 0x10000);
-/*TODO*///			}
-/*TODO*///		else
-/*TODO*///			_vdp.vram_exp = null;
-/*TODO*///	
+	{
+		_vdp = new _V9938();
+	
+		_vdp.model = model;
+		_vdp.vram_size = vram_size;
+		_vdp.INTCallback = callback;
+		_vdp.size_old = -1;
+	
+		/* allocate VRAM */
+		_vdp.vram = new UBytePtr (0x20000);
+		if (_vdp.vram==null) return 1;
+		memset (_vdp.vram, 0, 0x20000);
+		if (_vdp.vram_size < 0x20000)
+			{
+			/* set unavailable RAM to 0xff */
+			memset ( new UBytePtr(_vdp.vram, _vdp.vram_size), 0xff, (0x20000 - _vdp.vram_size) );
+			}
+		/* do we have expanded memory? */
+		if (_vdp.vram_size > 0x20000)
+			{
+			_vdp.vram_exp = new UBytePtr (0x10000);
+			if (_vdp.vram_exp==null)
+				{
+				_vdp.vram = null;
+				return 1;
+				}
+			memset (_vdp.vram_exp, 0, 0x10000);
+			}
+		else
+			_vdp.vram_exp = null;
+	
 		return 0;
 		}
 	
@@ -501,7 +502,7 @@ public class v9938
 		if (_vdp.model == MODEL_V9958) _vdp.statReg[1] |= 4;
 		for (i=0;i<48;i++) _vdp.contReg[i] = 0;
 		_vdp.cmd_write_first = _vdp.pal_write_first = 0;
-/*TODO*///		_vdp.INT = 0;
+		_vdp.INT = 0;
 		_vdp.read_ahead = 0; _vdp.address_latch = 0; /* ??? */
 		_vdp.scanline = 0;
 		}
@@ -518,23 +519,23 @@ public class v9938
 
 	static void v9938_check_int ()
 		{
-/*TODO*///		int n;
-/*TODO*///	
-/*TODO*///		n = ( (_vdp.contReg[1] & 0x20) && (_vdp.statReg[0] & 0x80) ) ||
-/*TODO*///			( (_vdp.statReg[1] & 0x01) && (_vdp.contReg[0] & 0x10) );
-/*TODO*///	
-/*TODO*///		if (n != _vdp.INT)
-/*TODO*///			{
-/*TODO*///			_vdp.INT = n;
-/*TODO*///			logerror ("V9938: IRQ line %s\n", n!=0 ? "up" : "down");
-/*TODO*///			}
-/*TODO*///	
-/*TODO*///		/* 
-/*TODO*///	    ** Somehow the IRQ request is going down without cpu_irq_line () being
-/*TODO*///	    ** called; because of this Mr. Ghost, Xevious and SD Snatcher don't
-/*TODO*///	    ** run. As a patch it's called every scanline 
-/*TODO*///	    */
-/*TODO*///		_vdp.INTCallback (n);
+		int n;
+	
+		n = ( (_vdp.contReg[1] & 0x20)!=0 && (_vdp.statReg[0] & 0x80)!=0 ) ||
+			( (_vdp.statReg[1] & 0x01)!=0 && (_vdp.contReg[0] & 0x10)!=0 )?1:0;
+	
+		if (n != _vdp.INT)
+			{
+			_vdp.INT = n;
+			logerror ("V9938: IRQ line %s\n", n!=0 ? "up" : "down");
+			}
+	
+		/* 
+	    ** Somehow the IRQ request is going down without cpu_irq_line () being
+	    ** called; because of this Mr. Ghost, Xevious and SD Snatcher don't
+	    ** run. As a patch it's called every scanline 
+	    */
+		_vdp.INTCallback.handler(n);
 		}
 	
 	public static void v9938_set_sprite_limit (int i)
@@ -969,6 +970,9 @@ public class v9938
 /*TODO*///			_vdp.statReg[0] = (_vdp.statReg[0] & 0xa0) | p;
 /*TODO*///		}
 /*TODO*///	
+        public static abstract interface ModeVisible_8_HandlersPtr {
+            public abstract void handler(UBytePtr col, int line);
+        }
 /*TODO*///	typedef struct {
 /*TODO*///		UINT8 m;
 /*TODO*///		void (*visible_8)(UINT8*, int);
@@ -1089,147 +1093,148 @@ public class v9938
 /*TODO*///		_vdp.mode = i;
 		}
 	
-/*TODO*///	static void v9938_refresh_8 (struct mame_bitmap *bmp, int line)
-/*TODO*///		{
-/*TODO*///		int i, double_lines;
-/*TODO*///		UINT8 col[256], *ln, *ln2 = null;
-/*TODO*///	
-/*TODO*///		double_lines = 0;
-/*TODO*///	
-/*TODO*///		if (_vdp.size == RENDER_HIGH)
-/*TODO*///			{
-/*TODO*///			if (_vdp.contReg[9] & 0x08)
-/*TODO*///				{
-/*TODO*///				_vdp.size_now = RENDER_HIGH;
-/*TODO*///				ln = bmp.line[line*2+((_vdp.statReg[2]>>1)&1)];
-/*TODO*///				}
-/*TODO*///			else
-/*TODO*///				{
-/*TODO*///				ln = bmp.line[line*2];
-/*TODO*///				ln2 = bmp.line[line*2+1];
-/*TODO*///				double_lines = 1;
-/*TODO*///				}
-/*TODO*///			}
-/*TODO*///		else
-/*TODO*///			ln = bmp.line[line];
-/*TODO*///	
-/*TODO*///		if ( !(_vdp.contReg[1] & 0x40) || (_vdp.statReg[2] & 0x40) )
-/*TODO*///			{
-/*TODO*///			if (_vdp.size == RENDER_HIGH)
-/*TODO*///				modes[_vdp.mode].border_8 (ln);
-/*TODO*///			else
-/*TODO*///				modes[_vdp.mode].border_8s (ln);
-/*TODO*///			}
-/*TODO*///		else
-/*TODO*///			{
-/*TODO*///			i = (line - _vdp.offset_y) & 255;
-/*TODO*///			if (_vdp.size == RENDER_HIGH)
-/*TODO*///				{
-/*TODO*///				modes[_vdp.mode].visible_8 (ln, i);
-/*TODO*///				if (modes[_vdp.mode].sprites)
-/*TODO*///					{
-/*TODO*///					modes[_vdp.mode].sprites (i, col);
-/*TODO*///					modes[_vdp.mode].draw_sprite_8 (ln, col);
-/*TODO*///					}
-/*TODO*///				}
-/*TODO*///			else
-/*TODO*///				{
-/*TODO*///				modes[_vdp.mode].visible_8s (ln, i);
-/*TODO*///				if (modes[_vdp.mode].sprites)
-/*TODO*///					{
-/*TODO*///					modes[_vdp.mode].sprites (i, col);
-/*TODO*///					modes[_vdp.mode].draw_sprite_8s (ln, col);
-/*TODO*///					}
-/*TODO*///				}
-/*TODO*///			}
-/*TODO*///	
-/*TODO*///		if (double_lines)
-/*TODO*///			memcpy (ln2, ln, (512 + 32) );
-/*TODO*///		}
-/*TODO*///	
-/*TODO*///	static void v9938_refresh_16 (struct mame_bitmap *bmp, int line)
-/*TODO*///		{
-/*TODO*///		int i, double_lines;
-/*TODO*///		UINT8 col[256];
-/*TODO*///		UINT16 *ln, *ln2 = null;
-/*TODO*///	
-/*TODO*///		double_lines = 0;
-/*TODO*///	
-/*TODO*///		if (_vdp.size == RENDER_HIGH)
-/*TODO*///			{
-/*TODO*///			if (_vdp.contReg[9] & 0x08)
-/*TODO*///				{
-/*TODO*///				_vdp.size_now = RENDER_HIGH;
-/*TODO*///				ln = (UINT16*)bmp.line[line*2+((_vdp.statReg[2]>>1)&1)];
-/*TODO*///				}
-/*TODO*///			else
-/*TODO*///				{
-/*TODO*///				ln = (UINT16*)bmp.line[line*2];
-/*TODO*///				ln2 = (UINT16*)bmp.line[line*2+1];
-/*TODO*///				double_lines = 1;
-/*TODO*///				}
-/*TODO*///			}
-/*TODO*///		else
-/*TODO*///			ln = (UINT16*)bmp.line[line];
-/*TODO*///	
-/*TODO*///		if ( !(_vdp.contReg[1] & 0x40) || (_vdp.statReg[2] & 0x40) )
-/*TODO*///			{
-/*TODO*///			if (_vdp.size == RENDER_HIGH)
-/*TODO*///				modes[_vdp.mode].border_16 (ln);
-/*TODO*///			else
-/*TODO*///				modes[_vdp.mode].border_16s (ln);
-/*TODO*///			}
-/*TODO*///		else
-/*TODO*///			{
-/*TODO*///			i = (line - _vdp.offset_y) & 255;
-/*TODO*///			if (_vdp.size == RENDER_HIGH)
-/*TODO*///				{
-/*TODO*///				modes[_vdp.mode].visible_16 (ln, i);
-/*TODO*///				if (modes[_vdp.mode].sprites)
-/*TODO*///					{
-/*TODO*///					modes[_vdp.mode].sprites (i, col);
-/*TODO*///					modes[_vdp.mode].draw_sprite_16 (ln, col);
-/*TODO*///					}
-/*TODO*///				}
-/*TODO*///			else
-/*TODO*///				{
-/*TODO*///				modes[_vdp.mode].visible_16s (ln, i);
-/*TODO*///				if (modes[_vdp.mode].sprites)
-/*TODO*///					{
-/*TODO*///					modes[_vdp.mode].sprites (i, col);
-/*TODO*///					modes[_vdp.mode].draw_sprite_16s (ln, col);
-/*TODO*///					}
-/*TODO*///				}
-/*TODO*///			}
-/*TODO*///	
-/*TODO*///		if (double_lines != 0)
-/*TODO*///			memcpy (ln2, ln, (512 + 32) * 2);
-/*TODO*///		}
-/*TODO*///	
-/*TODO*///	static void v9938_refresh_line (mame_bitmap bmp, int line)
-/*TODO*///		{
-/*TODO*///		int ind16, ind256;
-/*TODO*///	
-/*TODO*///		ind16 = pal_ind16[0];
-/*TODO*///		ind256 = pal_ind256[0];
-/*TODO*///	
-/*TODO*///		if ( !(_vdp.contReg[8] & 0x20) && (_vdp.mode != V9938_MODE_GRAPHIC5) )
-/*TODO*///			{
-/*TODO*///			pal_ind16[0] = pal_ind16[(_vdp.contReg[7] & 0x0f)];
-/*TODO*///			pal_ind256[0] = pal_ind256[_vdp.contReg[7]];
-/*TODO*///			}
-/*TODO*///	
-/*TODO*///		if (Machine.scrbitmap.depth == 8)
-/*TODO*///			v9938_refresh_8 (bmp, line);
-/*TODO*///		else
-/*TODO*///			v9938_refresh_16 (bmp, line);
-/*TODO*///	
-/*TODO*///		if ( !(_vdp.contReg[8] & 0x20) && (_vdp.mode != V9938_MODE_GRAPHIC5) )
-/*TODO*///			{
-/*TODO*///			pal_ind16[0] = ind16;
-/*TODO*///			pal_ind256[0] = ind256;
-/*TODO*///			}
-/*TODO*///		}
+	static void v9938_refresh_8 (mame_bitmap bmp, int line)
+		{
+		int i, double_lines;
+		int[] col=new int[256];
+                UBytePtr ln=null, ln2 = null;
+	
+		double_lines = 0;
+	
+		if (_vdp.size == RENDER_HIGH)
+			{
+			if ((_vdp.contReg[9] & 0x08) != 0)
+				{
+				_vdp.size_now = RENDER_HIGH;
+				ln = bmp.line[line*2+((_vdp.statReg[2]>>1)&1)];
+				}
+			else
+				{
+				ln = bmp.line[line*2];
+				ln2 = bmp.line[line*2+1];
+				double_lines = 1;
+				}
+			}
+		else
+			ln = bmp.line[line];
+	
+		if ( (_vdp.contReg[1] & 0x40)==0 || (_vdp.statReg[2] & 0x40)!=0 )
+			{
+			/*TODO*///if (_vdp.size == RENDER_HIGH)
+			/*TODO*///	modes[_vdp.mode].border_8 (ln);
+			/*TODO*///else
+			/*TODO*///	modes[_vdp.mode].border_8s (ln);
+			}
+		else
+			{
+			i = (line - _vdp.offset_y) & 255;
+			if (_vdp.size == RENDER_HIGH)
+				{
+				/*TODO*///modes[_vdp.mode].visible_8 (ln, i);
+				/*TODO*///if (modes[_vdp.mode].sprites)
+				/*TODO*///	{
+				/*TODO*///	modes[_vdp.mode].sprites (i, col);
+				/*TODO*///	modes[_vdp.mode].draw_sprite_8 (ln, col);
+				/*TODO*///	}
+				}
+			else
+				{
+				/*TODO*///modes[_vdp.mode].visible_8s (ln, i);
+				/*TODO*///if (modes[_vdp.mode].sprites)
+				/*TODO*///	{
+				/*TODO*///	modes[_vdp.mode].sprites (i, col);
+				/*TODO*///	modes[_vdp.mode].draw_sprite_8s (ln, col);
+				/*TODO*///	}
+				}
+			}
+	
+		if (double_lines != 0)
+			memcpy (ln2, ln, (512 + 32) );
+		}
+	
+	static void v9938_refresh_16 (mame_bitmap bmp, int line)
+		{
+		int i, double_lines;
+		int[] col=new int[256];
+		UShortPtr ln, ln2 = null;
+	
+		double_lines = 0;
+	
+		if (_vdp.size == RENDER_HIGH)
+			{
+			if ((_vdp.contReg[9] & 0x08)!=0)
+				{
+				_vdp.size_now = RENDER_HIGH;
+				ln = new UShortPtr(bmp.line[line*2+((_vdp.statReg[2]>>1)&1)]);
+				}
+			else
+				{
+				ln = new UShortPtr(bmp.line[line*2]);
+				ln2 = new UShortPtr(bmp.line[line*2+1]);
+				double_lines = 1;
+				}
+			}
+		else
+			ln = new UShortPtr(bmp.line[line]);
+	
+		if ( (_vdp.contReg[1] & 0x40)==0 || (_vdp.statReg[2] & 0x40)!=0 )
+			{
+			/*TODO*///if (_vdp.size == RENDER_HIGH)
+			/*TODO*///	modes[_vdp.mode].border_16 (ln);
+			/*TODO*///else
+			/*TODO*///	modes[_vdp.mode].border_16s (ln);
+			}
+		else
+			{
+			i = (line - _vdp.offset_y) & 255;
+			if (_vdp.size == RENDER_HIGH)
+				{
+				/*TODO*///modes[_vdp.mode].visible_16 (ln, i);
+				/*TODO*///if (modes[_vdp.mode].sprites)
+				/*TODO*///	{
+				/*TODO*///	modes[_vdp.mode].sprites (i, col);
+				/*TODO*///	modes[_vdp.mode].draw_sprite_16 (ln, col);
+				/*TODO*///	}
+				}
+			else
+				{
+				/*TODO*///modes[_vdp.mode].visible_16s (ln, i);
+				/*TODO*///if (modes[_vdp.mode].sprites)
+				/*TODO*///	{
+				/*TODO*///	modes[_vdp.mode].sprites (i, col);
+				/*TODO*///	modes[_vdp.mode].draw_sprite_16s (ln, col);
+				/*TODO*///	}
+				}
+			}
+	
+		if (double_lines != 0)
+			memcpy (ln2, ln, (512 + 32) * 2);
+		}
+	
+	static void v9938_refresh_line (mame_bitmap bmp, int line)
+		{
+		int ind16, ind256;
+	
+		ind16 = pal_ind16[0];
+		ind256 = pal_ind256[0];
+	
+		if ( (_vdp.contReg[8] & 0x20)==0 && (_vdp.mode != V9938_MODE_GRAPHIC5) )
+			{
+			pal_ind16[0] = pal_ind16[(_vdp.contReg[7] & 0x0f)];
+			pal_ind256[0] = pal_ind256[_vdp.contReg[7]];
+			}
+	
+		if (Machine.scrbitmap.depth == 8)
+			v9938_refresh_8 (bmp, line);
+		else
+			v9938_refresh_16 (bmp, line);
+	
+		if ( (_vdp.contReg[8] & 0x20)==0 && (_vdp.mode != V9938_MODE_GRAPHIC5) )
+			{
+			pal_ind16[0] = (char) ind16;
+			pal_ind256[0] = (char) ind256;
+			}
+		}
 	
 	public static VhUpdatePtr v9938_refresh = new VhUpdatePtr() {
             public void handler(mame_bitmap bitmap, int full_refresh) {
@@ -1404,65 +1409,66 @@ public class v9938
 /*TODO*///	
 	public static int v9938_interrupt ()
 		{
-/*TODO*///		UINT8 col[256];
-/*TODO*///		int scanline, max, pal, scanline_start;
-/*TODO*///	
-/*TODO*///		v9938_update_command ();
-/*TODO*///	
-/*TODO*///		pal = _vdp.contReg[9] & 2;
-/*TODO*///		if (pal) scanline_start = 53; else scanline_start = 26;
-/*TODO*///	
-/*TODO*///		/* set flags */
-/*TODO*///		if (_vdp.scanline == (_vdp.offset_y + scanline_start) )
-/*TODO*///			{
-/*TODO*///			_vdp.statReg[2] &= ~0x40;
-/*TODO*///			}
-/*TODO*///		else if (_vdp.scanline == (_vdp.offset_y + _vdp.visible_y + scanline_start) )
-/*TODO*///			{
-/*TODO*///			_vdp.statReg[2] |= 0x40;
-/*TODO*///			_vdp.statReg[0] |= 0x80;
-/*TODO*///			}
-/*TODO*///	
-/*TODO*///		max = (pal) ? 255 : (_vdp.contReg[9] & 0x80) ? 234 : 244;
-/*TODO*///		scanline = (_vdp.scanline - scanline_start - _vdp.offset_y);
-/*TODO*///		if ( (scanline >= 0) && (scanline <= max) &&
-/*TODO*///		   ( ( (scanline + _vdp.contReg[23]) & 255) == _vdp.contReg[19]) )
-/*TODO*///			{
-/*TODO*///			_vdp.statReg[1] |= 1;
-/*TODO*///			logerror ("V9938: scanline interrupt (%d)\n", scanline);
-/*TODO*///			}
-/*TODO*///		else
-/*TODO*///			if ( !(_vdp.contReg[0] & 0x10) ) _vdp.statReg[1] &= 0xfe;
-/*TODO*///	
-/*TODO*///		v9938_check_int ();
-/*TODO*///	
-/*TODO*///		/* check for start of vblank */
-/*TODO*///		if ((pal && (_vdp.scanline == 310)) ||
-/*TODO*///			(!pal && (_vdp.scanline == 259)))
-/*TODO*///			v9938_interrupt_start_vblank ();
-/*TODO*///	
-/*TODO*///		/* render the current line */
-/*TODO*///		if ((_vdp.scanline >= scanline_start) && (_vdp.scanline < (212 + 16 + scanline_start)))
-/*TODO*///			{
-/*TODO*///			scanline = (_vdp.scanline - scanline_start) & 255;
-/*TODO*///	
-/*TODO*///			if (osd_skip_this_frame () != 0 )
-/*TODO*///				{
-/*TODO*///				if ( (_vdp.statReg[2] & 0x40)==0 && (modes[_vdp.mode].sprites)!=0 )
-/*TODO*///					modes[_vdp.mode].sprites ( (scanline - _vdp.offset_y) & 255, col);
-/*TODO*///				}
-/*TODO*///			else
-/*TODO*///				{
-/*TODO*///				v9938_refresh_line (Machine.scrbitmap, scanline);
-/*TODO*///				}
-/*TODO*///			}
-/*TODO*///	
-/*TODO*///		max = (_vdp.contReg[9] & 2)!=0 ? 313 : 262;
-/*TODO*///		if (++_vdp.scanline == max)
-/*TODO*///			_vdp.scanline = 0;
-/*TODO*///	
-/*TODO*///		return _vdp.INT;
-                    return 0;
+                    
+		int[] col=new int[256];
+		int scanline, max, pal, scanline_start;
+	
+		/*TODO*///v9938_update_command ();
+	
+		pal = _vdp.contReg[9] & 2;
+		if (pal!=0) scanline_start = 53; else scanline_start = 26;
+	
+		/* set flags */
+		if (_vdp.scanline == (_vdp.offset_y + scanline_start) )
+			{
+			_vdp.statReg[2] &= ~0x40;
+			}
+		else if (_vdp.scanline == (_vdp.offset_y + _vdp.visible_y + scanline_start) )
+			{
+			_vdp.statReg[2] |= 0x40;
+			_vdp.statReg[0] |= 0x80;
+			}
+	
+		max = (pal!=0) ? 255 : (_vdp.contReg[9] & 0x80)!=0 ? 234 : 244;
+		scanline = (_vdp.scanline - scanline_start - _vdp.offset_y);
+		if ( (scanline >= 0) && (scanline <= max) &&
+		   ( ( (scanline + _vdp.contReg[23]) & 255) == _vdp.contReg[19]) )
+			{
+			_vdp.statReg[1] |= 1;
+			logerror ("V9938: scanline interrupt (%d)\n", scanline);
+			}
+		else
+			if ( (_vdp.contReg[0] & 0x10)==0 ) _vdp.statReg[1] &= 0xfe;
+	
+		v9938_check_int ();
+	
+		/* check for start of vblank */
+		/*TODO*///if ((pal!=0 && (_vdp.scanline == 310)) ||
+		/*TODO*///	(pal==0 && (_vdp.scanline == 259)))
+		/*TODO*///	v9938_interrupt_start_vblank ();
+	
+		/* render the current line */
+		if ((_vdp.scanline >= scanline_start) && (_vdp.scanline < (212 + 16 + scanline_start)))
+			{
+			scanline = (_vdp.scanline - scanline_start) & 255;
+	
+			if (osd_skip_this_frame () != 0 )
+			/*TODO*///	{
+			/*TODO*///	if ( (_vdp.statReg[2] & 0x40)==0 && (modes[_vdp.mode].sprites)!=null )
+				/*TODO*///	modes[_vdp.mode].sprites ( (scanline - _vdp.offset_y) & 255, col);
+			/*TODO*///	}
+			/*TODO*///else
+			/*TODO*///	{
+				v9938_refresh_line (Machine.scrbitmap, scanline);
+			/*TODO*///	}
+			}
+	
+		max = (_vdp.contReg[9] & 2)!=0 ? 313 : 262;
+		if (++_vdp.scanline == max)
+			_vdp.scanline = 0;
+	
+		return _vdp.INT;
+                    
 		}
 /*TODO*///	
 /*TODO*///	/***************************************************************************

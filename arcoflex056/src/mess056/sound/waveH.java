@@ -4,6 +4,8 @@
  */
 package mess056.sound;
 
+import static common.ptr.*;
+
 public class waveH {
 
     public static final int MAX_WAVE = 4;
@@ -69,6 +71,11 @@ public class waveH {
 /*TODO*/// * chunk_samples
 /*TODO*/// *	  number of samples produced for a data chunk (optional)
 /*TODO*/// *****************************************************************************/
+    public static abstract interface WaveFillerPtr {
+
+        public abstract int handler(UBytePtr buffer, int length, UBytePtr bytes);
+    }
+    
     public static class wave_args {
 
         public wave_args(Object file) {
@@ -77,23 +84,23 @@ public class waveH {
 
         public Object file;
         public int display;
-        /*TODO*///	int (*fill_wave)(INT16 *buffer, int length, UINT8 *bytes);
+        public WaveFillerPtr fill_wave;
         public int smpfreq;
         public int header_samples;
         public int trailer_samples;
         public int chunk_size;
         public int chunk_samples;
     };
-    /*TODO*///
-/*TODO*////*****************************************************************************
-/*TODO*/// * Your (optional) fill_wave callback will be called with "UINT8 *bytes" set
-/*TODO*/// * to one of these values if you should fill in the (optional) header or
-/*TODO*/// * trailer samples into the buffer.
-/*TODO*/// * Otherwise 'bytes' is a pointer to the chunk of data
-/*TODO*/// *****************************************************************************/
-/*TODO*///#define CODE_HEADER 	((UINT8*)-1)
-/*TODO*///#define CODE_TRAILER	((UINT8*)-2)
-/*TODO*///
+    
+/*****************************************************************************
+ * Your (optional) fill_wave callback will be called with "UINT8 *bytes" set
+ * to one of these values if you should fill in the (optional) header or
+ * trailer samples into the buffer.
+ * Otherwise 'bytes' is a pointer to the chunk of data
+ *****************************************************************************/
+    public static final int CODE_HEADER = -1;
+    public static final int CODE_TRAILER = -2;
+
     public static final int WAVE_STATUS_MOTOR_ENABLE = 1;
     public static final int WAVE_STATUS_MUTED = 2;
     public static final int WAVE_STATUS_MOTOR_INHIBIT = 4;

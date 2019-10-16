@@ -24,6 +24,7 @@ import static arcadeflex056.osdepend.logerror;
 import static common.libc.cstring.*;
 import static common.libc.cstdio.*;
 import static common.ptr.*;
+import static common.subArrays.*;
 import static consoleflex056.funcPtr.*;
 import static mame056.common.*;
 import static mame056.commonH.*;
@@ -59,6 +60,7 @@ import static mess056.machine.tc8521.*;
 import static mess056.machine.wd179x.*;
 import static mess056.mess.*;
 import static mess056.messH.*;
+import static mess056.sound.waveH.*;
 import static mess056.vidhrdw.tms9928a.*;
 import static mess056.vidhrdw.v9938.*;
 import static mess056.vidhrdw.v9938H.*;
@@ -1672,111 +1674,118 @@ public class msx
             }
         };
 	
-/*TODO*///	/*
-/*TODO*///	** Cassette functions
-/*TODO*///	*/
-/*TODO*///	
-/*TODO*///	static INT16* cas_samples;
-/*TODO*///	static int cas_len;
-/*TODO*///	
-/*TODO*///	int msx_cassette_fill_wave (INT16* samples, int wavlen, UINT8* casdata)
-/*TODO*///	{
-/*TODO*///		if (casdata == CODE_HEADER || casdata == CODE_TRAILER)
-/*TODO*///			return 0;
-/*TODO*///	
-/*TODO*///		if (wavlen < cas_len)
-/*TODO*///		{
-/*TODO*///			logerror ("Not enough space to store converted cas file!\n");
-/*TODO*///			return 0;
-/*TODO*///		}
-/*TODO*///	
-/*TODO*///		memcpy (samples, cas_samples, cas_len * 2);
-/*TODO*///	
-/*TODO*///		return cas_len;
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	static int check_fmsx_cas (void *f)
-/*TODO*///	{
-/*TODO*///		UINT8* casdata;
-/*TODO*///		int caslen, ret;
-/*TODO*///	
-/*TODO*///	    caslen = osd_fsize (f);
-/*TODO*///		if (caslen < 9) return -1;
-/*TODO*///	
-/*TODO*///	    casdata = (UINT8*)malloc (caslen);
-/*TODO*///	    if (casdata == 0)
-/*TODO*///		{
-/*TODO*///	       	logerror ("cas2wav: out of memory!\n");
-/*TODO*///	       	return -1;
-/*TODO*///	   	}
-/*TODO*///	
-/*TODO*///	    osd_fseek (f, 0, SEEK_SET);
-/*TODO*///	 	if (caslen != osd_fread (f, casdata, caslen) ) return -1;
-/*TODO*///	   	osd_fseek (f, 0, SEEK_SET);
-/*TODO*///	
-/*TODO*///	    ret = fmsx_cas_to_wav (casdata, caslen, &cas_samples, &cas_len);
-/*TODO*///	    if (ret == 2)
-/*TODO*///		logerror ("cas2wav: out of memory\n");
-/*TODO*///	    else if (ret)
-/*TODO*///		logerror ("cas2wav: conversion error\n");
-/*TODO*///	
-/*TODO*///	    free (casdata);
-/*TODO*///	
-/*TODO*///	    return ret;
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	int msx_cassette_init(int id)
-/*TODO*///	{
-/*TODO*///	    void *file;
-/*TODO*///		int ret;
-/*TODO*///	
-/*TODO*///		if (!device_filename(IO_CASSETTE,id) || !strlen(device_filename(IO_CASSETTE,id) ))
-/*TODO*///			return 0;
-/*TODO*///	
-/*TODO*///	    file = image_fopen(IO_CASSETTE, id, OSD_FILETYPE_IMAGE, OSD_FOPEN_READ);
-/*TODO*///	    if( file )
-/*TODO*///	    {
-/*TODO*///	        struct wave_args wa = {0,};
-/*TODO*///	        wa.file = file;
-/*TODO*///	        wa.display = 1;
-/*TODO*///			/* for cas files */
-/*TODO*///			cas_samples = null;
-/*TODO*///			cas_len = -1;
-/*TODO*///			if (!check_fmsx_cas (file) )
-/*TODO*///			{
-/*TODO*///				wa.smpfreq = 22050;
-/*TODO*///				wa.fill_wave = msx_cassette_fill_wave;
-/*TODO*///				wa.header_samples = cas_len;
-/*TODO*///				wa.trailer_samples = 0;
-/*TODO*///				wa.chunk_size = cas_len;
-/*TODO*///				wa.chunk_samples = 0;
-/*TODO*///			}
-/*TODO*///	        ret = device_open(IO_CASSETTE,id,0,&wa);
-/*TODO*///			free (cas_samples);
-/*TODO*///			cas_samples = null;
-/*TODO*///			cas_len = -1;
-/*TODO*///	
-/*TODO*///			return (ret ? INIT_FAIL : INIT_PASS);
-/*TODO*///	    }
-/*TODO*///	    file = image_fopen(IO_CASSETTE, id, OSD_FILETYPE_IMAGE,
-/*TODO*///	        OSD_FOPEN_RW_CREATE);
-/*TODO*///	    if( file )
-/*TODO*///	    {
-/*TODO*///	        struct wave_args wa = {0,};
-/*TODO*///	        wa.file = file;
-/*TODO*///	        wa.display = 1;
-/*TODO*///	        wa.smpfreq = 44100;
-/*TODO*///	        if( device_open(IO_CASSETTE,id,1,&wa) )
-/*TODO*///	            return INIT_FAIL;
-/*TODO*///	        return INIT_PASS;
-/*TODO*///	    }
-/*TODO*///	    return INIT_FAIL;
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	void msx_cassette_exit(int id)
-/*TODO*///	{
-/*TODO*///	    device_close(IO_CASSETTE,id);
-/*TODO*///	}
+	/*
+	** Cassette functions
+	*/
+	
+	static UBytePtr cas_samples;
+	static int cas_len;
+	
+	static WaveFillerPtr msx_cassette_fill_wave = new WaveFillerPtr() {
+            public int handler (UBytePtr samples, int wavlen, UBytePtr casdata) {
+                if (casdata.read() == CODE_HEADER || casdata.read() == CODE_TRAILER)
+			return 0;
+	
+		if (wavlen < cas_len)
+		{
+			logerror ("Not enough space to store converted cas file!\n");
+			return 0;
+		}
+	
+		memcpy (samples, cas_samples, cas_len * 2);
+	
+		return cas_len;
+            }
+        };
+	{
+		
+	}
+	
+	static int check_fmsx_cas (Object f)
+	{
+		UBytePtr casdata;
+		int caslen, ret=0;
+	
+                caslen = osd_fsize (f);
+		if (caslen < 9) return -1;
+	
+                casdata = new UBytePtr (caslen);
+                if (casdata == null)
+		{
+	       	logerror ("cas2wav: out of memory!\n");
+	       	return -1;
+	   	}
+	
+	    osd_fseek (f, 0, SEEK_SET);
+	 	if (caslen != osd_fread (f, casdata, caslen) ) return -1;
+	   	osd_fseek (f, 0, SEEK_SET);
+	
+	    /*TODO*///ret = fmsx_cas_to_wav (casdata, caslen, cas_samples, cas_len);
+	    if (ret == 2)
+		logerror ("cas2wav: out of memory\n");
+	    else if (ret != 0)
+		logerror ("cas2wav: conversion error\n");
+	
+	    casdata = null;
+	
+	    return ret;
+	}
+	
+	public static io_initPtr msx_cassette_init = new io_initPtr() {
+            public int handler(int id) {
+                Object file;
+		int ret;
+	
+		if (device_filename(IO_CASSETTE,id)==null || strlen(device_filename(IO_CASSETTE,id))==0)
+			return 0;
+	
+                file = image_fopen(IO_CASSETTE, id, OSD_FILETYPE_IMAGE_R, OSD_FOPEN_READ);
+                if( file != null )
+                {
+                    wave_args wa = new wave_args(file);
+                    wa.file = file;
+                    wa.display = 1;
+                            /* for cas files */
+                            cas_samples = null;
+                            cas_len = -1;
+                            if (check_fmsx_cas (file) == 0 )
+                            {
+                                    wa.smpfreq = 22050;
+                                    wa.fill_wave = msx_cassette_fill_wave;
+                                    wa.header_samples = cas_len;
+                                    wa.trailer_samples = 0;
+                                    wa.chunk_size = cas_len;
+                                    wa.chunk_samples = 0;
+                            }
+                            ret = device_open(IO_CASSETTE,id,0,wa);
+                            cas_samples = null;
+                            cas_len = -1;
+
+                            return (ret!=0 ? INIT_FAIL : INIT_PASS);
+                }
+                file = image_fopen(IO_CASSETTE, id, OSD_FILETYPE_IMAGE_R,
+                    OSD_FOPEN_RW_CREATE);
+                if( file != null )
+                {
+                    wave_args wa = new wave_args(file);
+                    wa.file = file;
+                    wa.display = 1;
+                    wa.smpfreq = 44100;
+                    if( device_open(IO_CASSETTE,id,1,wa) != 0 )
+                        return INIT_FAIL;
+                    return INIT_PASS;
+                }
+                return INIT_FAIL;
+            }
+        };
+	
+	public static io_exitPtr msx_cassette_exit = new io_exitPtr() {
+            public int handler(int id) {
+                device_close(IO_CASSETTE,id);
+                
+                return 0;
+            }
+        };
 	
 }
 

@@ -887,7 +887,8 @@ public class msx
 	    /* basic machine hardware */
             new MachineCPU[] {
                     new MachineCPU(
-                        CPU_Z80_MSX,
+                        //CPU_Z80_MSX,
+                        CPU_Z80,
                         3579545,    /* 3.579545 Mhz */
                         readmem,writemem,readport2,writeport2,
                         msx2_interrupt,262
@@ -1049,7 +1050,25 @@ public class msx
 	        null,                   /* input_chunk */
 	        null                    /* output_chunk */
 	    ),
-	    /*TODO*///IO_CASSETTE_WAVE (1, "cas0wav0", null, msx_cassette_init, msx_cassette_exit),
+	    //IO_CASSETTE_WAVE (1, "cas0wav0", null, msx_cassette_init, msx_cassette_exit),
+            new IODevice(
+                        IO_CASSETTE,
+                        1,
+                        "cas\0wav\0",
+                        IO_RESET_NONE,
+                        null,
+                        msx_cassette_init, 
+                        msx_cassette_exit,
+                        wave_info,			/* info */						
+                        wave_open,			/* open */						
+                        wave_close, 		/* close */ 					
+                        wave_status,		/* status */					
+                        wave_seek,			/* seek */						
+                        wave_tell,			/* tell */						
+                        wave_input, 		/* input */ 					
+                        wave_output,		/* output */					
+                        wave_input_chunk,	/* input_chunk */				
+                        wave_output_chunk),
             /*TODO*///IO_PRINTER_PORT (1, "prn0"),
 	    new IODevice(IO_END)
 	};

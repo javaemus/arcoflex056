@@ -10,7 +10,7 @@ import static mess056.machine.cbmserb.*;
 
 public class cbmserbH
 {
-    static IODevice IODEVICE_CBM_DRIVE =
+    public static IODevice IODEVICE_CBM_DRIVE =
         new IODevice(
 	
 	   IO_FLOPPY,          /* type */
