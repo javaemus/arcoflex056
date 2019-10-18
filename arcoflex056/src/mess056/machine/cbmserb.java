@@ -28,7 +28,7 @@ public class cbmserb
                 cbm_drive[_i] = new CBM_Drive();
         }
 	
-	public static CBM_Serial cbm_serial;
+	public static CBM_Serial cbm_serial = new CBM_Serial();
 	
 	/* must be called before other functions */
 	public static void cbm_drive_open ()

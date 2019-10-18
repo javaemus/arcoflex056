@@ -22,11 +22,14 @@ import static arcadeflex056.fucPtr.*;
 import static common.ptr.*;
 import static mame056.cpuexec.*;
 import static mame056.cpuexecH.*;
+import static mame056.memory.*;
+import static mame056.memoryH.*;
 import static mess056.includes.c64H.*;
 import static mess056.includes.cbmserbH.*;
 import static mess056.machine.vc20tape.*;
 import static mess056.includes.vc20tapeH.*;
 import static mess056.machine.cbmserb.*;
+import static mess056.machine.cia6526.*;
 import static mess056.vidhrdw.vic6567.*;
 
 public class c64
@@ -55,7 +58,7 @@ public class c64
 	
 /*TODO*///	/* expansion port lines input */
 /*TODO*///	int c64_pal = 0;
-/*TODO*///	UINT8 c64_game=1, c64_exrom=1;
+	public static int c64_game=1, c64_exrom=1;
 /*TODO*///	
 /*TODO*///	/* cpu port */
 	public static int c64_port6510, c64_ddr6510;
@@ -63,13 +66,13 @@ public class c64
 	public static UBytePtr c64_vicaddr=new UBytePtr(), c128_vicaddr=new UBytePtr();
 	public static UBytePtr c64_memory = new UBytePtr();
         public static UBytePtr c64_colorram = new UBytePtr();
-/*TODO*///	UINT8 *c64_basic;
-/*TODO*///	UINT8 *c64_kernal;
-/*TODO*///	UINT8 *c64_chargen;
-/*TODO*///	UINT8 *c64_roml=0;
-/*TODO*///	UINT8 *c64_romh=0;
-/*TODO*///	
-/*TODO*///	static UINT8 *roml=0, *romh=0;
+        public static UBytePtr c64_basic = new UBytePtr();
+        public static UBytePtr c64_kernal = new UBytePtr();
+        public static UBytePtr c64_chargen = new UBytePtr();
+        public static UBytePtr c64_roml=null;
+        public static UBytePtr c64_romh=null;
+
+        public static UBytePtr roml=null, romh=null;
 /*TODO*///	static int ultimax = 0;
 	public static int c64_tape_on = 1;
 	public static int c64_cia1_on = 1;
@@ -460,26 +463,26 @@ public class c64
 /*TODO*///		else
 /*TODO*///			c64_bankswitch (0);
 /*TODO*///	}
-/*TODO*///	
-/*TODO*///	public static WriteHandlerPtr c64_write_io = new WriteHandlerPtr() {public void handler(int offset, int data)
-/*TODO*///	{
-/*TODO*///		if (offset < 0x400) {
-/*TODO*///			vic2_port_w (offset & 0x3ff, data);
-/*TODO*///		} else if (offset < 0x800) {
+	
+	public static WriteHandlerPtr c64_write_io = new WriteHandlerPtr() {public void handler(int offset, int data)
+	{
+		if (offset < 0x400) {
+			vic2_port_w.handler(offset & 0x3ff, data);
+		} else if (offset < 0x800) {
 /*TODO*///			sid6581_0_port_w (offset & 0x3ff, data);
-/*TODO*///		} else if (offset < 0xc00)
-/*TODO*///			c64_colorram[offset & 0x3ff] = data | 0xf0;
-/*TODO*///		else if (offset < 0xd00)
-/*TODO*///			cia6526_0_port_w (offset & 0xff, data);
-/*TODO*///		else if (offset < 0xe00)
-/*TODO*///		{
-/*TODO*///			if (c64_cia1_on)
-/*TODO*///				cia6526_1_port_w (offset & 0xff, data);
+		} else if (offset < 0xc00)
+			c64_colorram.write(offset & 0x3ff, data | 0xf0);
+		else if (offset < 0xd00)
+			cia6526_0_port_w.handler(offset & 0xff, data);
+		else if (offset < 0xe00)
+		{
+			if (c64_cia1_on != 0)
+				cia6526_1_port_w.handler(offset & 0xff, data);
 /*TODO*///			else
 /*TODO*///				DBG_LOG (1, "io write", ("%.3x %.2x\n", offset, data));
-/*TODO*///		}
-/*TODO*///		else if (offset < 0xf00)
-/*TODO*///		{
+		}
+		else if (offset < 0xf00)
+		{
 /*TODO*///			/* i/o 1 */
 /*TODO*///			if (cartridge && (cartridgetype == CartridgeRobocop2))
 /*TODO*///			{
@@ -487,9 +490,9 @@ public class c64
 /*TODO*///			}
 /*TODO*///			else
 /*TODO*///				DBG_LOG (1, "io write", ("%.3x %.2x\n", offset, data));
-/*TODO*///		}
-/*TODO*///		else
-/*TODO*///		{
+		}
+		else
+		{
 /*TODO*///			/* i/o 2 */
 /*TODO*///			if (cartridge && (cartridgetype == CartridgeSuperGames))
 /*TODO*///			{
@@ -497,170 +500,172 @@ public class c64
 /*TODO*///			}
 /*TODO*///			else
 /*TODO*///				DBG_LOG (1, "io write", ("%.3x %.2x\n", offset, data));
-/*TODO*///		}
-/*TODO*///	} };
-/*TODO*///	
-/*TODO*///	public static ReadHandlerPtr c64_read_io  = new ReadHandlerPtr() { public int handler(int offset)
-/*TODO*///	{
-/*TODO*///		if (offset < 0x400)
-/*TODO*///			return vic2_port_r (offset & 0x3ff);
-/*TODO*///		else if (offset < 0x800)
-/*TODO*///			return sid6581_0_port_r (offset & 0x3ff);
-/*TODO*///		else if (offset < 0xc00)
-/*TODO*///			return c64_colorram[offset & 0x3ff];
-/*TODO*///		else if (offset < 0xd00)
-/*TODO*///			return cia6526_0_port_r (offset & 0xff);
-/*TODO*///		else if (c64_cia1_on && (offset < 0xe00))
-/*TODO*///			return cia6526_1_port_r (offset & 0xff);
+		}
+	} };
+	
+	public static ReadHandlerPtr c64_read_io  = new ReadHandlerPtr() { public int handler(int offset)
+	{
+		if (offset < 0x400)
+			return vic2_port_r.handler(offset & 0x3ff);
+		/*TODO*///else if (offset < 0x800)
+		/*TODO*///	return sid6581_0_port_r (offset & 0x3ff);
+		else if (offset < 0xc00)
+			return c64_colorram.read(offset & 0x3ff);
+		else if (offset < 0xd00)
+			return cia6526_0_port_r.handler(offset & 0xff);
+		else if (c64_cia1_on!=0 && (offset < 0xe00))
+			return cia6526_1_port_r.handler(offset & 0xff);
 /*TODO*///		DBG_LOG (1, "io read", ("%.3x\n", offset));
-/*TODO*///		return 0xff;
-/*TODO*///	} };
-/*TODO*///	
-/*TODO*///	/*
-/*TODO*///	 * two devices access bus, cpu and vic
-/*TODO*///	 *
-/*TODO*///	 * romh, roml chip select lines on expansion bus
-/*TODO*///	 * loram, hiram, charen bankswitching select by cpu
-/*TODO*///	 * exrom, game bankswitching select by cartridge
-/*TODO*///	 * va15, va14 bank select by cpu for vic
-/*TODO*///	 *
-/*TODO*///	 * exrom, game: normal c64 mode
-/*TODO*///	 * exrom, !game: ultimax mode
-/*TODO*///	 *
-/*TODO*///	 * romh: 8k rom at 0xa000 (hiram && !game && exrom)
-/*TODO*///	 * or 8k ram at 0xe000 (!game exrom)
-/*TODO*///	 * roml: 8k rom at 0x8000 (loram hiram !exrom)
-/*TODO*///	 * or 8k ram at 0x8000 (!game exrom)
-/*TODO*///	 * roml vic: upper 4k rom at 0x3000, 0x7000, 0xb000, 0xd000 (!game exrom)
-/*TODO*///	 *
-/*TODO*///	 * basic rom: 8k rom at 0xa000 (loram hiram game)
-/*TODO*///	 * kernal rom: 8k rom at 0xe000 (hiram !exrom, hiram game)
-/*TODO*///	 * char rom: 4k rom at 0xd000 (!exrom charen hiram
-/*TODO*///	 * game charen !hiram loram
-/*TODO*///	 * game charen hiram)
-/*TODO*///	 * cpu
-/*TODO*///	 *
-/*TODO*///	 * (write colorram)
-/*TODO*///	 * gr_w = !read&&!cas&&((address&0xf000)==0xd000)
-/*TODO*///	 *
-/*TODO*///	 * i_o = !game exrom !read ((address&0xf000)==0xd000)
-/*TODO*///	 * !game exrom ((address&0xf000)==0xd000)
-/*TODO*///	 * charen !hiram loram !read ((address&0xf000)==0xd000)
-/*TODO*///	 * charen !hiram loram ((address&0xf000)==0xd000)
-/*TODO*///	 * charen hiram !read ((address&0xf000)==0xd000)
-/*TODO*///	 * charen hiram ((address&0xf000)==0xd000)
-/*TODO*///	 *
-/*TODO*///	 * vic
-/*TODO*///	 * char rom: x101 (game, !exrom)
-/*TODO*///	 * romh: 0011 (!game, exrom)
-/*TODO*///	 *
-/*TODO*///	 * exrom !game (ultimax mode)
-/*TODO*///	 * addr    CPU     VIC-II
-/*TODO*///	 * ----    ---     ------
-/*TODO*///	 * 0000    RAM     RAM
-/*TODO*///	 * 1000    -       RAM
-/*TODO*///	 * 2000    -       RAM
-/*TODO*///	 * 3000    -       ROMH (upper half)
-/*TODO*///	 * 4000    -       RAM
-/*TODO*///	 * 5000    -       RAM
-/*TODO*///	 * 6000    -       RAM
-/*TODO*///	 * 7000    -       ROMH
-/*TODO*///	 * 8000    ROML    RAM
-/*TODO*///	 * 9000    ROML    RAM
-/*TODO*///	 * A000    -       RAM
-/*TODO*///	 * B000    -       ROMH
-/*TODO*///	 * C000    -       RAM
-/*TODO*///	 * D000    I/O     RAM
-/*TODO*///	 * E000    ROMH    RAM
-/*TODO*///	 * F000    ROMH    ROMH
-/*TODO*///	 */
-/*TODO*///	static void c64_bankswitch (int reset)
-/*TODO*///	{
-/*TODO*///		static int old = -1, exrom, game;
-/*TODO*///		int data, loram, hiram, charen;
-/*TODO*///	
-/*TODO*///		data = ((c64_port6510 & c64_ddr6510) | (c64_ddr6510 ^ 0xff)) & 7;
-/*TODO*///		if ((data == old)&&(exrom==c64_exrom)&&(game==c64_game)&&!reset) return;
-/*TODO*///	
+		return 0xff;
+	} };
+	
+	/*
+	 * two devices access bus, cpu and vic
+	 *
+	 * romh, roml chip select lines on expansion bus
+	 * loram, hiram, charen bankswitching select by cpu
+	 * exrom, game bankswitching select by cartridge
+	 * va15, va14 bank select by cpu for vic
+	 *
+	 * exrom, game: normal c64 mode
+	 * exrom, !game: ultimax mode
+	 *
+	 * romh: 8k rom at 0xa000 (hiram && !game && exrom)
+	 * or 8k ram at 0xe000 (!game exrom)
+	 * roml: 8k rom at 0x8000 (loram hiram !exrom)
+	 * or 8k ram at 0x8000 (!game exrom)
+	 * roml vic: upper 4k rom at 0x3000, 0x7000, 0xb000, 0xd000 (!game exrom)
+	 *
+	 * basic rom: 8k rom at 0xa000 (loram hiram game)
+	 * kernal rom: 8k rom at 0xe000 (hiram !exrom, hiram game)
+	 * char rom: 4k rom at 0xd000 (!exrom charen hiram
+	 * game charen !hiram loram
+	 * game charen hiram)
+	 * cpu
+	 *
+	 * (write colorram)
+	 * gr_w = !read&&!cas&&((address&0xf000)==0xd000)
+	 *
+	 * i_o = !game exrom !read ((address&0xf000)==0xd000)
+	 * !game exrom ((address&0xf000)==0xd000)
+	 * charen !hiram loram !read ((address&0xf000)==0xd000)
+	 * charen !hiram loram ((address&0xf000)==0xd000)
+	 * charen hiram !read ((address&0xf000)==0xd000)
+	 * charen hiram ((address&0xf000)==0xd000)
+	 *
+	 * vic
+	 * char rom: x101 (game, !exrom)
+	 * romh: 0011 (!game, exrom)
+	 *
+	 * exrom !game (ultimax mode)
+	 * addr    CPU     VIC-II
+	 * ----    ---     ------
+	 * 0000    RAM     RAM
+	 * 1000    -       RAM
+	 * 2000    -       RAM
+	 * 3000    -       ROMH (upper half)
+	 * 4000    -       RAM
+	 * 5000    -       RAM
+	 * 6000    -       RAM
+	 * 7000    -       ROMH
+	 * 8000    ROML    RAM
+	 * 9000    ROML    RAM
+	 * A000    -       RAM
+	 * B000    -       ROMH
+	 * C000    -       RAM
+	 * D000    I/O     RAM
+	 * E000    ROMH    RAM
+	 * F000    ROMH    ROMH
+	 */
+        static int old = -1, exrom, game;
+        
+	public static void c64_bankswitch (int reset)
+	{
+		
+		int data, loram, hiram, charen;
+	
+		data = ((c64_port6510 & c64_ddr6510) | (c64_ddr6510 ^ 0xff)) & 7;
+		if ((data == old)&&(exrom==c64_exrom)&&(game==c64_game)&&reset==0) return;
+	
 /*TODO*///		DBG_LOG (1, "bankswitch", ("%d\n", data & 7));
-/*TODO*///		loram = (data & 1) ? 1 : 0;
-/*TODO*///		hiram = (data & 2) ? 1 : 0;
-/*TODO*///		charen = (data & 4) ? 1 : 0;
-/*TODO*///	
-/*TODO*///		if ((!c64_game && c64_exrom)
-/*TODO*///		    || (loram && !c64_exrom)) // for omega race cartridge
-/*TODO*///	//	    || (loram && hiram && !c64_exrom))
-/*TODO*///		{
-/*TODO*///			cpu_setbank (1, roml);
-/*TODO*///			memory_set_bankhandler_w (2, 0, MWA_RAM); // always ram: pitstop
-/*TODO*///		}
-/*TODO*///		else
-/*TODO*///		{
-/*TODO*///			cpu_setbank (1, c64_memory + 0x8000);
-/*TODO*///			memory_set_bankhandler_w (2, 0, MWA_RAM);
-/*TODO*///		}
-/*TODO*///	
+		loram = (data & 1)!=0 ? 1 : 0;
+		hiram = (data & 2)!=0 ? 1 : 0;
+		charen = (data & 4)!=0 ? 1 : 0;
+	
+		if ((c64_game==0 && c64_exrom!=0)
+		    || (loram!=0 && c64_exrom==0)) // for omega race cartridge
+	//	    || (loram && hiram && !c64_exrom))
+		{
+			cpu_setbank (1, roml);
+			memory_set_bankhandler_w (2, 0, MWA_RAM); // always ram: pitstop
+		}
+		else
+		{
+			cpu_setbank (1, new UBytePtr(c64_memory, 0x8000));
+			memory_set_bankhandler_w (2, 0, MWA_RAM);
+		}
+	
 /*TODO*///	#if 1
-/*TODO*///		if ((!c64_game && !c64_exrom && hiram)
+		if ((c64_game==0 && c64_exrom==0 && hiram!=0))
 /*TODO*///		    /*|| (!c64_exrom)*/) // must be disabled for 8kb c64 cartridges! like space action, super expander, ...
 /*TODO*///	#else
 /*TODO*///		if ((!c64_game && c64_exrom && hiram)
 /*TODO*///		    || (!c64_exrom) )
 /*TODO*///	#endif
-/*TODO*///		{
-/*TODO*///			cpu_setbank (3, romh);
-/*TODO*///		}
-/*TODO*///		else if (loram && hiram &&c64_game)
-/*TODO*///		{
-/*TODO*///			cpu_setbank (3, c64_basic);
-/*TODO*///		}
-/*TODO*///		else
-/*TODO*///		{
-/*TODO*///			cpu_setbank (3, c64_memory + 0xa000);
-/*TODO*///		}
-/*TODO*///	
-/*TODO*///		if ((!c64_game && c64_exrom)
-/*TODO*///			|| (charen && (loram || hiram)))
-/*TODO*///		{
-/*TODO*///			memory_set_bankhandler_r (5, 0, c64_read_io);
-/*TODO*///			memory_set_bankhandler_w (6, 0, c64_write_io);
-/*TODO*///		}
-/*TODO*///		else
-/*TODO*///		{
-/*TODO*///			memory_set_bankhandler_r (5, 0, MRA_BANK5);
-/*TODO*///			memory_set_bankhandler_w (6, 0, MWA_BANK6);
-/*TODO*///			cpu_setbank (6, c64_memory + 0xd000);
-/*TODO*///			if (!charen && (loram || hiram))
-/*TODO*///			{
-/*TODO*///				cpu_setbank (5, c64_chargen);
-/*TODO*///			}
-/*TODO*///			else
-/*TODO*///			{
-/*TODO*///				cpu_setbank (5, c64_memory + 0xd000);
-/*TODO*///			}
-/*TODO*///		}
-/*TODO*///	
-/*TODO*///		if (!c64_game && c64_exrom)
-/*TODO*///		{
-/*TODO*///			cpu_setbank (7, romh);
-/*TODO*///			memory_set_bankhandler_w (8, 0, MWA_NOP);
-/*TODO*///		}
-/*TODO*///		else
-/*TODO*///		{
-/*TODO*///			memory_set_bankhandler_w (8, 0, MWA_RAM);
-/*TODO*///			if (hiram)
-/*TODO*///			{
-/*TODO*///				cpu_setbank (7, c64_kernal);
-/*TODO*///			}
-/*TODO*///			else
-/*TODO*///			{
-/*TODO*///				cpu_setbank (7, c64_memory + 0xe000);
-/*TODO*///			}
-/*TODO*///		}
-/*TODO*///		game=c64_game;
-/*TODO*///		exrom=c64_exrom;
-/*TODO*///		old = data;
-/*TODO*///	}
+		{
+			cpu_setbank (3, romh);
+		}
+		else if (loram!=0 && hiram!=0 &&c64_game!=0)
+		{
+			cpu_setbank (3, new UBytePtr(c64_basic));
+		}
+		else
+		{
+			cpu_setbank (3, new UBytePtr(c64_memory, 0xa000));
+		}
+	
+		if ((c64_game==0 && c64_exrom!=0)
+			|| (charen!=0 && (loram!=0 || hiram!=0)))
+		{
+			memory_set_bankhandler_r (5, 0, c64_read_io);
+			memory_set_bankhandler_w (6, 0, c64_write_io);
+		}
+		else
+		{
+			memory_set_bankhandler_r (5, 0, MRA_BANK5);
+			memory_set_bankhandler_w (6, 0, MWA_BANK6);
+			cpu_setbank (6, new UBytePtr(c64_memory, 0xd000));
+			if (charen==0 && (loram!=0 || hiram!=0))
+			{
+				cpu_setbank (5, c64_chargen);
+			}
+			else
+			{
+				cpu_setbank (5, new UBytePtr(c64_memory, 0xd000));
+			}
+		}
+	
+		if (c64_game==0 && c64_exrom!=0)
+		{
+			cpu_setbank (7, new UBytePtr(romh));
+			memory_set_bankhandler_w (8, 0, MWA_NOP);
+		}
+		else
+		{
+			memory_set_bankhandler_w (8, 0, MWA_RAM);
+			if (hiram != 0)
+			{
+				cpu_setbank (7, new UBytePtr(c64_kernal));
+			}
+			else
+			{
+				cpu_setbank (7, new UBytePtr(c64_memory, 0xe000));
+			}
+		}
+		game=c64_game;
+		exrom=c64_exrom;
+		old = data;
+	}
 	
 	/**
 	  ddr bit 1 port line is output
@@ -697,7 +702,7 @@ public class c64
 /*TODO*///		else if (c65)
 /*TODO*///			c65_bankswitch();
 /*TODO*///		else if (ultimax == 0)
-/*TODO*///			c64_bankswitch (0);
+			c64_bankswitch (0);
             }
         };
 	
@@ -919,7 +924,7 @@ public class c64
 			cbm_drive_1_config (SERIAL9ON()!=0 ? SERIAL : 0, c65!=0?11:9);
 			serial_clock = serial_data = serial_atn = 1;
 		}
-/*TODO*///		cia6526_reset();
+		cia6526_reset();
 		c64_vicaddr = new UBytePtr(c64_memory);
 		vicirq = cia0irq = 0;
 		c64_port6510 = 0xff;
