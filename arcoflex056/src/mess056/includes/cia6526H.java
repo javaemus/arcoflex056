@@ -30,6 +30,25 @@ public class cia6526H {
             public ReadHandlerPtr irq_func;
             public int a_pullup, b_pullup;
             public int todin50hz;
+            
+            public cia6526_interface(ReadHandlerPtr in_a_func, ReadHandlerPtr in_b_func, WriteHandlerPtr out_a_func, WriteHandlerPtr out_b_func, 
+                    WriteHandlerPtr out_pc_func, ReadHandlerPtr in_sp_func, ReadHandlerPtr out_sp_func, ReadHandlerPtr in_cnt_func, ReadHandlerPtr out_cnt_func,
+                    ReadHandlerPtr irq_func, int a_pullup, int b_pullup, int todin50hz){
+                
+                this.in_a_func=in_a_func;
+                this.in_b_func=in_b_func;
+                this.out_a_func=out_a_func;
+                this.out_b_func=out_b_func;
+                this.out_pc_func=out_pc_func;
+                this.in_sp_func=in_sp_func;
+                this.out_sp_func=out_sp_func;
+                this.in_cnt_func=in_cnt_func;
+                this.out_cnt_func=out_cnt_func;
+                this.irq_func=irq_func;
+                this.a_pullup=a_pullup;
+                this.b_pullup=b_pullup;
+                this.todin50hz=todin50hz;
+            }
     };
     
 }

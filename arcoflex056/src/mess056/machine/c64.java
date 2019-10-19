@@ -20,12 +20,17 @@ package mess056.machine;
 
 import static arcadeflex056.fucPtr.*;
 import static common.ptr.*;
+import static mame056.common.*;
+import static mame056.commonH.*;
+import static mame056.cpu.m6502.m6502H.M6510_IRQ_LINE;
 import static mame056.cpuexec.*;
 import static mame056.cpuexecH.*;
+import static mame056.mame.Machine;
 import static mame056.memory.*;
 import static mame056.memoryH.*;
 import static mess056.includes.c64H.*;
 import static mess056.includes.cbmserbH.*;
+import static mess056.includes.cia6526H.*;
 import static mess056.machine.vc20tape.*;
 import static mess056.includes.vc20tapeH.*;
 import static mess056.machine.cbmserb.*;
@@ -56,18 +61,18 @@ public class c64
 		0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff
 	};
 	
-/*TODO*///	/* expansion port lines input */
-/*TODO*///	int c64_pal = 0;
+	/* expansion port lines input */
+	public static int c64_pal = 0;
 	public static int c64_game=1, c64_exrom=1;
-/*TODO*///	
-/*TODO*///	/* cpu port */
+
+	/* cpu port */
 	public static int c64_port6510, c64_ddr6510;
 /*TODO*///	int c128_va1617;
 	public static UBytePtr c64_vicaddr=new UBytePtr(), c128_vicaddr=new UBytePtr();
-	public static UBytePtr c64_memory = new UBytePtr();
+	public static UBytePtr c64_memory;
         public static UBytePtr c64_colorram = new UBytePtr();
-        public static UBytePtr c64_basic = new UBytePtr();
-        public static UBytePtr c64_kernal = new UBytePtr();
+        public static UBytePtr c64_basic;
+        public static UBytePtr c64_kernal;
         public static UBytePtr c64_chargen = new UBytePtr();
         public static UBytePtr c64_roml=null;
         public static UBytePtr c64_romh=null;
@@ -108,179 +113,183 @@ public class c64
 	}
 	
 	
-/*TODO*///	/*
-/*TODO*///	 * cia 0
-/*TODO*///	 * port a
-/*TODO*///	 * 7-0 keyboard line select
-/*TODO*///	 * 7,6: paddle select( 01 port a, 10 port b)
-/*TODO*///	 * 4: joystick a fire button
-/*TODO*///	 * 3,2: Paddles port a fire button
-/*TODO*///	 * 3-0: joystick a direction
-/*TODO*///	 * port b
-/*TODO*///	 * 7-0: keyboard raw values
-/*TODO*///	 * 4: joystick b fire button, lightpen select
-/*TODO*///	 * 3,2: paddle b fire buttons (left,right)
-/*TODO*///	 * 3-0: joystick b direction
-/*TODO*///	 * flag cassette read input, serial request in
-/*TODO*///	 * irq to irq connected
-/*TODO*///	 */
-/*TODO*///	int c64_cia0_port_a_r (int offset)
-/*TODO*///	{
-/*TODO*///	    int value = 0xff;
-/*TODO*///	
-/*TODO*///	    if (!(cia0portb&0x80)) {
-/*TODO*///		UINT8 t=0xff;
-/*TODO*///		if (!(c64_keyline[7]&0x80)) t&=~0x80;
-/*TODO*///		if (!(c64_keyline[6]&0x80)) t&=~0x40;
-/*TODO*///		if (!(c64_keyline[5]&0x80)) t&=~0x20;
-/*TODO*///		if (!(c64_keyline[4]&0x80)) t&=~0x10;
-/*TODO*///		if (!(c64_keyline[3]&0x80)) t&=~0x08;
-/*TODO*///		if (!(c64_keyline[2]&0x80)) t&=~0x04;
-/*TODO*///		if (!(c64_keyline[1]&0x80)) t&=~0x02;
-/*TODO*///		if (!(c64_keyline[0]&0x80)) t&=~0x01;
-/*TODO*///		value &=t;
-/*TODO*///	    }
-/*TODO*///	    if (!(cia0portb&0x40)) {
-/*TODO*///		UINT8 t=0xff;
-/*TODO*///		if (!(c64_keyline[7]&0x40)) t&=~0x80;
-/*TODO*///		if (!(c64_keyline[6]&0x40)) t&=~0x40;
-/*TODO*///		if (!(c64_keyline[5]&0x40)) t&=~0x20;
-/*TODO*///		if (!(c64_keyline[4]&0x40)) t&=~0x10;
-/*TODO*///		if (!(c64_keyline[3]&0x40)) t&=~0x08;
-/*TODO*///		if (!(c64_keyline[2]&0x40)) t&=~0x04;
-/*TODO*///		if (!(c64_keyline[1]&0x40)) t&=~0x02;
-/*TODO*///		if (!(c64_keyline[0]&0x40)) t&=~0x01;
-/*TODO*///		value &=t;
-/*TODO*///	    }
-/*TODO*///	    if (!(cia0portb&0x20)) {
-/*TODO*///		UINT8 t=0xff;
-/*TODO*///		if (!(c64_keyline[7]&0x20)) t&=~0x80;
-/*TODO*///		if (!(c64_keyline[6]&0x20)) t&=~0x40;
-/*TODO*///		if (!(c64_keyline[5]&0x20)) t&=~0x20;
-/*TODO*///		if (!(c64_keyline[4]&0x20)) t&=~0x10;
-/*TODO*///		if (!(c64_keyline[3]&0x20)) t&=~0x08;
-/*TODO*///		if (!(c64_keyline[2]&0x20)) t&=~0x04;
-/*TODO*///		if (!(c64_keyline[1]&0x20)) t&=~0x02;
-/*TODO*///		if (!(c64_keyline[0]&0x20)) t&=~0x01;
-/*TODO*///		value &=t;
-/*TODO*///	    }
-/*TODO*///	    if (!(cia0portb&0x10)) {
-/*TODO*///		UINT8 t=0xff;
-/*TODO*///		if (!(c64_keyline[7]&0x10)) t&=~0x80;
-/*TODO*///		if (!(c64_keyline[6]&0x10)) t&=~0x40;
-/*TODO*///		if (!(c64_keyline[5]&0x10)) t&=~0x20;
-/*TODO*///		if (!(c64_keyline[4]&0x10)) t&=~0x10;
-/*TODO*///		if (!(c64_keyline[3]&0x10)) t&=~0x08;
-/*TODO*///		if (!(c64_keyline[2]&0x10)) t&=~0x04;
-/*TODO*///		if (!(c64_keyline[1]&0x10)) t&=~0x02;
-/*TODO*///		if (!(c64_keyline[0]&0x10)) t&=~0x01;
-/*TODO*///		value &=t;
-/*TODO*///	    }
-/*TODO*///	    if (!(cia0portb&0x08)) {
-/*TODO*///		UINT8 t=0xff;
-/*TODO*///		if (!(c64_keyline[7]&0x08)) t&=~0x80;
-/*TODO*///		if (!(c64_keyline[6]&0x08)) t&=~0x40;
-/*TODO*///		if (!(c64_keyline[5]&0x08)) t&=~0x20;
-/*TODO*///		if (!(c64_keyline[4]&0x08)) t&=~0x10;
-/*TODO*///		if (!(c64_keyline[3]&0x08)) t&=~0x08;
-/*TODO*///		if (!(c64_keyline[2]&0x08)) t&=~0x04;
-/*TODO*///		if (!(c64_keyline[1]&0x08)) t&=~0x02;
-/*TODO*///		if (!(c64_keyline[0]&0x08)) t&=~0x01;
-/*TODO*///		value &=t;
-/*TODO*///	    }
-/*TODO*///	    if (!(cia0portb&0x04)) {
-/*TODO*///		UINT8 t=0xff;
-/*TODO*///		if (!(c64_keyline[7]&0x04)) t&=~0x80;
-/*TODO*///		if (!(c64_keyline[6]&0x04)) t&=~0x40;
-/*TODO*///		if (!(c64_keyline[5]&0x04)) t&=~0x20;
-/*TODO*///		if (!(c64_keyline[4]&0x04)) t&=~0x10;
-/*TODO*///		if (!(c64_keyline[3]&0x04)) t&=~0x08;
-/*TODO*///		if (!(c64_keyline[2]&0x04)) t&=~0x04;
-/*TODO*///		if (!(c64_keyline[1]&0x04)) t&=~0x02;
-/*TODO*///		if (!(c64_keyline[0]&0x04)) t&=~0x01;
-/*TODO*///		value &=t;
-/*TODO*///	    }
-/*TODO*///	    if (!(cia0portb&0x02)) {
-/*TODO*///		UINT8 t=0xff;
-/*TODO*///		if (!(c64_keyline[7]&0x02)) t&=~0x80;
-/*TODO*///		if (!(c64_keyline[6]&0x02)) t&=~0x40;
-/*TODO*///		if (!(c64_keyline[5]&0x02)) t&=~0x20;
-/*TODO*///		if (!(c64_keyline[4]&0x02)) t&=~0x10;
-/*TODO*///		if (!(c64_keyline[3]&0x02)) t&=~0x08;
-/*TODO*///		if (!(c64_keyline[2]&0x02)) t&=~0x04;
-/*TODO*///		if (!(c64_keyline[1]&0x02)) t&=~0x02;
-/*TODO*///		if (!(c64_keyline[0]&0x02)) t&=~0x01;
-/*TODO*///		value &=t;
-/*TODO*///	    }
-/*TODO*///	    if (!(cia0portb&0x01)) {
-/*TODO*///		UINT8 t=0xff;
-/*TODO*///		if (!(c64_keyline[7]&0x01)) t&=~0x80;
-/*TODO*///		if (!(c64_keyline[6]&0x01)) t&=~0x40;
-/*TODO*///		if (!(c64_keyline[5]&0x01)) t&=~0x20;
-/*TODO*///		if (!(c64_keyline[4]&0x01)) t&=~0x10;
-/*TODO*///		if (!(c64_keyline[3]&0x01)) t&=~0x08;
-/*TODO*///		if (!(c64_keyline[2]&0x01)) t&=~0x04;
-/*TODO*///		if (!(c64_keyline[1]&0x01)) t&=~0x02;
-/*TODO*///		if (!(c64_keyline[0]&0x01)) t&=~0x01;
-/*TODO*///		value &=t;
-/*TODO*///	    }
-/*TODO*///	
-/*TODO*///	    if (JOYSTICK_SWAP) value &= c64_keyline[8];
-/*TODO*///	    else value &= c64_keyline[9];
-/*TODO*///	
-/*TODO*///	    return value;
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	int c64_cia0_port_b_r (int offset)
-/*TODO*///	{
-/*TODO*///	    int value = 0xff;
-/*TODO*///	
-/*TODO*///	    if (!(cia0porta & 0x80)) value &= c64_keyline[7];
-/*TODO*///	    if (!(cia0porta & 0x40)) value &= c64_keyline[6];
-/*TODO*///	    if (!(cia0porta & 0x20)) value &= c64_keyline[5];
-/*TODO*///	    if (!(cia0porta & 0x10)) value &= c64_keyline[4];
-/*TODO*///	    if (!(cia0porta & 8)) value &= c64_keyline[3];
-/*TODO*///	    if (!(cia0porta & 4)) value &= c64_keyline[2];
-/*TODO*///	    if (!(cia0porta & 2)) value &= c64_keyline[1];
-/*TODO*///	    if (!(cia0porta & 1)) value &= c64_keyline[0];
-/*TODO*///	
-/*TODO*///	    if (JOYSTICK_SWAP) value &= c64_keyline[9];
-/*TODO*///	    else value &= c64_keyline[8];
-/*TODO*///	
-/*TODO*///	    if (c128)
-/*TODO*///	    {
-/*TODO*///		if (!vic2e_k0_r ())
-/*TODO*///		    value &= c128_keyline[0];
-/*TODO*///		if (!vic2e_k1_r ())
-/*TODO*///		    value &= c128_keyline[1];
-/*TODO*///		if (!vic2e_k2_r ())
-/*TODO*///		    value &= c128_keyline[2];
-/*TODO*///	    }
-/*TODO*///	    if (c65) {
-/*TODO*///		if (!(c65_6511_port&2))
-/*TODO*///		    value&=c65_keyline;
-/*TODO*///	    }
-/*TODO*///	
-/*TODO*///	    return value;
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	void c64_cia0_port_a_w (int offset, int data)
-/*TODO*///	{
-/*TODO*///	    cia0porta = data;
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	static void c64_cia0_port_b_w (int offset, int data)
-/*TODO*///	{
-/*TODO*///	    cia0portb =data;
-/*TODO*///	    vic2_lightpen_write (data & 0x10);
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	static void c64_irq (int level)
-/*TODO*///	{
-/*TODO*///		static int old_level = 0;
-/*TODO*///	
-/*TODO*///		if (level != old_level)
-/*TODO*///		{
+	/*
+	 * cia 0
+	 * port a
+	 * 7-0 keyboard line select
+	 * 7,6: paddle select( 01 port a, 10 port b)
+	 * 4: joystick a fire button
+	 * 3,2: Paddles port a fire button
+	 * 3-0: joystick a direction
+	 * port b
+	 * 7-0: keyboard raw values
+	 * 4: joystick b fire button, lightpen select
+	 * 3,2: paddle b fire buttons (left,right)
+	 * 3-0: joystick b direction
+	 * flag cassette read input, serial request in
+	 * irq to irq connected
+	 */
+	public static ReadHandlerPtr c64_cia0_port_a_r = new ReadHandlerPtr() {
+            public int handler(int offset) {
+                int value = 0xff;
+	
+                if ((cia0portb&0x80)==0) {
+                    int t=0xff;
+                    if ((c64_keyline[7]&0x80)==0) t&=~0x80;
+                    if ((c64_keyline[6]&0x80)==0) t&=~0x40;
+                    if ((c64_keyline[5]&0x80)==0) t&=~0x20;
+                    if ((c64_keyline[4]&0x80)==0) t&=~0x10;
+                    if ((c64_keyline[3]&0x80)==0) t&=~0x08;
+                    if ((c64_keyline[2]&0x80)==0) t&=~0x04;
+                    if ((c64_keyline[1]&0x80)==0) t&=~0x02;
+                    if ((c64_keyline[0]&0x80)==0) t&=~0x01;
+                    value &=t;
+                }
+                if ((cia0portb&0x40)==0) {
+                    int t=0xff;
+                    if ((c64_keyline[7]&0x40)==0) t&=~0x80;
+                    if ((c64_keyline[6]&0x40)==0) t&=~0x40;
+                    if ((c64_keyline[5]&0x40)==0) t&=~0x20;
+                    if ((c64_keyline[4]&0x40)==0) t&=~0x10;
+                    if ((c64_keyline[3]&0x40)==0) t&=~0x08;
+                    if ((c64_keyline[2]&0x40)==0) t&=~0x04;
+                    if ((c64_keyline[1]&0x40)==0) t&=~0x02;
+                    if ((c64_keyline[0]&0x40)==0) t&=~0x01;
+                    value &=t;
+                }
+                if ((cia0portb&0x20)==0) {
+                    int t=0xff;
+                    if ((c64_keyline[7]&0x20)==0) t&=~0x80;
+                    if ((c64_keyline[6]&0x20)==0) t&=~0x40;
+                    if ((c64_keyline[5]&0x20)==0) t&=~0x20;
+                    if ((c64_keyline[4]&0x20)==0) t&=~0x10;
+                    if ((c64_keyline[3]&0x20)==0) t&=~0x08;
+                    if ((c64_keyline[2]&0x20)==0) t&=~0x04;
+                    if ((c64_keyline[1]&0x20)==0) t&=~0x02;
+                    if ((c64_keyline[0]&0x20)==0) t&=~0x01;
+                    value &=t;
+                }
+                if ((cia0portb&0x10)==0) {
+                    int t=0xff;
+                    if ((c64_keyline[7]&0x10)==0) t&=~0x80;
+                    if ((c64_keyline[6]&0x10)==0) t&=~0x40;
+                    if ((c64_keyline[5]&0x10)==0) t&=~0x20;
+                    if ((c64_keyline[4]&0x10)==0) t&=~0x10;
+                    if ((c64_keyline[3]&0x10)==0) t&=~0x08;
+                    if ((c64_keyline[2]&0x10)==0) t&=~0x04;
+                    if ((c64_keyline[1]&0x10)==0) t&=~0x02;
+                    if ((c64_keyline[0]&0x10)==0) t&=~0x01;
+                    value &=t;
+                }
+                if ((cia0portb&0x08)==0) {
+                    int t=0xff;
+                    if ((c64_keyline[7]&0x08)==0) t&=~0x80;
+                    if ((c64_keyline[6]&0x08)==0) t&=~0x40;
+                    if ((c64_keyline[5]&0x08)==0) t&=~0x20;
+                    if ((c64_keyline[4]&0x08)==0) t&=~0x10;
+                    if ((c64_keyline[3]&0x08)==0) t&=~0x08;
+                    if ((c64_keyline[2]&0x08)==0) t&=~0x04;
+                    if ((c64_keyline[1]&0x08)==0) t&=~0x02;
+                    if ((c64_keyline[0]&0x08)==0) t&=~0x01;
+                    value &=t;
+                }
+                if ((cia0portb&0x04)==0) {
+                    int t=0xff;
+                    if ((c64_keyline[7]&0x04)==0) t&=~0x80;
+                    if ((c64_keyline[6]&0x04)==0) t&=~0x40;
+                    if ((c64_keyline[5]&0x04)==0) t&=~0x20;
+                    if ((c64_keyline[4]&0x04)==0) t&=~0x10;
+                    if ((c64_keyline[3]&0x04)==0) t&=~0x08;
+                    if ((c64_keyline[2]&0x04)==0) t&=~0x04;
+                    if ((c64_keyline[1]&0x04)==0) t&=~0x02;
+                    if ((c64_keyline[0]&0x04)==0) t&=~0x01;
+                    value &=t;
+                }
+                if ((cia0portb&0x02)==0) {
+                    int t=0xff;
+                    if ((c64_keyline[7]&0x02)==0) t&=~0x80;
+                    if ((c64_keyline[6]&0x02)==0) t&=~0x40;
+                    if ((c64_keyline[5]&0x02)==0) t&=~0x20;
+                    if ((c64_keyline[4]&0x02)==0) t&=~0x10;
+                    if ((c64_keyline[3]&0x02)==0) t&=~0x08;
+                    if ((c64_keyline[2]&0x02)==0) t&=~0x04;
+                    if ((c64_keyline[1]&0x02)==0) t&=~0x02;
+                    if ((c64_keyline[0]&0x02)==0) t&=~0x01;
+                    value &=t;
+                }
+                if ((cia0portb&0x01)==0) {
+                    int t=0xff;
+                    if ((c64_keyline[7]&0x01)==0) t&=~0x80;
+                    if ((c64_keyline[6]&0x01)==0) t&=~0x40;
+                    if ((c64_keyline[5]&0x01)==0) t&=~0x20;
+                    if ((c64_keyline[4]&0x01)==0) t&=~0x10;
+                    if ((c64_keyline[3]&0x01)==0) t&=~0x08;
+                    if ((c64_keyline[2]&0x01)==0) t&=~0x04;
+                    if ((c64_keyline[1]&0x01)==0) t&=~0x02;
+                    if ((c64_keyline[0]&0x01)==0) t&=~0x01;
+                    value &=t;
+                }
+
+                if (JOYSTICK_SWAP()!=0) value &= c64_keyline[8];
+                else value &= c64_keyline[9];
+
+                return value;
+            }
+        };
+	
+	public static ReadHandlerPtr c64_cia0_port_b_r = new ReadHandlerPtr() {
+            public int handler(int offset) {
+                int value = 0xff;
+	
+                if ((cia0porta & 0x80)==0) value &= c64_keyline[7];
+                if ((cia0porta & 0x40)==0) value &= c64_keyline[6];
+                if ((cia0porta & 0x20)==0) value &= c64_keyline[5];
+                if ((cia0porta & 0x10)==0) value &= c64_keyline[4];
+                if ((cia0porta & 8)==0) value &= c64_keyline[3];
+                if ((cia0porta & 4)==0) value &= c64_keyline[2];
+                if ((cia0porta & 2)==0) value &= c64_keyline[1];
+                if ((cia0porta & 1)==0) value &= c64_keyline[0];
+
+                if (JOYSTICK_SWAP()!=0) value &= c64_keyline[9];
+                else value &= c64_keyline[8];
+
+    /*TODO*///	    if (c128)
+    /*TODO*///	    {
+    /*TODO*///		if (!vic2e_k0_r ())
+    /*TODO*///		    value &= c128_keyline[0];
+    /*TODO*///		if (!vic2e_k1_r ())
+    /*TODO*///		    value &= c128_keyline[1];
+    /*TODO*///		if (!vic2e_k2_r ())
+    /*TODO*///		    value &= c128_keyline[2];
+    /*TODO*///	    }
+    /*TODO*///	    if (c65) {
+    /*TODO*///		if (!(c65_6511_port&2))
+    /*TODO*///		    value&=c65_keyline;
+    /*TODO*///	    }
+
+                return value;
+            }
+        };
+	
+	public static WriteHandlerPtr c64_cia0_port_a_w = new WriteHandlerPtr() {
+            public void handler(int offset, int data) {
+                cia0porta = data;
+            }
+        };
+	
+	public static WriteHandlerPtr c64_cia0_port_b_w = new WriteHandlerPtr() {
+            public void handler(int offset, int data) {
+                cia0portb =data;
+/*TODO*///                vic2_lightpen_write (data & 0x10);
+            }
+        };
+        
+        static int old_level = 0;
+	
+	public static ReadHandlerPtr c64_irq = new ReadHandlerPtr() {
+            public int handler(int level) {
+                if (level != old_level)
+		{
 /*TODO*///			DBG_LOG (3, "mos6510", ("irq %s\n", level ? "start" : "end"));
 /*TODO*///			if (c128) {
 /*TODO*///				if (0&&(cpu_getactivecpu()==0)) {
@@ -289,28 +298,35 @@ public class c64
 /*TODO*///					cpu_set_irq_line (1, M6510_IRQ_LINE, level);
 /*TODO*///				}
 /*TODO*///			} else {
-/*TODO*///				cpu_set_irq_line (0, M6510_IRQ_LINE, level);
+				cpu_set_irq_line (0, M6510_IRQ_LINE, level);
 /*TODO*///			}
-/*TODO*///			old_level = level;
-/*TODO*///		}
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	WRITE_HANDLER(c64_tape_read)
-/*TODO*///	{
-/*TODO*///		cia6526_0_set_input_flag (data);
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	static void c64_cia0_interrupt (int level)
-/*TODO*///	{
-/*TODO*///		if (level != cia0irq)
-/*TODO*///		{
-/*TODO*///			c64_irq (level || vicirq);
-/*TODO*///			cia0irq = level;
-/*TODO*///		}
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	void c64_vic_interrupt (int level)
-/*TODO*///	{
+			old_level = level;
+		}
+                
+                return 0;
+            }
+        };
+	
+	public static WriteHandlerPtr c64_tape_read = new WriteHandlerPtr() {
+            public void handler(int offset, int data) {
+                cia6526_0_set_input_flag (data);
+            }
+        };
+	
+        public static ReadHandlerPtr c64_cia0_interrupt = new ReadHandlerPtr() {
+            public int handler(int level) {
+		if (level != cia0irq)
+		{
+			c64_irq.handler((level!=0 || vicirq!=0)?1:0);
+			cia0irq = level;
+		}
+                
+                return 0;
+            }
+        };
+	
+	public static ReadHandlerPtr c64_vic_interrupt = new ReadHandlerPtr() {
+            public int handler(int level) {
 /*TODO*///	#if 1
 /*TODO*///		if (level != vicirq)
 /*TODO*///		{
@@ -318,60 +334,64 @@ public class c64
 /*TODO*///			vicirq = level;
 /*TODO*///		}
 /*TODO*///	#endif
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	/*
-/*TODO*///	 * cia 1
-/*TODO*///	 * port a
-/*TODO*///	 * 7 serial bus data input
-/*TODO*///	 * 6 serial bus clock input
-/*TODO*///	 * 5 serial bus data output
-/*TODO*///	 * 4 serial bus clock output
-/*TODO*///	 * 3 serial bus atn output
-/*TODO*///	 * 2 rs232 data output
-/*TODO*///	 * 1-0 vic-chip system memory bank select
-/*TODO*///	 *
-/*TODO*///	 * port b
-/*TODO*///	 * 7 user rs232 data set ready
-/*TODO*///	 * 6 user rs232 clear to send
-/*TODO*///	 * 5 user
-/*TODO*///	 * 4 user rs232 carrier detect
-/*TODO*///	 * 3 user rs232 ring indicator
-/*TODO*///	 * 2 user rs232 data terminal ready
-/*TODO*///	 * 1 user rs232 request to send
-/*TODO*///	 * 0 user rs232 received data
-/*TODO*///	 * flag restore key or rs232 received data input
-/*TODO*///	 * irq to nmi connected ?
-/*TODO*///	 */
-/*TODO*///	int c64_cia1_port_a_r (int offset)
-/*TODO*///	{
-/*TODO*///		int value = 0xff;
-/*TODO*///	
-/*TODO*///		if (!serial_clock || !cbm_serial_clock_read ())
-/*TODO*///			value &= ~0x40;
-/*TODO*///		if (!serial_data || !cbm_serial_data_read ())
-/*TODO*///			value &= ~0x80;
-/*TODO*///		return value;
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	static void c64_cia1_port_a_w (int offset, int data)
-/*TODO*///	{
-/*TODO*///		static int helper[4] =
-/*TODO*///		{0xc000, 0x8000, 0x4000, 0x0000};
-/*TODO*///	
-/*TODO*///		cbm_serial_clock_write (serial_clock = !(data & 0x10));
-/*TODO*///		cbm_serial_data_write (serial_data = !(data & 0x20));
-/*TODO*///		cbm_serial_atn_write (serial_atn = !(data & 8));
-/*TODO*///		c64_vicaddr = c64_memory + helper[data & 3];
+                
+                return 0;
+            }
+        };
+	
+	/*
+	 * cia 1
+	 * port a
+	 * 7 serial bus data input
+	 * 6 serial bus clock input
+	 * 5 serial bus data output
+	 * 4 serial bus clock output
+	 * 3 serial bus atn output
+	 * 2 rs232 data output
+	 * 1-0 vic-chip system memory bank select
+	 *
+	 * port b
+	 * 7 user rs232 data set ready
+	 * 6 user rs232 clear to send
+	 * 5 user
+	 * 4 user rs232 carrier detect
+	 * 3 user rs232 ring indicator
+	 * 2 user rs232 data terminal ready
+	 * 1 user rs232 request to send
+	 * 0 user rs232 received data
+	 * flag restore key or rs232 received data input
+	 * irq to nmi connected ?
+	 */
+	public static ReadHandlerPtr c64_cia1_port_a_r = new ReadHandlerPtr() {
+            public int handler(int offset) {
+                int value = 0xff;
+	
+		if (serial_clock==0 || cbm_serial_clock_read ()==0)
+			value &= ~0x40;
+		if (serial_data==0 || cbm_serial_data_read ()==0)
+			value &= ~0x80;
+		return value;
+            }
+        };
+	
+        static int helper[] = {0xc000, 0x8000, 0x4000, 0x0000};
+                
+	public static WriteHandlerPtr c64_cia1_port_a_w = new WriteHandlerPtr() {
+            public void handler(int offset, int data) {
+                cbm_serial_clock_write (serial_clock = (data & 0x10)!=0?0:1);
+		cbm_serial_data_write (serial_data = (data & 0x20)!=0?0:1);
+		cbm_serial_atn_write (serial_atn = (data & 8)!=0?0:1);
+		c64_vicaddr = new UBytePtr(c64_memory, helper[data & 3]);
 /*TODO*///		if (c128) {
 /*TODO*///			c128_vicaddr = c64_memory + helper[data & 3] + c128_va1617;
 /*TODO*///		}
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	static void c64_cia1_interrupt (int level)
-/*TODO*///	{
-/*TODO*///		cia1irq=level;
-/*TODO*///		c64_nmi();
+            }
+        };
+	
+	public static ReadHandlerPtr c64_cia1_interrupt = new ReadHandlerPtr() {
+            public int handler(int level) {
+                cia1irq=level;
+		c64_nmi();
 /*TODO*///	#if 0
 /*TODO*///		static int old_level = 0;
 /*TODO*///	
@@ -383,36 +403,39 @@ public class c64
 /*TODO*///			old_level = level;
 /*TODO*///		}
 /*TODO*///	#endif
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	struct cia6526_interface c64_cia0 =
-/*TODO*///	{
-/*TODO*///		c64_cia0_port_a_r,
-/*TODO*///		c64_cia0_port_b_r,
-/*TODO*///		c64_cia0_port_a_w,
-/*TODO*///		c64_cia0_port_b_w,
-/*TODO*///		0,								   /*c64_cia0_pc_w */
-/*TODO*///		0,								   /*c64_cia0_sp_r */
-/*TODO*///		0,								   /*c64_cia0_sp_w */
-/*TODO*///		0,								   /*c64_cia0_cnt_r */
-/*TODO*///		0,								   /*c64_cia0_cnt_w */
-/*TODO*///		c64_cia0_interrupt,
-/*TODO*///		0xff, 0xff, 0
-/*TODO*///	}, c64_cia1 =
-/*TODO*///	{
-/*TODO*///		c64_cia1_port_a_r,
-/*TODO*///		0,								   /*c64_cia1_port_b_r, */
-/*TODO*///		c64_cia1_port_a_w,
-/*TODO*///		0,								   /*c64_cia1_port_b_w, */
-/*TODO*///		0,								   /*c64_cia1_pc_w */
-/*TODO*///		0,								   /*c64_cia1_sp_r */
-/*TODO*///		0,								   /*c64_cia1_sp_w */
-/*TODO*///		0,								   /*c64_cia1_cnt_r */
-/*TODO*///		0,								   /*c64_cia1_cnt_w */
-/*TODO*///		c64_cia1_interrupt,
-/*TODO*///		0xc7, 0xff, 0
-/*TODO*///	};
-/*TODO*///	
+
+                return 0;
+            }
+        };
+
+	public static cia6526_interface c64_cia0 = new cia6526_interface
+        (
+		c64_cia0_port_a_r,
+		c64_cia0_port_b_r,
+		c64_cia0_port_a_w,
+		c64_cia0_port_b_w,
+		null,								   /*c64_cia0_pc_w */
+		null,								   /*c64_cia0_sp_r */
+		null,								   /*c64_cia0_sp_w */
+		null,								   /*c64_cia0_cnt_r */
+		null,								   /*c64_cia0_cnt_w */
+		c64_cia0_interrupt,
+		0xff, 0xff, 0
+	), c64_cia1 = new cia6526_interface
+        (
+		c64_cia1_port_a_r,
+		null,								   /*c64_cia1_port_b_r, */
+		c64_cia1_port_a_w,
+		null,								   /*c64_cia1_port_b_w, */
+		null,								   /*c64_cia1_pc_w */
+		null,								   /*c64_cia1_sp_r */
+		null,								   /*c64_cia1_sp_w */
+		null,								   /*c64_cia1_cnt_r */
+		null,								   /*c64_cia1_cnt_w */
+		c64_cia1_interrupt,
+		0xc7, 0xff, 0
+	);
+	
 /*TODO*///	static void c64_bankswitch (int reset);
 /*TODO*///	static void c64_robocop2_w(int offset, int value)
 /*TODO*///	{
@@ -581,6 +604,7 @@ public class c64
         
 	public static void c64_bankswitch (int reset)
 	{
+            System.out.println("c64_bankswitch");
 		
 		int data, loram, hiram, charen;
 	
@@ -596,11 +620,13 @@ public class c64
 		    || (loram!=0 && c64_exrom==0)) // for omega race cartridge
 	//	    || (loram && hiram && !c64_exrom))
 		{
-			cpu_setbank (1, roml);
+                    System.out.println("A");
+			cpu_setbank (1, new UBytePtr(roml));
 			memory_set_bankhandler_w (2, 0, MWA_RAM); // always ram: pitstop
 		}
 		else
 		{
+                    System.out.println("B");
 			cpu_setbank (1, new UBytePtr(c64_memory, 0x8000));
 			memory_set_bankhandler_w (2, 0, MWA_RAM);
 		}
@@ -613,25 +639,30 @@ public class c64
 /*TODO*///		    || (!c64_exrom) )
 /*TODO*///	#endif
 		{
-			cpu_setbank (3, romh);
+                    System.out.println("C");
+			cpu_setbank (3, new UBytePtr(romh));
 		}
 		else if (loram!=0 && hiram!=0 &&c64_game!=0)
 		{
+                    System.out.println("D");
 			cpu_setbank (3, new UBytePtr(c64_basic));
 		}
 		else
 		{
+                    System.out.println("E");
 			cpu_setbank (3, new UBytePtr(c64_memory, 0xa000));
 		}
 	
 		if ((c64_game==0 && c64_exrom!=0)
 			|| (charen!=0 && (loram!=0 || hiram!=0)))
 		{
+                    System.out.println("F");
 			memory_set_bankhandler_r (5, 0, c64_read_io);
 			memory_set_bankhandler_w (6, 0, c64_write_io);
 		}
 		else
 		{
+                    System.out.println("G");
 			memory_set_bankhandler_r (5, 0, MRA_BANK5);
 			memory_set_bankhandler_w (6, 0, MWA_BANK6);
 			cpu_setbank (6, new UBytePtr(c64_memory, 0xd000));
@@ -647,24 +678,29 @@ public class c64
 	
 		if (c64_game==0 && c64_exrom!=0)
 		{
+                    System.out.println("H");
 			cpu_setbank (7, new UBytePtr(romh));
 			memory_set_bankhandler_w (8, 0, MWA_NOP);
 		}
 		else
 		{
+                    System.out.println("I");
 			memory_set_bankhandler_w (8, 0, MWA_RAM);
 			if (hiram != 0)
 			{
+                            System.out.println("I1");
 				cpu_setbank (7, new UBytePtr(c64_kernal));
 			}
 			else
 			{
+                            System.out.println("I2");
 				cpu_setbank (7, new UBytePtr(c64_memory, 0xe000));
 			}
 		}
 		game=c64_game;
 		exrom=c64_exrom;
 		old = data;
+                System.out.println("Salgo...");
 	}
 	
 	/**
@@ -681,7 +717,7 @@ public class c64
 	 */
         public static WriteHandlerPtr c64_m6510_port_w = new WriteHandlerPtr() {
             public void handler(int offset, int data) {
-            
+            System.out.println("c64_m6510_port_w");
 		if (offset != 0)
 		{
 			if (c64_port6510 != data)
@@ -780,46 +816,51 @@ public class c64
 		c64_colorram.write(offset & 0x3ff, data | 0xf0);
 	} };
 	
-/*TODO*///	/*
-/*TODO*///	 * only 14 address lines
-/*TODO*///	 * a15 and a14 portlines
-/*TODO*///	 * 0x1000-0x1fff, 0x9000-0x9fff char rom
-/*TODO*///	 */
-/*TODO*///	static int c64_dma_read (int offset)
-/*TODO*///	{
-/*TODO*///		if (!c64_game && c64_exrom)
-/*TODO*///		{
-/*TODO*///			if (offset < 0x3000)
-/*TODO*///				return c64_memory[offset];
-/*TODO*///			return c64_romh[offset & 0x1fff];
-/*TODO*///		}
-/*TODO*///		if (((c64_vicaddr - c64_memory + offset) & 0x7000) == 0x1000)
-/*TODO*///			return c64_chargen[offset & 0xfff];
-/*TODO*///		return c64_vicaddr[offset];
-/*TODO*///	}
-/*TODO*///	
+	/*
+	 * only 14 address lines
+	 * a15 and a14 portlines
+	 * 0x1000-0x1fff, 0x9000-0x9fff char rom
+	 */
+	public static ReadHandlerPtr c64_dma_read = new ReadHandlerPtr() {
+            public int handler(int offset) {
+                if (c64_game==0 && c64_exrom!=0)
+		{
+			if (offset < 0x3000)
+				return c64_memory.read(offset);
+			return c64_romh.read(offset & 0x1fff);
+		}
+		if (((c64_vicaddr.offset - c64_memory.offset + offset) & 0x7000) == 0x1000)
+                    return c64_chargen.read(offset & 0xfff);
+		return c64_vicaddr.read(offset);
+            }
+        };
+
+	
 /*TODO*///	static int c64_dma_read_ultimax (int offset)
 /*TODO*///	{
 /*TODO*///		if (offset < 0x3000)
 /*TODO*///			return c64_memory[offset];
 /*TODO*///		return c64_romh[offset & 0x1fff];
 /*TODO*///	}
-/*TODO*///	
-/*TODO*///	static int c64_dma_read_color (int offset)
-/*TODO*///	{
-/*TODO*///		return c64_colorram[offset & 0x3ff] & 0xf;
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	static void c64_common_driver_init (void)
-/*TODO*///	{
-/*TODO*///		/*    memset(c64_memory, 0, 0xfd00); */
+	
+	public static ReadHandlerPtr c64_dma_read_color = new ReadHandlerPtr() {
+            public int handler(int offset) {
+		return c64_colorram.read(offset & 0x3ff) & 0xf;
+            }
+        };
+	
+	static void c64_common_driver_init ()
+	{
+		/*    memset(c64_memory, 0, 0xfd00); */
+            c64_memory = new UBytePtr(0xfd00);
+            vic2.bitmap = Machine.scrbitmap;
 /*TODO*///		if (ultimax == 0) {
-/*TODO*///			c64_basic=memory_region(REGION_CPU1)+0x10000;
-/*TODO*///			c64_kernal=memory_region(REGION_CPU1)+0x12000;
-/*TODO*///			c64_chargen=memory_region(REGION_CPU1)+0x14000;
-/*TODO*///			c64_colorram=memory_region(REGION_CPU1)+0x15000;
-/*TODO*///			c64_roml=memory_region(REGION_CPU1)+0x15400;
-/*TODO*///			c64_romh=memory_region(REGION_CPU1)+0x17400;
+			c64_basic=new UBytePtr(memory_region(REGION_CPU1), 0x10000);
+			c64_kernal=new UBytePtr(memory_region(REGION_CPU1), 0x12000);
+			c64_chargen=new UBytePtr(memory_region(REGION_CPU1), 0x14000);
+			c64_colorram=new UBytePtr(memory_region(REGION_CPU1), 0x15000);
+			c64_roml=new UBytePtr(memory_region(REGION_CPU1), 0x15400);
+			c64_romh=new UBytePtr(memory_region(REGION_CPU1), 0x17400);
 /*TODO*///	#if 0
 /*TODO*///		{0x10000, 0x11fff, MWA_ROM, &c64_basic},	/* basic at 0xa000 */
 /*TODO*///		{0x12000, 0x13fff, MWA_ROM, &c64_kernal},	/* kernal at 0xe000 */
@@ -829,25 +870,25 @@ public class c64
 /*TODO*///		{0x17400, 0x193ff, MWA_ROM, &c64_romh},	/* kernal at 0xe000 */
 /*TODO*///	#endif
 /*TODO*///		}
-/*TODO*///		if (c64_tape_on)
-/*TODO*///			vc20_tape_open (c64_tape_read);
-/*TODO*///	
-/*TODO*///		if (c64_cia1_on)
-/*TODO*///		{
+		if (c64_tape_on != 0)
+			vc20_tape_open (c64_tape_read);
+	
+		if (c64_cia1_on != 0)
+		{
 /*TODO*///			cbm_drive_open ();
 /*TODO*///	
 /*TODO*///			cbm_drive_attach_fs (0);
 /*TODO*///			cbm_drive_attach_fs (1);
-/*TODO*///		}
-/*TODO*///	
-/*TODO*///		c64_cia0.todin50hz = c64_pal;
-/*TODO*///		cia6526_config (0, &c64_cia0);
-/*TODO*///		if (c64_cia1_on)
-/*TODO*///		{
-/*TODO*///			c64_cia1.todin50hz = c64_pal;
-/*TODO*///			cia6526_config (1, &c64_cia1);
-/*TODO*///		}
-/*TODO*///	
+		}
+	
+		c64_cia0.todin50hz = c64_pal;
+		cia6526_config (0, c64_cia0);
+		if (c64_cia1_on != 0)
+		{
+			c64_cia1.todin50hz = c64_pal;
+			cia6526_config (1, c64_cia1);
+		}
+	
 /*TODO*///		if (ultimax)
 /*TODO*///		{
 /*TODO*///			vic6567_init (0, c64_pal, c64_dma_read_ultimax, c64_dma_read_color,
@@ -855,12 +896,11 @@ public class c64
 /*TODO*///		}
 /*TODO*///		else
 /*TODO*///		{
-/*TODO*///			vic6567_init (0, c64_pal, c64_dma_read, c64_dma_read_color,
-/*TODO*///						  c64_vic_interrupt);
+			vic6567_init(0, c64_pal, c64_dma_read, c64_dma_read_color, c64_vic_interrupt);
 /*TODO*///		}
 /*TODO*///		state_add_function(c64_state);
-/*TODO*///	}
-/*TODO*///	
+	}
+	
 /*TODO*///	void c64_driver_init (void)
 /*TODO*///	{
 /*TODO*///		c64_common_driver_init ();
@@ -912,6 +952,7 @@ public class c64
 	
 	public static void c64_common_init_machine ()
 	{
+                c64_common_driver_init();
 /*TODO*///	#ifdef VC1541
 /*TODO*///		vc1541_reset ();
 /*TODO*///	#endif
@@ -934,6 +975,7 @@ public class c64
 	public static InitMachinePtr c64_init_machine = new InitMachinePtr() { public void handler() 
 	{
 		c64_common_init_machine ();
+                
 	
 /*TODO*///		c64_rom_recognition ();
 /*TODO*///		c64_rom_load();
@@ -941,7 +983,7 @@ public class c64
 /*TODO*///		if (c128)
 /*TODO*///			c128_bankswitch_64 (1);
 /*TODO*///		if (ultimax == 0)
-/*TODO*///			c64_bankswitch (1);
+			c64_bankswitch (1);
             }
         };
 	

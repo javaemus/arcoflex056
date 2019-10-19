@@ -87,7 +87,7 @@ public class cia6526
 		public int todstopped;
                 public timer_entry todtimer;
 
-/*TODO*///		int flag;						   /* input */
+		public int flag;						   /* input */
 
                 public int sdr;
 		public int cnt,						   /* input or output */
@@ -108,17 +108,18 @@ public class cia6526
 /*TODO*///	static void cia_timer1_timeout (int which);
 /*TODO*///	static void cia_timer2_timeout (int which);
 /*TODO*///	static void cia_tod_timeout (int which);
-/*TODO*///	
-/*TODO*///	/******************* configuration *******************/
-/*TODO*///	
-/*TODO*///	void cia6526_config (int which, const struct cia6526_interface *intf)
-/*TODO*///	{
-/*TODO*///		if (which >= MAX_CIA)
-/*TODO*///			return;
-/*TODO*///		memset (cia + which, 0, sizeof (cia[which]));
-/*TODO*///		cia[which].number=which;
-/*TODO*///		cia[which].intf = intf;
-/*TODO*///	}
+	
+	/******************* configuration *******************/
+	
+	public static void cia6526_config (int which, cia6526_interface intf)
+	{
+		if (which >= MAX_CIA)
+			return;
+		//memset (cia + which, 0, sizeof (cia[which]));
+                cia[which] = new _CIA6526();
+		cia[which].number=which;
+		cia[which].intf = intf;
+	}
 	
 	
 	/******************* reset *******************/
@@ -700,14 +701,14 @@ public class cia6526
 /*TODO*///	{
 /*TODO*///		This->in_b = data;
 /*TODO*///	}
-/*TODO*///	
-/*TODO*///	static void cia6526_set_input_flag (CIA6526 *This, int data)
-/*TODO*///	{
-/*TODO*///		if (This->flag && !data)
-/*TODO*///			cia_set_interrupt (This, 0x10);
-/*TODO*///		This->flag = data;
-/*TODO*///	}
-/*TODO*///	
+	
+	public static void cia6526_set_input_flag (int This, int data)
+	{
+		if (cia[This].flag!=0 && data==0)
+			cia_set_interrupt (This, 0x10);
+		cia[This].flag = data;
+	}
+	
 /*TODO*///	static void cia6526_set_input_sp (CIA6526 *This, int data)
 /*TODO*///	{
 /*TODO*///		This->sp = data;
@@ -940,11 +941,11 @@ public class cia6526
 /*TODO*///	{
 /*TODO*///		return cia[7].in_b;
 /*TODO*///	}
-/*TODO*///	
-/*TODO*///	void cia6526_0_set_input_flag (int data)
-/*TODO*///	{
-/*TODO*///		cia6526_set_input_flag (cia, data);
-/*TODO*///	}
+	
+	public static void cia6526_0_set_input_flag (int data)
+	{
+		cia6526_set_input_flag (0, data);
+	}
 /*TODO*///	void cia6526_1_set_input_flag (int data)
 /*TODO*///	{
 /*TODO*///		cia6526_set_input_flag (cia+1, data);

@@ -71,6 +71,7 @@ import static mame056.mame.*;
 import static mame056.timer.*;
 import static mame056.timerH.*;
 import static mess056.includes.c64H.*;
+import static mess056.includes.vic6567H.VIC2_LINES;
 
 public class vic6567
 {
@@ -259,23 +260,23 @@ public class vic6567
 /*TODO*///	#endif
 /*TODO*///	
 /*TODO*///	static void vic2_drawlines (int first, int last);
-/*TODO*///	
-/*TODO*///	void vic6567_init (int chip_vic2e, int pal,
-/*TODO*///					   int (*dma_read) (int), int (*dma_read_color) (int),
-/*TODO*///					   void (*irq) (int))
-/*TODO*///	{
-/*TODO*///		memset(&vic2, 0, sizeof(vic2));
-/*TODO*///	
-/*TODO*///		vic2.lines = VIC2_LINES;
-/*TODO*///	
-/*TODO*///		vic2.dma_read = dma_read;
-/*TODO*///		vic2.dma_read_color = dma_read_color;
-/*TODO*///		vic2.interrupt = irq;
-/*TODO*///		vic2.vic2e = chip_vic2e;
-/*TODO*///		vic2.pal = pal;
-/*TODO*///		vic2.on = true;
-/*TODO*///	}
-/*TODO*///	
+	
+	public static void vic6567_init (int chip_vic2e, int pal,
+					   ReadHandlerPtr dma_read, ReadHandlerPtr dma_read_color,
+					   ReadHandlerPtr irq)
+	{
+		//vic2 = new _vic2();
+	
+		vic2.lines = VIC2_LINES();
+	
+		vic2.dma_read = dma_read;
+		vic2.dma_read_color = dma_read_color;
+		vic2.interrupt = irq;
+		/*TODO*///vic2.vic2e = chip_vic2e;
+		vic2.pal = pal!=0?true:false;
+		vic2.on = true;
+	}
+	
 /*TODO*///	void vic2_set_rastering(int onoff)
 /*TODO*///	{
 /*TODO*///		vic2.on=onoff;
@@ -675,7 +676,8 @@ public class vic6567
 	
 	public static VhStartPtr vic2_vh_start = new VhStartPtr() {
             public int handler() {
-		int i;
+                
+                int i;
 	
 		vic2.bitmap = Machine.scrbitmap;
 	
@@ -687,12 +689,13 @@ public class vic6567
 			for (i = 1; i < 216; i++)
 				vic2.screen[i] = new UBytePtr(vic2.screen[i - 1], 656 / 8);
 		} else {
+                    
 			vic2.screen[0] = new UBytePtr(216 * 336 / 8);
 	
-			if (vic2.screen[0]==null)
-				return 1;
+			//if (vic2.screen[0]==null)
+			//	return 1;
 			for (i = 1; i < 216; i++)
-				vic2.screen[i] = new UBytePtr(vic2.screen[i - 1], 336 / 8);
+				vic2.screen[i] = new UBytePtr(216 * 336 / 8);
 		}
 	
 		for (i = 0; i < 256; i++)
@@ -771,8 +774,7 @@ public class vic6567
 	
 	public static void vic2_draw_character (int ybegin, int yend, int ch, int yoff, int xoff, int[] color)
 	{
-            System.out.println("vic2_draw_character");
-		int y, code;
+            	int y, code;
 	
 	/*	if (Machine.color_depth == 8)
 		{
@@ -792,9 +794,14 @@ public class vic6567
 		}
 		else
 	*/	{
+            
 			for (y = ybegin; y <= yend; y++)
 			{
 				code = vic2.dma_read.handler(vic2.chargenaddr + ch * 8 + y);
+                                
+                                //System.out.println("CHAR:"+code);
+                                //code=65;
+                                
 				vic2.screen[y + yoff].write(xoff >> 3, code);
 				new UShortPtr(vic2.bitmap.line[y + yoff]).write(xoff, (char) color[code >> 7]);
 				new UShortPtr(vic2.bitmap.line[y + yoff]).write(1 + xoff, (char) color[(code >> 6) & 1]);
@@ -849,8 +856,7 @@ public class vic6567
 	
 	public static void vic2_draw_bitmap (int ybegin, int yend, int ch, int yoff, int xoff)
 	{
-            System.out.println("vic2_draw_bitmap");
-		int y, code;
+            	int y, code;
 	
 	/*	if (Machine.color_depth == 8)
 		{
@@ -1252,7 +1258,10 @@ public class vic6567
 	
 	static void vic2_drawlines (int first, int last)
 	{
-            System.out.println("vic2_drawlines");
+            //System.out.println("vic2_drawlines");
+            if (vic2.bitmap==null)
+                vic2.bitmap=Machine.scrbitmap;
+            
 		int line, vline, end;
 		int attr, ch, ecm;
 		int syend;

@@ -4,6 +4,8 @@
  */ 
 package mess056.includes;
 
+import static mess056.vidhrdw.vic6567.vic2;
+
 public class vic6567H {
     /*
      * if you need this chip in another mame/mess emulation than let it me know
@@ -40,6 +42,6 @@ public class vic6567H {
      * ntsc 60 Hz vertical screen refresh, screen consists of 262 lines */
     public static int VIC6567_LINES = 261;
     public static int VIC6569_LINES = 312;
-/*TODO*///    public static int VIC2_LINES(){ return (vic2.pal?VIC6569_LINES:VIC6567_LINES); }
+    public static int VIC2_LINES(){ return (vic2.pal?VIC6569_LINES:VIC6567_LINES); }
 
 }
