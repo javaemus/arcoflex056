@@ -214,6 +214,8 @@ import static mess056.includes.vc20tapeH.*;
 import static mess056.includes.cbmserbH.*;
 import static mess056.includes.vic6567H.*;
 import static mess056.machine.c64.*;
+import static mess056.machine.cia6526.*;
+import static mess056.sndhrdw.sid6581.*;
 import static mess056.vidhrdw.vic6567.*;
 
 public class c64
@@ -260,13 +262,13 @@ public class c64
 	/*TODO*///#else
 	/* dram */
 	/* or character rom */
-	/*TODO*///	new Memory_ReadAddress(0xd000, 0xd3ff, MRA_BANK9),
-	/*TODO*///	new Memory_ReadAddress(0xd400, 0xd7ff, MRA_BANK10),
-	/*TODO*///	new Memory_ReadAddress(0xd800, 0xdbff, MRA_BANK11),		   /* colorram  */
-	/*TODO*///	new Memory_ReadAddress(0xdc00, 0xdcff, MRA_BANK12),
-	/*TODO*///	new Memory_ReadAddress(0xdd00, 0xddff, MRA_BANK13),
-	/*TODO*///	new Memory_ReadAddress(0xde00, 0xdeff, MRA_BANK14),		   /* csline expansion port */
-	/*TODO*///	new Memory_ReadAddress(0xdf00, 0xdfff, MRA_BANK15),		   /* csline expansion port */
+/*TODO*///		new Memory_ReadAddress(0xd000, 0xd3ff, MRA_BANK9),
+/*TODO*///		new Memory_ReadAddress(0xd400, 0xd7ff, MRA_BANK10),
+/*TODO*///		new Memory_ReadAddress(0xd800, 0xdbff, MRA_BANK11),		   /* colorram  */
+/*TODO*///		new Memory_ReadAddress(0xdc00, 0xdcff, MRA_BANK12),
+/*TODO*///		new Memory_ReadAddress(0xdd00, 0xddff, MRA_BANK13),
+/*TODO*///		new Memory_ReadAddress(0xde00, 0xdeff, MRA_BANK14),		   /* csline expansion port */
+/*TODO*///		new Memory_ReadAddress(0xdf00, 0xdfff, MRA_BANK15),		   /* csline expansion port */
 	/*TODO*///#endif
 		new Memory_ReadAddress(0xe000, 0xffff, MRA_BANK7),	   /* ram or kernel rom or external romh */
 		new Memory_ReadAddress(MEMPORT_MARKER, 0)
@@ -283,13 +285,13 @@ public class c64
 		new Memory_WriteAddress(0xd000, 0xdfff, MWA_BANK6),
 	/*TODO*///#else
 		/* or dram memory */
-	/*TODO*///	new Memory_WriteAddress(0xd000, 0xd3ff, vic2_port_w),
-	/*TODO*///	new Memory_WriteAddress(0xd400, 0xd7ff, sid6581_0_port_w),
-	/*TODO*///	new Memory_WriteAddress(0xd800, 0xdbff, c64_colorram_write),
-	/*TODO*///	new Memory_WriteAddress(0xdc00, 0xdcff, cia6526_0_port_w),
-	/*TODO*///	new Memory_WriteAddress(0xdd00, 0xddff, cia6526_1_port_w),
-	/*TODO*///	new Memory_WriteAddress(0xde00, 0xdeff, MWA_NOP),		   /* csline expansion port */
-	/*TODO*///	new Memory_WriteAddress(0xdf00, 0xdfff, MWA_NOP),		   /* csline expansion port */
+/*TODO*///		new Memory_WriteAddress(0xd000, 0xd3ff, vic2_port_w),
+/*TODO*///		new Memory_WriteAddress(0xd400, 0xd7ff, sid6581_0_port_w),
+/*TODO*///		new Memory_WriteAddress(0xd800, 0xdbff, c64_colorram_write),
+/*TODO*///		new Memory_WriteAddress(0xdc00, 0xdcff, cia6526_0_port_w),
+/*TODO*///		new Memory_WriteAddress(0xdd00, 0xddff, cia6526_1_port_w),
+/*TODO*///		new Memory_WriteAddress(0xde00, 0xdeff, MWA_NOP),		   /* csline expansion port */
+/*TODO*///		new Memory_WriteAddress(0xdf00, 0xdfff, MWA_NOP),		   /* csline expansion port */
 	/*TODO*///#endif
 		new Memory_WriteAddress(0xe000, 0xffff, MWA_BANK8),
 		new Memory_WriteAddress(MEMPORT_MARKER, 0)
@@ -643,37 +645,37 @@ public class c64
 	/*TODO*///		*(sys_palette+i*3)=*(sys_palette+i*3+2)=0;
 	/*TODO*///}
 	
-/*TODO*///	static RomLoadPtr rom_ultimax = new RomLoadPtr() { public void handler() {
-/*TODO*///                ROM_REGION (0x10000, REGION_CPU1, 0);
-/*TODO*///        ROM_END(); }};	 
+	static RomLoadPtr rom_ultimax = new RomLoadPtr() { public void handler() {
+                ROM_REGION (0x10000, REGION_CPU1, 0);
+        ROM_END(); }};	 
 	
-/*TODO*///	static RomLoadPtr rom_c64gs = new RomLoadPtr() { public void handler() {
-/*TODO*///		ROM_REGION (0x19400, REGION_CPU1, 0);
-/*TODO*///		/* standard basic, modified kernel */
-/*TODO*///		ROM_LOAD ("390852.01", 0x10000, 0x4000, 0xb0a9c2da);
-/*TODO*///		ROM_LOAD ("901225.01", 0x14000, 0x1000, 0xec4272ee);
-/*TODO*///	ROM_END(); }}; 
+	static RomLoadPtr rom_c64gs = new RomLoadPtr() { public void handler() {
+		ROM_REGION (0x19400, REGION_CPU1, 0);
+		/* standard basic, modified kernel */
+		ROM_LOAD ("390852.01", 0x10000, 0x4000, 0xb0a9c2da);
+		ROM_LOAD ("901225-01.u5", 0x14000, 0x1000, 0xec4272ee);
+	ROM_END(); }}; 
 	
 	static RomLoadPtr rom_c64 = new RomLoadPtr() { public void handler() {
 		ROM_REGION (0x19400, REGION_CPU1, 0);
 		ROM_LOAD ("901226.01", 0x10000, 0x2000, 0xf833d117);
 		ROM_LOAD( "901227.03",   0x12000, 0x2000, 0xdbe3e7c7 );
-		ROM_LOAD ("901225.01", 0x14000, 0x1000, 0xec4272ee);
+		ROM_LOAD ("901225-01.u5", 0x14000, 0x1000, 0xec4272ee);
 	ROM_END(); }}; 
 	
-/*TODO*///	static RomLoadPtr rom_c64pal = new RomLoadPtr() { public void handler() {
-/*TODO*///		ROM_REGION (0x19400, REGION_CPU1, 0);
-/*TODO*///		ROM_LOAD ("901226.01", 0x10000, 0x2000, 0xf833d117);
-/*TODO*///		ROM_LOAD( "901227.03",   0x12000, 0x2000, 0xdbe3e7c7 );
-/*TODO*///		ROM_LOAD ("901225.01", 0x14000, 0x1000, 0xec4272ee);
-/*TODO*///	ROM_END(); }}; 
+	static RomLoadPtr rom_c64pal = new RomLoadPtr() { public void handler() {
+		ROM_REGION (0x19400, REGION_CPU1, 0);
+		ROM_LOAD ("901226.01", 0x10000, 0x2000, 0xf833d117);
+		ROM_LOAD( "901227.03",   0x12000, 0x2000, 0xdbe3e7c7 );
+		ROM_LOAD ("901225-01.u5", 0x14000, 0x1000, 0xec4272ee);
+	ROM_END(); }}; 
 	
-/*TODO*///	static RomLoadPtr rom_vic64s = new RomLoadPtr() { public void handler() {
-/*TODO*///		ROM_REGION (0x19400, REGION_CPU1, 0);
-/*TODO*///		ROM_LOAD ("901226.01", 0x10000, 0x2000, 0xf833d117);
-/*TODO*///		ROM_LOAD( "kernel.swe",   0x12000, 0x2000, 0xf10c2c25 );
-/*TODO*///		ROM_LOAD ("charswe.bin", 0x14000, 0x1000, 0xbee9b3fd);
-/*TODO*///	ROM_END(); }}; 
+	static RomLoadPtr rom_vic64s = new RomLoadPtr() { public void handler() {
+		ROM_REGION (0x19400, REGION_CPU1, 0);
+		ROM_LOAD ("901226.01", 0x10000, 0x2000, 0xf833d117);
+		ROM_LOAD( "kernel.swe",   0x12000, 0x2000, 0xf10c2c25 );
+		ROM_LOAD ("charswe.bin", 0x14000, 0x1000, 0xbee9b3fd);
+	ROM_END(); }}; 
 	
 /*TODO*///	static RomLoadPtr rom_sx64 = new RomLoadPtr() { public void handler() {
 /*TODO*///		ROM_REGION (0x19400, REGION_CPU1, 0);
@@ -976,87 +978,90 @@ public class c64
 /*TODO*///		}
 /*TODO*///	};
 /*TODO*///	
-/*TODO*///	static struct MachineDriver machine_driver_c64pal =
-/*TODO*///	{
-/*TODO*///	  /* basic machine hardware */
-/*TODO*///		{
-/*TODO*///			{
-/*TODO*///				CPU_M6510,
-/*TODO*///				VIC6569_CLOCK,
-/*TODO*///				c64_readmem, c64_writemem,
-/*TODO*///				0, 0,
-/*TODO*///				c64_frame_interrupt, 1,
-/*TODO*///				vic2_raster_irq, VIC2_HRETRACERATE,
-/*TODO*///			},
-/*TODO*///		},
-/*TODO*///		VIC6569_VRETRACERATE,
-/*TODO*///		DEFAULT_REAL_60HZ_VBLANK_DURATION, /* frames per second, vblank duration */
-/*TODO*///		0,
-/*TODO*///		c64_init_machine,
-/*TODO*///		c64_shutdown_machine,
-/*TODO*///	
-/*TODO*///	  /* video hardware */
-/*TODO*///		336,							   /* screen width */
-/*TODO*///		216,							   /* screen height */
-/*TODO*///		{0, 336 - 1, 0, 216 - 1},		   /* visible_area */
-/*TODO*///		0,								   /* graphics decode info */
-/*TODO*///		sizeof (vic2_palette) / sizeof (vic2_palette[0]) / 3,
-/*TODO*///		0,
-/*TODO*///		c64_init_palette,				   /* convert color prom */
-/*TODO*///		VIDEO_TYPE_RASTER,
-/*TODO*///		0,
-/*TODO*///		vic2_vh_start,
-/*TODO*///		vic2_vh_stop,
-/*TODO*///		vic2_vh_screenrefresh,
-/*TODO*///	
-/*TODO*///	  /* sound hardware */
-/*TODO*///		0, 0, 0, 0,
+	static MachineDriver machine_driver_c64pal = new MachineDriver
+	(
+		/* basic machine hardware */
+		new MachineCPU[] {
+			new MachineCPU(
+				/*TODO*///CPU_M6510,
+                                CPU_M6502,
+				VIC6569_CLOCK,
+				c64_readmem, c64_writemem,
+				null, null,
+				c64_frame_interrupt, 1,
+				vic2_raster_irq, VIC2_HRETRACERATE
+			)
+		},
+		VIC6569_VRETRACERATE,
+		DEFAULT_REAL_60HZ_VBLANK_DURATION, /* frames per second, vblank duration */
+		0,
+		c64_init_machine,
+		//c64_shutdown_machine,
+	
+	  /* video hardware */
+		336,							   /* screen width */
+		216,							   /* screen height */
+		new rectangle(0, 336 - 1, 0, 216 - 1),                      /* visible_area */
+		null,								   /* graphics decode info */
+		vic2_palette.length / 3,
+		0,
+		c64_init_palette,				   /* convert color prom */
+		VIDEO_TYPE_RASTER,
+		null,
+		vic2_vh_start,
+		vic2_vh_stop,
+		vic2_vh_screenrefresh,
+	
+	  /* sound hardware */
+		0, 0, 0, 0,
 /*TODO*///		{
 /*TODO*///			{ SOUND_CUSTOM, &pal_sound_interface },
 /*TODO*///			{SOUND_DAC, &vc20tape_sound_interface}
 /*TODO*///		}
-/*TODO*///	};
-/*TODO*///	
-/*TODO*///	static struct MachineDriver machine_driver_c64gs =
-/*TODO*///	{
-/*TODO*///	  /* basic machine hardware */
-/*TODO*///		{
-/*TODO*///			{
-/*TODO*///				CPU_M6510,
-/*TODO*///				VIC6569_CLOCK,
-/*TODO*///				c64_readmem, c64_writemem,
-/*TODO*///				0, 0,
-/*TODO*///				c64_frame_interrupt, 1,
-/*TODO*///				vic2_raster_irq, VIC2_HRETRACERATE,
-/*TODO*///			},
-/*TODO*///		},
-/*TODO*///		VIC6569_VRETRACERATE, DEFAULT_REAL_60HZ_VBLANK_DURATION,	/* frames per second, vblank duration */
-/*TODO*///		0,
-/*TODO*///		c64_init_machine,
+                   null
+	);
+	
+	static MachineDriver machine_driver_c64gs = new MachineDriver
+	(
+		/* basic machine hardware */
+		new MachineCPU[] {
+			new MachineCPU(
+				CPU_M6510,
+				VIC6569_CLOCK,
+				c64_readmem, c64_writemem,
+				null, null,
+				c64_frame_interrupt, 1,
+				vic2_raster_irq, VIC2_HRETRACERATE
+                            )
+		},
+		VIC6569_VRETRACERATE, DEFAULT_REAL_60HZ_VBLANK_DURATION,	/* frames per second, vblank duration */
+		0,
+		c64_init_machine,
 /*TODO*///		c64_shutdown_machine,
 /*TODO*///	
-/*TODO*///	  /* video hardware */
-/*TODO*///		336,							   /* screen width */
-/*TODO*///		216,							   /* screen height */
-/*TODO*///		{0, 336 - 1, 0, 216 - 1},		   /* visible_area */
-/*TODO*///		0,								   /* graphics decode info */
-/*TODO*///		sizeof (vic2_palette) / sizeof (vic2_palette[0]) / 3,
-/*TODO*///		0,
-/*TODO*///		c64_init_palette,				   /* convert color prom */
-/*TODO*///		VIDEO_TYPE_RASTER,
-/*TODO*///		0,
-/*TODO*///		vic2_vh_start,
-/*TODO*///		vic2_vh_stop,
-/*TODO*///		vic2_vh_screenrefresh,
-/*TODO*///	
-/*TODO*///	  /* sound hardware */
-/*TODO*///		0, 0, 0, 0,
+	  /* video hardware */
+		336,							   /* screen width */
+		216,							   /* screen height */
+		new rectangle(0, 336 - 1, 0, 216 - 1),                      /* visible_area */
+		null,								   /* graphics decode info */
+		vic2_palette.length / 3,
+		0,
+		c64_init_palette,				   /* convert color prom */
+		VIDEO_TYPE_RASTER,
+		null,
+		vic2_vh_start,
+		vic2_vh_stop,
+		vic2_vh_screenrefresh,
+	
+	  /* sound hardware */
+		0, 0, 0, 0,
 /*TODO*///		{
 /*TODO*///			{ SOUND_CUSTOM, &pal_sound_interface },
 /*TODO*///			{ 0 }
 /*TODO*///		}
-/*TODO*///	};
-/*TODO*///	
+                null
+	);
+	
 /*TODO*///	static struct MachineDriver machine_driver_sx64 =
 /*TODO*///	{
 /*TODO*///	  /* basic machine hardware */
@@ -1112,28 +1117,28 @@ public class c64
 		new IODevice(IO_END)
 	};
 	
-	/*TODO*///static const struct IODevice io_sx64[] =
-/*TODO*///	{
+	static IODevice  io_sx64[] =
+	{
 /*TODO*///		IODEVICE_CBM_QUICK,
 /*TODO*///		IODEVICE_CBM_ROM("crt\080\0"),
 /*TODO*///		IODEVICE_VC1541,
-/*TODO*///		{IO_END}
-/*TODO*///	};
-/*TODO*///	
-/*TODO*///	static const struct IODevice io_ultimax[] =
-/*TODO*///	{
+                new IODevice(IO_END)
+	};
+	
+        static IODevice io_ultimax[] =
+        {
 /*TODO*///		IODEVICE_CBM_QUICK,
 /*TODO*///		IODEVICE_CBM_ROM("crt\0e0\0f0\0"),
 /*TODO*///		IODEVICE_VC20TAPE,
-/*TODO*///		{IO_END}
-/*TODO*///	};
-/*TODO*///	
-/*TODO*///	static const struct IODevice io_c64gs[] =
-/*TODO*///	{
+                new IODevice(IO_END)
+	};
+
+        static IODevice io_c64gs[] =
+        {
 /*TODO*///		IODEVICE_CBM_ROM("crt\080\0"),
-/*TODO*///		{IO_END}
-/*TODO*///	};
-/*TODO*///	
+                new IODevice(IO_END)
+        };
+
 /*TODO*///	#define init_c64 c64_driver_init
 /*TODO*///	#define init_c64pal c64pal_driver_init
 /*TODO*///	#define init_ultimax ultimax_driver_init
@@ -1153,11 +1158,13 @@ public class c64
 /*TODO*///	/*	  YEAR	NAME		PARENT	MACHINE 		INPUT	INIT	COMPANY 						   FULLNAME */
 /*TODO*///	COMP(1982, max,		0,		ultimax,		ultimax,ultimax,"Commodore Business Machines Co.", "Commodore Max (Ultimax/VC10)")
     //	COMP(1982, c64,		0,		c64,			c64,	c64,	"Commodore Business Machines Co.", "Commodore 64 (NTSC)")
-        public static GameDriver driver_c64 = new GameDriver("1982", "c64", "c64.java", rom_c64, null, machine_driver_c64, input_ports_c64, null, io_c64, "Commodore Business Machines Co.", "Commodore 64 (NTSC)");
+        public static GameDriver driver_c64 = new GameDriver("1982", "c64", "c64.java", rom_c64, null, machine_driver_c64, input_ports_c64, c64_driver_init, io_c64, "Commodore Business Machines Co.", "Commodore 64 (NTSC)");
 /*TODO*///	COMP(1982, cbm4064,	c64,	pet64,			c64,	c64,	"Commodore Business Machines Co.", "CBM4064/PET64/Educator64 (NTSC)")
-/*TODO*///	COMP(1982, c64pal, 	c64,	c64pal, 		c64,	c64pal, "Commodore Business Machines Co.", "Commodore 64/VC64/VIC64 (PAL)")
+    //	COMP(1982, c64pal, 	c64,	c64pal, 		c64,	c64pal, "Commodore Business Machines Co.", "Commodore 64/VC64/VIC64 (PAL)")
+        public static GameDriver driver_c64pal = new GameDriver("1982", "c64pal", "c64.java", rom_c64pal, null, machine_driver_c64pal, input_ports_c64, c64pal_driver_init, io_c64, "Commodore Business Machines Co.", "Commodore 64/VC64/VIC64 (PAL)");
 /*TODO*///	COMP(1982, vic64s, 	c64,	c64pal, 		vic64s,	c64pal, "Commodore Business Machines Co.", "Commodore 64 Swedish (PAL)")
-/*TODO*///	CONS(1987, c64gs,		c64,	c64gs,			c64gs,	c64gs,	"Commodore Business Machines Co.", "C64GS (PAL)")
+    //	CONS(1987, c64gs,		c64,	c64gs,			c64gs,	c64gs,	"Commodore Business Machines Co.", "C64GS (PAL)")
+        public static GameDriver driver_c64gs = new GameDriver("1987", "c64gs", "c64.java", rom_c64gs, null, machine_driver_c64gs, input_ports_c64gs, c64gs_driver_init, io_c64gs, "Commodore Business Machines Co.", "C64GS (PAL)");
 /*TODO*///	/* please leave the following as testdriver, */
 /*TODO*///	/* or better don't include them in system.c */
 /*TODO*///	COMPX(1983, sx64,		c64,	sx64,			sx64,	sx64,	"Commodore Business Machines Co.", "SX64 (PAL)",                      GAME_NOT_WORKING)

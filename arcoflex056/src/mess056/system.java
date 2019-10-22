@@ -335,13 +335,13 @@ public class system {
 	/*TODO*///		DRIVER( max )		/* Max (Japan)/Ultimax (US)/VC10 (German)		  */
 	driver_c64,		/* Commodore 64 - NTSC							  */
 	/*TODO*///	/*	DRIVER( j64 )*/		/* Commodore 64 - NTSC (Japan)					  */
-	/*TODO*///		DRIVER( c64pal )	/* Commodore 64 - PAL							  */
+	driver_c64pal,	/* Commodore 64 - PAL							  */
 	/*TODO*///		DRIVER( vic64s )	/* Commodore VIC64S (Swedish)					  */
 	/*TODO*///		DRIVER( cbm4064 )	/* Commodore CBM4064							  */
 	/*TODO*///	TESTDRIVER( sx64 )		/* Commodore SX 64 - PAL						  */
 	/*TODO*///	TESTDRIVER( vip64 )		/* Commodore VIP64 (SX64, PAL, Swedish)			  */
 	/*TODO*///	TESTDRIVER( dx64 )		/* Commodore DX 64 - PROTOTPYE, PAL						  */
-	/*TODO*///		DRIVER( c64gs ) 	/* Commodore 64 Games System					  */
+	driver_c64gs, 	/* Commodore 64 Games System					  */
 	/*TODO*///	
 	/*TODO*///		DRIVER( cbm500 )	/* Commodore 500/P128-40						  */
 	/*TODO*///		DRIVER( cbm610 )	/* Commodore 610/B128LP 						  */

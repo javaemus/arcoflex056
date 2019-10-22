@@ -152,16 +152,17 @@ public class vic6567
     public static int COLUMNS40(){ return (vic2.reg[0x16]&8); }	   /* else 38 Columns */
 /*TODO*///	#define COLUMNS (COLUMNS40?40:38)
 /*TODO*///	#define XSIZE (COLUMNS*8)
-/*TODO*///	
+
     public static int VIDEOADDR(){ return ( (vic2.reg[0x18]&0xf0)<<(10-4) ); }
     public static int CHARGENADDR(){ return ((vic2.reg[0x18]&0xe)<<10); }
-/*TODO*///	
+
     public static int RASTERLINE(){ return ( ((vic2.reg[0x11]&0x80)<<1)|vic2.reg[0x12]); }
-/*TODO*///	
+
     public static int BACKGROUNDCOLOR(){ return (vic2.reg[0x21]&0xf); }
     public static int MULTICOLOR1(){ return (vic2.reg[0x22]&0xf); }
     public static int MULTICOLOR2(){ return (vic2.reg[0x23]&0xf); }
-    public static int FOREGROUNDCOLOR(){ return (vic2.reg[0x24]&0xf); }
+    public static int FOREGROUNDCOLOR(){ return (vic2.reg[0x24]&0xf); 
+    }
     public static int FRAMECOLOR(){ return (vic2.reg[0x20]&0xf); }
 	
 	public static char vic2_palette[] =
@@ -306,6 +307,7 @@ public class vic6567
 	
 	static void vic2_set_interrupt (int mask)
 	{
+            //System.out.println("vic2_set_interrupt");
 		if ((((vic2.reg[0x19] ^ mask) & vic2.reg[0x1a] & 0xf)) !=0)
 		{
 			if ((vic2.reg[0x19] & 0x80)==0)
@@ -354,6 +356,7 @@ public class vic6567
 	
 	public static int vic2_frame_interrupt ()
 	{
+            //System.out.println("vic2_frame_interrupt();");
 		return ignore_interrupt.handler();
 	}
 	
@@ -695,7 +698,7 @@ public class vic6567
 			//if (vic2.screen[0]==null)
 			//	return 1;
 			for (i = 1; i < 216; i++)
-				vic2.screen[i] = new UBytePtr(216 * 336 / 8);
+				vic2.screen[i] = new UBytePtr(vic2.screen[i - 1], 336 / 8);
 		}
 	
 		for (i = 0; i < 256; i++)
@@ -801,6 +804,8 @@ public class vic6567
                                 
                                 //System.out.println("CHAR:"+code);
                                 //code=65;
+                                
+                                //code=1;
                                 
 				vic2.screen[y + yoff].write(xoff >> 3, code);
 				new UShortPtr(vic2.bitmap.line[y + yoff]).write(xoff, (char) color[code >> 7]);
@@ -1477,6 +1482,8 @@ public class vic6567
 	public static InterruptPtr vic2_raster_irq = new InterruptPtr() {
             public int handler() {
 		int i;
+                
+                //System.out.println("vic2_raster_irq");
 	
 		vic2.rasterline++;
 		if (vic2.rasterline >= vic2.lines)

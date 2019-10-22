@@ -22,6 +22,7 @@ import static arcadeflex056.fucPtr.*;
 import static common.ptr.*;
 import static mame056.common.*;
 import static mame056.commonH.*;
+import static mame056.cpu.m6502.m6502H.M6502_IRQ_LINE;
 import static mame056.cpu.m6502.m6502H.M6510_IRQ_LINE;
 import static mame056.cpuexec.*;
 import static mame056.cpuexecH.*;
@@ -68,17 +69,17 @@ public class c64
 	/* cpu port */
 	public static int c64_port6510, c64_ddr6510;
 /*TODO*///	int c128_va1617;
-	public static UBytePtr c64_vicaddr=new UBytePtr(), c128_vicaddr=new UBytePtr();
+	public static UBytePtr c64_vicaddr=null, c128_vicaddr=null;
 	public static UBytePtr c64_memory;
-        public static UBytePtr c64_colorram = new UBytePtr();
+        public static UBytePtr c64_colorram = null;
         public static UBytePtr c64_basic;
         public static UBytePtr c64_kernal;
-        public static UBytePtr c64_chargen = new UBytePtr();
+        public static UBytePtr c64_chargen = null;
         public static UBytePtr c64_roml=null;
         public static UBytePtr c64_romh=null;
 
         public static UBytePtr roml=null, romh=null;
-/*TODO*///	static int ultimax = 0;
+	public static int ultimax = 0;
 	public static int c64_tape_on = 1;
 	public static int c64_cia1_on = 1;
 /*TODO*///	static UINT8 cartridge = 0;
@@ -288,6 +289,7 @@ public class c64
 	
 	public static ReadHandlerPtr c64_irq = new ReadHandlerPtr() {
             public int handler(int level) {
+                System.out.println("c64_irq");
                 if (level != old_level)
 		{
 /*TODO*///			DBG_LOG (3, "mos6510", ("irq %s\n", level ? "start" : "end"));
@@ -298,7 +300,7 @@ public class c64
 /*TODO*///					cpu_set_irq_line (1, M6510_IRQ_LINE, level);
 /*TODO*///				}
 /*TODO*///			} else {
-				cpu_set_irq_line (0, M6510_IRQ_LINE, level);
+				cpu_set_irq_line (0, M6502_IRQ_LINE, level);
 /*TODO*///			}
 			old_level = level;
 		}
@@ -327,12 +329,13 @@ public class c64
 	
 	public static ReadHandlerPtr c64_vic_interrupt = new ReadHandlerPtr() {
             public int handler(int level) {
+                System.out.println("c64_vic_interrupt");
 /*TODO*///	#if 1
-/*TODO*///		if (level != vicirq)
-/*TODO*///		{
-/*TODO*///			c64_irq (level || cia0irq);
-/*TODO*///			vicirq = level;
-/*TODO*///		}
+		if (level != vicirq)
+		{
+			c64_irq.handler((level!=0 || cia0irq!=0)?1:0);
+			vicirq = level;
+		}
 /*TODO*///	#endif
                 
                 return 0;
@@ -382,6 +385,7 @@ public class c64
 		cbm_serial_data_write (serial_data = (data & 0x20)!=0?0:1);
 		cbm_serial_atn_write (serial_atn = (data & 8)!=0?0:1);
 		c64_vicaddr = new UBytePtr(c64_memory, helper[data & 3]);
+                System.out.println("VICADDR: "+helper[data & 3]);
 /*TODO*///		if (c128) {
 /*TODO*///			c128_vicaddr = c64_memory + helper[data & 3] + c128_va1617;
 /*TODO*///		}
@@ -530,7 +534,8 @@ public class c64
 	{
 		if (offset < 0x400)
 			return vic2_port_r.handler(offset & 0x3ff);
-		/*TODO*///else if (offset < 0x800)
+		else if (offset < 0x800)
+                    return 0x00;
 		/*TODO*///	return sid6581_0_port_r (offset & 0x3ff);
 		else if (offset < 0xc00)
 			return c64_colorram.read(offset & 0x3ff);
@@ -600,52 +605,46 @@ public class c64
 	 * E000    ROMH    RAM
 	 * F000    ROMH    ROMH
 	 */
-        static int old = -1, exrom, game;
+        static int old = -1, exrom=1, game=1;
         
 	public static void c64_bankswitch (int reset)
 	{
             System.out.println("c64_bankswitch");
 		
+
 		int data, loram, hiram, charen;
 	
 		data = ((c64_port6510 & c64_ddr6510) | (c64_ddr6510 ^ 0xff)) & 7;
 		if ((data == old)&&(exrom==c64_exrom)&&(game==c64_game)&&reset==0) return;
 	
-/*TODO*///		DBG_LOG (1, "bankswitch", ("%d\n", data & 7));
 		loram = (data & 1)!=0 ? 1 : 0;
 		hiram = (data & 2)!=0 ? 1 : 0;
 		charen = (data & 4)!=0 ? 1 : 0;
 	
 		if ((c64_game==0 && c64_exrom!=0)
-		    || (loram!=0 && c64_exrom==0)) // for omega race cartridge
-	//	    || (loram && hiram && !c64_exrom))
+			|| (loram!=0 && hiram!=0 && c64_exrom==0))
 		{
                     System.out.println("A");
-			cpu_setbank (1, new UBytePtr(roml));
-			memory_set_bankhandler_w (2, 0, MWA_RAM); // always ram: pitstop
+			cpu_setbank (1, roml);
+			memory_set_bankhandler_w(2, 0, MWA_NOP);
 		}
 		else
 		{
                     System.out.println("B");
 			cpu_setbank (1, new UBytePtr(c64_memory, 0x8000));
-			memory_set_bankhandler_w (2, 0, MWA_RAM);
+			memory_set_bankhandler_w(2, 0, MWA_RAM);
 		}
 	
-/*TODO*///	#if 1
-		if ((c64_game==0 && c64_exrom==0 && hiram!=0))
-/*TODO*///		    /*|| (!c64_exrom)*/) // must be disabled for 8kb c64 cartridges! like space action, super expander, ...
-/*TODO*///	#else
-/*TODO*///		if ((!c64_game && c64_exrom && hiram)
-/*TODO*///		    || (!c64_exrom) )
-/*TODO*///	#endif
+		if ((c64_game==0 && c64_exrom!=0 && hiram!=0)
+			|| (c64_exrom==0))
 		{
                     System.out.println("C");
-			cpu_setbank (3, new UBytePtr(romh));
+			cpu_setbank (3, romh);
 		}
-		else if (loram!=0 && hiram!=0 &&c64_game!=0)
+		else if (loram!=0 && hiram!=0)
 		{
                     System.out.println("D");
-			cpu_setbank (3, new UBytePtr(c64_basic));
+			cpu_setbank (3, c64_basic);
 		}
 		else
 		{
@@ -668,10 +667,12 @@ public class c64
 			cpu_setbank (6, new UBytePtr(c64_memory, 0xd000));
 			if (charen==0 && (loram!=0 || hiram!=0))
 			{
+                            System.out.println("G1");
 				cpu_setbank (5, c64_chargen);
 			}
 			else
 			{
+                            System.out.println("G2");
 				cpu_setbank (5, new UBytePtr(c64_memory, 0xd000));
 			}
 		}
@@ -679,7 +680,7 @@ public class c64
 		if (c64_game==0 && c64_exrom!=0)
 		{
                     System.out.println("H");
-			cpu_setbank (7, new UBytePtr(romh));
+			cpu_setbank (7, romh);
 			memory_set_bankhandler_w (8, 0, MWA_NOP);
 		}
 		else
@@ -689,18 +690,18 @@ public class c64
 			if (hiram != 0)
 			{
                             System.out.println("I1");
-				cpu_setbank (7, new UBytePtr(c64_kernal));
+				cpu_setbank (7, c64_kernal);
 			}
 			else
 			{
                             System.out.println("I2");
 				cpu_setbank (7, new UBytePtr(c64_memory, 0xe000));
 			}
+                        System.out.println("Salimos...");
 		}
 		game=c64_game;
 		exrom=c64_exrom;
 		old = data;
-                System.out.println("Salgo...");
 	}
 	
 	/**
@@ -737,8 +738,10 @@ public class c64
 /*TODO*///			c128_bankswitch_64 (0);
 /*TODO*///		else if (c65)
 /*TODO*///			c65_bankswitch();
-/*TODO*///		else if (ultimax == 0)
-			c64_bankswitch (0);
+/*TODO*///		else 
+                        if (ultimax == 0)
+                            c64_bankswitch (0);
+                        
             }
         };
 	
@@ -748,7 +751,7 @@ public class c64
 		{
 			int data = (c64_ddr6510 & c64_port6510) | (c64_ddr6510 ^ 0xff);
 	
-			if ((c64_tape_on!=0) && (c64_ddr6510 & 0x10)!=0 && vc20_tape_switch ()==0)
+			if ((c64_tape_on!=0) && (c64_ddr6510 & 0x10)==0 && vc20_tape_switch ()==0)
 				data &= ~0x10;
 /*TODO*///			if (c128 && !c128_capslock_r ())
 /*TODO*///				data &= ~0x40;
@@ -823,25 +826,37 @@ public class c64
 	 */
 	public static ReadHandlerPtr c64_dma_read = new ReadHandlerPtr() {
             public int handler(int offset) {
+                //System.out.println("offset="+(offset & 0xfff));
                 if (c64_game==0 && c64_exrom!=0)
 		{
 			if (offset < 0x3000)
 				return c64_memory.read(offset);
 			return c64_romh.read(offset & 0x1fff);
 		}
-		if (((c64_vicaddr.offset - c64_memory.offset + offset) & 0x7000) == 0x1000)
+		if (((c64_vicaddr.offset - c64_memory.offset + offset) & 0x7000) == 0x1000){
+                   //System.out.println("CHAR: "+(int)c64_chargen.memory[offset & 0xfff]);
+                   //System.out.println("CHAR2: "+(int)c64_memory.memory[offset & 0xfff]);
+                    //return c64_chargen.read(c64_memory.read(0xD000+offset) & 0xfff);
+                    //return c64_memory.read(0xD000+offset);
+                    //return c64_memory.read( offset & 0xfff );
+                    //return 4;
                     return c64_chargen.read(offset & 0xfff);
+                }
+                //System.out.println("CHAR2: "+(int)c64_chargen.read(offset & 0xfff));
 		return c64_vicaddr.read(offset);
+                //return 100;
+                //return c64_chargen.read(offset & 0xfff);
             }
         };
 
 	
-/*TODO*///	static int c64_dma_read_ultimax (int offset)
-/*TODO*///	{
-/*TODO*///		if (offset < 0x3000)
-/*TODO*///			return c64_memory[offset];
-/*TODO*///		return c64_romh[offset & 0x1fff];
-/*TODO*///	}
+	public static ReadHandlerPtr c64_dma_read_ultimax = new ReadHandlerPtr() {
+            public int handler(int offset) {
+                if (offset < 0x3000)
+			return c64_memory.read(offset);
+		return c64_romh.read(offset & 0x1fff);
+            }
+        };
 	
 	public static ReadHandlerPtr c64_dma_read_color = new ReadHandlerPtr() {
             public int handler(int offset) {
@@ -851,10 +866,12 @@ public class c64
 	
 	static void c64_common_driver_init ()
 	{
+            System.out.println("c64_common_driver_init");
 		/*    memset(c64_memory, 0, 0xfd00); */
             c64_memory = new UBytePtr(0xfd00);
             vic2.bitmap = Machine.scrbitmap;
-/*TODO*///		if (ultimax == 0) {
+            System.out.println("Loading ROMS into Memory");
+		if (ultimax == 0) {
 			c64_basic=new UBytePtr(memory_region(REGION_CPU1), 0x10000);
 			c64_kernal=new UBytePtr(memory_region(REGION_CPU1), 0x12000);
 			c64_chargen=new UBytePtr(memory_region(REGION_CPU1), 0x14000);
@@ -869,7 +886,7 @@ public class c64
 /*TODO*///		{0x15400, 0x173ff, MWA_ROM, &c64_roml},	/* basic at 0xa000 */
 /*TODO*///		{0x17400, 0x193ff, MWA_ROM, &c64_romh},	/* kernal at 0xe000 */
 /*TODO*///	#endif
-/*TODO*///		}
+		}
 		if (c64_tape_on != 0)
 			vc20_tape_open (c64_tape_read);
 	
@@ -889,56 +906,63 @@ public class c64
 			cia6526_config (1, c64_cia1);
 		}
 	
-/*TODO*///		if (ultimax)
-/*TODO*///		{
-/*TODO*///			vic6567_init (0, c64_pal, c64_dma_read_ultimax, c64_dma_read_color,
-/*TODO*///						  c64_vic_interrupt);
-/*TODO*///		}
-/*TODO*///		else
-/*TODO*///		{
+		if (ultimax != 0)
+		{
+			vic6567_init (0, c64_pal, c64_dma_read_ultimax, c64_dma_read_color,
+						  c64_vic_interrupt);
+		}
+		else
+		{
 			vic6567_init(0, c64_pal, c64_dma_read, c64_dma_read_color, c64_vic_interrupt);
-/*TODO*///		}
+		}
 /*TODO*///		state_add_function(c64_state);
 	}
 	
-/*TODO*///	void c64_driver_init (void)
-/*TODO*///	{
-/*TODO*///		c64_common_driver_init ();
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	void c64pal_driver_init (void)
-/*TODO*///	{
-/*TODO*///		c64_pal = 1;
-/*TODO*///		c64_common_driver_init ();
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	void ultimax_driver_init (void)
-/*TODO*///	{
-/*TODO*///		ultimax = 1;
-/*TODO*///	    c64_cia1_on = 0;
-/*TODO*///		c64_common_driver_init ();
+	public static InitDriverPtr c64_driver_init = new InitDriverPtr() {
+            public void handler() {
+                System.out.println("c64_driver_init");
+                c64_common_driver_init ();
+            }
+        };
+	
+	public static InitDriverPtr c64pal_driver_init = new InitDriverPtr() {
+            public void handler() {
+                System.out.println("c64pal_driver_init");
+		c64_pal = 1;
+		c64_common_driver_init ();
+            }
+        };
+	
+	public static InitDriverPtr ultimax_driver_init = new InitDriverPtr() {
+            public void handler() {
+		ultimax = 1;
+                c64_cia1_on = 0;
+		c64_common_driver_init ();
 /*TODO*///		if (cbm_rom[0].size==0) {
 /*TODO*///		  printf("no cartridge found\n");
 /*TODO*///		  exit(1);
 /*TODO*///		}
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	void c64gs_driver_init (void)
-/*TODO*///	{
-/*TODO*///		c64_pal = 1;
-/*TODO*///		c64_tape_on = 0;
-/*TODO*///	    c64_cia1_on = 1;
-/*TODO*///		c64_common_driver_init ();
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	void sx64_driver_init (void)
-/*TODO*///	{
+            }
+        };
+	
+	public static InitDriverPtr c64gs_driver_init = new InitDriverPtr() {
+            public void handler() {
+		c64_pal = 1;
+		c64_tape_on = 0;
+                c64_cia1_on = 1;
+		c64_common_driver_init ();
+            }
+        };
+	
+        public static InitDriverPtr sx64_driver_init = new InitDriverPtr() {
+            public void handler() {
 /*TODO*///		VC1541_CONFIG vc1541= { 1, 8 };
-/*TODO*///		c64_tape_on = 0;
-/*TODO*///		c64_pal = 1;
-/*TODO*///		c64_common_driver_init ();
+		c64_tape_on = 0;
+		c64_pal = 1;
+		c64_common_driver_init ();
 /*TODO*///		vc1541_config (0, 0, &vc1541);
-/*TODO*///	}
+	}
+            };
 /*TODO*///	
 /*TODO*///	void c64_driver_shutdown (void)
 /*TODO*///	{
@@ -952,7 +976,7 @@ public class c64
 	
 	public static void c64_common_init_machine ()
 	{
-                c64_common_driver_init();
+                
 /*TODO*///	#ifdef VC1541
 /*TODO*///		vc1541_reset ();
 /*TODO*///	#endif
@@ -974,15 +998,17 @@ public class c64
 	
 	public static InitMachinePtr c64_init_machine = new InitMachinePtr() { public void handler() 
 	{
-		c64_common_init_machine ();
+		
+                //kk
+                c64_common_init_machine ();
                 
 	
-/*TODO*///		c64_rom_recognition ();
-/*TODO*///		c64_rom_load();
+		c64_rom_recognition ();
+		c64_rom_load();
 	
 /*TODO*///		if (c128)
 /*TODO*///			c128_bankswitch_64 (1);
-/*TODO*///		if (ultimax == 0)
+		if (ultimax == 0)
 			c64_bankswitch (1);
             }
         };
@@ -1044,8 +1070,8 @@ public class c64
 /*TODO*///	#define BETWEEN(value1,value2,bottom,top) \
 /*TODO*///	    ( ((value2)>=(bottom))&&((value1)<(top)) )
 /*TODO*///	
-/*TODO*///	void c64_rom_recognition (void)
-/*TODO*///	{
+	public static void c64_rom_recognition ()
+	{
 /*TODO*///	    int i;
 /*TODO*///	    cartridgetype=CartridgeAuto;
 /*TODO*///	    for (i=0; (i<sizeof(cbm_rom)/sizeof(cbm_rom[0]))
@@ -1061,14 +1087,14 @@ public class c64
 /*TODO*///	    }
 /*TODO*///	    if (i==4) cartridgetype=CartridgeSuperGames;
 /*TODO*///	    if (i==32) cartridgetype=CartridgeRobocop2;
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	void c64_rom_load(void)
-/*TODO*///	{
-/*TODO*///	    int i;
-/*TODO*///	
-/*TODO*///	    c64_exrom = 1;
-/*TODO*///	    c64_game = 1;
+	}
+	
+	public static void c64_rom_load()
+	{
+	    int i;
+	
+	    c64_exrom = 1;
+	    c64_game = 1;
 /*TODO*///	    if (cartridge)
 /*TODO*///	    {
 /*TODO*///		if (AUTO_MODULE && (cartridgetype == CartridgeAuto))
@@ -1165,7 +1191,7 @@ public class c64
 /*TODO*///		    }
 /*TODO*///		}
 /*TODO*///	    }
-/*TODO*///	}
+	}
 
         static int quickload = 0;
         static int monitor=-1;

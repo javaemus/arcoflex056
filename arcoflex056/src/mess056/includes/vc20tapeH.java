@@ -24,7 +24,7 @@ public class vc20tapeH {
         null,               /* close */
         null,               /* status */
         null,               /* seek */
-        null,			   /* tell */
+        null,               /* tell */
         null,               /* input */
         null,               /* output */
         null,               /* input_chunk */

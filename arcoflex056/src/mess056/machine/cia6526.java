@@ -69,12 +69,12 @@ public class cia6526
 		public int ddr_b;
 	
                 public int t1c;
-		public int t1l;
+		public int t1l=0;
                 public timer_entry timer1;
 		public int timer1_state;
 
                 public int t2c;
-		public int t2l;
+		public int t2l=0;
                 public timer_entry timer2;
                 public int timer2_state;
 	
@@ -101,6 +101,11 @@ public class cia6526
 	};
 	
 	public static _CIA6526[] cia=new _CIA6526[MAX_CIA];
+        
+        static {
+            for (int _i=0 ; _i<MAX_CIA ; _i++)
+                cia[_i] = new _CIA6526();
+        }
 /*TODO*///	{
 /*TODO*///		{0}
 /*TODO*///	};
@@ -126,28 +131,32 @@ public class cia6526
 	
 	public static void cia6526_reset ()
 	{
-/*TODO*///		int i;
+		int i;
 /*TODO*///	
 /*TODO*///		assert (((int) cia[0].intf & 3) == 0);
 /*TODO*///	
-/*TODO*///		/* zap each structure, preserving the interface and swizzle */
-/*TODO*///		for (i = 0; i < MAX_CIA; i++)
-/*TODO*///		{
-/*TODO*///			const struct cia6526_interface *intf = cia[i].intf;
-/*TODO*///	
-/*TODO*///			if (cia[i].timer1)
-/*TODO*///				timer_remove (cia[i].timer1);
-/*TODO*///			if (cia[i].timer2)
-/*TODO*///				timer_remove (cia[i].timer2);
-/*TODO*///			if (cia[i].todtimer)
-/*TODO*///				timer_remove (cia[i].todtimer);
-/*TODO*///			memset (&cia[i], 0, sizeof (cia[i]));
-/*TODO*///			cia[i].number = i;
-/*TODO*///			cia[i].intf = intf;
-/*TODO*///			cia[i].t1l = 0xffff;
-/*TODO*///			cia[i].t2l = 0xffff;
-/*TODO*///			if (cia[i].intf!=0) cia[i].todtimer=timer_set(0.1,i,cia_tod_timeout);
-/*TODO*///		}
+		/* zap each structure, preserving the interface and swizzle */
+		for (i = 0; i < MAX_CIA; i++)
+		{
+                    if (cia[i]!=null){
+                        
+                        cia6526_interface intf = cia[i].intf;
+	
+			if (cia[i].timer1 != null)
+				timer_remove (cia[i].timer1);
+			if (cia[i].timer2 != null)
+				timer_remove (cia[i].timer2);
+			if (cia[i].todtimer != null)
+				timer_remove (cia[i].todtimer);
+			//memset (&cia[i], 0, sizeof (cia[i]));
+                        cia[i] = new _CIA6526();
+			cia[i].number = i;
+			cia[i].intf = intf;
+			cia[i].t1l = 0xffff;
+			cia[i].t2l = 0xffff;
+			if (cia[i].intf!=null) cia[i].todtimer=timer_set(0.1,i,cia_tod_timeout);
+                    }
+		}
 	}
 	
 	/******************* external interrupt check *******************/
