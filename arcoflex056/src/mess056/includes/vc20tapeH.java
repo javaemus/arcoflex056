@@ -14,7 +14,7 @@ public class vc20tapeH {
       new IODevice(      
         IO_CASSETTE,        /* type */
         1,                  /* count */
-        "wav0",    /* TAP, LNX and T64(maybe) later file extensions */
+        "wav\0",    /* TAP, LNX and T64(maybe) later file extensions */
         IO_RESET_NONE,      /* reset if file changed */
         null,               /* id */
         vc20_tape_attach_image,	/* init */

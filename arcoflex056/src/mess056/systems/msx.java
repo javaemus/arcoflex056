@@ -1015,7 +1015,7 @@ public class msx
             new IODevice(
                 IO_CARTSLOT,                /* type */
                 MSX_MAX_CARTS,              /* count */
-                "rom0",                    /* file extensions */
+                "rom\0",                    /* file extensions */
                 IO_RESET_NONE,				/* reset if file changed */
                 null,
                 msx_load_rom,               /* init */
@@ -1034,7 +1034,7 @@ public class msx
 	    new IODevice(
 	        IO_FLOPPY,              /* type */
 	        2,                      /* count */
-	        "dsk0",                /* file extensions */
+	        "dsk\0",                /* file extensions */
 	        IO_RESET_NONE,          /* reset if file changed */
 	        null,
 	        msx_floppy_init,   	/* init */

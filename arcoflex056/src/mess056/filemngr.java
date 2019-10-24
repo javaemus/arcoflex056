@@ -6,7 +6,10 @@ package mess056;
 
 import static common.libc.cstring.*;
 import java.io.File;
+import java.util.StringTokenizer;
 import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import static mame056.commonH.*;
 import static mame056.inptportH.*;
 import static mame056.input.*;
@@ -692,11 +695,30 @@ public class filemngr
                 javax.swing.JFileChooser jf = new JFileChooser();
                 //jf.setCurrentDirectory(new File(osd_get_cwd() + "/" + Machine.gamedrv.name));
                 jf.setCurrentDirectory(new File(osd_get_cwd()));
+                
+                // extensions
+                String _supFilesStr = "Supported Files (";
+                String[] _arrExtensions = getExtensionsByPosition(sel);
+                
+                if (_arrExtensions != null){
+                    int _top = _arrExtensions.length -1;
+
+                    for (int _i=0 ; _i<_arrExtensions.length ; _i++){
+                        _supFilesStr += "*."+_arrExtensions[_i];
+                        if (_i != _top)
+                            _supFilesStr += ", ";
+                    }
+
+                    _supFilesStr += ")";
+                }
+                
+                FileFilter filter = new FileNameExtensionFilter(_supFilesStr, _arrExtensions);
+                jf.setFileFilter(filter);
+                jf.addChoosableFileFilter(filter);
+                
                 int option = jf.showOpenDialog(null);
                 
                 Object selected_file = jf.getSelectedFile();
-                //System.out.println("Salida: "+option);
-                //System.out.println( "Seleccionado: "+selected_file );
                 
                 if (option == 0) { // selected file
                     if (selected_file != null){
@@ -715,6 +737,8 @@ public class filemngr
 	}
         
         static int previous_sel;
+        
+        static int[] ids = new int[40];
 
 	public static int filemanager(mame_bitmap bitmap, int selected)
 	{
@@ -722,7 +746,7 @@ public class filemngr
 		String[] menu_item = new String[40];
 		String[] menu_subitem = new String[40];
 		int[] types = new int[40];
-		int[] ids = new int[40];
+		
 		char[] flag = new char[40];
 	
 		int sel, total, arrowize, type, id;
@@ -915,5 +939,43 @@ public class filemngr
 		szBuffer[2] = '\0';
 		osd_change_directory( String.valueOf(szBuffer) );
 	}
+
+        private static String[] getExtensionsByPosition(int sel) {
+            IODevice[] dev = Machine.gamedrv.dev;
+            int _dev = 0;
+            
+            String _strOut = "";
+            String[] _extList=null;
+            
+            int _countSel = 0;
+                
+            while(dev[_dev].type != IO_END)
+            {
+                    int type = dev[_dev].type;
+                    for (int id = 0; id < dev[_dev].count; id++)
+                    {
+                        if (_countSel == sel){
+                            
+                            _strOut = dev[_dev].file_extensions;
+                            
+                            StringTokenizer tok = new StringTokenizer(_strOut, "\0");
+                            int _numExt = tok.countTokens();
+                            _extList = new String[_numExt];
+                            
+                            for (int _i=0 ; _i<_numExt ; _i++){
+                                
+                                _extList[_i] = tok.nextToken();
+                                
+                            }
+                        }
+                         
+                        _countSel++;
+
+                    }
+                    _dev++;
+            }
+            
+            return _extList;
+        }
 	
 }

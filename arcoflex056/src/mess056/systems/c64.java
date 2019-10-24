@@ -210,6 +210,7 @@ import static mame056.sndintrfH.*;
 import static mess056.deviceH.*;
 import static mess056.messH.*;
 import static mess056.includes.c64H.*;
+import static mess056.includes.cbmH.*;
 import static mess056.includes.vc20tapeH.*;
 import static mess056.includes.cbmserbH.*;
 import static mess056.includes.vic6567H.*;
@@ -658,8 +659,8 @@ public class c64
 	
 	static RomLoadPtr rom_c64 = new RomLoadPtr() { public void handler() {
 		ROM_REGION (0x19400, REGION_CPU1, 0);
-		ROM_LOAD ("901226.01", 0x10000, 0x2000, 0xf833d117);
-		ROM_LOAD( "901227.03",   0x12000, 0x2000, 0xdbe3e7c7 );
+		ROM_LOAD ("901226-01.u3", 0x10000, 0x2000, 0xf833d117);
+		ROM_LOAD( "901227-03.u4", 0x12000, 0x2000, 0xdbe3e7c7 );
 		ROM_LOAD ("901225-01.u5", 0x14000, 0x1000, 0xec4272ee);
 	ROM_END(); }}; 
 	
@@ -983,8 +984,8 @@ public class c64
 		/* basic machine hardware */
 		new MachineCPU[] {
 			new MachineCPU(
-				/*TODO*///CPU_M6510,
-                                CPU_M6502,
+				CPU_M6510,
+                                //CPU_M6502,
 				VIC6569_CLOCK,
 				c64_readmem, c64_writemem,
 				null, null,
@@ -1110,8 +1111,8 @@ public class c64
 	
 	static IODevice io_c64[] =
 	{
-		/*TODO*///IODEVICE_CBM_QUICK,
-		/*TODO*///IODEVICE_CBM_ROM("crt\080\0"),
+		IODEVICE_CBM_QUICK,
+		IODEVICE_CBM_ROM("crt\080\0"),
 		IODEVICE_VC20TAPE,
 		IODEVICE_CBM_DRIVE,
 		new IODevice(IO_END)
@@ -1135,7 +1136,7 @@ public class c64
 
         static IODevice io_c64gs[] =
         {
-/*TODO*///		IODEVICE_CBM_ROM("crt\080\0"),
+		IODEVICE_CBM_ROM("crt\080\0"),
                 new IODevice(IO_END)
         };
 

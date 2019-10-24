@@ -992,10 +992,10 @@ public class ted7360
 	*/	{
 			for (y = ybegin; y <= yend; y++)
 			{
-				/*TODO*///if (INROM() != 0)
-				/*TODO*///	code = vic_dma_read_rom (chargenaddr + ch * 8 + y);
-				/*TODO*///else
-				/*TODO*///	code = vic_dma_read (chargenaddr + ch * 8 + y);
+				if (INROM() != 0)
+					code = vic_dma_read_rom.handler(chargenaddr + ch * 8 + y);
+				else
+					code = vic_dma_read.handler(chargenaddr + ch * 8 + y);
 				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(xoff, (char) color[code >> 7]);
 				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(1 + xoff, (char) color[(code >> 6) & 1]);
 				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(2 + xoff, (char) color[(code >> 5) & 1]);
@@ -1034,10 +1034,10 @@ public class ted7360
 	*/	{
 			for (y = ybegin; y <= yend; y++)
 			{
-				/*TODO*///if (INROM() != 0)
-				/*TODO*///	code = vic_dma_read_rom (chargenaddr + ch * 8 + y);
-				/*TODO*///else
-				/*TODO*///	code = vic_dma_read (chargenaddr + ch * 8 + y);
+				if (INROM() != 0)
+					code = vic_dma_read_rom.handler(chargenaddr + ch * 8 + y);
+				else
+					code = vic_dma_read.handler(chargenaddr + ch * 8 + y);
 				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(xoff, (char) multi[code >> 6]);
 				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(xoff + 1, (char) multi[code >> 6]);
 				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(xoff + 2, (char) multi[(code >> 4) & 3]);
@@ -1073,7 +1073,7 @@ public class ted7360
 	*/	{
 			for (y = ybegin; y <= yend; y++)
 			{
-				/*TODO*///code = vic_dma_read (bitmapaddr + ch * 8 + y);
+				code = vic_dma_read.handler(bitmapaddr + ch * 8 + y);
 				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(xoff, (char) c16_bitmap[code >> 7]);
 				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(1 + xoff, (char) c16_bitmap[(code >> 6) & 1]);
 				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(2 + xoff, (char) c16_bitmap[(code >> 5) & 1]);
@@ -1109,7 +1109,7 @@ public class ted7360
 	*/	{
 			for (y = ybegin; y <= yend; y++)
 			{
-				/*TODO*///code = vic_dma_read (bitmapaddr + ch * 8 + y);
+				code = vic_dma_read.handler(bitmapaddr + ch * 8 + y);
 				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(xoff, (char) bitmapmulti[code >> 6]);
 				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(xoff + 1, (char) bitmapmulti[code >> 6]);
 				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(xoff + 2, (char) bitmapmulti[(code >> 4) & 3]);
@@ -1228,8 +1228,8 @@ public class ted7360
 		{
 		    if (HIRESON() != 0)
 		    {
-			/*TODO*///ch = vic_dma_read ((videoaddr | 0x400) + offs);
-			/*TODO*///attr = vic_dma_read (((videoaddr) + offs));
+			ch = vic_dma_read.handler((videoaddr | 0x400) + offs);
+			attr = vic_dma_read.handler(((videoaddr) + offs));
 			c1 = ((ch >> 4) & 0xf) | (attr << 4);
 			c2 = (ch & 0xf) | (attr & 0x70);
 			bitmapmulti[1] = c16_bitmap[1] = Machine.pens[c1 & 0x7f];
@@ -1245,8 +1245,8 @@ public class ted7360
 		    }
 		    else
 		    {
-			/*TODO*///ch = vic_dma_read ((videoaddr | 0x400) + offs);
-			/*TODO*///attr = vic_dma_read (((videoaddr) + offs));
+			ch = vic_dma_read.handler((videoaddr | 0x400) + offs);
+			attr = vic_dma_read.handler(((videoaddr) + offs));
 			// levente harsfalvi's docu says cursor off in ecm and multicolor
 			if (ECMON() != 0) {
 			    // hardware reverse off
@@ -1266,8 +1266,8 @@ public class ted7360
 			    }
 			} else if (cursor1 && (offs == CURSOR1POS())) {
 	/*TODO*///#ifndef GFX
-	/*TODO*///		    ted7360_draw_cursor (ybegin, yend, yoff, xoff,
-	/*TODO*///					 Machine.pens[attr & 0x7f]);
+			    ted7360_draw_cursor (ybegin, yend, yoff, xoff,
+						 Machine.pens[attr & 0x7f]);
 	/*TODO*///#else
 			    drawgfx (ted7360_bitmap, cursorelement, 0, Machine.pens[attr & 0x7f], 0, 0,
 				     xoff, yoff, null, TRANSPARENCY_NONE, 0);
@@ -1329,37 +1329,38 @@ public class ted7360
 	    }
 	}
 	
-	static void ted7360_draw_text (mame_bitmap bitmap, char[] text, int[] y)
+	static void ted7360_draw_text (mame_bitmap bitmap, String text, int[] y)
 	{
-            System.out.println("ted7360_draw_text needs to be implemented!!!!");
+            //System.out.println("ted7360_draw_text "+text);
 		int x, x0, y1t, width = (Machine.visible_area.max_x -
 								 Machine.visible_area.min_x) / Machine.uifont.width;
 	
-		/*TODO*///if (text[0] != 0)
-		/*TODO*///{
-		/*TODO*///	x = text.length;
-		/*TODO*///	*y -= Machine.uifont.height * ((x + width - 1) / width);
-		/*TODO*///	y1t = *y + Machine.uifont.height;
-		/*TODO*///	x = 0;
-		/*TODO*///	while (text[x] != null)
-		/*TODO*///	{
-		/*TODO*///		for (x0 = Machine.visible_area.min_x;
-		/*TODO*///			 text[x] && (x0 < Machine.visible_area.max_x -
-		/*TODO*///						 Machine.uifont.width);
-		/*TODO*///			 x++, x0 += Machine.uifont.width)
-		/*TODO*///		{
-		/*TODO*///			drawgfx (bitmap, Machine.uifont, text[x], 0, 0, 0, x0, y1t, 0,
-		/*TODO*///					 TRANSPARENCY_NONE, 0);
-		/*TODO*///		}
-		/*TODO*///		y1t += Machine.uifont.height;
-		/*TODO*///	}
-		/*TODO*///}
+		if (text != null && text.length() != 0)
+		{
+			x = text.length();
+			y[0] -= Machine.uifont.height * ((x + width - 1) / width);
+			y1t = y[0] + Machine.uifont.height;
+			x = 0;
+			while ( x < text.length() )
+			{
+				for (x0 = Machine.visible_area.min_x;
+					/*TODO*/// text[x] && 
+                                        (x0 < Machine.visible_area.max_x -
+								 Machine.uifont.width);
+					 x++, x0 += Machine.uifont.width)
+				{
+					drawgfx (bitmap, Machine.uifont, text.charAt(x), 0, 0, 0, x0, y1t, null,
+							 TRANSPARENCY_NONE, 0);
+				}
+				y1t += Machine.uifont.height;
+			}
+		}
 	}
 	
 	public static InterruptPtr ted7360_raster_interrupt = new InterruptPtr() {
             public int handler() {
                 int y;
-		/*TODO*///char text[70];
+		String text = "";
 	
 		rasterline++;
 		rastertime = timer_get_time ();
@@ -1372,18 +1373,18 @@ public class ted7360
 			y = Machine.visible_area.max_y + 1 - Machine.uifont.height;
 	
 		/*TODO*///	vc20_tape_status (text, sizeof (text));
-		/*TODO*///	ted7360_draw_text (ted7360_bitmap, text, &y);
+			ted7360_draw_text (ted7360_bitmap, text, new int[]{y});
 	
 			if (REAL_C1551() != 0) {
 		/*TODO*///		vc1541_drive_status (text, sizeof (text));
-		/*TODO*///		ted7360_draw_text (ted7360_bitmap, text, &y);
+				ted7360_draw_text (ted7360_bitmap, text, new int[]{y});
 			}
 	
 		/*TODO*///	cbm_drive_0_status (text, text.length);
-		/*TODO*///	ted7360_draw_text (ted7360_bitmap, text, &y);
+			ted7360_draw_text (ted7360_bitmap, text, new int[]{y});
 	
 		/*TODO*///	cbm_drive_1_status (text, text.length);
-		/*TODO*///	ted7360_draw_text (ted7360_bitmap, text, &y);
+			ted7360_draw_text (ted7360_bitmap, text, new int[]{y});
 		}
 		/*TODO*///if (rasterline == C16_2_RASTERLINE (RASTERLINE()))
 		/*TODO*///{

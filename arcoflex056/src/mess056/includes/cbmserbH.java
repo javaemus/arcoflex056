@@ -15,7 +15,7 @@ public class cbmserbH
 	
 	   IO_FLOPPY,          /* type */
 	   2,				   /* count */
-	   "d640",            /* G64 later *//*file extensions */
+	   "d64\0",            /* G64 later *//*file extensions */
 	   IO_RESET_NONE,	   /* reset if file changed */
 	   null,               /* id */
 	   cbm_drive_attach_image,        /* init */

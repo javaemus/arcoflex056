@@ -243,9 +243,9 @@ public class c16
 		new Memory_WriteAddress(0x0000, 0x0001, c16_m7501_port_w, c16_memory),
 		new Memory_WriteAddress(0x0002, 0x3fff, MWA_RAM),
 	/*TODO*///#ifndef NEW_BANKHANDLER
-	/*TODO*///	new Memory_WriteAddress(0x4000, 0x7fff, MWA_BANK5),
-	/*TODO*///	new Memory_WriteAddress(0x8000, 0xbfff, MWA_BANK6),
-	/*TODO*///	new Memory_WriteAddress(0xc000, 0xfcff, MWA_BANK7),
+		new Memory_WriteAddress(0x4000, 0x7fff, MWA_BANK5),
+		new Memory_WriteAddress(0x8000, 0xbfff, MWA_BANK6),
+		new Memory_WriteAddress(0xc000, 0xfcff, MWA_BANK7),
 	/*TODO*///#endif
 	/*TODO*///#if 0
 	/*TODO*///	new Memory_WriteAddress(0x4000, 0x7fff, c16_write_4000),  /*configured in c16_common_init */
@@ -794,7 +794,8 @@ public class c16
 		/* basic machine hardware */
 		new MachineCPU[] {
 			new MachineCPU(
-				CPU_M7501,				   /* MOS7501 has no nmi line */
+				//CPU_M7501,				   /* MOS7501 has no nmi line */
+                                CPU_M6502,
 				1400000,				   /*TED7360PAL_CLOCK/2, */
 				c16_readmem, c16_writemem,
 				null, null,
@@ -1107,7 +1108,7 @@ public class c16
 		new IODevice(
 			IO_CARTSLOT,				   /* type */
 			2,				/* normal 1 *//* count */
-			"bin0rom0",                     /* file extensions */
+			"bin\0rom\0",                     /* file extensions */
 			IO_RESET_ALL,			/* reset if file changed */
 			null,
 			c16_rom_init,                   /* init */
@@ -1134,7 +1135,7 @@ public class c16
 /*TODO*///		{
 /*TODO*///			IO_CARTSLOT,				   /* type */
 /*TODO*///			2,							   /* normal 1 *//* count */
-/*TODO*///			"bin0rom0",                  /* file extensions */
+/*TODO*///			"bin\0rom\0",                  /* file extensions */
 /*TODO*///			IO_RESET_ALL,				   /* reset if file changed */
 /*TODO*///			0,
 /*TODO*///			c16_rom_init,				   /* init */
@@ -1160,7 +1161,7 @@ public class c16
 /*TODO*///		{
 /*TODO*///			IO_CARTSLOT,				   /* type */
 /*TODO*///			2,							   /* normal 1 *//* count */
-/*TODO*///			"bin0rom0",                  /* file extensions */
+/*TODO*///			"bin\0rom\0",                  /* file extensions */
 /*TODO*///			IO_RESET_ALL,				   /* reset if file changed */
 /*TODO*///			0,
 /*TODO*///			c16_rom_init,				   /* init */

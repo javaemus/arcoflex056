@@ -131,6 +131,7 @@ public class cia6526
 	
 	public static void cia6526_reset ()
 	{
+            System.out.println("cia6526_reset");
 		int i;
 /*TODO*///	
 /*TODO*///		assert (((int) cia[0].intf & 3) == 0);
@@ -163,14 +164,21 @@ public class cia6526
 	
 	public static void cia_set_interrupt (int This, int data)
 	{
+            //System.out.println("cia_set_interrupt "+cia[This].ifr+", "+cia[This].ifr+", "+cia[This].intf.irq_func);
+            
 		cia[This].ifr |= data;
+                System.out.println("cia_set_interrupt 1 "+data);
 		if ((cia[This].ier & data) != 0)
 		{
+                    System.out.println("cia_set_interrupt 2");
 			if ((cia[This].ifr & 0x80)==0)
 			{
-/*TODO*///				DBG_LOG (3, "cia set interrupt", ("%d %.2x\n", cia[This].number, data));
-				if (cia[This].intf.irq_func != null)
-					cia[This].intf.irq_func.handler(1);
+                            System.out.println("cia_set_interrupt 3");
+/*TODO*///				DBG_LOG (3, "cia set interrupt", ("%d %.2x\n", This.number, data));
+				if (cia[This].intf.irq_func != null){
+                                    System.out.println("Lanzo INTR!");
+                                    cia[This].intf.irq_func.handler(1);
+                                }
 				cia[This].ifr |= 0x80;
 			}
 		}
@@ -178,6 +186,7 @@ public class cia6526
 	
 	public static void cia_clear_interrupt (int This, int data)
 	{
+            System.out.println("cia_clear_interrupt");
 		cia[This].ifr &= ~data;
 		if ((cia[This].ifr & 0x9f) == 0x80)
 		{
@@ -452,6 +461,7 @@ public class cia6526
 	
 	public static int cia6526_read (int This, int offset)
 	{
+            
 		int val = 0;
 	
 		offset &= 0xf;
@@ -552,8 +562,11 @@ public class cia6526
 	
 	static void cia6526_write (int This, int offset, int data)
 	{
+                System.out.println("cia6526_write 1 "+offset);
 /*TODO*///		DBG_LOG (1, "cia write", ("%d %.2x:%.2x\n", This->number, offset, data));
 		offset &= 0xf;
+                
+                System.out.println("cia6526_write 2 "+offset);
 	
 		switch (offset)
 		{

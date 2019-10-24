@@ -69,15 +69,15 @@ public class c16
 	
 	static int lowrom = 0, highrom = 0;
 	
-	public static UBytePtr c16_memory = new UBytePtr();
-	public static UBytePtr c16_memory_10000 = new UBytePtr();
-	public static UBytePtr c16_memory_14000 = new UBytePtr();
-	public static UBytePtr c16_memory_18000 = new UBytePtr();
-	public static UBytePtr c16_memory_1c000 = new UBytePtr();
-	public static UBytePtr c16_memory_20000 = new UBytePtr();
-	public static UBytePtr c16_memory_24000 = new UBytePtr();
-	public static UBytePtr c16_memory_28000 = new UBytePtr();
-	public static UBytePtr c16_memory_2c000 = new UBytePtr();
+	public static UBytePtr c16_memory = new UBytePtr(0xfd00);
+	public static UBytePtr c16_memory_10000;
+	public static UBytePtr c16_memory_14000;
+	public static UBytePtr c16_memory_18000;
+	public static UBytePtr c16_memory_1c000;
+	public static UBytePtr c16_memory_20000;
+	public static UBytePtr c16_memory_24000;
+	public static UBytePtr c16_memory_28000;
+	public static UBytePtr c16_memory_2c000;
 	
 	/**
 	  ddr bit 1 port line is output
@@ -607,6 +607,8 @@ public class c16
 	public static InitMachinePtr c16_init_machine = new InitMachinePtr() {
             public void handler() {
                 int i;
+                
+                c16_memory = new UBytePtr(memory_region(REGION_CPU1));
 	
 		tpi6525_2_reset();
 		tpi6525_3_reset();

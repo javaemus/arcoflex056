@@ -2957,7 +2957,7 @@ public class amstrad
 		( 
 			IO_SNAPSHOT,				/* type */ 
 			1,							/* count */ 
-			"sna0",                    /* file extensions */ 
+			"sna\0",                    /* file extensions */ 
 			IO_RESET_NONE,				/* reset if file changed */ 
 			null, 
 			amstrad_snapshot_load,		/* init */ 
@@ -2978,7 +2978,7 @@ public class amstrad
 		( 
 			IO_FLOPPY,					/* type */ 
 			2,							/* count */ 
-			"dsk0",                    /* file extensions */ 
+			"dsk\0",                    /* file extensions */ 
 			IO_RESET_NONE,				/* reset if file changed */ 
 			null, 
 			amstrad_floppy_init,			/* init */ 
@@ -2996,10 +2996,10 @@ public class amstrad
 		);
 	
 /*TODO*///	static IODevice AMSTRAD_IO_CASSETTE =
-/*TODO*///		IO_CASSETTE_WAVE(1,"wav0",null,amstrad_cassette_init,amstrad_cassette_exit);
+/*TODO*///		IO_CASSETTE_WAVE(1,"wav\0",null,amstrad_cassette_init,amstrad_cassette_exit);
 	
 /*TODO*///	static IODevice AMSTRAD_IO_PRINTER =
-/*TODO*///		IO_PRINTER_PORT(1,"prn0");
+/*TODO*///		IO_PRINTER_PORT(1,"prn\0");
 	
 	static IODevice io_cpc6128[] =
 	{
@@ -3023,7 +3023,7 @@ public class amstrad
 		new IODevice(
 			IO_CARTSLOT,				/* type */
 			1,							/* count */
-			"cpr0",                    /* file extensions */
+			"cpr\0",                    /* file extensions */
 			IO_RESET_NONE,				/* reset if file changed */
 			null,
 			amstrad_plus_cartridge_init,	/* init */

@@ -778,6 +778,8 @@ public class vic6567
 	public static void vic2_draw_character (int ybegin, int yend, int ch, int yoff, int xoff, int[] color)
 	{
             	int y, code;
+                
+                //System.out.println("vic2_draw_character "+ch);
 	
 	/*	if (Machine.color_depth == 8)
 		{
@@ -817,12 +819,14 @@ public class vic6567
 				new UShortPtr(vic2.bitmap.line[y + yoff]).write(6 + xoff, (char) color[(code >> 1) & 1]);
 				new UShortPtr(vic2.bitmap.line[y + yoff]).write(7 + xoff, (char) color[code & 1]);
 			}
+                        
 		}
 	}
 	
 	static void vic2_draw_character_multi (int ybegin, int yend, int ch,
 										   int yoff, int xoff)
 	{
+            System.out.println("vic2_draw_character_multi "+ch);
 		int y, code;
 	
 	/*	if (Machine.color_depth == 8)

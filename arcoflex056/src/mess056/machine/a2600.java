@@ -603,8 +603,8 @@ public class a2600
 			{
 				logerror("TIA_w - WSYNC \n");
 			//#ifndef USE_SCANLINE_WSYNC
-			//	timer_reset(HSYNC_timer, TIME_IN_CYCLES(76, 0));
-			//	a2600_main_cb.handler(0);
+				timer_reset(HSYNC_timer, TIME_IN_CYCLES(76, 0));
+				a2600_main_cb.handler(0);
 			//#else
 				TIA_wsync = 1;
 				cpu_spinuntil_trigger(WSYNC_TRIGGER);
@@ -877,7 +877,7 @@ public class a2600
 			break;
 	
 		case CXCLR:						/* 0x2C Clear Collision Latches */
-			//break;
+			break;
 	
 	
 			/*TODO*///ROM.write(offset, data);
