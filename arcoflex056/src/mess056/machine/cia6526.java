@@ -118,6 +118,7 @@ public class cia6526
 	
 	public static void cia6526_config (int which, cia6526_interface intf)
 	{
+            System.out.println("cia6526_config");
 		if (which >= MAX_CIA)
 			return;
 		//memset (cia + which, 0, sizeof (cia[which]));
@@ -150,7 +151,7 @@ public class cia6526
 			if (cia[i].todtimer != null)
 				timer_remove (cia[i].todtimer);
 			//memset (&cia[i], 0, sizeof (cia[i]));
-                        cia[i] = new _CIA6526();
+                        //cia[i] = new _CIA6526();
 			cia[i].number = i;
 			cia[i].intf = intf;
 			cia[i].t1l = 0xffff;
@@ -167,7 +168,7 @@ public class cia6526
             //System.out.println("cia_set_interrupt "+cia[This].ifr+", "+cia[This].ifr+", "+cia[This].intf.irq_func);
             
 		cia[This].ifr |= data;
-                System.out.println("cia_set_interrupt 1 "+data);
+                //System.out.println("cia_set_interrupt 1 "+data);
 		if ((cia[This].ier & data) != 0)
 		{
                     System.out.println("cia_set_interrupt 2");
@@ -186,7 +187,7 @@ public class cia6526
 	
 	public static void cia_clear_interrupt (int This, int data)
 	{
-            System.out.println("cia_clear_interrupt");
+            //System.out.println("cia_clear_interrupt");
 		cia[This].ifr &= ~data;
 		if ((cia[This].ifr & 0x9f) == 0x80)
 		{
@@ -199,6 +200,7 @@ public class cia6526
 	/******************* Timer timeouts *************************/
 	public static timer_callback cia_tod_timeout = new timer_callback() {
             public void handler(int which) {
+                //System.out.println("cia_tod_timeout");
                 cia[which].tod10ths++;
 		if (cia[which].tod10ths > 9)
 		{
@@ -562,11 +564,11 @@ public class cia6526
 	
 	static void cia6526_write (int This, int offset, int data)
 	{
-                System.out.println("cia6526_write 1 "+offset);
+                //System.out.println("cia6526_write 1 "+offset);
 /*TODO*///		DBG_LOG (1, "cia write", ("%d %.2x:%.2x\n", This->number, offset, data));
 		offset &= 0xf;
                 
-                System.out.println("cia6526_write 2 "+offset);
+                //System.out.println("cia6526_write 2 "+offset);
 	
 		switch (offset)
 		{

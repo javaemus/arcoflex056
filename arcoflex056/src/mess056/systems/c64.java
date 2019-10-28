@@ -272,6 +272,10 @@ public class c64
 /*TODO*///		new Memory_ReadAddress(0xdf00, 0xdfff, MRA_BANK15),		   /* csline expansion port */
 	/*TODO*///#endif
 		new Memory_ReadAddress(0xe000, 0xffff, MRA_BANK7),	   /* ram or kernel rom or external romh */
+		//new Memory_ReadAddress(0x10000, 0x11fff, MRA_ROM),	   /* basic at 0xa000 */
+		//new Memory_ReadAddress(0x12000, 0x13fff, MRA_ROM),	   /* kernal at 0xe000 */
+		//new Memory_ReadAddress(0x14000, 0x14fff, MRA_ROM),	   /* charrom at 0xd000 */
+		//new Memory_ReadAddress(0x15000, 0x153ff, MRA_RAM),
 		new Memory_ReadAddress(MEMPORT_MARKER, 0)
 	};
 	
@@ -295,6 +299,12 @@ public class c64
 /*TODO*///		new Memory_WriteAddress(0xdf00, 0xdfff, MWA_NOP),		   /* csline expansion port */
 	/*TODO*///#endif
 		new Memory_WriteAddress(0xe000, 0xffff, MWA_BANK8),
+		//new Memory_WriteAddress(0x10000, 0x11fff, MWA_ROM, c64_basic),	/* basic at 0xa000 */
+		//new Memory_WriteAddress(0x12000, 0x13fff, MWA_ROM, c64_kernal),	/* kernal at 0xe000 */
+		//new Memory_WriteAddress(0x14000, 0x14fff, MWA_ROM, c64_chargen),	/* charrom at 0xd000 */
+		//new Memory_WriteAddress(0x15000, 0x153ff, MWA_RAM, c64_colorram),		/* colorram at 0xd800 */
+		//new Memory_WriteAddress(0x15400, 0x173ff, MWA_ROM, c64_roml),	/* basic at 0xa000 */
+		//new Memory_WriteAddress(0x17400, 0x193ff, MWA_ROM, c64_romh),
 		new Memory_WriteAddress(MEMPORT_MARKER, 0)
 	};
 	
@@ -901,8 +911,7 @@ public class c64
 		/* basic machine hardware */
 		new MachineCPU[] {
 			new MachineCPU(
-				CPU_M6510,
-                                //CPU_M6502,
+				CPU_M6510|CPU_16BIT_PORT,
 				VIC6567_CLOCK,
 				c64_readmem, c64_writemem,
 				null, null,
@@ -1112,7 +1121,7 @@ public class c64
 	static IODevice io_c64[] =
 	{
 		IODEVICE_CBM_QUICK,
-		IODEVICE_CBM_ROM("crt\080\0"),
+/*TODO*///		IODEVICE_CBM_ROM("crt\080\0"),
 		IODEVICE_VC20TAPE,
 		IODEVICE_CBM_DRIVE,
 		new IODevice(IO_END)

@@ -237,7 +237,7 @@ public class vic6567
                 }
 	};
         
-        public static _vic2 vic2 = new _vic2();
+        public static _vic2 vic2 = null;
         
 	
 	public static int vic2_getforeground (int y, int x)
@@ -266,14 +266,14 @@ public class vic6567
 					   ReadHandlerPtr dma_read, ReadHandlerPtr dma_read_color,
 					   ReadHandlerPtr irq)
 	{
-		//vic2 = new _vic2();
+		vic2 = new _vic2();
 	
 		vic2.lines = VIC2_LINES();
 	
 		vic2.dma_read = dma_read;
 		vic2.dma_read_color = dma_read_color;
 		vic2.interrupt = irq;
-		/*TODO*///vic2.vic2e = chip_vic2e;
+		vic2.vic2e = chip_vic2e!=0?true:false;
 		vic2.pal = pal!=0?true:false;
 		vic2.on = true;
 	}
@@ -307,16 +307,16 @@ public class vic6567
 	
 	static void vic2_set_interrupt (int mask)
 	{
-            //System.out.println("vic2_set_interrupt");
-		if ((((vic2.reg[0x19] ^ mask) & vic2.reg[0x1a] & 0xf)) !=0)
-		{
+            System.out.println("vic2_set_interrupt");
+		//if ((((vic2.reg[0x19] ^ mask) & vic2.reg[0x1a] & 0xf)) !=0)
+		//{
 			if ((vic2.reg[0x19] & 0x80)==0)
 			{
 				/*TODO*///DBG_LOG (2, "vic2", ("irq start %.2x\n", mask));
 				vic2.reg[0x19] |= 0x80;
 				vic2.interrupt.handler(1);
 			}
-		}
+		//}
 		vic2.reg[0x19] |= mask;
 	}
 	
