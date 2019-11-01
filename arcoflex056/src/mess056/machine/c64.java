@@ -63,6 +63,7 @@ public class c64
 /*TODO*///	/* cpu port */
 	public static int c64_port6510, c64_ddr6510;
         public static int c128=0;
+        public static int c65=0;
 /*TODO*///	int c128_va1617;
         public static UBytePtr c64_vicaddr, c128_vicaddr;
         public static UBytePtr c64_memory=new UBytePtr(0x15000);
@@ -75,19 +76,22 @@ public class c64
 
         public static UBytePtr  roml=null, romh=null;
 	public static int ultimax = 0;
-        public static int c64_tape_on = 1;
+        public static int c64_tape_on = 0;
         public static int c64_cia1_on = 1;
-/*TODO*///	static UINT8 cartridge = 0;
-/*TODO*///	static enum
-/*TODO*///	{
-/*TODO*///		CartridgeAuto = 0, CartridgeUltimax, CartridgeC64,
-/*TODO*///		CartridgeSuperGames, CartridgeRobocop2
-/*TODO*///	}
-/*TODO*///	cartridgetype = CartridgeAuto;
-        public static int cia0porta=0;
+
+        public static int cartridge = 0;
+
+        public static int CartridgeAuto = 0;
+        public static int CartridgeUltimax = 1;
+        public static int CartridgeC64 = 3;
+        public static int CartridgeSuperGames = 4;
+        public static int CartridgeRobocop2 = 5;
+
+        public static int cartridgetype = CartridgeAuto;
+        public static int cia0porta=1;
         public static int serial_clock, serial_data, serial_atn;
 	public static int vicirq = 1, cia0irq = 1;
-/*TODO*///	
+
 /*TODO*///	/*
 /*TODO*///	 * cia 0
 /*TODO*///	 * port a
@@ -106,17 +110,21 @@ public class c64
 /*TODO*///	 */
         public static ReadHandlerPtr c64_cia0_port_a_r = new ReadHandlerPtr() {
             public int handler(int offset) {
-		int value = 0xff;
+                System.out.println("c64_cia0_port_a_r inicio");
+                int value = 0xff;
 	
 		if (JOYSTICK_SWAP() != 0) value = c64_keyline[8];
                 else 
                     value = c64_keyline[9];
+                
+                System.out.println("c64_cia0_port_a_r="+value);
 		return value;
             }
         };
 	
         public static ReadHandlerPtr c64_cia0_port_b_r = new ReadHandlerPtr() {
             public int handler(int offset) {
+                 System.out.println("c64_cia0_port_b_r antes");
 		int value = 0xff;
 	
 		if ((cia0porta & 0x80)==0)
@@ -152,7 +160,7 @@ public class c64
 /*TODO*///			if (!(c65_6511_port&2))
 /*TODO*///				value&=c65_keyline;
 /*TODO*///		}
-	
+            System.out.println("c64_cia0_port_b_r="+value);
 		return value;
             }
         };
@@ -160,11 +168,13 @@ public class c64
         public static WriteHandlerPtr c64_cia0_port_a_w = new WriteHandlerPtr() {
             public void handler(int offset, int data) {
                 cia0porta = data;
+                System.out.println("c64_cia0_port_a_w");
             }
         };
 	
         public static WriteHandlerPtr c64_cia0_port_b_w = new WriteHandlerPtr() {
             public void handler(int offset, int data) {
+                System.out.println("c64_cia0_port_b_w");
 /*TODO*///		vic2_lightpen_write (data & 0x10);
             }
         };
@@ -200,6 +210,7 @@ public class c64
 /*TODO*///	
         public static ReadHandlerPtr c64_cia0_interrupt = new ReadHandlerPtr() {
             public int handler(int level) {
+                System.out.println("c64_cia0_interrupt");
 		if (level != cia0irq)
 		{
 			c64_irq ((level!=0 || vicirq!=0)? 1 : 0);
@@ -250,6 +261,7 @@ public class c64
 /*TODO*///	 */
         public static ReadHandlerPtr c64_cia1_port_a_r = new ReadHandlerPtr() {
             public int handler(int level) {
+                System.out.println("c64_cia1_port_a_r");
 		int value = 0xff;
 	
 		if (serial_clock==0 || cbm_serial_clock_read ()==0)
@@ -280,6 +292,7 @@ public class c64
 	
 	public static ReadHandlerPtr c64_cia1_interrupt = new ReadHandlerPtr() {
             public int handler(int level) {
+                System.out.println("c64_cia1_interrupt");
                 if (level != old_level)
 		{
 /*TODO*///			DBG_LOG (1, "mos6510", ("nmi %s\n", level ? "start" : "end"));
@@ -680,12 +693,12 @@ public class c64
 /*TODO*///	{
 /*TODO*///		return c64_colorram[offset & 0x3ff];
 /*TODO*///	}
-/*TODO*///	
-/*TODO*///	public static WriteHandlerPtr c64_colorram_write = new WriteHandlerPtr() {public void handler(int offset, int data)
-/*TODO*///	{
-/*TODO*///		c64_colorram[offset & 0x3ff] = data | 0xf0;
-/*TODO*///	} };
-/*TODO*///	
+	
+	public static WriteHandlerPtr c64_colorram_write = new WriteHandlerPtr() {public void handler(int offset, int data)
+	{
+		c64_colorram.write(offset & 0x3ff, data | 0xf0);
+	} };
+	
 /*TODO*///	/*
 /*TODO*///	 * only 14 address lines
 /*TODO*///	 * a15 and a14 portlines
@@ -820,16 +833,17 @@ public class c64
 /*TODO*///		vc1541_reset ();
 /*TODO*///	#endif
 /*TODO*///		sid6581_0_configure(SID8580);
-/*TODO*///		if (c64_cia1_on != 0)
-/*TODO*///		{
-/*TODO*///			cbm_serial_reset_write (0);
-/*TODO*///			cbm_drive_0_config (SERIAL8ON ? SERIAL : 0, c65?10:8);
-/*TODO*///			cbm_drive_1_config (SERIAL9ON ? SERIAL : 0, c65?11:9);
-/*TODO*///			serial_clock = serial_data = serial_atn = 1;
-/*TODO*///		}
-/*TODO*///		cia6526_reset ();
-		c64_vicaddr = c64_memory;
-		vicirq = cia0irq = 0;
+		if (c64_cia1_on != 0)
+		{
+			cbm_serial_reset_write (0);
+/*TODO*///			cbm_drive_0_config (SERIAL8ON()!=0 ? SERIAL : 0, c65!=0?10:8);
+/*TODO*///			cbm_drive_1_config (SERIAL9ON()!=0 ? SERIAL : 0, c65!=0?11:9);
+			serial_clock = serial_data = serial_atn = 1;
+		}
+		cia6526_reset ();
+		c64_vicaddr = new UBytePtr(c64_memory);
+		vicirq = 0;
+                cia0irq = 0;
 		c64_port6510 = 0xff;
 		c64_ddr6510 = 0;
 	} };
@@ -837,10 +851,10 @@ public class c64
 	public static InitMachinePtr c64_init_machine = new InitMachinePtr() { public void handler() 
 	{
 		c64_common_init_machine.handler();
-/*TODO*///	
-/*TODO*///		c64_rom_recognition ();
-/*TODO*///		c64_rom_load();
-/*TODO*///	
+	
+		c64_rom_recognition ();
+		c64_rom_load();
+
 /*TODO*///		if (c128 != 0)
 /*TODO*///			c128_bankswitch_64 (1);
 		if (ultimax==0)
@@ -898,129 +912,130 @@ public class c64
 /*TODO*///			logerror("rom %s not recognized\n", device_filename(IO_CARTSLOT,id));
 /*TODO*///		return retval;
 /*TODO*///	}
-/*TODO*///	
-/*TODO*///	#define BETWEEN(value1,value2,bottom,top) \
-/*TODO*///	    ( ((value2)>=(bottom))&&((value1)<(top)) )
-/*TODO*///	
-/*TODO*///	void c64_rom_recognition (void)
-/*TODO*///	{
-/*TODO*///		int i;
-/*TODO*///		cartridgetype=CartridgeAuto;
-/*TODO*///		for (i=0; (i<sizeof(cbm_rom)/sizeof(cbm_rom[0]))
-/*TODO*///				 &&(cbm_rom[i].size!=0); i++) {
-/*TODO*///			cartridge=1;
-/*TODO*///			if ( BETWEEN(0xa000, 0xbfff, cbm_rom[i].addr,
-/*TODO*///						 cbm_rom[i].addr+cbm_rom[i].size) ) {
-/*TODO*///				cartridgetype=CartridgeC64;
-/*TODO*///			} else if ( BETWEEN(0xe000, 0xffff, cbm_rom[i].addr,
-/*TODO*///								cbm_rom[i].addr+cbm_rom[i].size) ) {
-/*TODO*///				cartridgetype=CartridgeUltimax;
-/*TODO*///			}
-/*TODO*///		}
-/*TODO*///		if (i==4) cartridgetype=CartridgeSuperGames;
-/*TODO*///		if (i==32) cartridgetype=CartridgeRobocop2;
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	void c64_rom_load(void)
-/*TODO*///	{
-/*TODO*///		int i;
-/*TODO*///	
-/*TODO*///		c64_exrom = 1;
-/*TODO*///		c64_game = 1;
-/*TODO*///		if (cartridge != 0)
-/*TODO*///		{
-/*TODO*///			if (AUTO_MODULE && (cartridgetype == CartridgeAuto))
-/*TODO*///			{
-/*TODO*///				logerror("Cartridge type not recognized using Machine type\n");
-/*TODO*///			}
-/*TODO*///			if (C64_MODULE && (cartridgetype == CartridgeUltimax))
-/*TODO*///			{
-/*TODO*///				logerror("Cartridge could be ultimax type!?\n");
-/*TODO*///			}
-/*TODO*///			if (ULTIMAX_MODULE && (cartridgetype == CartridgeC64))
-/*TODO*///			{
-/*TODO*///				logerror("Cartridge could be c64 type!?\n");
-/*TODO*///			}
-/*TODO*///			if (C64_MODULE != 0)
-/*TODO*///				cartridgetype = CartridgeC64;
-/*TODO*///			else if (ULTIMAX_MODULE != 0)
-/*TODO*///				cartridgetype = CartridgeUltimax;
-/*TODO*///			else if (SUPERGAMES_MODULE != 0)
-/*TODO*///				cartridgetype = CartridgeSuperGames;
-/*TODO*///			else if (ROBOCOP2_MODULE != 0)
-/*TODO*///				cartridgetype = CartridgeRobocop2;
-/*TODO*///			if (ultimax || (cartridgetype == CartridgeUltimax)) {
-/*TODO*///				c64_game = 0;
-/*TODO*///			} else {
-/*TODO*///				c64_exrom = 0;
-/*TODO*///			}
-/*TODO*///			if (ultimax != 0) {
-/*TODO*///				for (i=0; (i<sizeof(cbm_rom)/sizeof(cbm_rom[0]))
-/*TODO*///						 &&(cbm_rom[i].size!=0); i++) {
-/*TODO*///					if (cbm_rom[i].addr==CBM_ROM_ADDR_LO) {
-/*TODO*///						memcpy(c64_memory+0x8000+0x2000-cbm_rom[i].size,
-/*TODO*///							   cbm_rom[i].chip, cbm_rom[i].size);
-/*TODO*///					} else if ((cbm_rom[i].addr==CBM_ROM_ADDR_HI)
-/*TODO*///							   ||(cbm_rom[i].addr==CBM_ROM_ADDR_UNKNOWN)) {
-/*TODO*///						memcpy(c64_memory+0xe000+0x2000-cbm_rom[i].size,
-/*TODO*///							   cbm_rom[i].chip, cbm_rom[i].size);
-/*TODO*///					} else {
-/*TODO*///						memcpy(c64_memory+cbm_rom[i].addr, cbm_rom[i].chip,
-/*TODO*///							   cbm_rom[i].size);
-/*TODO*///					}
-/*TODO*///				}
-/*TODO*///	        } else if ( (cartridgetype==CartridgeRobocop2)
-/*TODO*///						||(cartridgetype==CartridgeSuperGames) ) {
-/*TODO*///				roml=0;
-/*TODO*///				romh=0;
-/*TODO*///				for (i=0; (i<sizeof(cbm_rom)/sizeof(cbm_rom[0]))
-/*TODO*///						 &&(cbm_rom[i].size!=0); i++) {
-/*TODO*///					if (!roml
-/*TODO*///						&& ((cbm_rom[i].addr==CBM_ROM_ADDR_UNKNOWN)
-/*TODO*///							||(cbm_rom[i].addr==CBM_ROM_ADDR_LO)
-/*TODO*///							||(cbm_rom[i].addr==0x8000)) ) {
-/*TODO*///						roml=cbm_rom[i].chip;
-/*TODO*///					}
-/*TODO*///					if (!romh
-/*TODO*///						&& ((cbm_rom[i].addr==CBM_ROM_ADDR_HI)
-/*TODO*///							||(cbm_rom[i].addr==0xa000) ) ){
-/*TODO*///						romh=cbm_rom[i].chip;
-/*TODO*///					}
-/*TODO*///					if (!romh
-/*TODO*///						&& (cbm_rom[i].addr==0x8000)
-/*TODO*///						&&(cbm_rom[i].size=0x4000) ){
-/*TODO*///						romh=cbm_rom[i].chip+0x2000;
-/*TODO*///					}
-/*TODO*///				}
-/*TODO*///			} else /*if ((cartridgetype == CartridgeC64)||
-/*TODO*///					 (cartridgetype == CartridgeUltimax) )*/{
-/*TODO*///				roml=c64_roml;
-/*TODO*///				romh=c64_romh;
-/*TODO*///				memset(roml, 0, 0x2000);
-/*TODO*///				memset(romh, 0, 0x2000);
-/*TODO*///				for (i=0; (i<sizeof(cbm_rom)/sizeof(cbm_rom[0]))
-/*TODO*///						 &&(cbm_rom[i].size!=0); i++) {
-/*TODO*///					if ((cbm_rom[i].addr==CBM_ROM_ADDR_UNKNOWN)
-/*TODO*///						||(cbm_rom[i].addr==CBM_ROM_ADDR_LO) ) {
-/*TODO*///						memcpy(roml+0x2000-cbm_rom[i].size,
-/*TODO*///							   cbm_rom[i].chip, cbm_rom[i].size);
-/*TODO*///					} else if ( ((cartridgetype == CartridgeC64)
-/*TODO*///						  &&(cbm_rom[i].addr==CBM_ROM_ADDR_HI))
-/*TODO*///						 ||((cartridgetype==CartridgeUltimax)
-/*TODO*///							&&(cbm_rom[i].addr==CBM_ROM_ADDR_HI)) ) {
-/*TODO*///						memcpy(romh+0x2000-cbm_rom[i].size,
-/*TODO*///							   cbm_rom[i].chip, cbm_rom[i].size);
-/*TODO*///					} else if (cbm_rom[i].addr<0xc000) {
-/*TODO*///						memcpy(roml+cbm_rom[i].addr-0x8000, cbm_rom[i].chip,
-/*TODO*///							   cbm_rom[i].size);
-/*TODO*///					} else {
-/*TODO*///						memcpy(romh+cbm_rom[i].addr-0xe000,
-/*TODO*///							   cbm_rom[i].chip, cbm_rom[i].size);
-/*TODO*///					}
-/*TODO*///				}
-/*TODO*///			}
-/*TODO*///		}
-/*TODO*///	}
+	
+	public static boolean BETWEEN(int value1, int value2, int bottom, int top){
+	    return ( ((value2)>=(bottom))&&((value1)<(top)) );
+        }
+	
+	public static void c64_rom_recognition ()
+	{
+		int i;
+		cartridgetype=CartridgeAuto;
+		for (i=0; (i<cbm_rom.length)
+				 &&(cbm_rom[i].size!=0); i++) {
+			cartridge=1;
+			if ( BETWEEN(0xa000, 0xbfff, cbm_rom[i].addr,
+						 cbm_rom[i].addr+cbm_rom[i].size) ) {
+				cartridgetype=CartridgeC64;
+			} else if ( BETWEEN(0xe000, 0xffff, cbm_rom[i].addr,
+								cbm_rom[i].addr+cbm_rom[i].size) ) {
+				cartridgetype=CartridgeUltimax;
+			}
+		}
+		if (i==4) cartridgetype=CartridgeSuperGames;
+		if (i==32) cartridgetype=CartridgeRobocop2;
+	}
+	
+	public static void c64_rom_load()
+	{
+		int i;
+	
+		c64_exrom = 1;
+		c64_game = 1;
+		if (cartridge != 0)
+		{
+			if (AUTO_MODULE()!=0 && (cartridgetype == CartridgeAuto))
+			{
+				logerror("Cartridge type not recognized using Machine type\n");
+			}
+			if (C64_MODULE()!=0 && (cartridgetype == CartridgeUltimax))
+			{
+				logerror("Cartridge could be ultimax type!?\n");
+			}
+			if (ULTIMAX_MODULE()!=0 && (cartridgetype == CartridgeC64))
+			{
+				logerror("Cartridge could be c64 type!?\n");
+			}
+			if (C64_MODULE() != 0)
+				cartridgetype = CartridgeC64;
+			else if (ULTIMAX_MODULE() != 0)
+				cartridgetype = CartridgeUltimax;
+			else if (SUPERGAMES_MODULE() != 0)
+				cartridgetype = CartridgeSuperGames;
+			else if (ROBOCOP2_MODULE() != 0)
+				cartridgetype = CartridgeRobocop2;
+			if (ultimax!=0 || (cartridgetype == CartridgeUltimax)) {
+				c64_game = 0;
+			} else {
+				c64_exrom = 0;
+			}
+			if (ultimax != 0) {
+				for (i=0; (i<cbm_rom.length)
+						 &&(cbm_rom[i].size!=0); i++) {
+					if (cbm_rom[i].addr==CBM_ROM_ADDR_LO) {
+						memcpy(new UBytePtr(c64_memory, 0x8000+0x2000-cbm_rom[i].size),
+							   cbm_rom[i].chip, cbm_rom[i].size);
+					} else if ((cbm_rom[i].addr==CBM_ROM_ADDR_HI)
+							   ||(cbm_rom[i].addr==CBM_ROM_ADDR_UNKNOWN)) {
+						memcpy(new UBytePtr(c64_memory, 0xe000+0x2000-cbm_rom[i].size),
+							   cbm_rom[i].chip, cbm_rom[i].size);
+					} else {
+						memcpy(new UBytePtr(c64_memory, cbm_rom[i].addr), cbm_rom[i].chip,
+							   cbm_rom[i].size);
+					}
+				}
+	        } else if ( (cartridgetype==CartridgeRobocop2)
+						||(cartridgetype==CartridgeSuperGames) ) {
+				roml=null;
+				romh=null;
+				for (i=0; (i<cbm_rom.length)
+						 &&(cbm_rom[i].size!=0); i++) {
+					if (roml==null
+						&& ((cbm_rom[i].addr==CBM_ROM_ADDR_UNKNOWN)
+							||(cbm_rom[i].addr==CBM_ROM_ADDR_LO)
+							||(cbm_rom[i].addr==0x8000)) ) {
+						roml=cbm_rom[i].chip;
+					}
+					if (romh==null
+						&& ((cbm_rom[i].addr==CBM_ROM_ADDR_HI)
+							||(cbm_rom[i].addr==0xa000) ) ){
+						romh=cbm_rom[i].chip;
+					}
+					if (romh==null
+						&& (cbm_rom[i].addr==0x8000)
+						&&(cbm_rom[i].size==0x4000) ){
+						romh=new UBytePtr(cbm_rom[i].chip, 0x2000);
+					}
+				}
+			} else /*if ((cartridgetype == CartridgeC64)||
+					 (cartridgetype == CartridgeUltimax) )*/{
+				roml=c64_roml;
+				romh=c64_romh;
+				memset(roml, 0, 0x2000);
+				memset(romh, 0, 0x2000);
+				for (i=0; (i<cbm_rom.length)
+						 &&(cbm_rom[i].size!=0); i++) {
+					if ((cbm_rom[i].addr==CBM_ROM_ADDR_UNKNOWN)
+						||(cbm_rom[i].addr==CBM_ROM_ADDR_LO) ) {
+						memcpy(new UBytePtr(roml, 0x2000-cbm_rom[i].size),
+							   cbm_rom[i].chip, cbm_rom[i].size);
+					} else if ( ((cartridgetype == CartridgeC64)
+						  &&(cbm_rom[i].addr==CBM_ROM_ADDR_HI))
+						 ||((cartridgetype==CartridgeUltimax)
+							&&(cbm_rom[i].addr==CBM_ROM_ADDR_HI)) ) {
+						memcpy(new UBytePtr(romh, 0x2000-cbm_rom[i].size),
+							   cbm_rom[i].chip, cbm_rom[i].size);
+					} else if (cbm_rom[i].addr<0xc000) {
+						memcpy(new UBytePtr(roml, cbm_rom[i].addr-0x8000), cbm_rom[i].chip,
+							   cbm_rom[i].size);
+					} else {
+						memcpy(new UBytePtr(romh, cbm_rom[i].addr-0xe000),
+							   cbm_rom[i].chip, cbm_rom[i].size);
+					}
+				}
+			}
+		}
+	}
         
         static int quickload = 0;
 		static int nmilevel = 0;

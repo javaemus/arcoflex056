@@ -30,6 +30,7 @@ import static mame056.mame.*;
 import static mame056.cpuexec.*;
 import static mess056.vidhrdw.tms9928a.INTCallbackPtr;
 import static mess056.vidhrdw.v9938H.*;
+import static mess056.vidhrdw.v9938mod.*;
 
 public class v9938
 {
@@ -707,19 +708,20 @@ public class v9938
 /*TODO*///	
 /*TODO*///	#define V9938_SECOND_FIELD ( !(((_vdp.contReg[9] & 0x04) && !(_vdp.statReg[2] & 2)) || _vdp.blink)) 
 /*TODO*///	
-/*TODO*///	#define V9938_WIDTH	(512 + 32)
+        public static int V9938_WIDTH	= (512 + 32);
 /*TODO*///	#define V9938_BPP	(8)
 /*TODO*///	#undef	V9938_BPP
 /*TODO*///	#define V9938_BPP	(16)
 /*TODO*///	#undef 	V9938_WIDTH
-/*TODO*///	#define V9938_WIDTH	(256 + 16)
+/*TODO*///        public static int  V9938_WIDTH	= (256 + 16);
 /*TODO*///	#undef	V9938_BPP
 /*TODO*///	#define V9938_BPP	(8)
 /*TODO*///	#undef	V9938_BPP
 /*TODO*///	#undef 	V9938_WIDTH
-/*TODO*///	
-/*TODO*///	static void v9938_sprite_mode1 (int line, UINT8 *col)
-/*TODO*///		{
+	
+	public static ModeSprites_HandlersPtr v9938_sprite_mode1 = new ModeSprites_HandlersPtr() {
+            public void handler(int line, UBytePtr col) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 /*TODO*///		UINT8	*attrtbl, *patterntbl, *patternptr;
 /*TODO*///		int x, y, p, height, c, p2, i, n, pattern;
 /*TODO*///	
@@ -838,10 +840,13 @@ public class v9938
 /*TODO*///	
 /*TODO*///		if ( !(_vdp.statReg[0] & 0x40) )
 /*TODO*///			_vdp.statReg[0] = (_vdp.statReg[0] & 0xa0) | p;
-/*TODO*///		}
-/*TODO*///	
-/*TODO*///	static void v9938_sprite_mode2 (int line, UINT8 *col)
-/*TODO*///		{
+            }
+        };
+        
+	public static ModeSprites_HandlersPtr v9938_sprite_mode2 = new ModeSprites_HandlersPtr() {
+            @Override
+            public void handler(int line, UBytePtr col) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
 /*TODO*///		int attrtbl, patterntbl, patternptr, colourtbl;
 /*TODO*///		int x, i, y, p, height, c, p2, n, pattern, colourmask, first_cc_seen;
 /*TODO*///	
@@ -967,134 +972,169 @@ public class v9938
 /*TODO*///			}
 /*TODO*///	
 /*TODO*///		if ( !(_vdp.statReg[0] & 0x40) )
-/*TODO*///			_vdp.statReg[0] = (_vdp.statReg[0] & 0xa0) | p;
-/*TODO*///		}
-/*TODO*///	
-        public static abstract interface ModeVisible_8_HandlersPtr {
-            public abstract void handler(UBytePtr col, int line);
-        }
-/*TODO*///	typedef struct {
-/*TODO*///		UINT8 m;
-/*TODO*///		void (*visible_8)(UINT8*, int);
-/*TODO*///		void (*visible_16)(UINT16*, int);
-/*TODO*///		void (*visible_8s)(UINT8*, int);
-/*TODO*///		void (*visible_16s)(UINT16*, int);
-/*TODO*///		void (*border_8)(UINT8*);
-/*TODO*///		void (*border_16)(UINT16*);
-/*TODO*///		void (*border_8s)(UINT8*);
-/*TODO*///		void (*border_16s)(UINT16*);
-/*TODO*///		void (*sprites)(int, UINT8*);
-/*TODO*///		void (*draw_sprite_8)(UINT8*, UINT8*);
-/*TODO*///		void (*draw_sprite_16)(UINT16*, UINT8*);
-/*TODO*///		void (*draw_sprite_8s)(UINT8*, UINT8*);
-/*TODO*///		void (*draw_sprite_16s)(UINT16*, UINT8*);
-/*TODO*///	} V9938_MODE;
-/*TODO*///	
-/*TODO*///	static const V9938_MODE modes[] = {
-/*TODO*///		{ 0x02,
-/*TODO*///			v9938_mode_text1_8, v9938_mode_text1_16,
-/*TODO*///			v9938_mode_text1_8s, v9938_mode_text1_16s,
-/*TODO*///			v9938_default_border_8, v9938_default_border_16,
-/*TODO*///			v9938_default_border_8s, v9938_default_border_16s,
-/*TODO*///			null, 
-/*TODO*///			null, null,
-/*TODO*///			null, null },
-/*TODO*///		{ 0x01,
-/*TODO*///			v9938_mode_multi_8, v9938_mode_multi_16,
-/*TODO*///			v9938_mode_multi_8s, v9938_mode_multi_16s,
-/*TODO*///			v9938_default_border_8, v9938_default_border_16,
-/*TODO*///			v9938_default_border_8s, v9938_default_border_16s,
-/*TODO*///			v9938_sprite_mode1, 
-/*TODO*///			v9938_default_draw_sprite_8, v9938_default_draw_sprite_16,
-/*TODO*///			v9938_default_draw_sprite_8s, v9938_default_draw_sprite_16s },
-/*TODO*///		{ 0x00,
-/*TODO*///			v9938_mode_graphic1_8, v9938_mode_graphic1_16,
-/*TODO*///			v9938_mode_graphic1_8s, v9938_mode_graphic1_16s,
-/*TODO*///			v9938_default_border_8, v9938_default_border_16,
-/*TODO*///			v9938_default_border_8s, v9938_default_border_16s,
-/*TODO*///			v9938_sprite_mode1, 
-/*TODO*///			v9938_default_draw_sprite_8, v9938_default_draw_sprite_16,
-/*TODO*///			v9938_default_draw_sprite_8s, v9938_default_draw_sprite_16s },
-/*TODO*///		{ 0x04,
-/*TODO*///			v9938_mode_graphic23_8, v9938_mode_graphic23_16,
-/*TODO*///			v9938_mode_graphic23_8s, v9938_mode_graphic23_16s,
-/*TODO*///			v9938_default_border_8, v9938_default_border_16,
-/*TODO*///			v9938_default_border_8s, v9938_default_border_16s,
-/*TODO*///			v9938_sprite_mode1, 
-/*TODO*///			v9938_default_draw_sprite_8, v9938_default_draw_sprite_16,
-/*TODO*///			v9938_default_draw_sprite_8s, v9938_default_draw_sprite_16s },
-/*TODO*///		{ 0x08,
-/*TODO*///			v9938_mode_graphic23_8, v9938_mode_graphic23_16,
-/*TODO*///			v9938_mode_graphic23_8s, v9938_mode_graphic23_16s,
-/*TODO*///			v9938_default_border_8, v9938_default_border_16,
-/*TODO*///			v9938_default_border_8s, v9938_default_border_16s,
-/*TODO*///			v9938_sprite_mode2, 
-/*TODO*///			v9938_default_draw_sprite_8, v9938_default_draw_sprite_16,
-/*TODO*///			v9938_default_draw_sprite_8s, v9938_default_draw_sprite_16s },
-/*TODO*///		{ 0x0c,
-/*TODO*///			v9938_mode_graphic4_8, v9938_mode_graphic4_16,
-/*TODO*///			v9938_mode_graphic4_8s, v9938_mode_graphic4_16s,
-/*TODO*///			v9938_default_border_8, v9938_default_border_16,
-/*TODO*///			v9938_default_border_8s, v9938_default_border_16s,
-/*TODO*///			v9938_sprite_mode2, 
-/*TODO*///			v9938_default_draw_sprite_8, v9938_default_draw_sprite_16,
-/*TODO*///			v9938_default_draw_sprite_8s, v9938_default_draw_sprite_16s },
-/*TODO*///		{ 0x10,
-/*TODO*///			v9938_mode_graphic5_8, v9938_mode_graphic5_16,
-/*TODO*///			v9938_mode_graphic5_8s, v9938_mode_graphic5_16s,
-/*TODO*///			v9938_graphic5_border_8, v9938_graphic5_border_16,
-/*TODO*///			v9938_graphic5_border_8s, v9938_graphic5_border_16s,
-/*TODO*///			v9938_sprite_mode2, 
-/*TODO*///			v9938_graphic5_draw_sprite_8, v9938_graphic5_draw_sprite_16,
-/*TODO*///			v9938_graphic5_draw_sprite_8s, v9938_graphic5_draw_sprite_16s },
-/*TODO*///		{ 0x14,
-/*TODO*///			v9938_mode_graphic6_8, v9938_mode_graphic6_16,
-/*TODO*///			v9938_mode_graphic6_8s, v9938_mode_graphic6_16s,
-/*TODO*///			v9938_default_border_8, v9938_default_border_16,
-/*TODO*///			v9938_default_border_8s, v9938_default_border_16s,
-/*TODO*///			v9938_sprite_mode2, 
-/*TODO*///			v9938_default_draw_sprite_8, v9938_default_draw_sprite_16,
-/*TODO*///			v9938_default_draw_sprite_8s, v9938_default_draw_sprite_16s },
-/*TODO*///		{ 0x1c,
-/*TODO*///			v9938_mode_graphic7_8, v9938_mode_graphic7_16,
-/*TODO*///			v9938_mode_graphic7_8s, v9938_mode_graphic7_16s,
-/*TODO*///			v9938_graphic7_border_8, v9938_graphic7_border_16,
-/*TODO*///			v9938_graphic7_border_8s, v9938_graphic7_border_16s,
-/*TODO*///			v9938_sprite_mode2, 
-/*TODO*///			v9938_graphic7_draw_sprite_8, v9938_graphic7_draw_sprite_16,
-/*TODO*///			v9938_graphic7_draw_sprite_8s, v9938_graphic7_draw_sprite_16s },
-/*TODO*///		{ 0x0a,
-/*TODO*///			v9938_mode_text2_8, v9938_mode_text2_16,
-/*TODO*///			v9938_mode_text2_8s, v9938_mode_text2_16s,
-/*TODO*///			v9938_default_border_8, v9938_default_border_16,
-/*TODO*///			v9938_default_border_8s, v9938_default_border_16s,
-/*TODO*///			null, 
-/*TODO*///			null, null,
-/*TODO*///			null, null },
-/*TODO*///		{ 0xff,
-/*TODO*///			v9938_mode_unknown_8, v9938_mode_unknown_16,
-/*TODO*///			v9938_mode_unknown_8s, v9938_mode_unknown_16s,
-/*TODO*///			v9938_default_border_8, v9938_default_border_16,
-/*TODO*///			v9938_default_border_8s, v9938_default_border_16s,
-/*TODO*///			null, 
-/*TODO*///			null, null,
-/*TODO*///			null, null },
-/*TODO*///	};
+/*TODO*///			_vdp.statReg[0] = (_vdp.statReg[0] & 0xa0) | p;                
+            }
+        };
+        
+	public static class V9938_MODE {
+		public int m;
+		public ModeVisible_8_HandlersPtr visible_8 = null;
+		public ModeVisible_16_HandlersPtr visible_16 = null;
+		public ModeVisible_8_HandlersPtr visible_8s = null;
+		public ModeVisible_16_HandlersPtr visible_16s = null;
+		public ModeBorder_8_HandlersPtr border_8 = null;
+		public ModeBorder_16_HandlersPtr border_16 = null;
+		public ModeBorder_8_HandlersPtr border_8s = null;
+		public ModeBorder_16_HandlersPtr border_16s = null;
+		public ModeSprites_HandlersPtr sprites = null;
+		public ModeDraw_Sprites_HandlersPtr draw_sprite_8 = null;
+		public ModeDraw_Sprites_HandlersPtr draw_sprite_16 = null;
+		public ModeDraw_Sprites_HandlersPtr draw_sprite_8s = null;
+		public ModeDraw_Sprites_HandlersPtr draw_sprite_16s = null;
+                
+                public V9938_MODE(int m, 
+                        ModeVisible_8_HandlersPtr visible_8, 
+                        ModeVisible_16_HandlersPtr visible_16,
+                        ModeVisible_8_HandlersPtr visible_8s,
+                        ModeVisible_16_HandlersPtr visible_16s,
+                        ModeBorder_8_HandlersPtr border_8,
+                        ModeBorder_16_HandlersPtr border_16,
+                        ModeBorder_8_HandlersPtr border_8s,
+                        ModeBorder_16_HandlersPtr border_16s,
+                        ModeSprites_HandlersPtr sprites,
+                        ModeDraw_Sprites_HandlersPtr draw_sprite_8,
+                        ModeDraw_Sprites_HandlersPtr draw_sprite_16,
+                        ModeDraw_Sprites_HandlersPtr draw_sprite_8s,
+                        ModeDraw_Sprites_HandlersPtr draw_sprite_16s)
+                {
+                    this.visible_8 = visible_8;
+                    this.visible_16 = visible_16;
+                    this.visible_8s = visible_8s;
+                    this.visible_16s = visible_16s;
+                    this.border_8 = border_8;
+                    this.border_16 = border_16;
+                    this.border_8s = border_8s;
+                    this.border_16s = border_16s;
+                    this.sprites = sprites;
+                    this.draw_sprite_8 = draw_sprite_8;
+                    this.draw_sprite_16 = draw_sprite_16;
+                    this.draw_sprite_8s = draw_sprite_8s;
+                    this.draw_sprite_16s = draw_sprite_16s;
+                }
+	};
+	
+	static V9938_MODE modes[] = {
+		new V9938_MODE( 0x02,
+			v9938_mode_text1_8, v9938_mode_text1_16,
+			v9938_mode_text1_8s, v9938_mode_text1_16s,
+			v9938_default_border_8, v9938_default_border_16,
+			v9938_default_border_8s, v9938_default_border_16s,
+			null, 
+			null, null,
+			null, null ),
+		new V9938_MODE( 0x01,
+			v9938_mode_multi_8, v9938_mode_multi_16,
+			v9938_mode_multi_8s, v9938_mode_multi_16s,
+			v9938_default_border_8, v9938_default_border_16,
+			v9938_default_border_8s, v9938_default_border_16s,
+			v9938_sprite_mode1, 
+			v9938_default_draw_sprite_8, v9938_default_draw_sprite_16,
+			v9938_default_draw_sprite_8s, v9938_default_draw_sprite_16s ),
+		new V9938_MODE( 0x00,
+			v9938_mode_graphic1_8, v9938_mode_graphic1_16,
+			v9938_mode_graphic1_8s, v9938_mode_graphic1_16s,
+			v9938_default_border_8, v9938_default_border_16,
+			v9938_default_border_8s, v9938_default_border_16s,
+			v9938_sprite_mode1, 
+			v9938_default_draw_sprite_8, v9938_default_draw_sprite_16,
+			v9938_default_draw_sprite_8s, v9938_default_draw_sprite_16s ),
+		new V9938_MODE( 0x04,
+			v9938_mode_graphic23_8, v9938_mode_graphic23_16,
+			v9938_mode_graphic23_8s, v9938_mode_graphic23_16s,
+			v9938_default_border_8, v9938_default_border_16,
+			v9938_default_border_8s, v9938_default_border_16s,
+			v9938_sprite_mode1, 
+			v9938_default_draw_sprite_8, v9938_default_draw_sprite_16,
+			v9938_default_draw_sprite_8s, v9938_default_draw_sprite_16s ),
+		new V9938_MODE( 0x08,
+			v9938_mode_graphic23_8, v9938_mode_graphic23_16,
+			v9938_mode_graphic23_8s, v9938_mode_graphic23_16s,
+			v9938_default_border_8, v9938_default_border_16,
+			v9938_default_border_8s, v9938_default_border_16s,
+			v9938_sprite_mode2, 
+			v9938_default_draw_sprite_8, v9938_default_draw_sprite_16,
+			v9938_default_draw_sprite_8s, v9938_default_draw_sprite_16s ),
+		new V9938_MODE( 0x0c,
+			v9938_mode_graphic4_8, v9938_mode_graphic4_16,
+			v9938_mode_graphic4_8s, v9938_mode_graphic4_16s,
+			v9938_default_border_8, v9938_default_border_16,
+			v9938_default_border_8s, v9938_default_border_16s,
+			v9938_sprite_mode2, 
+			v9938_default_draw_sprite_8, v9938_default_draw_sprite_16,
+			v9938_default_draw_sprite_8s, v9938_default_draw_sprite_16s ),
+		new V9938_MODE( 0x10,
+			v9938_mode_graphic5_8, v9938_mode_graphic5_16,
+			v9938_mode_graphic5_8s, v9938_mode_graphic5_16s,
+			v9938_graphic5_border_8, v9938_graphic5_border_16,
+			v9938_graphic5_border_8s, v9938_graphic5_border_16s,
+			v9938_sprite_mode2, 
+			v9938_graphic5_draw_sprite_8, v9938_graphic5_draw_sprite_16,
+			v9938_graphic5_draw_sprite_8s, v9938_graphic5_draw_sprite_16s ),
+		new V9938_MODE( 0x14,
+			v9938_mode_graphic6_8, v9938_mode_graphic6_16,
+			v9938_mode_graphic6_8s, v9938_mode_graphic6_16s,
+			v9938_default_border_8, v9938_default_border_16,
+			v9938_default_border_8s, v9938_default_border_16s,
+			v9938_sprite_mode2, 
+			v9938_default_draw_sprite_8, v9938_default_draw_sprite_16,
+			v9938_default_draw_sprite_8s, v9938_default_draw_sprite_16s ),
+		new V9938_MODE( 0x1c,
+			v9938_mode_graphic7_8, v9938_mode_graphic7_16,
+			v9938_mode_graphic7_8s, v9938_mode_graphic7_16s,
+			v9938_graphic7_border_8, v9938_graphic7_border_16,
+			v9938_graphic7_border_8s, v9938_graphic7_border_16s,
+			v9938_sprite_mode2, 
+			v9938_graphic7_draw_sprite_8, v9938_graphic7_draw_sprite_16,
+			v9938_graphic7_draw_sprite_8s, v9938_graphic7_draw_sprite_16s ),
+		new V9938_MODE( 0x0a,
+			v9938_mode_text2_8, v9938_mode_text2_16,
+			v9938_mode_text2_8s, v9938_mode_text2_16s,
+			v9938_default_border_8, v9938_default_border_16,
+			v9938_default_border_8s, v9938_default_border_16s,
+			null, 
+			null, null,
+			null, null ),
+		new V9938_MODE( 0xff,
+			v9938_mode_unknown_8, v9938_mode_unknown_16,
+			v9938_mode_unknown_8s, v9938_mode_unknown_16s,
+			v9938_default_border_8, v9938_default_border_16,
+			v9938_default_border_8s, v9938_default_border_16s,
+			null, 
+			null, null,
+			null, null )
+	};
 	
 	static void v9938_set_mode ()
-		{
+	{
 		int n,i;
 	
 		n = (((_vdp.contReg[0] & 0x0e) << 1) | ((_vdp.contReg[1] & 0x18) >> 3));
-/*TODO*///		for (i=0;;i++)
-/*TODO*///			{
-/*TODO*///			if ( (modes[i].m == n) || (modes[i].m == 0xff) ) break;
-/*TODO*///			}
-/*TODO*///		_vdp.mode = i;
-		}
+                
+                //System.out.println("Long: "+modes.length);
+                //System.out.println("N: "+modes.length);
+		
+                for (i=0;i<modes.length;i++)
+                {
+                    if ( (modes[i].m == n) || (modes[i].m == 0xff) ) break;
+                }
+                if (i>=modes.length) i=modes.length-1;
+		_vdp.mode = i;
+                
+	}
 	
 	static void v9938_refresh_8 (mame_bitmap bmp, int line)
 		{
+                    System.out.println("v9938_refresh_8");
 		int i, double_lines;
 		int[] col=new int[256];
                 UBytePtr ln=null, ln2 = null;
@@ -1120,22 +1160,22 @@ public class v9938
 	
 		if ( (_vdp.contReg[1] & 0x40)==0 || (_vdp.statReg[2] & 0x40)!=0 )
 			{
-			/*TODO*///if (_vdp.size == RENDER_HIGH)
-			/*TODO*///	modes[_vdp.mode].border_8 (ln);
-			/*TODO*///else
-			/*TODO*///	modes[_vdp.mode].border_8s (ln);
+			if (_vdp.size == RENDER_HIGH)
+				modes[_vdp.mode].border_8.handler(ln);
+			else
+				modes[_vdp.mode].border_8s.handler(ln);
 			}
 		else
 			{
 			i = (line - _vdp.offset_y) & 255;
 			if (_vdp.size == RENDER_HIGH)
 				{
-				/*TODO*///modes[_vdp.mode].visible_8 (ln, i);
-				/*TODO*///if (modes[_vdp.mode].sprites)
-				/*TODO*///	{
-				/*TODO*///	modes[_vdp.mode].sprites (i, col);
-				/*TODO*///	modes[_vdp.mode].draw_sprite_8 (ln, col);
-				/*TODO*///	}
+				modes[_vdp.mode].visible_8.handler(ln, i);
+				if (modes[_vdp.mode].sprites != null)
+					{
+/*TODO*///					modes[_vdp.mode].sprites.handler(i, col);
+/*TODO*///					modes[_vdp.mode].draw_sprite_8.handler(ln, col);
+					}
 				}
 			else
 				{
@@ -1154,8 +1194,9 @@ public class v9938
 	
 	static void v9938_refresh_16 (mame_bitmap bmp, int line)
 		{
+                    //System.out.println("v9938_refresh_16");
 		int i, double_lines;
-		int[] col=new int[256];
+		UBytePtr col=new UBytePtr(256);
 		UShortPtr ln, ln2 = null;
 	
 		double_lines = 0;
@@ -1179,31 +1220,31 @@ public class v9938
 	
 		if ( (_vdp.contReg[1] & 0x40)==0 || (_vdp.statReg[2] & 0x40)!=0 )
 			{
-			/*TODO*///if (_vdp.size == RENDER_HIGH)
-			/*TODO*///	modes[_vdp.mode].border_16 (ln);
-			/*TODO*///else
-			/*TODO*///	modes[_vdp.mode].border_16s (ln);
+			if (_vdp.size == RENDER_HIGH)
+				modes[_vdp.mode].border_16.handler(ln);
+			else
+				modes[_vdp.mode].border_16s.handler(ln);
 			}
 		else
 			{
 			i = (line - _vdp.offset_y) & 255;
 			if (_vdp.size == RENDER_HIGH)
 				{
-				/*TODO*///modes[_vdp.mode].visible_16 (ln, i);
-				/*TODO*///if (modes[_vdp.mode].sprites)
-				/*TODO*///	{
-				/*TODO*///	modes[_vdp.mode].sprites (i, col);
-				/*TODO*///	modes[_vdp.mode].draw_sprite_16 (ln, col);
-				/*TODO*///	}
+				modes[_vdp.mode].visible_16.handler(ln, i);
+				if (modes[_vdp.mode].sprites != null)
+					{
+					modes[_vdp.mode].sprites.handler(i, col);
+					modes[_vdp.mode].draw_sprite_16.handler(ln, col);
+					}
 				}
 			else
 				{
-				/*TODO*///modes[_vdp.mode].visible_16s (ln, i);
-				/*TODO*///if (modes[_vdp.mode].sprites)
-				/*TODO*///	{
-				/*TODO*///	modes[_vdp.mode].sprites (i, col);
-				/*TODO*///	modes[_vdp.mode].draw_sprite_16s (ln, col);
-				/*TODO*///	}
+				modes[_vdp.mode].visible_16s.handler(ln, i);
+				if (modes[_vdp.mode].sprites != null)
+					{
+					modes[_vdp.mode].sprites.handler(i, col);
+					modes[_vdp.mode].draw_sprite_16s.handler(ln, col);
+					}
 				}
 			}
 	
@@ -1224,10 +1265,11 @@ public class v9938
 			pal_ind256[0] = pal_ind256[_vdp.contReg[7]];
 			}
 	
-		if (Machine.scrbitmap.depth == 8)
+		if (Machine.scrbitmap.depth == 8){
 			v9938_refresh_8 (bmp, line);
-		else
+                } else {
 			v9938_refresh_16 (bmp, line);
+                }
 	
 		if ( (_vdp.contReg[8] & 0x20)==0 && (_vdp.mode != V9938_MODE_GRAPHIC5) )
 			{
@@ -1409,11 +1451,12 @@ public class v9938
 /*TODO*///	
 	public static int v9938_interrupt ()
 		{
+                    //System.out.println("v9938_interrupt");
                     
-		int[] col=new int[256];
+		UBytePtr col=new UBytePtr(256);
 		int scanline, max, pal, scanline_start;
 	
-		/*TODO*///v9938_update_command ();
+		v9938_update_command ();
 	
 		pal = _vdp.contReg[9] & 2;
 		if (pal!=0) scanline_start = 53; else scanline_start = 26;
@@ -1453,15 +1496,15 @@ public class v9938
 			scanline = (_vdp.scanline - scanline_start) & 255;
 	
 			if (osd_skip_this_frame () != 0 )
-			/*TODO*///	{
-			/*TODO*///	if ( (_vdp.statReg[2] & 0x40)==0 && (modes[_vdp.mode].sprites)!=null )
-				/*TODO*///	modes[_vdp.mode].sprites ( (scanline - _vdp.offset_y) & 255, col);
-			/*TODO*///	}
-			/*TODO*///else
-			/*TODO*///	{
-				v9938_refresh_line (Machine.scrbitmap, scanline);
-			/*TODO*///	}
+			{
+				if ( (_vdp.statReg[2] & 0x40)==0 && (modes[_vdp.mode].sprites)!=null )
+					modes[_vdp.mode].sprites.handler((scanline - _vdp.offset_y) & 255, col);
 			}
+			else
+                        {
+                            v9938_refresh_line (Machine.scrbitmap, scanline);
+                        }
+		}
 	
 		max = (_vdp.contReg[9] & 2)!=0 ? 313 : 262;
 		if (++_vdp.scanline == max)
@@ -1478,7 +1521,7 @@ public class v9938
 /*TODO*///	***************************************************************************/
 /*TODO*///	
 /*TODO*///	public static int VDP(){ return _vdp.contReg;}
-/*TODO*///	public static int VDPStatus(){return  _vdp.statReg;}
+/*TODO*///	public static int VDPStatus(int pos){return  _vdp.statReg[pos];}
 /*TODO*///	#define VRAM _vdp.vram
 /*TODO*///	public static int ScrMode(){return  _vdp.mode;}
 /*TODO*///	
@@ -1635,7 +1678,7 @@ public class v9938
 /*TODO*///	static int Mask[] = { 0x0F,0x03,0x0F,0xFF };
 /*TODO*///	static int  PPB[]  = { 2,4,2,1 };
 /*TODO*///	static int  PPL[]  = { 256,512,512,256 };
-/*TODO*///	static int  VdpOpsCnt=1;
+	public static int  VdpOpsCnt=1;
 /*TODO*///	static void (*VdpEngine)(void)=0;
 /*TODO*///	
 /*TODO*///	                      /*  SprOn SprOn SprOf SprOf */
@@ -2316,17 +2359,18 @@ public class v9938
 /*TODO*///	    }
 /*TODO*///	  }
 /*TODO*///	}
-/*TODO*///	
+	
 	/** VDPWrite() ***********************************************/
 	/** Use this function to transfer pixel(s) from CPU to VDP. **/
 	/*************************************************************/
 	static void v9938_cpu_to_vdp (int V)
 	{
-/*TODO*///	  VDPStatus[2]&=0x7F;
-/*TODO*///	  VDPStatus[7]=VDP[44]=V;
+	  _vdp.statReg[2]&=0x7F;
+	  _vdp.statReg[7]=V;
+          _vdp.contReg[44]=V;
 /*TODO*///	  if(VdpEngine&&(VdpOpsCnt>0)) VdpEngine();
 	}
-/*TODO*///	
+	
 /*TODO*///	/** VDPRead() ************************************************/
 /*TODO*///	/** Use this function to transfer pixel(s) from VDP to CPU. **/
 /*TODO*///	/*************************************************************/
@@ -2497,12 +2541,13 @@ public class v9938
 	  /* Operation successfull initiated */
 	  return(1);
 	}
-/*TODO*///	
-/*TODO*///	/** LoopVDP() ************************************************/
-/*TODO*///	/** Run X steps of active VDP command                       **/
-/*TODO*///	/*************************************************************/
-/*TODO*///	static void v9938_update_command (void)
-/*TODO*///	{
+	
+	/** LoopVDP() ************************************************/
+	/** Run X steps of active VDP command                       **/
+	/*************************************************************/
+	public static void v9938_update_command ()
+	{
+            //System.out.println("v9938_update_command NOT IMPLEMENTED!!!!");
 /*TODO*///	  if(VdpOpsCnt<=0)
 /*TODO*///	  {
 /*TODO*///	    VdpOpsCnt+=13662;
@@ -2513,6 +2558,6 @@ public class v9938
 /*TODO*///	    VdpOpsCnt=13662;
 /*TODO*///	    if(VdpEngine) VdpEngine();
 /*TODO*///	  }
-/*TODO*///	}
+	}
 	
 }

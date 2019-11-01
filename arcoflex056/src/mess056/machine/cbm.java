@@ -395,8 +395,7 @@ public class cbm
 				else if (stricmp (cp, ".f0") == 0)
 					adr = 0xf000;
 				else adr = CBM_ROM_ADDR_UNKNOWN;
-				logerror("loading %s rom at %.4x size:%.4x\n",
-							 device_filename(IO_CARTSLOT,id), adr, size);
+				//logerror("loading %s rom at %.4x size:%.4x\n", device_filename(IO_CARTSLOT,id), adr, size);
 				if ((cbm_rom[i].chip=new UBytePtr(size)) == null) {
 					osd_fclose(fp);
 					return INIT_FAIL;

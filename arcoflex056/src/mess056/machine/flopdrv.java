@@ -380,7 +380,7 @@ public class flopdrv
 		drive_flags = drives[id].flags;
 	
 		/* these flags are independant of a real drive/disk image */
-	    flags |= drive_flags & (FLOPPY_DRIVE_CONNECTED | FLOPPY_DRIVE_READY | FLOPPY_DRIVE_MOTOR_ON | FLOPPY_DRIVE_INDEX);
+                flags |= drive_flags & (FLOPPY_DRIVE_CONNECTED | FLOPPY_DRIVE_READY | FLOPPY_DRIVE_MOTOR_ON | FLOPPY_DRIVE_INDEX);
 	
 		flags |= drive_flags & FLOPPY_DRIVE_DISK_INSERTED;
 	
@@ -519,11 +519,12 @@ public class flopdrv
                 System.out.println("id.H: "+id.H);
                 System.out.println("id.R: "+id.R);
                 System.out.println("id.N: "+id.N);
+                        
 		
                 System.out.println("id.flags: "+id.flags);
                 System.out.println("id.data_id: "+id.data_id);
                 System.out.println("END=========");*/
-                        
+                //        System.out.println("id.data_id========="+id.data_id);
                         
 		}
 	

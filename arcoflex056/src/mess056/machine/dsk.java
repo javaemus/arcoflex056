@@ -40,7 +40,7 @@ public class dsk
 	
 	public static class dsk_drive
 	{
-		public char[] data = null; /* the whole image data */
+		public UBytePtr data = null; /* the whole image data */
 		public int[] track_offsets = new int[dsk_MAX_TRACKS*dsk_MAX_SIDES]; /* offset within data for each track */
 		public int[] sector_offsets = new int[dsk_SECTORS_PER_TRACK]; /* offset within current track for sector data */
 		public int current_track;		/* current track */
@@ -147,6 +147,7 @@ public class dsk
 	{
                 //System.out.println("dsk_load!!!! "+id);
 		Object file;
+                drives[id].data = null;
 	
 		file = image_fopen(type, id, OSD_FILETYPE_IMAGE_R, OSD_FOPEN_READ);
 	
@@ -164,7 +165,7 @@ public class dsk
 			if (datasize!=0)
 			{
 				/* malloc memory for this data */
-				ptr2 = new UBytePtr(datasize);
+				UBytePtr ptr2 = new UBytePtr(datasize);
 	
 				if (ptr2!=null)
 				{
@@ -180,7 +181,7 @@ public class dsk
                                         
                                         //System.out.println(ptr.memory);
                                         
-                                        drives[id].data=ptr2.memory;
+                                        drives[id].data=new UBytePtr(ptr2.memory);
 	
 					/* close file */
 					osd_fclose(file);
@@ -206,7 +207,7 @@ public class dsk
 		return IMAGE_VERIFY_FAIL;
 	}
 	
-	static UBytePtr ptr2 = null;
+	//static UBytePtr ptr2 = null;
         
 	/* load floppy */
 	public static io_initPtr dsk_floppy_load = new io_initPtr() {
@@ -224,7 +225,7 @@ public class dsk
                             dsk_disk_image_init(id); /* initialise dsk */
                             floppy_drive_set_disk_image_interface(id,dsk_floppy_interface);
                             
-                            if(dsk_floppy_verify(drives[id].data) == IMAGE_VERIFY_PASS)
+                            if(dsk_floppy_verify(drives[id].data.memory) == IMAGE_VERIFY_PASS)
                                 return INIT_PASS;
                             else
                                 return INIT_PASS;
@@ -262,14 +263,14 @@ public class dsk
 /*TODO*///					osd_fclose(file);
 /*TODO*///	
 /*TODO*///					/* ok! */
-					return 1;
+/*TODO*///					return 1;
 /*TODO*///				}
 /*TODO*///				osd_fclose(file);
 /*TODO*///	
 /*TODO*///			}
 /*TODO*///		};
 	
-/*TODO*///		return 0;
+		return 0;
 	}
 	
 	
@@ -279,7 +280,7 @@ public class dsk
 	
 		if (drives[id].data!=null)
 		{
-			dsk_save(IO_FLOPPY,id,drives[id].data);
+			dsk_save(IO_FLOPPY,id,drives[id].data.memory);
 			drives[id].data = null;
 		}
 		drives[id].data = null;
@@ -296,19 +297,19 @@ public class dsk
 		int track_size;
 		int tracks, sides;
 		int skip, length,offs;
-		UBytePtr file_loaded = new UBytePtr(drives[thedrive].data);
+		//UBytePtr file_loaded = new UBytePtr(drives[thedrive].data);
 	
 	
 		/* get size of each track from main header. Size of each
 		track includes a 0x0100 byte header, and the actual sector data for
 		all sectors on the track */
-		track_size = file_loaded.read(0x032) | (file_loaded.read(0x033)<<8);
+		track_size = drives[thedrive].data.read(0x032) | (drives[thedrive].data.read(0x033)<<8);
 	
 		/* main header is 0x0100 in size */
 		track_offset = 0x0100;
 	
-		sides = file_loaded.read(0x031);
-		tracks = file_loaded.read(0x030);
+		sides = drives[thedrive].data.read(0x031);
+		tracks = drives[thedrive].data.read(0x030);
 	
 	
 		/* single sided? */
@@ -377,10 +378,10 @@ public class dsk
 		int track_size;
 		int tracks, sides;
 		int offs, skip, length;
-		UBytePtr file_loaded = new UBytePtr(drives[thedrive].data);
+		//UBytePtr file_loaded = new UBytePtr(drives[thedrive].data);
 	
-		sides = file_loaded.read(0x031);
-		tracks = file_loaded.read(0x030);
+		sides = drives[thedrive].data.read(0x031);
+		tracks = drives[thedrive].data.read(0x030);
 	
 		if (sides==1)
 		{
@@ -404,7 +405,7 @@ public class dsk
 			by 256 to get size in bytes. If 0, track doesn't exist and
 			is unformatted, otherwise it exists. Track size includes 0x0100
 			header */
-			track_size_high_byte = file_loaded.read(0x034 + i);
+			track_size_high_byte = drives[thedrive].data.read(0x034 + i);
 	
 			if (track_size_high_byte != 0)
 			{
@@ -473,7 +474,7 @@ public class dsk
                 //System.out.println(thedrive.data);
                 //System.out.println(thedrive.data.memory);
 	
-		if (memcmp(drives[thedrive].data,"MV - CPC".toCharArray(),8)==0)
+		if (memcmp(drives[thedrive].data.memory,"MV - CPC".toCharArray(),8)==0)
 		{
                     System.out.println("MV - CPC");
 			drives[thedrive].disk_image_type = 0;
@@ -483,7 +484,7 @@ public class dsk
 	
 		}
 		else
-		if (memcmp(drives[thedrive].data,"EXTENDED".toCharArray(),8)==0)
+		if (memcmp(drives[thedrive].data.memory,"EXTENDED".toCharArray(),8)==0)
 		{
                     System.out.println("EXTENDED");
 			drives[thedrive].disk_image_type = 1;
@@ -521,7 +522,7 @@ public class dsk
 		int id_offset;
 		int track_offset;
 		UBytePtr track_header;
-		UBytePtr data;
+		char[] data;
 	
 		drive = drive & 0x03;
 		side = side & 0x01;
@@ -534,7 +535,7 @@ public class dsk
 			return;
 	
 		/* yes */
-		data = new UBytePtr(get_floppy_data(drive));
+		data = get_floppy_data(drive);
 	
 		if (data==null)
 			return;
@@ -627,7 +628,7 @@ public class dsk
         static char[] get_floppy_data(int drive)
 	{
 		drive = drive & 0x03;
-		return drives[drive].data;
+		return drives[drive].data.memory;
 	}
         
 	public static UBytePtr dsk_get_sector_ptr_callback(int drive, int sector_index, int side)
@@ -685,7 +686,7 @@ public class dsk
 	{
 		UBytePtr pSectorData;
 	
-		pSectorData = dsk_get_sector_ptr_callback(drive, index1, side);
+		pSectorData = new UBytePtr(dsk_get_sector_ptr_callback(drive, index1, side));
 	
 		if (pSectorData!=null)
 		{

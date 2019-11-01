@@ -806,9 +806,9 @@ public class a2600
 	            3584160/3,					/* 1.19Mhz */
 	            readmem, writemem, null, null,
 	//#ifndef USE_SCANLINE_WSYNC
-	            null, 0                        /* for screen updates per scanline */
+	//            null, 0                        /* for screen updates per scanline */
 	//#else
-	//            a2600_scanline_int, 262     /* for screen updates per scanline */
+	            a2600_scanline_int, 262     /* for screen updates per scanline */
 	//#endif
 	        )
 	    },

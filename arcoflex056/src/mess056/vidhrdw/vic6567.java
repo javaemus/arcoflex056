@@ -234,10 +234,13 @@ public class vic6567
                 public _vic2(){
                     for (int _i=0 ; _i<8 ; _i++)
                         sprites[_i] = new _sprites();
+                    
+                    for (int _i=0 ; _i<216 ; _i++)
+                        screen[_i] = new UBytePtr();
                 }
 	};
         
-        public static _vic2 vic2 = null;
+        public static _vic2 vic2 = new _vic2();
         
 	
 	public static int vic2_getforeground (int y, int x)
@@ -266,7 +269,7 @@ public class vic6567
 					   ReadHandlerPtr dma_read, ReadHandlerPtr dma_read_color,
 					   ReadHandlerPtr irq)
 	{
-		vic2 = new _vic2();
+		//vic2 = new _vic2();
 	
 		vic2.lines = VIC2_LINES();
 	
@@ -307,21 +310,22 @@ public class vic6567
 	
 	static void vic2_set_interrupt (int mask)
 	{
-            System.out.println("vic2_set_interrupt");
-		//if ((((vic2.reg[0x19] ^ mask) & vic2.reg[0x1a] & 0xf)) !=0)
-		//{
+            //System.out.println("vic2_set_interrupt "+vic2.reg[0x19]);
+		if ((((vic2.reg[0x19] ^ mask) & vic2.reg[0x1a] & 0xf)) !=0)
+		{
 			if ((vic2.reg[0x19] & 0x80)==0)
 			{
 				/*TODO*///DBG_LOG (2, "vic2", ("irq start %.2x\n", mask));
 				vic2.reg[0x19] |= 0x80;
 				vic2.interrupt.handler(1);
 			}
-		//}
+		}
 		vic2.reg[0x19] |= mask;
 	}
 	
 	public static void vic2_clear_interrupt (int mask)
 	{
+            System.out.println("vic2_clear_interrupt "+vic2.reg[0x19]);
 		vic2.reg[0x19] &= ~mask;
 		if ((vic2.reg[0x19] & 0x80)!=0 && (vic2.reg[0x19] & vic2.reg[0x1a] & 0xf)==0)
 		{
@@ -339,6 +343,7 @@ public class vic6567
 	static timer_callback vic2_timer_timeout = new timer_callback() {
             public void handler(int which) {
 /*TODO*///		DBG_LOG (3, "vic2 ", ("timer %d timeout\n", which));
+System.out.println("vic2_timer_timeout");
 		switch (which)
 		{
 		case 1:						   /* light pen */
@@ -364,6 +369,7 @@ public class vic6567
             public void handler(int offset, int data) {
 /*TODO*///		DBG_LOG (2, "vic write", ("%.2x:%.2x\n", offset, data));
 		offset &= 0x3f;
+                //System.out.println("vic2_port_w "+(offset==0x19));
 		switch (offset)
 		{
 		case 1:
@@ -458,7 +464,7 @@ public class vic6567
 			vic2_set_interrupt(0); //beamrider needs this
 			break;
 		case 0x11:
-			if (vic2.reg[offset] != data)
+			//if (vic2.reg[offset] != data)
 			{
 				if (vic2.on)
 					vic2_drawlines (vic2.lastline, vic2.rasterline);
@@ -476,13 +482,13 @@ public class vic6567
 			}
 			break;
 		case 0x12:
-			if (data != vic2.reg[offset])
+			//if (data != vic2.reg[offset])
 			{
 				vic2.reg[offset] = data;
 			}
 			break;
 		case 0x16:
-			if (vic2.reg[offset] != data)
+			//if (vic2.reg[offset] != data)
 			{
 				if (vic2.on)
 					vic2_drawlines (vic2.lastline, vic2.rasterline);
@@ -500,7 +506,7 @@ public class vic6567
 			}
 			break;
 		case 0x18:
-			if (vic2.reg[offset] != data)
+			//if (vic2.reg[offset] != data)
 			{
 				if (vic2.on) vic2_drawlines (vic2.lastline, vic2.rasterline);
 				vic2.reg[offset] = data;
@@ -509,7 +515,7 @@ public class vic6567
 			}
 			break;
 		case 0x21:						   /* backgroundcolor */
-			if (vic2.reg[offset] != data)
+			//if (vic2.reg[offset] != data)
 			{
 				if (vic2.on) vic2_drawlines (vic2.lastline, vic2.rasterline);
 				vic2.reg[offset] = data;
@@ -518,7 +524,7 @@ public class vic6567
 			}
 			break;
 		case 0x22:						   /* background color 1 */
-			if (vic2.reg[offset] != data)
+			//if (vic2.reg[offset] != data)
 			{
 				if (vic2.on) vic2_drawlines (vic2.lastline, vic2.rasterline);
 				vic2.reg[offset] = data;
@@ -526,7 +532,7 @@ public class vic6567
 			}
 			break;
 		case 0x23:						   /* background color 2 */
-			if (vic2.reg[offset] != data)
+			//if (vic2.reg[offset] != data)
 			{
 				if (vic2.on)
 					vic2_drawlines (vic2.lastline, vic2.rasterline);
@@ -535,7 +541,7 @@ public class vic6567
 			}
 			break;
 		case 0x24:						   /* background color 3 */
-			if (vic2.reg[offset] != data)
+			//if (vic2.reg[offset] != data)
 			{
 				if (vic2.on) vic2_drawlines (vic2.lastline, vic2.rasterline);
 				vic2.reg[offset] = data;
@@ -543,7 +549,7 @@ public class vic6567
 			}
 			break;
 		case 0x20:						   /* framecolor */
-			if (vic2.reg[offset] != data)
+			//if (vic2.reg[offset] != data)
 			{
 				if (vic2.on)
 					vic2_drawlines (vic2.lastline, vic2.rasterline);
@@ -551,14 +557,14 @@ public class vic6567
 			}
 			break;
 		case 0x2f:
-			if (vic2.vic2e)
+			//if (vic2.vic2e)
 			{
 /*TODO*///				DBG_LOG (2, "vic write", ("%.2x:%.2x\n", offset, data));
 				vic2.reg[offset] = data;
 			}
 			break;
 		case 0x30:
-			if (vic2.vic2e)
+			//if (vic2.vic2e)
 			{
 				vic2.reg[offset] = data;
 			}

@@ -118,11 +118,11 @@ public class cia6526
 	
 	public static void cia6526_config (int which, cia6526_interface intf)
 	{
-            System.out.println("cia6526_config");
+            System.out.println("cia6526_config "+which);
 		if (which >= MAX_CIA)
 			return;
 		//memset (cia + which, 0, sizeof (cia[which]));
-                cia[which] = new _CIA6526();
+                //cia[which] = new _CIA6526();
 		cia[which].number=which;
 		cia[which].intf = intf;
 	}
@@ -137,23 +137,26 @@ public class cia6526
 /*TODO*///	
 /*TODO*///		assert (((int) cia[0].intf & 3) == 0);
 /*TODO*///	
+                if ((cia[0].intf) == null){
+                    return;
+                }
 		/* zap each structure, preserving the interface and swizzle */
 		for (i = 0; i < MAX_CIA; i++)
 		{
                     if (cia[i]!=null){
                         
-                        cia6526_interface intf = cia[i].intf;
+                        //cia6526_interface intf = cia[i].intf;
 	
-			if (cia[i].timer1 != null)
+			/*if (cia[i].timer1 != null)
 				timer_remove (cia[i].timer1);
 			if (cia[i].timer2 != null)
 				timer_remove (cia[i].timer2);
 			if (cia[i].todtimer != null)
-				timer_remove (cia[i].todtimer);
+				timer_remove (cia[i].todtimer);*/
 			//memset (&cia[i], 0, sizeof (cia[i]));
                         //cia[i] = new _CIA6526();
-			cia[i].number = i;
-			cia[i].intf = intf;
+			//cia[i].number = i;
+			//cia[i].intf = intf;
 			cia[i].t1l = 0xffff;
 			cia[i].t2l = 0xffff;
 			if (cia[i].intf!=null) cia[i].todtimer=timer_set(0.1,i,cia_tod_timeout);
@@ -428,7 +431,7 @@ public class cia6526
 			}
 		}
 	
-		/*  cia_timer1_state(This); */
+		/* cia_timer1_state(which); */
 	
 		if (TIMER2_COUNT_TIMER1(cia[which]) != 0 || ((TIMER2_COUNT_TIMER1_CNT(cia[which]) != 0 ) && (cia[which].cnt != 0)))
 		{
@@ -466,16 +469,21 @@ public class cia6526
             
 		int val = 0;
 	
-		offset &= 0xf;
-		switch (offset)
+		//offset &= 0xf;
+		switch (offset & 0xf)
 		{
 		case 0:
+                    System.out.println("0="+(cia[This].intf.in_a_func != null));
+                    System.out.println(This);
+                    System.out.println((cia[This].number));
+                    System.out.println(cia[This].intf.in_a_func.handler(cia[This].number));
 			if (cia[This].intf.in_a_func != null)
 				cia[This].in_a = cia[This].intf.in_a_func.handler(cia[This].number);
 			val = ((cia[This].out_a & cia[This].ddr_a)
 				   | (cia[This].intf.a_pullup & ~cia[This].ddr_a)) & cia[This].in_a;
 			break;
 		case 1:
+                    System.out.println("1="+cia[This].intf.in_b_func);
 			if (cia[This].intf.in_b_func != null)
 				cia[This].in_b = cia[This].intf.in_b_func.handler(cia[This].number);
 			val = ((cia[This].out_b & cia[This].ddr_b)
@@ -556,6 +564,7 @@ public class cia6526
 			break;
 		}
 /*TODO*///		DBG_LOG (1, "cia read", ("%d %.2x:%.2x\n", cia[This].number, offset, val));
+                //System.out.println("cia6526_read "+offset+" ,"+This+"="+val);
 		return val;
 	}
 	
@@ -566,11 +575,11 @@ public class cia6526
 	{
                 //System.out.println("cia6526_write 1 "+offset);
 /*TODO*///		DBG_LOG (1, "cia write", ("%d %.2x:%.2x\n", This->number, offset, data));
-		offset &= 0xf;
+		//offset &= 0xf;
                 
                 //System.out.println("cia6526_write 2 "+offset);
 	
-		switch (offset)
+		switch (offset & 0xf)
 		{
 		case 0:
 			cia[This].out_a = data;
@@ -714,6 +723,8 @@ public class cia6526
 			}
 			break;
 		}
+                
+                //System.out.println("cia6526_write "+offset+", "+This+"="+data);
 	}
 	
 /*TODO*///	static void cia_set_input_a (CIA6526 *This, int data)
@@ -761,12 +772,14 @@ public class cia6526
 /*TODO*///	
         public static ReadHandlerPtr cia6526_0_port_r = new ReadHandlerPtr() {
             public int handler(int offset) {
+                System.out.println("Leo 0 offset="+offset);
                 return cia6526_read (0, offset);
             }
         };
 
         public static ReadHandlerPtr cia6526_1_port_r = new ReadHandlerPtr() {
             public int handler(int offset) {
+                System.out.println("Leo 1 offset="+offset);
 		return cia6526_read (1, offset);
             }
         };

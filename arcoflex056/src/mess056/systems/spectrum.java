@@ -315,13 +315,13 @@ public class spectrum
             }
         };
         
-        public static int[] spec_ports = new int[48 * 1024];
+        /*public static int[] spec_ports = new int[48 * 1024];
         static {
             int _longo = spec_ports.length;
             
             for (int _i=0 ; _i<_longo ; _i++)
                     spec_ports[_i] = 0xFF;
-        }
+        }*/
 	
 	public static ReadHandlerPtr spectrum_port_r = new ReadHandlerPtr() {
             public int handler(int offset) {
@@ -339,7 +339,8 @@ public class spectrum
 	
 			//System.out.println("Read from port: %04x\n"+ offset);
 	
-			return spec_ports[offset];
+			//return spec_ports[offset];
+                        return 0xff;
             }
         };
 	
@@ -350,7 +351,7 @@ public class spectrum
 			else
 			{
 				//System.out.println("Write %02x to Port: %04x\n"+ data+","+ offset);
-                            spec_ports[offset] = data & 0xFF;
+                            //spec_ports[offset] = data & 0xFF;
 			}
             }
         };
@@ -415,7 +416,7 @@ public class spectrum
 					return;
 	
 			/* store new state */
-			spectrum_128_port_7ffd_data = data&0xff;
+			spectrum_128_port_7ffd_data = data;
 	
 			/* update memory */
 			spectrum_128_update_memory();
@@ -515,7 +516,8 @@ public class spectrum
 	
 		 logerror("Read from 128 port: %04x\n", offset);
 	
-		 return spec_ports[offset];
+		 //return spec_ports[offset];
+                 return 0xff;
             }
         };
 	
@@ -545,7 +547,7 @@ public class spectrum
 			else
 			{
 				logerror("Write %02x to 128 port: %04x\n", data, offset);
-                                spec_ports[offset] = data & 0xFF;
+                                //spec_ports[offset] = data & 0xFF;
 			}
             }
         };
@@ -649,7 +651,7 @@ public class spectrum
 	public static WriteHandlerPtr spectrum_plus3_port_3ffd_w = new WriteHandlerPtr() {
             public void handler(int offset, int data) {
                 if ((~readinputport(16) & 0x20) != 0)
-			nec765_data_w.handler(0,data&0xff);
+			nec765_data_w.handler(0,data);
             }
         };
 	
@@ -658,7 +660,7 @@ public class spectrum
                 if ((readinputport(16) & 0x20) != 0)
                                 return 0xff;
                 else
-                                return nec765_data_r.handler(0)&0xff;
+                                return nec765_data_r.handler(0);
             }
         };
 	
@@ -667,7 +669,7 @@ public class spectrum
                 if ((readinputport(16) & 0x20) != 0)
                                 return 0xff;
                 else
-                                return nec765_status_r.handler(0)&0xff;
+                                return nec765_status_r.handler(0);
             }
         };
 	
@@ -698,8 +700,8 @@ public class spectrum
 					ram_page = spectrum_128_port_7ffd_data & 0x07;
 					ram_data = new UBytePtr(spectrum_ram, (ram_page<<14));
 	
-					cpu_setbank(4, ram_data);
-					cpu_setbank(8, ram_data);
+					cpu_setbank(4, new UBytePtr(ram_data));
+					cpu_setbank(8, new UBytePtr(ram_data));
 	
 					logerror("RAM at 0xc000: %02x\n",ram_page);
 	
@@ -720,7 +722,7 @@ public class spectrum
 	
 					ChosenROM = new UBytePtr(memory_region(REGION_CPU1), 0x010000 + (ROMSelection<<14));
 	
-					cpu_setbank(1, ChosenROM);
+					cpu_setbank(1, new UBytePtr(ChosenROM));
 					memory_set_bankhandler_w(5, 0, MWA_ROM);
 	
 					logerror("rom switch: %02x\n", ROMSelection);
@@ -738,22 +740,22 @@ public class spectrum
 					memory_selection = new IntArray(spectrum_plus3_memory_selections, (MemorySelection<<2));
 	
 					ram_data = new UBytePtr(spectrum_ram, (memory_selection.read(0)<<14));
-					cpu_setbank(1, ram_data);
-					cpu_setbank(5, ram_data);
+					cpu_setbank(1, new UBytePtr(ram_data));
+					cpu_setbank(5, new UBytePtr(ram_data));
 					/* allow writes to 0x0000-0x03fff */
 					memory_set_bankhandler_w(5, 0, MWA_BANK5);
 	
 					ram_data = new UBytePtr(spectrum_ram, (memory_selection.read(1)<<14));
-					cpu_setbank(2, ram_data);
-					cpu_setbank(6, ram_data);
+					cpu_setbank(2, new UBytePtr(ram_data));
+					cpu_setbank(6, new UBytePtr(ram_data));
 	
 					ram_data = new UBytePtr(spectrum_ram, (memory_selection.read(2)<<14));
-					cpu_setbank(3, ram_data);
-					cpu_setbank(7, ram_data);
+					cpu_setbank(3, new UBytePtr(ram_data));
+					cpu_setbank(7, new UBytePtr(ram_data));
 	
 					ram_data = new UBytePtr(spectrum_ram, (memory_selection.read(3)<<14));
-					cpu_setbank(4, ram_data);
-					cpu_setbank(8, ram_data);
+					cpu_setbank(4, new UBytePtr(ram_data));
+					cpu_setbank(8, new UBytePtr(ram_data));
 	
 					logerror("extended memory paging: %02x\n",MemorySelection);
 			 }
@@ -773,7 +775,7 @@ public class spectrum
 					return;
 	
 			/* store new state */
-			spectrum_128_port_7ffd_data = data&0xff;
+			spectrum_128_port_7ffd_data = data;
 	
 			/* update memory */
 			spectrum_plus3_update_memory();
@@ -796,7 +798,7 @@ public class spectrum
 			floppy_drive_set_ready_state(0, 1, 1);
 			floppy_drive_set_ready_state(1, 1, 1);
 	
-			spectrum_plus3_port_1ffd_data = data&0xff;
+			spectrum_plus3_port_1ffd_data = data;
 	
 			/* disable paging? */
 			if ((spectrum_128_port_7ffd_data & 0x20)==0)
@@ -820,20 +822,20 @@ public class spectrum
 		 {
 			 switch ((offset>>8) & 0xff)
 			 {
-					case 0x1f: return spectrum_port_1f_r.handler(offset)&0xff;
-                                        case 0x2f: return spectrum_plus3_port_2ffd_r.handler(offset)&0xff;
-					case 0x3f: return spectrum_plus3_port_3ffd_r.handler(offset)&0xff;
-					case 0x7f: return spectrum_port_7f_r.handler(offset)&0xff;
-					case 0xdf: return spectrum_port_df_r.handler(offset)&0xff;
-                                        case 0xff: return spectrum_128_port_fffd_r.handler(offset)&0xff;
+					case 0x1f: return spectrum_port_1f_r.handler(offset);
+                                        case 0x2f: return spectrum_plus3_port_2ffd_r.handler(offset);
+					case 0x3f: return spectrum_plus3_port_3ffd_r.handler(offset);
+					case 0x7f: return spectrum_port_7f_r.handler(offset);
+					case 0xdf: return spectrum_port_df_r.handler(offset);
+                                        case 0xff: return spectrum_128_port_fffd_r.handler(offset);
 					
 			 }
 		 }
 	
 		 logerror("Read from +3 port: %04x\n", offset);
 	
-		 //return 0xff;
-                 return spec_ports[offset];
+		 return 0xff;
+                 //return spec_ports[offset];
             }
         };
 	
@@ -850,19 +852,19 @@ public class spectrum
 					switch ((offset>>8) & 0xf0)
 					{
 							case 0x10:
-									spectrum_plus3_port_1ffd_w.handler(offset, data&0xff);
+									spectrum_plus3_port_1ffd_w.handler(offset, data);
 									break;
 							case 0x30:
-									spectrum_plus3_port_3ffd_w.handler(offset, data&0xff);
+									spectrum_plus3_port_3ffd_w.handler(offset, data);
                                                                         break;
                                                         case 0x70:
-									spectrum_plus3_port_7ffd_w.handler(offset, data&0xff);
+									spectrum_plus3_port_7ffd_w.handler(offset, data);
 									break;
 							case 0xb0:
-									spectrum_128_port_bffd_w.handler(offset, data&0xff);
+									spectrum_128_port_bffd_w.handler(offset, data);
 									break;
 							case 0xf0:
-									spectrum_128_port_fffd_w.handler(offset, data&0xff);
+									spectrum_128_port_fffd_w.handler(offset, data);
 									break;
 							
 							default:
@@ -872,7 +874,7 @@ public class spectrum
 			else
 			{
 				logerror("Write %02x to +3 port: %04x\n", data, offset);
-                                spec_ports[offset] = data & 0xFF;
+                                //spec_ports[offset] = data & 0xFF;
 			}
             }
         };
@@ -2068,7 +2070,7 @@ public class spectrum
 	
 	static InputPortPtr input_ports_spectrum = new InputPortPtr(){ public void handler() { 
 		PORT_START();  /* 0xFEFE */
-			PORT_BITX(0x01, IP_ACTIVE_LOW, IPT_KEYBOARD, "CAPS SHIFT",                       KEYCODE_LSHIFT,  IP_JOY_NONE );
+			PORT_BITX(0x01, IP_ACTIVE_LOW, IPT_KEYBOARD, "CAPS SHIFT",                       KEYCODE_Z,  IP_JOY_NONE );
 			PORT_BITX(0x02, IP_ACTIVE_LOW, IPT_KEYBOARD, "Z  COPY    :      LN       BEEP",  KEYCODE_Z,  IP_JOY_NONE );
 			PORT_BITX(0x04, IP_ACTIVE_LOW, IPT_KEYBOARD, "X  CLEAR   Pound  EXP      INK",   KEYCODE_X,  IP_JOY_NONE );
 			PORT_BITX(0x08, IP_ACTIVE_LOW, IPT_KEYBOARD, "C  CONT    ?      LPRINT   PAPER", KEYCODE_C,  IP_JOY_NONE );
@@ -2120,7 +2122,7 @@ public class spectrum
 	
 		PORT_START();  /* 0x7FFE */
 			PORT_BITX(0x01, IP_ACTIVE_LOW, IPT_KEYBOARD, "SPACE",                              KEYCODE_SPACE,   IP_JOY_NONE );
-			PORT_BITX(0x02, IP_ACTIVE_LOW, IPT_KEYBOARD, "SYMBOL SHIFT",                       KEYCODE_RSHIFT,  IP_JOY_NONE );
+			PORT_BITX(0x02, IP_ACTIVE_LOW, IPT_KEYBOARD, "SYMBOL SHIFT",                       KEYCODE_LSHIFT,  IP_JOY_NONE );
 			PORT_BITX(0x04, IP_ACTIVE_LOW, IPT_KEYBOARD, "M  PAUSE   .      PI       INVERSE", KEYCODE_M,  IP_JOY_NONE );
 			PORT_BITX(0x08, IP_ACTIVE_LOW, IPT_KEYBOARD, "N  NEXT    ,      INKEY$   OVER",    KEYCODE_N,  IP_JOY_NONE );
 			PORT_BITX(0x10, IP_ACTIVE_LOW, IPT_KEYBOARD, "B  BORDER  *      BIN      BRIGHT",  KEYCODE_B,  IP_JOY_NONE );
@@ -2143,12 +2145,12 @@ public class spectrum
 	
 			PORT_START();  /* Spectrum+ Keys (set CAPS + SPACE and CAPS + SYMBOL */
 			PORT_BITX(0x01, IP_ACTIVE_LOW, IPT_KEYBOARD, "BREAK",                     KEYCODE_PAUSE,      IP_JOY_NONE );
-			PORT_BITX(0x02, IP_ACTIVE_LOW, IPT_KEYBOARD, "EXT MODE",                  KEYCODE_LCONTROL,   IP_JOY_NONE );
+			PORT_BITX(0x02, IP_ACTIVE_LOW, IPT_KEYBOARD, "EXT MODE",                  KEYCODE_RCONTROL,   IP_JOY_NONE );
 			PORT_BIT(0xfc, IP_ACTIVE_LOW, IPT_UNUSED);
 	
 			PORT_START();  /* Spectrum+ Keys (set SYMBOL SHIFT + O/P */
-			PORT_BITX(0x01, IP_ACTIVE_LOW, IPT_KEYBOARD, "\"", KEYCODE_F4,  IP_JOY_NONE );
-	/*		  PORT_BITX(0x01, IP_ACTIVE_LOW, IPT_KEYBOARD, "\"", KEYCODE_QUOTE,  IP_JOY_NONE );*/
+	//		PORT_BITX(0x01, IP_ACTIVE_LOW, IPT_KEYBOARD, "\"", KEYCODE_F4,  IP_JOY_NONE );
+			PORT_BITX(0x01, IP_ACTIVE_LOW, IPT_KEYBOARD, "\"", KEYCODE_QUOTE,  IP_JOY_NONE );
 			PORT_BITX(0x02, IP_ACTIVE_LOW, IPT_KEYBOARD, ";", KEYCODE_COLON,  IP_JOY_NONE );
 			PORT_BIT(0xfc, IP_ACTIVE_LOW, IPT_UNUSED);
 	

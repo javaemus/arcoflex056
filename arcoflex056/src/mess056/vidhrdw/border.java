@@ -83,10 +83,10 @@ public class border
 	        if (NumItems != 0)
 	        {
 	                int CyclesPerFrame = (int)(Machine.drv.cpu[0].cpu_clock / Machine.drv.frames_per_second);
-	                logerror ("Event count = %d, curr cycle = %ld, total cycles = %ld \n", NumItems, TIME_TO_CYCLES(0,cpu_getscanline()*cpu_getscanlineperiod()), CyclesPerFrame);
+	                //logerror ("Event count = %d, curr cycle = %ld, total cycles = %ld \n", NumItems, TIME_TO_CYCLES(0,cpu_getscanline()*cpu_getscanlineperiod()), CyclesPerFrame);
 	        }
-	        for (Count = 0; Count < NumItems; Count++)
-	                logerror ("Event no %05d, ID = %04x, data = %04x, time = %ld\n", Count, pItem[Count].Event_ID, pItem[Count].Event_Data, pItem[Count].Event_Time);
+	        //for (Count = 0; Count < NumItems; Count++)
+	        //        logerror ("Event no %05d, ID = %04x, data = %04x, time = %ld\n", Count, pItem[Count].Event_ID, pItem[Count].Event_Data, pItem[Count].Event_Time);
 	
 	        /* Find the first and second events with the correct ID */
 	        while ((CurrItem < NumItems) && (pItem[CurrItem].Event_ID != EventID))
