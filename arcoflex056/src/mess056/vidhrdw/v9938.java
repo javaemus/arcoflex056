@@ -22,6 +22,7 @@ package mess056.vidhrdw;
 
 import static arcadeflex056.fucPtr.*;
 import static arcadeflex056.osdepend.logerror;
+import static arcadeflex056.video.osd_set_visible_area;
 import static arcadeflex056.video.osd_skip_this_frame;
 import static common.libc.cstring.*;
 import static common.ptr.*;
@@ -582,7 +583,7 @@ public class v9938
         
 	public static void v9938_register_write (int reg, int data)
 		{
-		
+		//System.out.println("v9938_register_write: "+reg);
 	
 		if (reg <= 27)
 			{
@@ -686,7 +687,8 @@ public class v9938
 				break;
 			case 7:
 				ret = _vdp.statReg[7];
-/*TODO*///				_vdp.statReg[7] = _vdp.contReg[44] = v9938_vdp_to_cpu () ;
+				_vdp.statReg[7] = v9938_vdp_to_cpu () ;
+                                _vdp.contReg[44] = v9938_vdp_to_cpu () ;
 				break;
 			default:
 				ret = _vdp.statReg[reg];
@@ -700,14 +702,14 @@ public class v9938
             }
         };
 		
-/*TODO*///	/***************************************************************************
-/*TODO*///	
-/*TODO*///		Refresh / render function
-/*TODO*///	
-/*TODO*///	***************************************************************************/
-/*TODO*///	
-/*TODO*///	#define V9938_SECOND_FIELD ( !(((_vdp.contReg[9] & 0x04) && !(_vdp.statReg[2] & 2)) || _vdp.blink)) 
-/*TODO*///	
+	/***************************************************************************
+	
+		Refresh / render function
+	
+	***************************************************************************/
+	
+        public static int V9938_SECOND_FIELD(){ return ( (((_vdp.contReg[9] & 0x04)!=0 && (_vdp.statReg[2] & 2)==0) || _vdp.blink!=0))?0:1; }
+	
         public static int V9938_WIDTH	= (512 + 32);
 /*TODO*///	#define V9938_BPP	(8)
 /*TODO*///	#undef	V9938_BPP
@@ -721,258 +723,259 @@ public class v9938
 	
 	public static ModeSprites_HandlersPtr v9938_sprite_mode1 = new ModeSprites_HandlersPtr() {
             public void handler(int line, UBytePtr col) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-/*TODO*///		UINT8	*attrtbl, *patterntbl, *patternptr;
-/*TODO*///		int x, y, p, height, c, p2, i, n, pattern;
-/*TODO*///	
-/*TODO*///		memset (col, 0, 256);
-/*TODO*///	
-/*TODO*///		/* are sprites disabled? */
-/*TODO*///		if (_vdp.contReg[8] & 0x02) return;
-/*TODO*///	
-/*TODO*///		attrtbl = _vdp.vram + (_vdp.contReg[5] << 7) + (_vdp.contReg[11] << 15);
-/*TODO*///		patterntbl = _vdp.vram + (_vdp.contReg[6] << 11);
-/*TODO*///	
-/*TODO*///		/* 16x16 or 8x8 sprites */
-/*TODO*///		height = (_vdp.contReg[1] & 2) ? 16 : 8;
-/*TODO*///		/* magnified sprites (zoomed) */
-/*TODO*///		if (_vdp.contReg[1] & 1) height *= 2;
-/*TODO*///	
-/*TODO*///		p2 = p = 0;
-/*TODO*///		while (1)
-/*TODO*///			{
-/*TODO*///			y = attrtbl[0];
-/*TODO*///			if (y == 208) break;
-/*TODO*///			y = (y - _vdp.contReg[23]) & 255;
-/*TODO*///			if (y > 208)
-/*TODO*///				y = -(~y&255);
-/*TODO*///			else
-/*TODO*///				y++;
-/*TODO*///	
-/*TODO*///			/* if sprite in range, has to be drawn */
-/*TODO*///			if ( (line >= y) && (line  < (y + height) ) )
-/*TODO*///				{
-/*TODO*///				if (p2 == 4)
-/*TODO*///					{
-/*TODO*///					/* max maximum sprites per line! */
-/*TODO*///					if ( !(_vdp.statReg[0] & 0x40) )
-/*TODO*///						_vdp.statReg[0] = (_vdp.statReg[0] & 0xa0) | 0x40 | p;
-/*TODO*///	
-/*TODO*///					if (_vdpsprite_limit) break;
-/*TODO*///					}
-/*TODO*///				/* get x */
-/*TODO*///				x = attrtbl[1];
-/*TODO*///				if (attrtbl[3] & 0x80) x -= 32;
-/*TODO*///	
-/*TODO*///				/* get pattern */
-/*TODO*///				pattern = attrtbl[2];
-/*TODO*///				if (_vdp.contReg[1] & 2)
-/*TODO*///					pattern &= 0xfc;
-/*TODO*///				n = line - y;
-/*TODO*///				patternptr = patterntbl + pattern * 8 +
-/*TODO*///					((_vdp.contReg[1] & 1) ? n/2  : n);
-/*TODO*///				pattern = patternptr[0] << 8 | patternptr[16];
-/*TODO*///	
-/*TODO*///				/* get colour */
-/*TODO*///				c = attrtbl[3] & 0x0f;
-/*TODO*///	
-/*TODO*///				/* draw left part */
-/*TODO*///				n = 0;
-/*TODO*///				while (1)
-/*TODO*///					{
-/*TODO*///					if (n == 0) pattern = patternptr[0];
-/*TODO*///					else if ( (n == 1) && (_vdp.contReg[1] & 2) ) pattern = patternptr[16];
-/*TODO*///					else break;
-/*TODO*///	
-/*TODO*///					n++;
-/*TODO*///	
-/*TODO*///					for (i=0;i<8;i++)
-/*TODO*///						{
-/*TODO*///						if (pattern & 0x80)
-/*TODO*///							{
-/*TODO*///							if ( (x >= 0) && (x < 256) )
-/*TODO*///								{
-/*TODO*///								if (col[x] & 0x40)
-/*TODO*///									{
-/*TODO*///									/* we have a collision! */
-/*TODO*///									if (p2 < 4)
-/*TODO*///										_vdp.statReg[0] |= 0x20;
-/*TODO*///									}
-/*TODO*///								if ( !(col[x] & 0x80) )
-/*TODO*///									{
-/*TODO*///									if (c || (_vdp.contReg[8] & 0x20) )
-/*TODO*///										col[x] |= 0xc0 | c;
-/*TODO*///									else
-/*TODO*///										col[x] |= 0x40;
-/*TODO*///									}
-/*TODO*///	
-/*TODO*///								/* if zoomed, draw another pixel */
-/*TODO*///								if (_vdp.contReg[1] & 1)
-/*TODO*///									{
-/*TODO*///									if (col[x+1] & 0x40)
-/*TODO*///	    	                        	{
-/*TODO*///	       		                    	/* we have a collision! */
-/*TODO*///										if (p2 < 4)
-/*TODO*///											_vdp.statReg[0] |= 0x20;
-/*TODO*///	                            		}
-/*TODO*///	                        		if ( !(col[x+1] & 0x80) )
-/*TODO*///		                            	{
-/*TODO*///	   		                         	if (c || (_vdp.contReg[8] & 0x20) )
-/*TODO*///											col[x+1] |= 0xc0 | c;
-/*TODO*///										else
-/*TODO*///											col[x+1] |= 0x80;
-/*TODO*///	                            		}
-/*TODO*///									}
-/*TODO*///								}
-/*TODO*///							}
-/*TODO*///						if (_vdp.contReg[1] & 1) x += 2; else x++;
-/*TODO*///						pattern <<= 1;
-/*TODO*///						}
-/*TODO*///					}
-/*TODO*///	
-/*TODO*///				p2++;
-/*TODO*///				}
-/*TODO*///	
-/*TODO*///			if (p >= 31) break;
-/*TODO*///			p++;
-/*TODO*///			attrtbl += 4;
-/*TODO*///			}
-/*TODO*///	
-/*TODO*///		if ( !(_vdp.statReg[0] & 0x40) )
-/*TODO*///			_vdp.statReg[0] = (_vdp.statReg[0] & 0xa0) | p;
+
+		UBytePtr attrtbl, patterntbl, patternptr;
+		int x, y, p, height, c, p2, i, n, pattern;
+	
+		memset (col, 0, 256);
+	
+		/* are sprites disabled? */
+		if ((_vdp.contReg[8] & 0x02) != 0) return;
+	
+		attrtbl = new UBytePtr(_vdp.vram, (_vdp.contReg[5] << 7) + (_vdp.contReg[11] << 15));
+		patterntbl = new UBytePtr(_vdp.vram, (_vdp.contReg[6] << 11));
+	
+		/* 16x16 or 8x8 sprites */
+		height = (_vdp.contReg[1] & 2)!=0 ? 16 : 8;
+		/* magnified sprites (zoomed) */
+		if ((_vdp.contReg[1] & 1)!=0) height *= 2;
+	
+		p2 = p = 0;
+		while (true)
+			{
+			y = attrtbl.read(0);
+			if (y == 208) break;
+			y = (y - _vdp.contReg[23]) & 255;
+			if (y > 208)
+				y = -(~y&255);
+			else
+				y++;
+	
+			/* if sprite in range, has to be drawn */
+			if ( (line >= y) && (line  < (y + height) ) )
+				{
+				if (p2 == 4)
+					{
+					/* max maximum sprites per line! */
+					if ( (_vdp.statReg[0] & 0x40) == 0)
+						_vdp.statReg[0] = (_vdp.statReg[0] & 0xa0) | 0x40 | p;
+	
+					if (_vdp.sprite_limit != 0) break;
+					}
+				/* get x */
+				x = attrtbl.read(1);
+				if ((attrtbl.read(3) & 0x80)!=0) x -= 32;
+	
+				/* get pattern */
+				pattern = attrtbl.read(2);
+				if ((_vdp.contReg[1] & 2) != 0)
+					pattern &= 0xfc;
+				n = line - y;
+				patternptr = new UBytePtr(patterntbl, pattern * 8 +
+					((_vdp.contReg[1] & 1)!=0 ? n/2  : n));
+				pattern = patternptr.read(0) << 8 | patternptr.read(16);
+	
+				/* get colour */
+				c = attrtbl.read(3) & 0x0f;
+	
+				/* draw left part */
+				n = 0;
+				while (true)
+					{
+					if (n == 0) pattern = patternptr.read(0);
+					else if ( (n == 1) && (_vdp.contReg[1] & 2)!=0 ) pattern = patternptr.read(16);
+					else break;
+	
+					n++;
+	
+					for (i=0;i<8;i++)
+						{
+						if ((pattern & 0x80) != 0)
+							{
+							if ( (x >= 0) && (x < 256) )
+								{
+								if ((col.read(x) & 0x40) != 0)
+									{
+									/* we have a collision! */
+									if (p2 < 4)
+										_vdp.statReg[0] |= 0x20;
+									}
+								if ( (col.read(x) & 0x80) == 0)
+									{
+									if (c!=0 || (_vdp.contReg[8] & 0x20)!=0 )
+										col.write(x, col.read(x) | 0xc0 | c);
+									else
+										col.write(x, col.read(x) | 0x40);
+									}
+	
+								/* if zoomed, draw another pixel */
+								if ((_vdp.contReg[1] & 1) != 0)
+									{
+									if ((col.read(x+1) & 0x40) != 0)
+	    	                        	{
+	       		                    	/* we have a collision! */
+										if (p2 < 4)
+											_vdp.statReg[0] |= 0x20;
+	                            		}
+	                        		if ( (col.read(x+1) & 0x80) == 0)
+		                            	{
+	   		                         	if (c!=0 || (_vdp.contReg[8] & 0x20)!=0 )
+											col.write(x+1, col.read(x+1) | 0xc0 | c);
+										else
+											col.write(x+1, col.read(x+1) | 0x80);
+	                            		}
+									}
+								}
+							}
+						if ((_vdp.contReg[1] & 1)!=0) x += 2; else x++;
+						pattern <<= 1;
+						}
+					}
+	
+				p2++;
+				}
+	
+			if (p >= 31) break;
+			p++;
+			attrtbl.inc( 4 );
+			}
+	
+		if ( (_vdp.statReg[0] & 0x40) == 0)
+			_vdp.statReg[0] = (_vdp.statReg[0] & 0xa0) | p;
             }
         };
         
 	public static ModeSprites_HandlersPtr v9938_sprite_mode2 = new ModeSprites_HandlersPtr() {
             @Override
             public void handler(int line, UBytePtr col) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-/*TODO*///		int attrtbl, patterntbl, patternptr, colourtbl;
-/*TODO*///		int x, i, y, p, height, c, p2, n, pattern, colourmask, first_cc_seen;
-/*TODO*///	
-/*TODO*///		memset (col, 0, 256);
-/*TODO*///	
-/*TODO*///		/* are sprites disabled? */
-/*TODO*///		if (_vdp.contReg[8] & 0x02) return;
-/*TODO*///	
-/*TODO*///		attrtbl = ( (_vdp.contReg[5] & 0xfc) << 7) + (_vdp.contReg[11] << 15);
-/*TODO*///		colourtbl =  ( (_vdp.contReg[5] & 0xf8) << 7) + (_vdp.contReg[11] << 15);
-/*TODO*///		patterntbl = (_vdp.contReg[6] << 11);
-/*TODO*///		colourmask = ( (_vdp.contReg[5] & 3) << 3) | 0x7; /* check this! */
-/*TODO*///	
-/*TODO*///		/* 16x16 or 8x8 sprites */
-/*TODO*///		height = (_vdp.contReg[1] & 2) ? 16 : 8;
-/*TODO*///		/* magnified sprites (zoomed) */
-/*TODO*///		if (_vdp.contReg[1] & 1) height *= 2;
-/*TODO*///	
-/*TODO*///		p2 = p = first_cc_seen = 0;
-/*TODO*///		while (1)
-/*TODO*///			{
-/*TODO*///			y = v9938_vram_read (attrtbl);
-/*TODO*///			if (y == 216) break;
-/*TODO*///			y = (y - _vdp.contReg[23]) & 255;
-/*TODO*///			if (y > 216)
-/*TODO*///				y = -(~y&255);
-/*TODO*///			else
-/*TODO*///				y++;
-/*TODO*///	
-/*TODO*///			/* if sprite in range, has to be drawn */
-/*TODO*///			if ( (line >= y) && (line  < (y + height) ) )
-/*TODO*///				{
-/*TODO*///				if (p2 == 8)
-/*TODO*///					{
-/*TODO*///					/* max maximum sprites per line! */
-/*TODO*///					if ( !(_vdp.statReg[0] & 0x40) )
-/*TODO*///						_vdp.statReg[0] = (_vdp.statReg[0] & 0xa0) | 0x40 | p;
-/*TODO*///	
-/*TODO*///					if (_vdpsprite_limit) break;
-/*TODO*///					}
-/*TODO*///	
-/*TODO*///				n = line - y; if (_vdp.contReg[1] & 1) n /= 2;
-/*TODO*///				/* get colour */
-/*TODO*///				c = v9938_vram_read (colourtbl + (((p&colourmask)*16) + n));
-/*TODO*///	
-/*TODO*///				/* don't draw all sprite with CC set before any sprites 
-/*TODO*///	               with CC = 0 are seen on this line */
-/*TODO*///				if (c & 0x40)
-/*TODO*///					{
-/*TODO*///					if (first_cc_seen == 0)
-/*TODO*///						goto skip_first_cc_set;
-/*TODO*///					}
-/*TODO*///				else
-/*TODO*///					first_cc_seen = 1;
-/*TODO*///	
-/*TODO*///				/* get pattern */
-/*TODO*///				pattern = v9938_vram_read (attrtbl + 2);
-/*TODO*///				if (_vdp.contReg[1] & 2)
-/*TODO*///					pattern &= 0xfc;
-/*TODO*///				patternptr = patterntbl + pattern * 8 + n;
-/*TODO*///				pattern = (v9938_vram_read (patternptr) << 8) |
-/*TODO*///					v9938_vram_read (patternptr + 16);
-/*TODO*///	
-/*TODO*///				/* get x */
-/*TODO*///				x = v9938_vram_read (attrtbl + 1);
-/*TODO*///				if (c & 0x80) x -= 32;
-/*TODO*///	
-/*TODO*///				n = (_vdp.contReg[1] & 2) ? 16 : 8;
-/*TODO*///				while (n--)
-/*TODO*///					{
-/*TODO*///					for (i=0;i<=(_vdp.contReg[1] & 1);i++)
-/*TODO*///						{
-/*TODO*///						if ( (x >= 0) && (x < 256) )
-/*TODO*///							{
-/*TODO*///							if ( (pattern & 0x8000) && !(col[x] & 0x10) )
-/*TODO*///								{
-/*TODO*///								if ( (c & 15) || (_vdp.contReg[8] & 0x20) ) 
-/*TODO*///									{
-/*TODO*///									if ( !(c & 0x40) )
-/*TODO*///										{
-/*TODO*///										if (col[x] & 0x20) col[x] |= 0x10;
-/*TODO*///										else 
-/*TODO*///											col[x] |= 0x20 | (c & 15);
-/*TODO*///										}
-/*TODO*///									else
-/*TODO*///										col[x] |= c & 15;
-/*TODO*///	
-/*TODO*///									col[x] |= 0x80;
-/*TODO*///									}
-/*TODO*///								}
-/*TODO*///							else
-/*TODO*///								{
-/*TODO*///								if ( !(c & 0x40) && (col[x] & 0x20) )
-/*TODO*///									col[x] |= 0x10;
-/*TODO*///								}
-/*TODO*///	
-/*TODO*///							if ( !(c & 0x60) && (pattern & 0x8000) )
-/*TODO*///								{
-/*TODO*///								if (col[x] & 0x40)
-/*TODO*///									{
-/*TODO*///									/* sprite collision! */
-/*TODO*///									if (p2 < 8)
-/*TODO*///										_vdp.statReg[0] |= 0x20;
-/*TODO*///									}
-/*TODO*///								else
-/*TODO*///									col[x] |= 0x40;
-/*TODO*///								}
-/*TODO*///	
-/*TODO*///							x++;
-/*TODO*///							}
-/*TODO*///						}
-/*TODO*///	
-/*TODO*///					pattern <<= 1;
-/*TODO*///					}
-/*TODO*///	
+
+		int attrtbl, patterntbl, patternptr, colourtbl;
+		int x, i, y, p, height, c, p2, n, pattern, colourmask, first_cc_seen;
+	
+		memset (col, 0, 256);
+	
+		/* are sprites disabled? */
+		if ((_vdp.contReg[8] & 0x02) != 0) return;
+	
+		attrtbl = ( (_vdp.contReg[5] & 0xfc) << 7) + (_vdp.contReg[11] << 15);
+		colourtbl =  ( (_vdp.contReg[5] & 0xf8) << 7) + (_vdp.contReg[11] << 15);
+		patterntbl = (_vdp.contReg[6] << 11);
+		colourmask = ( (_vdp.contReg[5] & 3) << 3) | 0x7; /* check this! */
+	
+		/* 16x16 or 8x8 sprites */
+		height = (_vdp.contReg[1] & 2)!=0 ? 16 : 8;
+		/* magnified sprites (zoomed) */
+		if ((_vdp.contReg[1] & 1) != 0) height *= 2;
+	
+		p2 = p = first_cc_seen = 0;
+		while (true)
+			{
+			y = v9938_vram_read (attrtbl);
+			if (y == 216) break;
+			y = (y - _vdp.contReg[23]) & 255;
+			if (y > 216)
+				y = -(~y&255);
+			else
+				y++;
+	
+			/* if sprite in range, has to be drawn */
+			if ( (line >= y) && (line  < (y + height) ) )
+				{
+				if (p2 == 8)
+					{
+					/* max maximum sprites per line! */
+					if ( (_vdp.statReg[0] & 0x40) == 0 )
+						_vdp.statReg[0] = (_vdp.statReg[0] & 0xa0) | 0x40 | p;
+	
+					if (_vdp.sprite_limit != 0) break;
+					}
+	
+				n = line - y; if ((_vdp.contReg[1] & 1)!=0) n /= 2;
+				/* get colour */
+				c = v9938_vram_read (colourtbl + (((p&colourmask)*16) + n));
+	
+				/* don't draw all sprite with CC set before any sprites 
+	               with CC = 0 are seen on this line */
+				if ((c & 0x40) != 0)
+					{
+					/*TODO*///if (first_cc_seen == 0)
+					/*TODO*///	skip_first_cc_set();
+                                        /*TODO*///        break;
+					}
+				else
+					first_cc_seen = 1;
+	
+				/* get pattern */
+				pattern = v9938_vram_read (attrtbl + 2);
+				if ((_vdp.contReg[1] & 2) != 0)
+					pattern &= 0xfc;
+				patternptr = patterntbl + pattern * 8 + n;
+				pattern = (v9938_vram_read (patternptr) << 8) |
+					v9938_vram_read (patternptr + 16);
+	
+				/* get x */
+				x = v9938_vram_read (attrtbl + 1);
+				if ((c & 0x80)!=0) x -= 32;
+	
+				n = (_vdp.contReg[1] & 2)!=0 ? 16 : 8;
+				while (n-- != 0)
+					{
+					for (i=0;i<=(_vdp.contReg[1] & 1);i++)
+						{
+						if ( (x >= 0) && (x < 256) )
+							{
+							if ( (pattern & 0x8000)!=0 && (col.read(x) & 0x10)==0 )
+								{
+								if ( (c & 15)!=0 || (_vdp.contReg[8] & 0x20)!=0 ) 
+									{
+									if ( (c & 0x40)==0 )
+										{
+										if ((col.read(x) & 0x20)!=0) col.write(x, col.read(x) | 0x10 );
+										else 
+											col.write(x, col.read(x) | 0x20 | (c & 15) );
+										}
+									else
+										col.write(x, col.read(x)| c & 15);
+	
+									col.write(x, col.read(x) | 0x80);
+									}
+								}
+							else
+								{
+								if ( (c & 0x40)==0 && (col.read(x) & 0x20)!=0 )
+									col.write(x, col.read(x) | 0x10 );
+								}
+	
+							if ( (c & 0x60)==0 && (pattern & 0x8000)!=0 )
+								{
+								if ((col.read(x) & 0x40) != 0)
+									{
+									/* sprite collision! */
+									if (p2 < 8)
+										_vdp.statReg[0] |= 0x20;
+									}
+								else
+									col.write(x, col.read(x) | 0x40 );
+								}
+	
+							x++;
+							}
+						}
+	
+					pattern <<= 1;
+					}
+	
 /*TODO*///	skip_first_cc_set:
-/*TODO*///				p2++;
-/*TODO*///				}
-/*TODO*///	
-/*TODO*///			if (p >= 31) break;
-/*TODO*///			p++;
-/*TODO*///			attrtbl += 4;
-/*TODO*///			}
-/*TODO*///	
-/*TODO*///		if ( !(_vdp.statReg[0] & 0x40) )
-/*TODO*///			_vdp.statReg[0] = (_vdp.statReg[0] & 0xa0) | p;                
+				p2++;
+				}
+	
+			if (p >= 31) break;
+			p++;
+			attrtbl += 4;
+			}
+	
+		if ( (_vdp.statReg[0] & 0x40) == 0 )
+			_vdp.statReg[0] = (_vdp.statReg[0] & 0xa0) | p;                
             }
         };
         
@@ -1007,6 +1010,7 @@ public class v9938
                         ModeDraw_Sprites_HandlersPtr draw_sprite_8s,
                         ModeDraw_Sprites_HandlersPtr draw_sprite_16s)
                 {
+                    this.m = m;
                     this.visible_8 = visible_8;
                     this.visible_16 = visible_16;
                     this.visible_8s = visible_8s;
@@ -1121,7 +1125,7 @@ public class v9938
 		n = (((_vdp.contReg[0] & 0x0e) << 1) | ((_vdp.contReg[1] & 0x18) >> 3));
                 
                 //System.out.println("Long: "+modes.length);
-                //System.out.println("N: "+modes.length);
+                //System.out.println("SET MODE: "+n);
 		
                 for (i=0;i<modes.length;i++)
                 {
@@ -1173,12 +1177,14 @@ public class v9938
 				modes[_vdp.mode].visible_8.handler(ln, i);
 				if (modes[_vdp.mode].sprites != null)
 					{
+                                            System.out.println("Need to be implemented A");
 /*TODO*///					modes[_vdp.mode].sprites.handler(i, col);
 /*TODO*///					modes[_vdp.mode].draw_sprite_8.handler(ln, col);
 					}
 				}
 			else
 				{
+                                    System.out.println("Need to be implemented B");
 				/*TODO*///modes[_vdp.mode].visible_8s (ln, i);
 				/*TODO*///if (modes[_vdp.mode].sprites)
 				/*TODO*///	{
@@ -1284,171 +1290,171 @@ public class v9938
             }
         };
 		
-/*TODO*///	/*
-/*TODO*///	
-/*TODO*///	From: awulms@inter.nl.net (Alex Wulms)
-/*TODO*///	*** About the HR/VR topic: this is how it works according to me:
-/*TODO*///	
-/*TODO*///	*** HR:
-/*TODO*///	HR is very straightforward:
-/*TODO*///	-HR=1 during 'display time'
-/*TODO*///	-HR=0 during 'horizontal border, horizontal retrace'
-/*TODO*///	I have put 'display time' and 'horizontal border, horizontal retrace' between
-/*TODO*///	quotes because HR does not only flip between 0 and 1 during the display of
-/*TODO*///	the 192/212 display lines, but also during the vertical border and during the
-/*TODO*///	vertical retrace.
-/*TODO*///	
-/*TODO*///	*** VR:
-/*TODO*///	VR is a little bit tricky
-/*TODO*///	-VR always gets set to 0 when the VDP starts with display line 0
-/*TODO*///	-VR gets set to 1 when the VDP reaches display line (192 if LN=0) or (212 if
-/*TODO*///	LN=1)
-/*TODO*///	-The VDP displays contents of VRAM as long as VR=0
-/*TODO*///	
-/*TODO*///	As a consequence of this behaviour, it is possible to program the famous
-/*TODO*///	overscan trick, where VRAM contents is shown in the borders:
-/*TODO*///	Generate an interrupt at line 230 (or so) and on this interrupt: set LN=1
-/*TODO*///	Generate an interrupt at line 200 (or so) and on this interrupt: set LN=0
-/*TODO*///	Repeat the above two steps
-/*TODO*///	
-/*TODO*///	*** The top/bottom border contents during overscan:
-/*TODO*///	On screen 0:
-/*TODO*///	1) The VDP keeps increasing the name table address pointer during bottom
-/*TODO*///	border, vertical retrace and top border
-/*TODO*///	2) The VDP resets the name table address pointer when the first display line
-/*TODO*///	is reached
-/*TODO*///	
-/*TODO*///	On the other screens:
-/*TODO*///	1) The VDP keeps increasing the name table address pointer during the bottom
-/*TODO*///	border
-/*TODO*///	2) The VDP resets the name table address pointer such that the top border
-/*TODO*///	contents connects up with the first display line. E.g., when the top border
-/*TODO*///	is 26 lines high, the VDP will take:
-/*TODO*///	'logical'      vram line
-/*TODO*///	TOPB000  256-26
-/*TODO*///	...
-/*TODO*///	TOPB025  256-01
-/*TODO*///	DISPL000 000
-/*TODO*///	...
-/*TODO*///	DISPL211 211
-/*TODO*///	BOTB000  212
-/*TODO*///	...
-/*TODO*///	BOTB024  236
-/*TODO*///	
-/*TODO*///	
-/*TODO*///	
-/*TODO*///	*** About the horizontal interrupt
-/*TODO*///	
-/*TODO*///	All relevant definitions on a row:
-/*TODO*///	-FH: Bit 0 of status register 1
-/*TODO*///	-IE1: Bit 4 of mode register 0
-/*TODO*///	-IL: Line number in mode register 19
-/*TODO*///	-DL: The line that the VDP is going to display (corrected for vertical scroll)
-/*TODO*///	-IRQ: Interrupt request line of VDP to Z80
-/*TODO*///	
-/*TODO*///	At the *start* of every new line (display, bottom border, part of vertical
-/*TODO*///	display), the VDP does:
-/*TODO*///	-FH = (FH && IE1) || (IL==DL)
-/*TODO*///	
-/*TODO*///	After reading of status register 1 by the CPU, the VDP does:
-/*TODO*///	-FH = 0
-/*TODO*///	
-/*TODO*///	Furthermore, the following is true all the time:
-/*TODO*///	-IRQ = FH && IE1
-/*TODO*///	
-/*TODO*///	The resulting behaviour:
-/*TODO*///	When IE1=0:
-/*TODO*///	-FH will be set as soon as display of line IL starts
-/*TODO*///	-FH will be reset as soon as status register 1 is read
-/*TODO*///	-FH will be reset as soon as the next display line is reached
-/*TODO*///	
-/*TODO*///	When IE=1:
-/*TODO*///	-FH and IRQ will be set as soon as display line IL is reached
-/*TODO*///	-FH and IRQ will be reset as soon as status register 1 is read
-/*TODO*///	
-/*TODO*///	Another subtile result:
-/*TODO*///	If, while FH and IRQ are set, IE1 gets reset, the next happens:
-/*TODO*///	-IRQ is reset immediately (since IRQ is always FH && IE1)
-/*TODO*///	-FH will be reset as soon as display of the next line starts (unless the next
-/*TODO*///	line is line IL)
-/*TODO*///	
-/*TODO*///	
-/*TODO*///	*** About the vertical interrupt:
-/*TODO*///	Another relevant definition:
-/*TODO*///	-FV: Bit 7 of status register 0
-/*TODO*///	-IE0: Bit 5 of mode register 1
-/*TODO*///	
-/*TODO*///	I only know for sure the behaviour when IE0=1:
-/*TODO*///	-FV and IRQ will be set as soon as VR changes from 0 to 1
-/*TODO*///	-FV and IRQ will be reset as soon as status register 0 is read
-/*TODO*///	
-/*TODO*///	A consequence is that NO vertical interrupts will be generated during the
-/*TODO*///	overscan trick, described in the VR section above.
-/*TODO*///	
-/*TODO*///	I do not know the behaviour of FV when IE0=0. That is the part that I still
-/*TODO*///	have to test.
-/*TODO*///	*/
-/*TODO*///	
-/*TODO*///	static void v9938_interrupt_start_vblank ()
-/*TODO*///		{
-/*TODO*///	/*TODO*///#if 0
-/*TODO*///	/*TODO*///	if (keyboard_pressed (KEYCODE_D) )
-/*TODO*///	/*TODO*///		{
-/*TODO*///	/*TODO*///		FILE *fp;
-/*TODO*///	/*TODO*///		int i;
-/*TODO*///	/*TODO*///
-/*TODO*///	/*TODO*///		fp = fopen ("vram.dmp", "wb");
-/*TODO*///	/*TODO*///		if (fp)
-/*TODO*///	/*TODO*///			{
-/*TODO*///	/*TODO*///			fwrite (_vdp.vram, 0x10000, 1, fp);
-/*TODO*///	/*TODO*///			fclose (fp);
-/*TODO*///	/*TODO*///			usrintf_showmessage ("saved");
-/*TODO*///	/*TODO*///			}
-/*TODO*///	/*TODO*///
-/*TODO*///	/*TODO*///		for (i=0;i<24;i++) printf ("R#%d = %02x\n", i, _vdp.contReg[i]);
-/*TODO*///	/*TODO*///		}
-/*TODO*///	/*TODO*///#endif
-/*TODO*///	
-/*TODO*///		/* at every frame, vdp switches fields */
-/*TODO*///		_vdp.statReg[2] = (_vdp.statReg[2] & 0xfd) | (~_vdp.statReg[2] & 2);
-/*TODO*///	
-/*TODO*///		/* color blinking */
-/*TODO*///		if ((_vdp.contReg[13] & 0xf0)==0)
-/*TODO*///			_vdp.blink = 0;
-/*TODO*///		else if (!(_vdp.contReg[13] & 0x0f))
-/*TODO*///			_vdp.blink = 1;
-/*TODO*///		else
+	/*
+	
+	From: awulms@inter.nl.net (Alex Wulms)
+	*** About the HR/VR topic: this is how it works according to me:
+	
+	*** HR:
+	HR is very straightforward:
+	-HR=1 during 'display time'
+	-HR=0 during 'horizontal border, horizontal retrace'
+	I have put 'display time' and 'horizontal border, horizontal retrace' between
+	quotes because HR does not only flip between 0 and 1 during the display of
+	the 192/212 display lines, but also during the vertical border and during the
+	vertical retrace.
+	
+	*** VR:
+	VR is a little bit tricky
+	-VR always gets set to 0 when the VDP starts with display line 0
+	-VR gets set to 1 when the VDP reaches display line (192 if LN=0) or (212 if
+	LN=1)
+	-The VDP displays contents of VRAM as long as VR=0
+	
+	As a consequence of this behaviour, it is possible to program the famous
+	overscan trick, where VRAM contents is shown in the borders:
+	Generate an interrupt at line 230 (or so) and on this interrupt: set LN=1
+	Generate an interrupt at line 200 (or so) and on this interrupt: set LN=0
+	Repeat the above two steps
+	
+	*** The top/bottom border contents during overscan:
+	On screen 0:
+	1) The VDP keeps increasing the name table address pointer during bottom
+	border, vertical retrace and top border
+	2) The VDP resets the name table address pointer when the first display line
+	is reached
+	
+	On the other screens:
+	1) The VDP keeps increasing the name table address pointer during the bottom
+	border
+	2) The VDP resets the name table address pointer such that the top border
+	contents connects up with the first display line. E.g., when the top border
+	is 26 lines high, the VDP will take:
+	'logical'      vram line
+	TOPB000  256-26
+	...
+	TOPB025  256-01
+	DISPL000 000
+	...
+	DISPL211 211
+	BOTB000  212
+	...
+	BOTB024  236
+	
+	
+	
+	*** About the horizontal interrupt
+	
+	All relevant definitions on a row:
+	-FH: Bit 0 of status register 1
+	-IE1: Bit 4 of mode register 0
+	-IL: Line number in mode register 19
+	-DL: The line that the VDP is going to display (corrected for vertical scroll)
+	-IRQ: Interrupt request line of VDP to Z80
+	
+	At the *start* of every new line (display, bottom border, part of vertical
+	display), the VDP does:
+	-FH = (FH && IE1) || (IL==DL)
+	
+	After reading of status register 1 by the CPU, the VDP does:
+	-FH = 0
+	
+	Furthermore, the following is true all the time:
+	-IRQ = FH && IE1
+	
+	The resulting behaviour:
+	When IE1=0:
+	-FH will be set as soon as display of line IL starts
+	-FH will be reset as soon as status register 1 is read
+	-FH will be reset as soon as the next display line is reached
+	
+	When IE=1:
+	-FH and IRQ will be set as soon as display line IL is reached
+	-FH and IRQ will be reset as soon as status register 1 is read
+	
+	Another subtile result:
+	If, while FH and IRQ are set, IE1 gets reset, the next happens:
+	-IRQ is reset immediately (since IRQ is always FH && IE1)
+	-FH will be reset as soon as display of the next line starts (unless the next
+	line is line IL)
+	
+	
+	*** About the vertical interrupt:
+	Another relevant definition:
+	-FV: Bit 7 of status register 0
+	-IE0: Bit 5 of mode register 1
+	
+	I only know for sure the behaviour when IE0=1:
+	-FV and IRQ will be set as soon as VR changes from 0 to 1
+	-FV and IRQ will be reset as soon as status register 0 is read
+	
+	A consequence is that NO vertical interrupts will be generated during the
+	overscan trick, described in the VR section above.
+	
+	I do not know the behaviour of FV when IE0=0. That is the part that I still
+	have to test.
+	*/
+	
+	public static void v9938_interrupt_start_vblank ()
+		{
+/*TODO*///	#if 0
+/*TODO*///		if (keyboard_pressed (KEYCODE_D) )
 /*TODO*///			{
-/*TODO*///			/* both on and off counter are non-zero: timed blinking */
-/*TODO*///			if (_vdp.blink_count)
-/*TODO*///				_vdp.blink_count--;
-/*TODO*///			if (!_vdp.blink_count)
+/*TODO*///			FILE *fp;
+/*TODO*///			int i;
+/*TODO*///	
+/*TODO*///			fp = fopen ("vram.dmp", "wb");
+/*TODO*///			if (fp)
 /*TODO*///				{
-/*TODO*///				_vdp.blink = vdp.blink!=0?0:1;
-/*TODO*///				if (_vdp.blink != 0)
-/*TODO*///					_vdp.blink_count = (_vdp.contReg[13] >> 4) * 10;
-/*TODO*///				else
-/*TODO*///					_vdp.blink_count = (_vdp.contReg[13] & 0x0f) * 10;
+/*TODO*///				fwrite (_vdp.vram, 0x10000, 1, fp);
+/*TODO*///				fclose (fp);
+/*TODO*///				usrintf_showmessage ("saved");
 /*TODO*///				}
+/*TODO*///	
+/*TODO*///			for (i=0;i<24;i++) printf ("R#%d = %02x\n", i, _vdp.contReg[i]);
 /*TODO*///			}
-/*TODO*///	
-/*TODO*///		/* check screen rendering size */
-/*TODO*///		if (_vdp.size_auto && (_vdp.size_now >= 0) && (_vdp.size != _vdp.size_now) )
-/*TODO*///			_vdp.size = _vdp.size_now;
-/*TODO*///	
-/*TODO*///		if (_vdp.size != _vdp.size_old)
-/*TODO*///			{
-/*TODO*///			if (_vdp.size == RENDER_HIGH)
-/*TODO*///				osd_set_visible_area (0, 512 + 32 - 1, 0, 424 + 32 - 1);
-/*TODO*///			else
-/*TODO*///				osd_set_visible_area (0, 256 + 16 - 1, 0, 212 + 16 - 1);
-/*TODO*///	
-/*TODO*///			_vdp.size_old = _vdp.size;
-/*TODO*///			}
-/*TODO*///	
-/*TODO*///		_vdp.size_now = -1;
-/*TODO*///		}
-/*TODO*///	
+/*TODO*///	#endif
+	
+		/* at every frame, vdp switches fields */
+		_vdp.statReg[2] = (_vdp.statReg[2] & 0xfd) | (~_vdp.statReg[2] & 2);
+	
+		/* color blinking */
+		if ((_vdp.contReg[13] & 0xf0)==0)
+			_vdp.blink = 0;
+		else if ((_vdp.contReg[13] & 0x0f) == 0)
+			_vdp.blink = 1;
+		else
+			{
+			/* both on and off counter are non-zero: timed blinking */
+			if (_vdp.blink_count != 0)
+				_vdp.blink_count--;
+			if (_vdp.blink_count == 0)
+				{
+				_vdp.blink = _vdp.blink!=0?0:1;
+				if (_vdp.blink != 0)
+					_vdp.blink_count = (_vdp.contReg[13] >> 4) * 10;
+				else
+					_vdp.blink_count = (_vdp.contReg[13] & 0x0f) * 10;
+				}
+			}
+	
+		/* check screen rendering size */
+		if (_vdp.size_auto!=0 && (_vdp.size_now >= 0) && (_vdp.size != _vdp.size_now) )
+			_vdp.size = _vdp.size_now;
+	
+		if (_vdp.size != _vdp.size_old)
+			{
+			if (_vdp.size == RENDER_HIGH)
+				osd_set_visible_area (0, 512 + 32 - 1, 0, 424 + 32 - 1);
+			else
+				osd_set_visible_area (0, 256 + 16 - 1, 0, 212 + 16 - 1);
+	
+			_vdp.size_old = _vdp.size;
+			}
+	
+		_vdp.size_now = -1;
+		}
+	
 	public static int v9938_interrupt ()
 		{
                     //System.out.println("v9938_interrupt");
@@ -1486,9 +1492,9 @@ public class v9938
 		v9938_check_int ();
 	
 		/* check for start of vblank */
-		/*TODO*///if ((pal!=0 && (_vdp.scanline == 310)) ||
-		/*TODO*///	(pal==0 && (_vdp.scanline == 259)))
-		/*TODO*///	v9938_interrupt_start_vblank ();
+		if ((pal!=0 && (_vdp.scanline == 310)) ||
+			(pal==0 && (_vdp.scanline == 259)))
+			v9938_interrupt_start_vblank ();
 	
 		/* render the current line */
 		if ((_vdp.scanline >= scanline_start) && (_vdp.scanline < (212 + 16 + scanline_start)))
@@ -1523,51 +1529,51 @@ public class v9938
 /*TODO*///	public static int VDP(){ return _vdp.contReg;}
 /*TODO*///	public static int VDPStatus(int pos){return  _vdp.statReg[pos];}
 /*TODO*///	#define VRAM _vdp.vram
-/*TODO*///	public static int ScrMode(){return  _vdp.mode;}
-/*TODO*///	
-/*TODO*///	/*************************************************************/
-/*TODO*///	/** Completely rewritten by Alex Wulms:                     **/
-/*TODO*///	/**  - VDP Command execution 'in parallel' with CPU         **/
-/*TODO*///	/**  - Corrected behaviour of VDP commands                  **/
-/*TODO*///	/**  - Made it easier to implement correct S7/8 mapping     **/
-/*TODO*///	/**    by concentrating VRAM access in one single place     **/
-/*TODO*///	/**  - Made use of the 'in parallel' VDP command exec       **/
-/*TODO*///	/**    and correct timing. You must call the function       **/
-/*TODO*///	/**    LoopVDP() from LoopZ80 in MSX.c. You must call it    **/
-/*TODO*///	/**    exactly 256 times per screen refresh.                **/
-/*TODO*///	/** Started on       : 11-11-1999                           **/
-/*TODO*///	/** Beta release 1 on:  9-12-1999                           **/
-/*TODO*///	/** Beta release 2 on: 20-01-2000                           **/
-/*TODO*///	/**  - Corrected behaviour of VRM <. Z80 transfer          **/
-/*TODO*///	/**  - Improved performance of the code                     **/
-/*TODO*///	/** Public release 1.0: 20-04-2000                          **/
-/*TODO*///	/*************************************************************/
-/*TODO*///	
-/*TODO*///	#define VDP_VRMP5(X, Y) (VRAM + ((Y&1023)<<7) + ((X&255)>>1))
-/*TODO*///	#define VDP_VRMP6(X, Y) (VRAM + ((Y&1023)<<7) + ((X&511)>>2))
+	public static int ScrMode(){return  _vdp.mode;}
+	
+	/*************************************************************/
+	/** Completely rewritten by Alex Wulms:                     **/
+	/**  - VDP Command execution 'in parallel' with CPU         **/
+	/**  - Corrected behaviour of VDP commands                  **/
+	/**  - Made it easier to implement correct S7/8 mapping     **/
+	/**    by concentrating VRAM access in one single place     **/
+	/**  - Made use of the 'in parallel' VDP command exec       **/
+	/**    and correct timing. You must call the function       **/
+	/**    LoopVDP() from LoopZ80 in MSX.c. You must call it    **/
+	/**    exactly 256 times per screen refresh.                **/
+	/** Started on       : 11-11-1999                           **/
+	/** Beta release 1 on:  9-12-1999                           **/
+	/** Beta release 2 on: 20-01-2000                           **/
+	/**  - Corrected behaviour of VRM <. Z80 transfer          **/
+	/**  - Improved performance of the code                     **/
+	/** Public release 1.0: 20-04-2000                          **/
+	/*************************************************************/
+	
+        public static UBytePtr VDP_VRMP5(int X, int Y){ return new UBytePtr(_vdp.vram, ((Y&1023)<<7) + ((X&255)>>1)); }
+        public static UBytePtr VDP_VRMP6(int X, int Y){ return new UBytePtr(_vdp.vram, ((Y&1023)<<7) + ((X&511)>>2)); }
 /*TODO*///	//#define VDP_VRMP7(X, Y) (VRAM + ((Y&511)<<8) + ((X&511)>>1))
-/*TODO*///	#define VDP_VRMP7(X, Y) (VRAM + ((X&2)<<15) + ((Y&511)<<7) + ((X&511)>>2))
+        public static UBytePtr VDP_VRMP7(int X, int Y){ return new UBytePtr(_vdp.vram, ((X&2)<<15) + ((Y&511)<<7) + ((X&511)>>2)); }
 /*TODO*///	//#define VDP_VRMP8(X, Y) (VRAM + ((Y&511)<<8) + (X&255))
-/*TODO*///	#define VDP_VRMP8(X, Y) (VRAM + ((X&1)<<16) + ((Y&511)<<7) + ((X>>1)&127))
-/*TODO*///	
+        public static UBytePtr VDP_VRMP8(int X, int Y){ return new UBytePtr(_vdp.vram, ((X&1)<<16) + ((Y&511)<<7) + ((X>>1)&127)); }
+	
 /*TODO*///	#define VDP_VRMP(M, X, Y) VDPVRMP(M, X, Y)
-/*TODO*///	#define VDP_POINT(M, X, Y) VDPpoint(M, X, Y)
-/*TODO*///	#define VDP_PSET(M, X, Y, C, O) VDPpset(M, X, Y, C, O)
-/*TODO*///	
-/*TODO*///	#define CM_ABRT  0x0
-/*TODO*///	#define CM_POINT 0x4
-/*TODO*///	#define CM_PSET  0x5
-/*TODO*///	#define CM_SRCH  0x6
-/*TODO*///	#define CM_LINE  0x7
-/*TODO*///	#define CM_LMMV  0x8
-/*TODO*///	#define CM_LMMM  0x9
-/*TODO*///	#define CM_LMCM  0xA
-/*TODO*///	#define CM_LMMC  0xB
-/*TODO*///	#define CM_HMMV  0xC
-/*TODO*///	#define CM_HMMM  0xD
-/*TODO*///	#define CM_YMMM  0xE
-/*TODO*///	#define CM_HMMC  0xF
-/*TODO*///	
+        public static int VDP_POINT(int M, int X, int Y){ return VDPpoint(M, X, Y); }
+        public static void VDP_PSET(int M, int X, int Y, int C, int O){ VDPpset(M, X, Y, C, O); }
+	
+        public static final int CM_ABRT  = 0x0;
+        public static final int CM_POINT = 0x4;
+        public static final int CM_PSET  = 0x5;
+        public static final int CM_SRCH  = 0x6;
+        public static final int CM_LINE  = 0x7;
+        public static final int CM_LMMV  = 0x8;
+        public static final int CM_LMMM  = 0x9;
+        public static final int CM_LMCM  = 0xA;
+        public static final int CM_LMMC  = 0xB;
+        public static final int CM_HMMV  = 0xC;
+        public static final int CM_HMMM  = 0xD;
+        public static final int CM_YMMM  = 0xE;
+        public static final int CM_HMMC  = 0xF;
+
 /*TODO*///	/*************************************************************/
 /*TODO*///	/* Many VDP commands are executed in some kind of loop but   */
 /*TODO*///	/* essentially, there are only a few basic loop structures   */
@@ -1612,81 +1618,41 @@ public class v9938
 /*TODO*///	      } \
 /*TODO*///	    } \
 /*TODO*///	  }
-/*TODO*///	
-/*TODO*///	/*************************************************************/
-/*TODO*///	/** Structures and stuff                                    **/
-/*TODO*///	/*************************************************************/
-/*TODO*///	public static class MMC {
-/*TODO*///	  public int SX,SY;
-/*TODO*///	  public int DX,DY;
-/*TODO*///	  public int TX,TY;
-/*TODO*///	  public int NX,NY;
-/*TODO*///	  public int MX;
-/*TODO*///	  public int ASX,ADX,ANX;
-/*TODO*///	  public int CL;
-/*TODO*///	  public int LO;
-/*TODO*///	  public int CM;
-/*TODO*///	};
-/*TODO*///	
-/*TODO*///	/*************************************************************/
-/*TODO*///	/** Function prototypes                                     **/
-/*TODO*///	/*************************************************************/
-/*TODO*///	static UINT8 *VDPVRMP(register UINT8 M, register int X, register int Y);
-/*TODO*///	
-/*TODO*///	static UINT8 VDPpoint5(register int SX, register int SY);
-/*TODO*///	static UINT8 VDPpoint6(register int SX, register int SY);
-/*TODO*///	static UINT8 VDPpoint7(register int SX, register int SY);
-/*TODO*///	static UINT8 VDPpoint8(register int SX, register int SY);
-/*TODO*///	
-/*TODO*///	static UINT8 VDPpoint(register UINT8 SM,
-/*TODO*///	                     register int SX, register int SY);
-/*TODO*///	
-/*TODO*///	static void VDPpsetlowlevel(register UINT8 *P, register UINT8 CL,
-/*TODO*///	                            register UINT8 M, register UINT8 OP);
-/*TODO*///	
-/*TODO*///	static void VDPpset5(register int DX, register int DY,
-/*TODO*///	                     register UINT8 CL, register UINT8 OP);
-/*TODO*///	static void VDPpset6(register int DX, register int DY,
-/*TODO*///	                     register UINT8 CL, register UINT8 OP);
-/*TODO*///	static void VDPpset7(register int DX, register int DY,
-/*TODO*///	                     register UINT8 CL, register UINT8 OP);
-/*TODO*///	static void VDPpset8(register int DX, register int DY,
-/*TODO*///	                     register UINT8 CL, register UINT8 OP);
-/*TODO*///	
-/*TODO*///	static void VDPpset(register UINT8 SM,
-/*TODO*///	                    register int DX, register int DY,
-/*TODO*///	                    register UINT8 CL, register UINT8 OP);
-/*TODO*///	
-/*TODO*///	static int GetVdpTimingValue(register int *);
-/*TODO*///	
-/*TODO*///	static void SrchEngine(void);
-/*TODO*///	static void LineEngine(void);
-/*TODO*///	static void LmmvEngine(void);
-/*TODO*///	static void LmmmEngine(void);
-/*TODO*///	static void LmcmEngine(void);
-/*TODO*///	static void LmmcEngine(void);
-/*TODO*///	static void HmmvEngine(void);
-/*TODO*///	static void HmmmEngine(void);
-/*TODO*///	static void YmmmEngine(void);
-/*TODO*///	static void HmmcEngine(void);
-/*TODO*///	
-/*TODO*///	static void ReportVdpCommand(register UINT8 Op);
-/*TODO*///	
-/*TODO*///	/*************************************************************/
-/*TODO*///	/** Variables visible only in this module                   **/
-/*TODO*///	/*************************************************************/
-/*TODO*///	static int Mask[] = { 0x0F,0x03,0x0F,0xFF };
-/*TODO*///	static int  PPB[]  = { 2,4,2,1 };
-/*TODO*///	static int  PPL[]  = { 256,512,512,256 };
+	
+	/*************************************************************/
+	/** Structures and stuff                                    **/
+	/*************************************************************/
+	public static class _MMC {
+	  public int SX,SY;
+	  public int DX,DY;
+	  public int TX,TY;
+	  public int NX,NY;
+	  public int MX;
+	  public int ASX,ADX,ANX;
+	  public int CL;
+	  public int LO;
+	  public int CM;
+	};
+        
+        public static _MMC MMC = new _MMC();
+	
+
+	
+	/*************************************************************/
+	/** Variables visible only in this module                   **/
+	/*************************************************************/
+	static int Mask[] = { 0x0F,0x03,0x0F,0xFF };
+	static int  PPB[]  = { 2,4,2,1 };
+	static int  PPL[]  = { 256,512,512,256 };
 	public static int  VdpOpsCnt=1;
-/*TODO*///	static void (*VdpEngine)(void)=0;
-/*TODO*///	
+        public static _vdpEngine VdpEngine = null;
+	
 /*TODO*///	                      /*  SprOn SprOn SprOf SprOf */
 /*TODO*///	                      /*  ScrOf ScrOn ScrOf ScrOn */
 /*TODO*///	static int srch_timing[8]={ 818, 1025,  818,  830,   /* ntsc */
 /*TODO*///	                            696,  854,  696,  684 }; /* pal  */
-/*TODO*///	static int line_timing[8]={ 1063, 1259, 1063, 1161,
-/*TODO*///	                            904,  1026, 904,  953 };
+	static int line_timing[]={ 1063, 1259, 1063, 1161,
+	                            904,  1026, 904,  953 };
 /*TODO*///	static int hmmv_timing[8]={ 439,  549,  439,  531,
 /*TODO*///	                            366,  439,  366,  427 };
 /*TODO*///	static int lmmv_timing[8]={ 873,  1135, 873, 1056,
@@ -1714,151 +1680,157 @@ public class v9938
 /*TODO*///	
 /*TODO*///	  return(VRAM);
 /*TODO*///	}
-/*TODO*///	
-/*TODO*///	/** VDPpoint5() ***********************************************/
-/*TODO*///	/** Get a pixel on screen 5                                 **/
-/*TODO*///	/*************************************************************/
-/*TODO*///	INLINE UINT8 VDPpoint5(int SX, int SY)
-/*TODO*///	{
-/*TODO*///	  return (*VDP_VRMP5(SX, SY) >>
-/*TODO*///	          (((~SX)&1)<<2)
-/*TODO*///	         )&15;
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	/** VDPpoint6() ***********************************************/
-/*TODO*///	/** Get a pixel on screen 6                                 **/
-/*TODO*///	/*************************************************************/
-/*TODO*///	INLINE UINT8 VDPpoint6(int SX, int SY)
-/*TODO*///	{
-/*TODO*///	  return (*VDP_VRMP6(SX, SY) >>
-/*TODO*///	          (((~SX)&3)<<1)
-/*TODO*///	         )&3;
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	/** VDPpoint7() ***********************************************/
-/*TODO*///	/** Get a pixel on screen 7                                 **/
-/*TODO*///	/*************************************************************/
-/*TODO*///	INLINE UINT8 VDPpoint7(int SX, int SY)
-/*TODO*///	{
-/*TODO*///	  return (*VDP_VRMP7(SX, SY) >>
-/*TODO*///	          (((~SX)&1)<<2)
-/*TODO*///	         )&15;
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	/** VDPpoint8() ***********************************************/
-/*TODO*///	/** Get a pixel on screen 8                                 **/
-/*TODO*///	/*************************************************************/
-/*TODO*///	INLINE UINT8 VDPpoint8(int SX, int SY)
-/*TODO*///	{
-/*TODO*///	  return *VDP_VRMP8(SX, SY);
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	/** VDPpoint() ************************************************/
-/*TODO*///	/** Get a pixel on a screen                                 **/
-/*TODO*///	/*************************************************************/
-/*TODO*///	INLINE UINT8 VDPpoint(UINT8 SM, int SX, int SY)
-/*TODO*///	{
-/*TODO*///	  switch(SM)
-/*TODO*///	  {
-/*TODO*///	    case 0: return VDPpoint5(SX,SY);
-/*TODO*///	    case 1: return VDPpoint6(SX,SY);
-/*TODO*///	    case 2: return VDPpoint7(SX,SY);
-/*TODO*///	    case 3: return VDPpoint8(SX,SY);
-/*TODO*///	  }
-/*TODO*///	
-/*TODO*///	  return(0);
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	/** VDPpsetlowlevel() ****************************************/
-/*TODO*///	/** Low level function to set a pixel on a screen           **/
-/*TODO*///	/** Make it inline to make it fast                          **/
-/*TODO*///	/*************************************************************/
-/*TODO*///	INLINE void VDPpsetlowlevel(UINT8 *P, UINT8 CL, UINT8 M, UINT8 OP)
-/*TODO*///	{
-/*TODO*///	  switch (OP)
-/*TODO*///	  {
-/*TODO*///	    case 0: *P = (*P & M) | CL; break;
-/*TODO*///	    case 1: *P = *P & (CL | M); break;
-/*TODO*///	    case 2: *P |= CL; break;
-/*TODO*///	    case 3: *P ^= CL; break;
-/*TODO*///	    case 4: *P = (*P & M) | ~(CL | M); break;
-/*TODO*///	    case 8: if (CL) *P = (*P & M) | CL; break;
-/*TODO*///	    case 9: if (CL) *P = *P & (CL | M); break;
-/*TODO*///	    case 10: if (CL) *P |= CL; break;
-/*TODO*///	    case 11:  if (CL) *P ^= CL; break;
-/*TODO*///	    case 12:  if (CL) *P = (*P & M) | ~(CL|M); break;
-/*TODO*///	  }
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	/** VDPpset5() ***********************************************/
-/*TODO*///	/** Set a pixel on screen 5                                 **/
-/*TODO*///	/*************************************************************/
-/*TODO*///	INLINE void VDPpset5(int DX, int DY, UINT8 CL, UINT8 OP)
-/*TODO*///	{
-/*TODO*///	  register UINT8 SH = ((~DX)&1)<<2;
-/*TODO*///	
-/*TODO*///	  VDPpsetlowlevel(VDP_VRMP5(DX, DY),
-/*TODO*///	                  CL << SH, ~(15<<SH), OP);
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	/** VDPpset6() ***********************************************/
-/*TODO*///	/** Set a pixel on screen 6                                 **/
-/*TODO*///	/*************************************************************/
-/*TODO*///	INLINE void VDPpset6(int DX, int DY, UINT8 CL, UINT8 OP)
-/*TODO*///	{
-/*TODO*///	  register UINT8 SH = ((~DX)&3)<<1;
-/*TODO*///	
-/*TODO*///	  VDPpsetlowlevel(VDP_VRMP6(DX, DY),
-/*TODO*///	                  CL << SH, ~(3<<SH), OP);
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	/** VDPpset7() ***********************************************/
-/*TODO*///	/** Set a pixel on screen 7                                 **/
-/*TODO*///	/*************************************************************/
-/*TODO*///	INLINE void VDPpset7(int DX, int DY, UINT8 CL, UINT8 OP)
-/*TODO*///	{
-/*TODO*///	  register UINT8 SH = ((~DX)&1)<<2;
-/*TODO*///	
-/*TODO*///	  VDPpsetlowlevel(VDP_VRMP7(DX, DY),
-/*TODO*///	                  CL << SH, ~(15<<SH), OP);
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	/** VDPpset8() ***********************************************/
-/*TODO*///	/** Set a pixel on screen 8                                 **/
-/*TODO*///	/*************************************************************/
-/*TODO*///	INLINE void VDPpset8(int DX, int DY, UINT8 CL, UINT8 OP)
-/*TODO*///	{
-/*TODO*///	  VDPpsetlowlevel(VDP_VRMP8(DX, DY),
-/*TODO*///	                  CL, 0, OP);
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	/** VDPpset() ************************************************/
-/*TODO*///	/** Set a pixel on a screen                                 **/
-/*TODO*///	/*************************************************************/
-/*TODO*///	INLINE void VDPpset(UINT8 SM, int DX, int DY, UINT8 CL, UINT8 OP)
-/*TODO*///	{
-/*TODO*///	  switch (SM) {
-/*TODO*///	    case 0: VDPpset5(DX, DY, CL, OP); break;
-/*TODO*///	    case 1: VDPpset6(DX, DY, CL, OP); break;
-/*TODO*///	    case 2: VDPpset7(DX, DY, CL, OP); break;
-/*TODO*///	    case 3: VDPpset8(DX, DY, CL, OP); break;
-/*TODO*///	  }
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	/** GetVdpTimingValue() **************************************/
-/*TODO*///	/** Get timing value for a certain VDP command              **/
-/*TODO*///	/*************************************************************/
-/*TODO*///	static int GetVdpTimingValue(register int *timing_values)
-/*TODO*///	{
-/*TODO*///	  return(timing_values[((VDP[1]>>6)&1)|(VDP[8]&2)|((VDP[9]<<1)&4)]);
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	/** SrchEgine()** ********************************************/
-/*TODO*///	/** Search a dot                                            **/
-/*TODO*///	/*************************************************************/
-/*TODO*///	void SrchEngine(void)
-/*TODO*///	{
-/*TODO*///	  register int SX=MMC.SX;
+	
+	/** VDPpoint5() ***********************************************/
+	/** Get a pixel on screen 5                                 **/
+	/*************************************************************/
+	public static int VDPpoint5(int SX, int SY)
+	{
+	  return ((VDP_VRMP5(SX, SY)).read() >>
+	          (((~SX)&1)<<2)
+	         )&15;
+	}
+	
+	/** VDPpoint6() ***********************************************/
+	/** Get a pixel on screen 6                                 **/
+	/*************************************************************/
+	public static int VDPpoint6(int SX, int SY)
+	{
+	  return ((VDP_VRMP6(SX, SY)).read() >>
+	          (((~SX)&3)<<1)
+	         )&3;
+	}
+	
+	/** VDPpoint7() ***********************************************/
+	/** Get a pixel on screen 7                                 **/
+	/*************************************************************/
+	public static int VDPpoint7(int SX, int SY)
+	{
+	  return ((VDP_VRMP7(SX, SY)).read() >>
+	          (((~SX)&1)<<2)
+	         )&15;
+	}
+	
+	/** VDPpoint8() ***********************************************/
+	/** Get a pixel on screen 8                                 **/
+	/*************************************************************/
+	public static int VDPpoint8(int SX, int SY)
+	{
+	  return (VDP_VRMP8(SX, SY)).read();
+	}
+	
+	/** VDPpoint() ************************************************/
+	/** Get a pixel on a screen                                 **/
+	/*************************************************************/
+	public static int VDPpoint(int SM, int SX, int SY)
+	{
+	  switch(SM)
+	  {
+	    case 0: return VDPpoint5(SX,SY);
+	    case 1: return VDPpoint6(SX,SY);
+	    case 2: return VDPpoint7(SX,SY);
+	    case 3: return VDPpoint8(SX,SY);
+	  }
+	
+	  return(0);
+	}
+	
+	/** VDPpsetlowlevel() ****************************************/
+	/** Low level function to set a pixel on a screen           **/
+	/** Make it inline to make it fast                          **/
+	/*************************************************************/
+	public static void VDPpsetlowlevel(UBytePtr P, int CL, int M, int OP)
+	{
+	  switch (OP)
+	  {
+	    case 0: P.write((P.read() & M) | CL); break;
+	    case 1: P.write( P.read() & (CL | M)); break;
+	    case 2: P.write( P.read()| CL ); break;
+	    case 3: P.write( P.read()^ CL); break;
+	    case 4: P.write( (P.read() & M) | ~(CL | M) ); break;
+	    case 8: if (CL != 0) P.write( (P.read() & M) | CL ); break;
+	    case 9: if (CL != 0) P.write( P.read() & (CL | M) ); break;
+	    case 10:if (CL != 0) P.write( P.read() | CL ); break;
+	    case 11:if (CL != 0) P.write( P.read() ^ CL ); break;
+	    case 12:if (CL != 0) P.write( (P.read() & M) | ~(CL|M)); break;
+	  }
+	}
+	
+	/** VDPpset5() ***********************************************/
+	/** Set a pixel on screen 5                                 **/
+	/*************************************************************/
+	public static void VDPpset5(int DX, int DY, int CL, int OP)
+	{
+	  int SH = ((~DX)&1)<<2;
+	
+	  VDPpsetlowlevel(VDP_VRMP5(DX, DY),
+	                  CL << SH, ~(15<<SH), OP);
+	}
+	
+	/** VDPpset6() ***********************************************/
+	/** Set a pixel on screen 6                                 **/
+	/*************************************************************/
+	public static void VDPpset6(int DX, int DY, int CL, int OP)
+	{
+	  int SH = ((~DX)&3)<<1;
+	
+	  VDPpsetlowlevel(VDP_VRMP6(DX, DY),
+	                  CL << SH, ~(3<<SH), OP);
+	}
+	
+	/** VDPpset7() ***********************************************/
+	/** Set a pixel on screen 7                                 **/
+	/*************************************************************/
+	public static void VDPpset7(int DX, int DY, int CL, int OP)
+	{
+	  int SH = ((~DX)&1)<<2;
+	
+	  VDPpsetlowlevel(VDP_VRMP7(DX, DY),
+	                  CL << SH, ~(15<<SH), OP);
+	}
+	
+	/** VDPpset8() ***********************************************/
+	/** Set a pixel on screen 8                                 **/
+	/*************************************************************/
+	public static void VDPpset8(int DX, int DY, int CL, int OP)
+	{
+	  VDPpsetlowlevel(VDP_VRMP8(DX, DY),
+	                  CL, 0, OP);
+	}
+	
+	/** VDPpset() ************************************************/
+	/** Set a pixel on a screen                                 **/
+	/*************************************************************/
+	public static void VDPpset(int SM, int DX, int DY, int CL, int OP)
+	{
+	  switch (SM) {
+	    case 0: VDPpset5(DX, DY, CL, OP); break;
+	    case 1: VDPpset6(DX, DY, CL, OP); break;
+	    case 2: VDPpset7(DX, DY, CL, OP); break;
+	    case 3: VDPpset8(DX, DY, CL, OP); break;
+	  }
+	}
+        
+        public static abstract interface _vdpEngine {
+            public abstract void handler();
+        }
+	
+	/** GetVdpTimingValue() **************************************/
+	/** Get timing value for a certain VDP command              **/
+	/*************************************************************/
+	static int GetVdpTimingValue(int[] timing_values)
+	{
+	  return(timing_values[((_vdp.contReg[1]>>6)&1)|(_vdp.contReg[8]&2)|((_vdp.contReg[9]<<1)&4)]);
+	}
+	
+	/** SrchEgine()** ********************************************/
+	/** Search a dot                                            **/
+	/*************************************************************/
+	public static _vdpEngine SrchEngine = new _vdpEngine() {
+            @Override
+            public void handler() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                /*TODO*///	  register int SX=MMC.SX;
 /*TODO*///	  register int SY=MMC.SY;
 /*TODO*///	  register int TX=MMC.TX;
 /*TODO*///	  register int ANX=MMC.ANX;
@@ -1874,11 +1846,11 @@ public class v9938
 /*TODO*///	      if ((
 /*TODO*///	#define post_srch(MX) \
 /*TODO*///	           ==CL) ^ANX) { \
-/*TODO*///	      VDPStatus[2]|=0x10; /* Border detected */ \
+/*TODO*///	      _vdp.statReg[2]|=0x10; /* Border detected */ \
 /*TODO*///	      break; \
 /*TODO*///	    } \
 /*TODO*///	    if ((SX+=TX) & MX) { \
-/*TODO*///	      VDPStatus[2]&=0xEF; /* Border not detected */ \
+/*TODO*///	      _vdp.statReg[2]&=0xEF; /* Border not detected */ \
 /*TODO*///	      break; \
 /*TODO*///	    } \
 /*TODO*///	  }
@@ -1896,105 +1868,158 @@ public class v9938
 /*TODO*///	
 /*TODO*///	  if ((VdpOpsCnt=cnt)>0) {
 /*TODO*///	    /* Command execution done */
-/*TODO*///	    VDPStatus[2]&=0xFE;
+/*TODO*///	    _vdp.statReg[2]&=0xFE;
 /*TODO*///	    VdpEngine=0;
 /*TODO*///	    /* Update SX in VDP registers */
-/*TODO*///	    VDPStatus[8]=SX&0xFF;
-/*TODO*///	    VDPStatus[9]=(SX>>8)|0xFE;
+/*TODO*///	    _vdp.statReg[8]=SX&0xFF;
+/*TODO*///	    _vdp.statReg[9]=(SX>>8)|0xFE;
 /*TODO*///	  }
 /*TODO*///	  else {
 /*TODO*///	    MMC.SX=SX;
 /*TODO*///	  }
-/*TODO*///	}
+            }
+        };
+
 /*TODO*///	
 /*TODO*///	/** LineEgine()** ********************************************/
 /*TODO*///	/** Draw a line                                             **/
 /*TODO*///	/*************************************************************/
-/*TODO*///	void LineEngine(void)
-/*TODO*///	{
-/*TODO*///	  register int DX=MMC.DX;
-/*TODO*///	  register int DY=MMC.DY;
-/*TODO*///	  register int TX=MMC.TX;
-/*TODO*///	  register int TY=MMC.TY;
-/*TODO*///	  register int NX=MMC.NX;
-/*TODO*///	  register int NY=MMC.NY;
-/*TODO*///	  register int ASX=MMC.ASX;
-/*TODO*///	  register int ADX=MMC.ADX;
-/*TODO*///	  register UINT8 CL=MMC.CL;
-/*TODO*///	  register UINT8 LO=MMC.LO;
-/*TODO*///	  register int cnt;
-/*TODO*///	  register int delta;
-/*TODO*///	
-/*TODO*///	  delta = GetVdpTimingValue(line_timing);
-/*TODO*///	  cnt = VdpOpsCnt;
-/*TODO*///	
-/*TODO*///	#define post_linexmaj(MX) \
-/*TODO*///	      DX+=TX; \
-/*TODO*///	      if ((ASX-=NY)<0) { \
-/*TODO*///	        ASX+=NX; \
-/*TODO*///	        DY+=TY; \
-/*TODO*///	      } \
-/*TODO*///	      ASX&=1023; /* Mask to 10 bits range */ \
-/*TODO*///	      if (ADX++==NX || (DX&MX)) \
-/*TODO*///	        break; \
-/*TODO*///	    }
-/*TODO*///	#define post_lineymaj(MX) \
-/*TODO*///	      DY+=TY; \
-/*TODO*///	      if ((ASX-=NY)<0) { \
-/*TODO*///	        ASX+=NX; \
-/*TODO*///	        DX+=TX; \
-/*TODO*///	      } \
-/*TODO*///	      ASX&=1023; /* Mask to 10 bits range */ \
-/*TODO*///	      if (ADX++==NX || (DX&MX)) \
-/*TODO*///	        break; \
-/*TODO*///	    }
-/*TODO*///	
-/*TODO*///	  if ((VDP[45]&0x01)==0)
-/*TODO*///	    /* X-Axis is major direction */
-/*TODO*///	    switch (ScrMode) {
-/*TODO*///	      case 5: pre_loop VDPpset5(DX, DY, CL, LO); post_linexmaj(256)
-/*TODO*///	              break;
-/*TODO*///	      case 6: pre_loop VDPpset6(DX, DY, CL, LO); post_linexmaj(512)
-/*TODO*///	              break;
-/*TODO*///	      case 7: pre_loop VDPpset7(DX, DY, CL, LO); post_linexmaj(512)
-/*TODO*///	              break;
-/*TODO*///	      case 8: pre_loop VDPpset8(DX, DY, CL, LO); post_linexmaj(256)
-/*TODO*///	              break;
-/*TODO*///	    }
-/*TODO*///	  else
-/*TODO*///	    /* Y-Axis is major direction */
-/*TODO*///	    switch (ScrMode) {
-/*TODO*///	      case 5: pre_loop VDPpset5(DX, DY, CL, LO); post_lineymaj(256)
-/*TODO*///	              break;
-/*TODO*///	      case 6: pre_loop VDPpset6(DX, DY, CL, LO); post_lineymaj(512)
-/*TODO*///	              break;
-/*TODO*///	      case 7: pre_loop VDPpset7(DX, DY, CL, LO); post_lineymaj(512)
-/*TODO*///	              break;
-/*TODO*///	      case 8: pre_loop VDPpset8(DX, DY, CL, LO); post_lineymaj(256)
-/*TODO*///	              break;
-/*TODO*///	    }
-/*TODO*///	
-/*TODO*///	  if ((VdpOpsCnt=cnt)>0) {
-/*TODO*///	    /* Command execution done */
-/*TODO*///	    VDPStatus[2]&=0xFE;
-/*TODO*///	    VdpEngine=0;
-/*TODO*///	    VDP[38]=DY & 0xFF;
-/*TODO*///	    VDP[39]=(DY>>8) & 0x03;
-/*TODO*///	  }
-/*TODO*///	  else {
-/*TODO*///	    MMC.DX=DX;
-/*TODO*///	    MMC.DY=DY;
-/*TODO*///	    MMC.ASX=ASX;
-/*TODO*///	    MMC.ADX=ADX;
-/*TODO*///	  }
-/*TODO*///	}
+	public static _vdpEngine LineEngine = new _vdpEngine() {
+            @Override
+            public void handler() {
+                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                int DX=MMC.DX;
+                int DY=MMC.DY;
+                int TX=MMC.TX;
+                int TY=MMC.TY;
+                int NX=MMC.NX;
+                int NY=MMC.NY;
+                int ASX=MMC.ASX;
+                int ADX=MMC.ADX;
+                int CL=MMC.CL;
+                int LO=MMC.LO;
+                int cnt;
+                int delta;
+
+                delta = GetVdpTimingValue(line_timing);
+                cnt = VdpOpsCnt;
+
+	
+                if ((_vdp.contReg[45]&0x01)==0){
+                  /* X-Axis is major direction */
+                  switch (ScrMode()) {
+                    case 5: 
+                        while ((cnt-=delta) > 0) { 
+                            VDPpset5(DX, DY, CL, LO);
+                        } DX+=TX; 
+                        if ((ASX-=NY)<0) { 
+                          ASX+=NX; 
+                          DY+=TY; 
+                        } 
+                        ASX&=1023; /* Mask to 10 bits range */ 
+                        if (ADX++==NX || (DX&256)!=0) {}
+                          break; 
+	    
+                    case 6: while ((cnt-=delta) > 0) { VDPpset6(DX, DY, CL, LO); } DX+=TX; 
+                        if ((ASX-=NY)<0) { 
+                          ASX+=NX; 
+                          DY+=TY; 
+                        } 
+                        ASX&=1023; /* Mask to 10 bits range */ 
+                        if (ADX++==NX || (DX&512)!=0) {}
+                          break;
+                    case 7: while ((cnt-=delta) > 0) { VDPpset7(DX, DY, CL, LO); } DX+=TX; 
+                        if ((ASX-=NY)<0) { 
+                          ASX+=NX; 
+                          DY+=TY; 
+                        } 
+                        ASX&=1023; /* Mask to 10 bits range */ 
+                        if (ADX++==NX || (DX&512)!=0) {}
+                          break;
+                    case 8: while ((cnt-=delta) > 0) { VDPpset8(DX, DY, CL, LO); } DX+=TX; 
+                        if ((ASX-=NY)<0) { 
+                          ASX+=NX; 
+                          DY+=TY; 
+                        } 
+                        ASX&=1023; /* Mask to 10 bits range */ 
+                        if (ADX++==NX || (DX&256)!=0) {}
+                          break;
+                  }
+                } else
+                  /* Y-Axis is major direction */
+                  switch (ScrMode()) {
+                    case 5: 
+                        while ((cnt-=delta) > 0) { 
+                            VDPpset5(DX, DY, CL, LO);
+                        } DY+=TY; 
+                        if ((ASX-=NY)<0) { 
+                          ASX+=NX; 
+                          DX+=TX; 
+                        } 
+                        ASX&=1023; /* Mask to 10 bits range */ 
+                        if (ADX++==NX || (DX&256)!=0) {}
+                    break;
+                    case 6: 
+                        while ((cnt-=delta) > 0) { 
+                            VDPpset6(DX, DY, CL, LO);
+                        } DY+=TY; 
+                        if ((ASX-=NY)<0) { 
+                          ASX+=NX; 
+                          DX+=TX; 
+                        } 
+                        ASX&=1023; /* Mask to 10 bits range */ 
+                        if (ADX++==NX || (DX&512)!=0) {}
+                    break;
+                    case 7: while ((cnt-=delta) > 0) { 
+                        VDPpset7(DX, DY, CL, LO);
+                    } DY+=TY; 
+                        if ((ASX-=NY)<0) { 
+                          ASX+=NX; 
+                          DX+=TX; 
+                        } 
+                        ASX&=1023; /* Mask to 10 bits range */ 
+                        if (ADX++==NX || (DX&512)!=0) {}
+                    break;
+                    
+                    case 8: 
+                        while ((cnt-=delta) > 0) { 
+                            VDPpset8(DX, DY, CL, LO);
+                        } DY+=TY; 
+                        if ((ASX-=NY)<0) { 
+                          ASX+=NX; 
+                          DX+=TX; 
+                        } 
+                        ASX&=1023; /* Mask to 10 bits range */ 
+                        if (ADX++==NX || (DX&256)!=0) {}
+                    break;
+                  
+                  }
+
+                if ((VdpOpsCnt=cnt)>0) {
+                  /* Command execution done */
+                  _vdp.statReg[2]&=0xFE;
+                  VdpEngine=null;
+                  _vdp.contReg[38]=DY & 0xFF;
+                  _vdp.contReg[39]=(DY>>8) & 0x03;
+                }
+                else {
+                  MMC.DX=DX;
+                  MMC.DY=DY;
+                  MMC.ASX=ASX;
+                  MMC.ADX=ADX;
+                }
+            }
+        };
+
 /*TODO*///	
 /*TODO*///	/** LmmvEngine() *********************************************/
 /*TODO*///	/** VDP . Vram                                             **/
 /*TODO*///	/*************************************************************/
-/*TODO*///	void LmmvEngine(void)
-/*TODO*///	{
-/*TODO*///	  register int DX=MMC.DX;
+	public static _vdpEngine LmmvEngine = new _vdpEngine() {
+            @Override
+            public void handler() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                /*TODO*///	  register int DX=MMC.DX;
 /*TODO*///	  register int DY=MMC.DY;
 /*TODO*///	  register int TX=MMC.TX;
 /*TODO*///	  register int TY=MMC.TY;
@@ -2023,7 +2048,7 @@ public class v9938
 /*TODO*///	
 /*TODO*///	  if ((VdpOpsCnt=cnt)>0) {
 /*TODO*///	    /* Command execution done */
-/*TODO*///	    VDPStatus[2]&=0xFE;
+/*TODO*///	    _vdp.statReg[2]&=0xFE;
 /*TODO*///	    VdpEngine=0;
 /*TODO*///	    if (NY == 0)
 /*TODO*///	      DY+=TY;
@@ -2038,14 +2063,18 @@ public class v9938
 /*TODO*///	    MMC.ANX=ANX;
 /*TODO*///	    MMC.ADX=ADX;
 /*TODO*///	  }
-/*TODO*///	}
+            }
+        };
+
 /*TODO*///	
 /*TODO*///	/** LmmmEngine() *********************************************/
 /*TODO*///	/** Vram . Vram                                            **/
 /*TODO*///	/*************************************************************/
-/*TODO*///	void LmmmEngine(void)
-/*TODO*///	{
-/*TODO*///	  register int SX=MMC.SX;
+	public static _vdpEngine LmmmEngine = new _vdpEngine() {
+            @Override
+            public void handler() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                /*TODO*///	  register int SX=MMC.SX;
 /*TODO*///	  register int SY=MMC.SY;
 /*TODO*///	  register int DX=MMC.DX;
 /*TODO*///	  register int DY=MMC.DY;
@@ -2076,7 +2105,7 @@ public class v9938
 /*TODO*///	
 /*TODO*///	  if ((VdpOpsCnt=cnt)>0) {
 /*TODO*///	    /* Command execution done */
-/*TODO*///	    VDPStatus[2]&=0xFE;
+/*TODO*///	    _vdp.statReg[2]&=0xFE;
 /*TODO*///	    VdpEngine=0;
 /*TODO*///	    if (NY == 0) {
 /*TODO*///	      SY+=TY;
@@ -2100,22 +2129,26 @@ public class v9938
 /*TODO*///	    MMC.ASX=ASX;
 /*TODO*///	    MMC.ADX=ADX;
 /*TODO*///	  }
-/*TODO*///	}
-/*TODO*///	
+            }
+        };
+
+
 /*TODO*///	/** LmcmEngine() *********************************************/
 /*TODO*///	/** Vram . CPU                                             **/
 /*TODO*///	/*************************************************************/
-/*TODO*///	void LmcmEngine()
-/*TODO*///	{
-/*TODO*///	  if ((VDPStatus[2]&0x80)!=0x80) {
+	public static _vdpEngine LmcmEngine = new _vdpEngine() {
+            @Override
+            public void handler() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                /*TODO*///	  if ((_vdp.statReg[2]&0x80)!=0x80) {
 /*TODO*///	
-/*TODO*///	    VDPStatus[7]=VDP[44]=VDP_POINT(ScrMode-5, MMC.ASX, MMC.SY);
+/*TODO*///	    _vdp.statReg[7]=VDP[44]=VDP_POINT(ScrMode-5, MMC.ASX, MMC.SY);
 /*TODO*///	    VdpOpsCnt-=GetVdpTimingValue(lmmv_timing);
-/*TODO*///	    VDPStatus[2]|=0x80;
+/*TODO*///	    _vdp.statReg[2]|=0x80;
 /*TODO*///	
 /*TODO*///	    if (!--MMC.ANX || ((MMC.ASX+=MMC.TX)&MMC.MX)) {
 /*TODO*///	      if (!(--MMC.NY & 1023) || (MMC.SY+=MMC.TY)==-1) {
-/*TODO*///	        VDPStatus[2]&=0xFE;
+/*TODO*///	        _vdp.statReg[2]&=0xFE;
 /*TODO*///	        VdpEngine=0;
 /*TODO*///	        if (!MMC.NY)
 /*TODO*///	          MMC.DY+=MMC.TY;
@@ -2130,24 +2163,29 @@ public class v9938
 /*TODO*///	      }
 /*TODO*///	    }
 /*TODO*///	  }
-/*TODO*///	}
+            }
+        };
+
+        
 /*TODO*///	
 /*TODO*///	/** LmmcEngine() *********************************************/
 /*TODO*///	/** CPU . Vram                                             **/
 /*TODO*///	/*************************************************************/
-/*TODO*///	void LmmcEngine(void)
-/*TODO*///	{
-/*TODO*///	  if ((VDPStatus[2]&0x80)!=0x80) {
+	public static _vdpEngine LmmcEngine = new _vdpEngine() {
+            @Override
+            public void handler() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                /*TODO*///	  if ((_vdp.statReg[2]&0x80)!=0x80) {
 /*TODO*///	    register UINT8 SM=ScrMode-5;
 /*TODO*///	
-/*TODO*///	    VDPStatus[7]=VDP[44]&=Mask[SM];
+/*TODO*///	    _vdp.statReg[7]=VDP[44]&=Mask[SM];
 /*TODO*///	    VDP_PSET(SM, MMC.ADX, MMC.DY, VDP[44], MMC.LO);
 /*TODO*///	    VdpOpsCnt-=GetVdpTimingValue(lmmv_timing);
-/*TODO*///	    VDPStatus[2]|=0x80;
+/*TODO*///	    _vdp.statReg[2]|=0x80;
 /*TODO*///	
 /*TODO*///	    if (!--MMC.ANX || ((MMC.ADX+=MMC.TX)&MMC.MX)) {
 /*TODO*///	      if (!(--MMC.NY&1023) || (MMC.DY+=MMC.TY)==-1) {
-/*TODO*///	        VDPStatus[2]&=0xFE;
+/*TODO*///	        _vdp.statReg[2]&=0xFE;
 /*TODO*///	        VdpEngine=0;
 /*TODO*///	        if (!MMC.NY)
 /*TODO*///	          MMC.DY+=MMC.TY;
@@ -2162,14 +2200,18 @@ public class v9938
 /*TODO*///	      }
 /*TODO*///	    }
 /*TODO*///	  }
-/*TODO*///	}
-/*TODO*///	
+            }
+        };
+
+        
 /*TODO*///	/** HmmvEngine() *********************************************/
 /*TODO*///	/** VDP -. Vram                                            **/
 /*TODO*///	/*************************************************************/
-/*TODO*///	void HmmvEngine(void)
-/*TODO*///	{
-/*TODO*///	  register int DX=MMC.DX;
+	public static _vdpEngine HmmvEngine = new _vdpEngine() {
+            @Override
+            public void handler() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                /*TODO*///	  register int DX=MMC.DX;
 /*TODO*///	  register int DY=MMC.DY;
 /*TODO*///	  register int TX=MMC.TX;
 /*TODO*///	  register int TY=MMC.TY;
@@ -2197,7 +2239,7 @@ public class v9938
 /*TODO*///	
 /*TODO*///	  if ((VdpOpsCnt=cnt)>0) {
 /*TODO*///	    /* Command execution done */
-/*TODO*///	    VDPStatus[2]&=0xFE;
+/*TODO*///	    _vdp.statReg[2]&=0xFE;
 /*TODO*///	    VdpEngine=0;
 /*TODO*///	    if (NY == 0)
 /*TODO*///	      DY+=TY;
@@ -2212,14 +2254,18 @@ public class v9938
 /*TODO*///	    MMC.ANX=ANX;
 /*TODO*///	    MMC.ADX=ADX;
 /*TODO*///	  }
-/*TODO*///	}
-/*TODO*///	
+            }
+        };
+
+        
 /*TODO*///	/** HmmmEngine() *********************************************/
 /*TODO*///	/** Vram . Vram                                            **/
 /*TODO*///	/*************************************************************/
-/*TODO*///	void HmmmEngine(void)
-/*TODO*///	{
-/*TODO*///	  register int SX=MMC.SX;
+	public static _vdpEngine HmmmEngine = new _vdpEngine() {
+            @Override
+            public void handler() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                /*TODO*///	  register int SX=MMC.SX;
 /*TODO*///	  register int SY=MMC.SY;
 /*TODO*///	  register int DX=MMC.DX;
 /*TODO*///	  register int DY=MMC.DY;
@@ -2249,7 +2295,7 @@ public class v9938
 /*TODO*///	
 /*TODO*///	  if ((VdpOpsCnt=cnt)>0) {
 /*TODO*///	    /* Command execution done */
-/*TODO*///	    VDPStatus[2]&=0xFE;
+/*TODO*///	    _vdp.statReg[2]&=0xFE;
 /*TODO*///	    VdpEngine=0;
 /*TODO*///	    if (NY == 0) {
 /*TODO*///	      SY+=TY;
@@ -2273,14 +2319,18 @@ public class v9938
 /*TODO*///	    MMC.ASX=ASX;
 /*TODO*///	    MMC.ADX=ADX;
 /*TODO*///	  }
-/*TODO*///	}
-/*TODO*///	
+            }
+        };
+
+        
 /*TODO*///	/** YmmmEngine() *********************************************/
 /*TODO*///	/** Vram . Vram                                            **/
 /*TODO*///	/*************************************************************/
-/*TODO*///	void YmmmEngine(void)
-/*TODO*///	{
-/*TODO*///	  register int SY=MMC.SY;
+	public static _vdpEngine YmmmEngine = new _vdpEngine() {
+            @Override
+            public void handler() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                /*TODO*///	  register int SY=MMC.SY;
 /*TODO*///	  register int DX=MMC.DX;
 /*TODO*///	  register int DY=MMC.DY;
 /*TODO*///	  register int TX=MMC.TX;
@@ -2306,7 +2356,7 @@ public class v9938
 /*TODO*///	
 /*TODO*///	  if ((VdpOpsCnt=cnt)>0) {
 /*TODO*///	    /* Command execution done */
-/*TODO*///	    VDPStatus[2]&=0xFE;
+/*TODO*///	    _vdp.statReg[2]&=0xFE;
 /*TODO*///	    VdpEngine=0;
 /*TODO*///	    if (NY == 0) {
 /*TODO*///	      SY+=TY;
@@ -2328,22 +2378,26 @@ public class v9938
 /*TODO*///	    MMC.NY=NY;
 /*TODO*///	    MMC.ADX=ADX;
 /*TODO*///	  }
-/*TODO*///	}
-/*TODO*///	
+            }
+        };
+
+        
 /*TODO*///	/** HmmcEngine() *********************************************/
 /*TODO*///	/** CPU . Vram                                             **/
 /*TODO*///	/*************************************************************/
-/*TODO*///	void HmmcEngine(void)
-/*TODO*///	{
-/*TODO*///	  if ((VDPStatus[2]&0x80)!=0x80) {
+	public static _vdpEngine HmmcEngine = new _vdpEngine() {
+            @Override
+            public void handler() {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                /*TODO*///	  if ((_vdp.statReg[2]&0x80)!=0x80) {
 /*TODO*///	
 /*TODO*///	    *VDP_VRMP(ScrMode-5, MMC.ADX, MMC.DY)=VDP[44];
 /*TODO*///	    VdpOpsCnt-=GetVdpTimingValue(hmmv_timing);
-/*TODO*///	    VDPStatus[2]|=0x80;
+/*TODO*///	    _vdp.statReg[2]|=0x80;
 /*TODO*///	
 /*TODO*///	    if (!--MMC.ANX || ((MMC.ADX+=MMC.TX)&MMC.MX)) {
 /*TODO*///	      if (!(--MMC.NY&1023) || (MMC.DY+=MMC.TY)==-1) {
-/*TODO*///	        VDPStatus[2]&=0xFE;
+/*TODO*///	        _vdp.statReg[2]&=0xFE;
 /*TODO*///	        VdpEngine=0;
 /*TODO*///	        if (!MMC.NY)
 /*TODO*///	          MMC.DY+=MMC.TY;
@@ -2358,7 +2412,11 @@ public class v9938
 /*TODO*///	      }
 /*TODO*///	    }
 /*TODO*///	  }
-/*TODO*///	}
+            }
+        };
+
+        
+        
 	
 	/** VDPWrite() ***********************************************/
 	/** Use this function to transfer pixel(s) from CPU to VDP. **/
@@ -2368,175 +2426,187 @@ public class v9938
 	  _vdp.statReg[2]&=0x7F;
 	  _vdp.statReg[7]=V;
           _vdp.contReg[44]=V;
-/*TODO*///	  if(VdpEngine&&(VdpOpsCnt>0)) VdpEngine();
+	  if(VdpEngine!=null &&(VdpOpsCnt>0)) VdpEngine.handler();
 	}
 	
-/*TODO*///	/** VDPRead() ************************************************/
-/*TODO*///	/** Use this function to transfer pixel(s) from VDP to CPU. **/
-/*TODO*///	/*************************************************************/
-/*TODO*///	static UINT8 v9938_vdp_to_cpu (void)
-/*TODO*///	{
-/*TODO*///	  VDPStatus[2]&=0x7F;
-/*TODO*///	  if(VdpEngine&&(VdpOpsCnt>0)) VdpEngine();
-/*TODO*///	  return(VDP[44]);
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	/** ReportVdpCommand() ***************************************/
-/*TODO*///	/** Report VDP Command to be executed                       **/
-/*TODO*///	/*************************************************************/
-/*TODO*///	static void ReportVdpCommand(register UINT8 Op)
-/*TODO*///	{
-/*TODO*///	  static char *Ops[16] =
-/*TODO*///	  {
-/*TODO*///	    "SET ","AND ","OR  ","XOR ","NOT ","NOP ","NOP ","NOP ",
-/*TODO*///	    "TSET","TAND","TOR ","TXOR","TNOT","NOP ","NOP ","NOP "
-/*TODO*///	  };
-/*TODO*///	  static char *Commands[16] =
-/*TODO*///	  {
-/*TODO*///	    " ABRT"," ????"," ????"," ????","POINT"," PSET"," SRCH"," LINE",
-/*TODO*///	    " LMMV"," LMMM"," LMCM"," LMMC"," HMMV"," HMMM"," YMMM"," HMMC"
-/*TODO*///	  };
-/*TODO*///	  register UINT8 CL, CM, LO;
-/*TODO*///	  register int SX,SY, DX,DY, NX,NY;
-/*TODO*///	
-/*TODO*///	  /* Fetch arguments */
-/*TODO*///	  CL = VDP[44];
-/*TODO*///	  SX = (VDP[32]+((int)VDP[33]<<8)) & 511;
-/*TODO*///	  SY = (VDP[34]+((int)VDP[35]<<8)) & 1023;
-/*TODO*///	  DX = (VDP[36]+((int)VDP[37]<<8)) & 511;
-/*TODO*///	  DY = (VDP[38]+((int)VDP[39]<<8)) & 1023;
-/*TODO*///	  NX = (VDP[40]+((int)VDP[41]<<8)) & 1023;
-/*TODO*///	  NY = (VDP[42]+((int)VDP[43]<<8)) & 1023;
-/*TODO*///	  CM = Op>>4;
-/*TODO*///	  LO = Op&0x0F;
-/*TODO*///	
-/*TODO*///	  logerror ("V9938: Opcode %02Xh %s-%s (%d,%d).(%d,%d),%d [%d,%d]%s\n",
-/*TODO*///	         Op, Commands[CM], Ops[LO],
-/*TODO*///	         SX,SY, DX,DY, CL, VDP[45]&0x04? -NX:NX,
-/*TODO*///	         VDP[45]&0x08? -NY:NY,
-/*TODO*///	         VDP[45]&0x70? " on ExtVRAM":""
-/*TODO*///	        );
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	/** VDPDraw() ************************************************/
-/*TODO*///	/** Perform a given V9938 operation Op.                     **/
-/*TODO*///	/*************************************************************/
+	/** VDPRead() ************************************************/
+	/** Use this function to transfer pixel(s) from VDP to CPU. **/
+	/*************************************************************/
+	public static int v9938_vdp_to_cpu ()
+	{
+	  _vdp.statReg[2]&=0x7F;
+	  if(VdpEngine != null&&(VdpOpsCnt>0)) VdpEngine.handler();
+	  return(_vdp.contReg[44]);
+	}
+        
+        static String Ops[] =
+	  {
+	    "SET ","AND ","OR  ","XOR ","NOT ","NOP ","NOP ","NOP ",
+	    "TSET","TAND","TOR ","TXOR","TNOT","NOP ","NOP ","NOP "
+	  };
+	  static String Commands[] =
+	  {
+	    " ABRT"," ????"," ????"," ????","POINT"," PSET"," SRCH"," LINE",
+	    " LMMV"," LMMM"," LMCM"," LMMC"," HMMV"," HMMM"," YMMM"," HMMC"
+	  };
+	
+	/** ReportVdpCommand() ***************************************/
+	/** Report VDP Command to be executed                       **/
+	/*************************************************************/
+	static void ReportVdpCommand(int Op)
+	{
+	  
+	  int CL, CM, LO;
+	  int SX,SY, DX,DY, NX,NY;
+	
+	  /* Fetch arguments */
+	  CL = _vdp.contReg[44];
+	  SX = (_vdp.contReg[32]+((int)_vdp.contReg[33]<<8)) & 511;
+	  SY = (_vdp.contReg[34]+((int)_vdp.contReg[35]<<8)) & 1023;
+	  DX = (_vdp.contReg[36]+((int)_vdp.contReg[37]<<8)) & 511;
+	  DY = (_vdp.contReg[38]+((int)_vdp.contReg[39]<<8)) & 1023;
+	  NX = (_vdp.contReg[40]+((int)_vdp.contReg[41]<<8)) & 1023;
+	  NY = (_vdp.contReg[42]+((int)_vdp.contReg[43]<<8)) & 1023;
+	  CM = Op>>4;
+	  LO = Op&0x0F;
+	
+	  logerror ("V9938: Opcode %02Xh %s-%s (%d,%d).(%d,%d),%d [%d,%d]%s\n",
+	         Op, Commands[CM], Ops[LO],
+	         SX,SY, DX,DY, CL, (_vdp.contReg[45]&0x04)!=0? -NX:NX,
+	         (_vdp.contReg[45]&0x08)!=0? -NY:NY,
+	         (_vdp.contReg[45]&0x70)!=0? " on ExtVRAM":""
+	        );
+	}
+	
+	/** VDPDraw() ************************************************/
+	/** Perform a given V9938 operation Op.                     **/
+	/*************************************************************/
 	static int v9938_command_unit_w (int Op)
 	{
-/*TODO*///	  register int SM;
-/*TODO*///	
-/*TODO*///	  /* V9938 ops only work in SCREENs 5-8 */
-/*TODO*///	  if (ScrMode<5)
-/*TODO*///	    return(0);
-/*TODO*///	
-/*TODO*///	  SM = ScrMode-5;         /* Screen mode index 0..3  */
-/*TODO*///	
-/*TODO*///	  MMC.CM = Op>>4;
-/*TODO*///	  if ((MMC.CM & 0x0C) != 0x0C && MMC.CM != 0)
-/*TODO*///	    /* Dot operation: use only relevant bits of color */
-/*TODO*///	    VDPStatus[7]=(VDP[44]&=Mask[SM]);
-/*TODO*///	
-/*TODO*///	/*  if(Verbose&0x02) */
-/*TODO*///	    ReportVdpCommand(Op);
-/*TODO*///	
-/*TODO*///	  switch(Op>>4) {
-/*TODO*///	    case CM_ABRT:
-/*TODO*///	      VDPStatus[2]&=0xFE;
-/*TODO*///	      VdpEngine=0;
-/*TODO*///	      return 1;
-/*TODO*///	    case CM_POINT:
-/*TODO*///	      VDPStatus[2]&=0xFE;
-/*TODO*///	      VdpEngine=0;
-/*TODO*///	      VDPStatus[7]=VDP[44]=
-/*TODO*///	                   VDP_POINT(SM, VDP[32]+((int)VDP[33]<<8),
-/*TODO*///	                                 VDP[34]+((int)VDP[35]<<8));
-/*TODO*///	      return 1;
-/*TODO*///	    case CM_PSET:
-/*TODO*///	      VDPStatus[2]&=0xFE;
-/*TODO*///	      VdpEngine=0;
-/*TODO*///	      VDP_PSET(SM,
-/*TODO*///	               VDP[36]+((int)VDP[37]<<8),
-/*TODO*///	               VDP[38]+((int)VDP[39]<<8),
-/*TODO*///	               VDP[44],
-/*TODO*///	               Op&0x0F);
-/*TODO*///	      return 1;
-/*TODO*///	    case CM_SRCH:
-/*TODO*///	      VdpEngine=SrchEngine;
-/*TODO*///	      break;
-/*TODO*///	    case CM_LINE:
-/*TODO*///	      VdpEngine=LineEngine;
-/*TODO*///	      break;
-/*TODO*///	    case CM_LMMV:
-/*TODO*///	      VdpEngine=LmmvEngine;
-/*TODO*///	      break;
-/*TODO*///	    case CM_LMMM:
-/*TODO*///	      VdpEngine=LmmmEngine;
-/*TODO*///	      break;
-/*TODO*///	    case CM_LMCM:
-/*TODO*///	      VdpEngine=LmcmEngine;
-/*TODO*///	      break;
-/*TODO*///	    case CM_LMMC:
-/*TODO*///	      VdpEngine=LmmcEngine;
-/*TODO*///	      break;
-/*TODO*///	    case CM_HMMV:
-/*TODO*///	      VdpEngine=HmmvEngine;
-/*TODO*///	      break;
-/*TODO*///	    case CM_HMMM:
-/*TODO*///	      VdpEngine=HmmmEngine;
-/*TODO*///	      break;
-/*TODO*///	    case CM_YMMM:
-/*TODO*///	      VdpEngine=YmmmEngine;
-/*TODO*///	      break;
-/*TODO*///	    case CM_HMMC:
-/*TODO*///	      VdpEngine=HmmcEngine;
-/*TODO*///	      break;
-/*TODO*///	    default:
-/*TODO*///	      logerror("V9938: Unrecognized opcode %02Xh\n",Op);
-/*TODO*///	        return(0);
-/*TODO*///	  }
-/*TODO*///	
-/*TODO*///	  /* Fetch unconditional arguments */
-/*TODO*///	  MMC.SX = (VDP[32]+((int)VDP[33]<<8)) & 511;
-/*TODO*///	  MMC.SY = (VDP[34]+((int)VDP[35]<<8)) & 1023;
-/*TODO*///	  MMC.DX = (VDP[36]+((int)VDP[37]<<8)) & 511;
-/*TODO*///	  MMC.DY = (VDP[38]+((int)VDP[39]<<8)) & 1023;
-/*TODO*///	  MMC.NY = (VDP[42]+((int)VDP[43]<<8)) & 1023;
-/*TODO*///	  MMC.TY = VDP[45]&0x08? -1:1;
-/*TODO*///	  MMC.MX = PPL[SM];
-/*TODO*///	  MMC.CL = VDP[44];
-/*TODO*///	  MMC.LO = Op&0x0F;
-/*TODO*///	
-/*TODO*///	  /* Argument depends on UINT8 or dot operation */
-/*TODO*///	  if ((MMC.CM & 0x0C) == 0x0C) {
-/*TODO*///	    MMC.TX = VDP[45]&0x04? -PPB[SM]:PPB[SM];
-/*TODO*///	    MMC.NX = ((VDP[40]+((int)VDP[41]<<8)) & 1023)/PPB[SM];
-/*TODO*///	  }
-/*TODO*///	  else {
-/*TODO*///	    MMC.TX = VDP[45]&0x04? -1:1;
-/*TODO*///	    MMC.NX = (VDP[40]+((int)VDP[41]<<8)) & 1023;
-/*TODO*///	  }
-/*TODO*///	
-/*TODO*///	  /* X loop variables are treated specially for LINE command */
-/*TODO*///	  if (MMC.CM == CM_LINE) {
-/*TODO*///	    MMC.ASX=((MMC.NX-1)>>1);
-/*TODO*///	    MMC.ADX=0;
-/*TODO*///	  }
-/*TODO*///	  else {
-/*TODO*///	    MMC.ASX = MMC.SX;
-/*TODO*///	    MMC.ADX = MMC.DX;
-/*TODO*///	  }
-/*TODO*///	
-/*TODO*///	  /* NX loop variable is treated specially for SRCH command */
-/*TODO*///	  if (MMC.CM == CM_SRCH)
-/*TODO*///	    MMC.ANX=(VDP[45]&0x02)!=0; /* Do we look for "==" or "!="? */
-/*TODO*///	  else
-/*TODO*///	    MMC.ANX = MMC.NX;
-/*TODO*///	
-/*TODO*///	  /* Command execution started */
-/*TODO*///	  VDPStatus[2]|=0x01;
-/*TODO*///	
-/*TODO*///	  /* Start execution if we still have time slices */
-/*TODO*///	  if(VdpEngine&&(VdpOpsCnt>0)) VdpEngine();
+            //System.out.println("v9938_command_unit_w");
+	  int SM;
+	
+	  /* V9938 ops only work in SCREENs 5-8 */
+	  if (_vdp.mode<5)
+	    return(0);
+	
+	  SM = _vdp.mode-5;         /* Screen mode index 0..3  */
+          //System.out.println("SM="+SM);
+          // HACK
+          if (SM>=4) SM=0;
+	  //  return(0);
+	
+	  MMC.CM = Op>>4;
+	  if ((MMC.CM & 0x0C) != 0x0C && MMC.CM != 0)
+	    /* Dot operation: use only relevant bits of color */
+	    _vdp.statReg[7]=(_vdp.contReg[44]&=Mask[SM]);
+	
+	/*  if(Verbose&0x02) */
+	    ReportVdpCommand(Op);
+            
+            //System.out.println("Op="+(Op>>4));
+	
+	  switch(Op>>4) {
+	    case CM_ABRT:
+	      _vdp.statReg[2]&=0xFE;
+	      VdpEngine=null;
+	      return 1;
+	    case CM_POINT:
+	      _vdp.statReg[2]&=0xFE;
+	      VdpEngine=null;
+	      _vdp.statReg[7]=
+                           VDP_POINT(SM, _vdp.contReg[32]+((int)_vdp.contReg[33]<<8),
+	                                 _vdp.contReg[34]+((int)_vdp.contReg[35]<<8));
+              _vdp.contReg[44]=
+	                   VDP_POINT(SM, _vdp.contReg[32]+((int)_vdp.contReg[33]<<8),
+	                                 _vdp.contReg[34]+((int)_vdp.contReg[35]<<8));
+	      return 1;
+	    case CM_PSET:
+	      _vdp.statReg[2]&=0xFE;
+	      VdpEngine=null;
+	      VDP_PSET(SM,
+	               _vdp.contReg[36]+((int)_vdp.contReg[37]<<8),
+	               _vdp.contReg[38]+((int)_vdp.contReg[39]<<8),
+	               _vdp.contReg[44],
+	               Op&0x0F);
+	      return 1;
+	    case CM_SRCH:
+	      VdpEngine=SrchEngine;
+	      break;
+	    case CM_LINE:
+	      VdpEngine=LineEngine;
+	      break;
+	    case CM_LMMV:
+	      VdpEngine=LmmvEngine;
+	      break;
+	    case CM_LMMM:
+	      VdpEngine=LmmmEngine;
+	      break;
+	    case CM_LMCM:
+	      VdpEngine=LmcmEngine;
+	      break;
+	    case CM_LMMC:
+	      VdpEngine=LmmcEngine;
+	      break;
+	    case CM_HMMV:
+	      VdpEngine=HmmvEngine;
+	      break;
+	    case CM_HMMM:
+	      VdpEngine=HmmmEngine;
+	      break;
+	    case CM_YMMM:
+	      VdpEngine=YmmmEngine;
+	      break;
+	    case CM_HMMC:
+	      VdpEngine=HmmcEngine;
+	      break;
+	    default:
+	      logerror("V9938: Unrecognized opcode %02Xh\n",Op);
+	        return(0);
+	  }
+	
+	  /* Fetch unconditional arguments */
+	  MMC.SX = (_vdp.contReg[32]+((int)_vdp.contReg[33]<<8)) & 511;
+	  MMC.SY = (_vdp.contReg[34]+((int)_vdp.contReg[35]<<8)) & 1023;
+	  MMC.DX = (_vdp.contReg[36]+((int)_vdp.contReg[37]<<8)) & 511;
+	  MMC.DY = (_vdp.contReg[38]+((int)_vdp.contReg[39]<<8)) & 1023;
+	  MMC.NY = (_vdp.contReg[42]+((int)_vdp.contReg[43]<<8)) & 1023;
+	  MMC.TY = (_vdp.contReg[45]&0x08) != 0? -1:1;
+	  MMC.MX = PPL[SM];
+	  MMC.CL = _vdp.contReg[44];
+	  MMC.LO = Op&0x0F;
+	
+	  /* Argument depends on UINT8 or dot operation */
+	  if ((MMC.CM & 0x0C) == 0x0C) {
+	    MMC.TX = (_vdp.contReg[45]&0x04) != 0 ? -PPB[SM]:PPB[SM];
+	    MMC.NX = ((_vdp.contReg[40]+((int)_vdp.contReg[41]<<8)) & 1023)/PPB[SM];
+	  }
+	  else {
+	    MMC.TX = (_vdp.contReg[45]&0x04) != 0 ? -1:1;
+	    MMC.NX = (_vdp.contReg[40]+((int)_vdp.contReg[41]<<8)) & 1023;
+	  }
+	
+	  /* X loop variables are treated specially for LINE command */
+	  if (MMC.CM == CM_LINE) {
+	    MMC.ASX=((MMC.NX-1)>>1);
+	    MMC.ADX=0;
+	  }
+	  else {
+	    MMC.ASX = MMC.SX;
+	    MMC.ADX = MMC.DX;
+	  }
+	
+	  /* NX loop variable is treated specially for SRCH command */
+	  if (MMC.CM == CM_SRCH)
+	    MMC.ANX=(_vdp.contReg[45]&0x02)!=0 ? 1 : 0; /* Do we look for "==" or "!="? */
+	  else
+	    MMC.ANX = MMC.NX;
+	
+	  /* Command execution started */
+	  _vdp.statReg[2]|=0x01;
+	
+	  /* Start execution if we still have time slices */
+	  if(VdpEngine!=null && (VdpOpsCnt>0)) VdpEngine.handler();
 	
 	  /* Operation successfull initiated */
 	  return(1);
@@ -2548,16 +2618,16 @@ public class v9938
 	public static void v9938_update_command ()
 	{
             //System.out.println("v9938_update_command NOT IMPLEMENTED!!!!");
-/*TODO*///	  if(VdpOpsCnt<=0)
-/*TODO*///	  {
-/*TODO*///	    VdpOpsCnt+=13662;
-/*TODO*///	    if(VdpEngine&&(VdpOpsCnt>0)) VdpEngine();
-/*TODO*///	  }
-/*TODO*///	  else
-/*TODO*///	  {
-/*TODO*///	    VdpOpsCnt=13662;
-/*TODO*///	    if(VdpEngine) VdpEngine();
-/*TODO*///	  }
+	  if(VdpOpsCnt<=0)
+	  {
+	    VdpOpsCnt+=13662;
+	    if(VdpEngine != null&&(VdpOpsCnt>0)) VdpEngine.handler();
+	  }
+	  else
+	  {
+	    VdpOpsCnt=13662;
+	    if(VdpEngine != null) VdpEngine.handler();
+	  }
 	}
 	
 }

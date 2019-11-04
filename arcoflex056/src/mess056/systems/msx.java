@@ -903,7 +903,7 @@ public class msx
 	    512 + 32, (212 + 16) * 2, new rectangle( 0, 512 + 32 - 1, 0, (212 + 16) * 2 - 1 ),
 	    null,
 	    512,
-		512,
+            512,
 	    v9938_init_palette,
 	
 	    VIDEO_UPDATE_BEFORE_VBLANK | VIDEO_TYPE_RASTER,
