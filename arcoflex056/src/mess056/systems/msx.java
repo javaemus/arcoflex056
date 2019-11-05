@@ -1099,6 +1099,7 @@ public class msx
 	/*TODO*///COMPX( 1985, msx2,    msx,    msx2,    msx2,      msx2,   "ASCII & Microsoft", "MSX 2", GAME_NOT_WORKING )
 	public static GameDriver driver_msx2 = new GameDriver("1985", "msx2", "msx.java", rom_msx2, null, machine_driver_msx2, input_ports_msx2, null, io_msx, "ASCII & Microsoft", "MSX 2");
         /*TODO*///COMPX( 1985, msx2a,   msx,    msx2,    msx2,      msx2,   "ASCII & Microsoft", "MSX 2 (BASIC 2.1)", GAME_NOT_WORKING )
+        public static GameDriver driver_msx2a = new GameDriver("1985", "msx2a", "msx.java", rom_msx2a, null, machine_driver_msx2, input_ports_msx2, null, io_msx, "ASCII & Microsoft", "MSX 2 (BASIC 2.1)");
 	/*TODO*///COMPX( 1985, msx2j,  msx,    msx2,     msx2j,     msx2,   "ASCII & Microsoft", "MSX 2 (Japan)", GAME_NOT_WORKING )
 	
 }

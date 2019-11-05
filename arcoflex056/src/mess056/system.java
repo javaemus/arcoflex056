@@ -704,7 +704,7 @@ public class system {
 	/*TODO*///		DRIVER( expert10 )	/* 198? ???									      */
 	/*TODO*///		DRIVER( expert11 )	/* 198? ???									      */
 	driver_msx2, 		/* 1985 MSX2									  */
-	/*TODO*///		DRIVER( msx2a )		/* 1985 MSX2									  */
+	driver_msx2a,		/* 1985 MSX2									  */
 	/*TODO*///		DRIVER( msx2j ) 	/* 1983 MSX2 Jap								  */
 	/*TODO*///	
 	/*TODO*///		/* NASCOM MICROCOMPUTERS */

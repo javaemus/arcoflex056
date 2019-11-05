@@ -474,6 +474,7 @@ if (V9938_WIDTH > 512){
     public static ModeVisible_16_HandlersPtr v9938_mode_graphic5_16 = new ModeVisible_16_HandlersPtr() {
         @Override
         public void handler(UShortPtr ln, int line) {
+            //System.out.println("v9938_mode_graphic5_16");
             UBytePtr nametbl;
             int colour;
             int line2, linemask, x, xx;
@@ -578,6 +579,7 @@ if (V9938_WIDTH > 512){
     public static ModeBorder_16_HandlersPtr v9938_graphic5_border_16 = new ModeBorder_16_HandlersPtr() {
         @Override
         public void handler(UShortPtr ln) {
+            //System.out.println("v9938_graphic5_border_16");
             int i;
 	int pen0;
         if (V9938_WIDTH > 512){
@@ -628,6 +630,7 @@ if (V9938_WIDTH > 512){
     public static ModeDraw_Sprites_HandlersPtr v9938_graphic5_draw_sprite_16 = new ModeDraw_Sprites_HandlersPtr() {
         @Override
         public void handler(UShortPtr ln, UBytePtr col) {
+            //System.out.println("v9938_graphic5_draw_sprite_16");
             int i;
 if (V9938_WIDTH > 512){
 	ln.inc( _vdp.offset_x * 2 );

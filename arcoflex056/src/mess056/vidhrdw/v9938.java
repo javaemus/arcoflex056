@@ -58,7 +58,7 @@ public class v9938
                 /* sprites */
                 public int sprite_limit;
 		/* size */
-		public int size, size_old, size_auto, size_now;
+		public int size=0, size_old, size_auto, size_now;
 	};
 	
 	
@@ -848,7 +848,7 @@ public class v9938
 	public static ModeSprites_HandlersPtr v9938_sprite_mode2 = new ModeSprites_HandlersPtr() {
             @Override
             public void handler(int line, UBytePtr col) {
-
+                //System.out.println("v9938_sprite_mode2");
 		int attrtbl, patterntbl, patternptr, colourtbl;
 		int x, i, y, p, height, c, p2, n, pattern, colourmask, first_cc_seen;
 	
@@ -1125,14 +1125,16 @@ public class v9938
 		n = (((_vdp.contReg[0] & 0x0e) << 1) | ((_vdp.contReg[1] & 0x18) >> 3));
                 
                 //System.out.println("Long: "+modes.length);
-                //System.out.println("SET MODE: "+n);
+                
 		
                 for (i=0;i<modes.length;i++)
                 {
                     if ( (modes[i].m == n) || (modes[i].m == 0xff) ) break;
                 }
-                if (i>=modes.length) i=modes.length-1;
+
 		_vdp.mode = i;
+                
+                System.out.println("SET MODE: "+n);
                 
 	}
 	
@@ -1212,7 +1214,7 @@ public class v9938
 			if ((_vdp.contReg[9] & 0x08)!=0)
 				{
 				_vdp.size_now = RENDER_HIGH;
-				ln = new UShortPtr(bmp.line[line*2+((_vdp.statReg[2]>>1)&1)]);
+			ln = new UShortPtr(bmp.line[line*2+((_vdp.statReg[2]>>1)&1)]);
 				}
 			else
 				{
@@ -1222,7 +1224,7 @@ public class v9938
 				}
 			}
 		else
-			ln = new UShortPtr(bmp.line[line]);
+			ln = new UShortPtr(bmp.line[line*2]);
 	
 		if ( (_vdp.contReg[1] & 0x40)==0 || (_vdp.statReg[2] & 0x40)!=0 )
 			{
@@ -2492,9 +2494,6 @@ public class v9938
 	
 	  SM = _vdp.mode-5;         /* Screen mode index 0..3  */
           //System.out.println("SM="+SM);
-          // HACK
-          if (SM>=4) SM=0;
-	  //  return(0);
 	
 	  MMC.CM = Op>>4;
 	  if ((MMC.CM & 0x0C) != 0x0C && MMC.CM != 0)
