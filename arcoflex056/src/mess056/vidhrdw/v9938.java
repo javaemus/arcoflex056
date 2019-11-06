@@ -491,6 +491,7 @@ public class v9938
 	
 	public static void v9938_reset ()
 		{
+                    System.out.println("v9938_reset");
 		int i;
 	
 		/* offset reset */
@@ -507,6 +508,8 @@ public class v9938
 		_vdp.INT = 0;
 		_vdp.read_ahead = 0; _vdp.address_latch = 0; /* ??? */
 		_vdp.scanline = 0;
+                //v9938_set_mode ();
+                //v9938_check_int ();
 		}
 	
 	public static VhStopPtr v9938_exit = new VhStopPtr() {
@@ -726,6 +729,7 @@ public class v9938
 
 		UBytePtr attrtbl, patterntbl, patternptr;
 		int x, y, p, height, c, p2, i, n, pattern;
+                
 	
 		memset (col, 0, 256);
 	
@@ -842,6 +846,7 @@ public class v9938
 	
 		if ( (_vdp.statReg[0] & 0x40) == 0)
 			_vdp.statReg[0] = (_vdp.statReg[0] & 0xa0) | p;
+                
             }
         };
         
@@ -1026,8 +1031,18 @@ public class v9938
                     this.draw_sprite_16s = draw_sprite_16s;
                 }
 	};
+        
+        static V9938_MODE modeMerged = new V9938_MODE(0xffff, 
+                v9938_mode_text1_8, v9938_mode_graphic23_16,
+			v9938_mode_graphic23_8s, v9938_mode_graphic23_16s,
+			v9938_default_border_8, v9938_default_border_16,
+			v9938_default_border_8s, v9938_default_border_16s,
+			v9938_sprite_mode1, 
+			v9938_default_draw_sprite_8, v9938_default_draw_sprite_16,
+			v9938_default_draw_sprite_8s, v9938_default_draw_sprite_16s);
 	
 	static V9938_MODE modes[] = {
+                //modeMerged,
 		new V9938_MODE( 0x02,
 			v9938_mode_text1_8, v9938_mode_text1_16,
 			v9938_mode_text1_8s, v9938_mode_text1_16s,
@@ -1077,6 +1092,13 @@ public class v9938
 			v9938_default_draw_sprite_8, v9938_default_draw_sprite_16,
 			v9938_default_draw_sprite_8s, v9938_default_draw_sprite_16s ),
 		new V9938_MODE( 0x10,
+                        /*v9938_mode_text1_8, v9938_mode_text1_16,
+			v9938_mode_text1_8s, v9938_mode_text1_16s,
+			v9938_default_border_8, v9938_default_border_16,
+			v9938_default_border_8s, v9938_default_border_16s,
+			null, 
+			null, null,
+			null, null ),*/
 			v9938_mode_graphic5_8, v9938_mode_graphic5_16,
 			v9938_mode_graphic5_8s, v9938_mode_graphic5_16s,
 			v9938_graphic5_border_8, v9938_graphic5_border_16,
@@ -1124,6 +1146,10 @@ public class v9938
 	
 		n = (((_vdp.contReg[0] & 0x0e) << 1) | ((_vdp.contReg[1] & 0x18) >> 3));
                 
+                System.out.println("SET MODE: "+n);
+                
+                //n = 0x02;
+                
                 //System.out.println("Long: "+modes.length);
                 
 		
@@ -1134,7 +1160,7 @@ public class v9938
 
 		_vdp.mode = i;
                 
-                System.out.println("SET MODE: "+n);
+                
                 
 	}
 	
@@ -1211,17 +1237,18 @@ public class v9938
 	
 		if (_vdp.size == RENDER_HIGH)
 			{
-			if ((_vdp.contReg[9] & 0x08)!=0)
-				{
-				_vdp.size_now = RENDER_HIGH;
+			//if ((_vdp.contReg[9] & 0x08)!=0)
+				//{
+				//_vdp.size_now = RENDER_HIGH;
 			ln = new UShortPtr(bmp.line[line*2+((_vdp.statReg[2]>>1)&1)]);
-				}
+			/*	}
 			else
 				{
 				ln = new UShortPtr(bmp.line[line*2]);
 				ln2 = new UShortPtr(bmp.line[line*2+1]);
 				double_lines = 1;
 				}
+                        */
 			}
 		else
 			ln = new UShortPtr(bmp.line[line*2]);
@@ -1255,9 +1282,10 @@ public class v9938
 					}
 				}
 			}
-	
+                
 		if (double_lines != 0)
 			memcpy (ln2, ln, (512 + 32) * 2);
+                
 		}
 	
 	static void v9938_refresh_line (mame_bitmap bmp, int line)
@@ -1655,18 +1683,18 @@ public class v9938
 /*TODO*///	                            696,  854,  696,  684 }; /* pal  */
 	static int line_timing[]={ 1063, 1259, 1063, 1161,
 	                            904,  1026, 904,  953 };
-/*TODO*///	static int hmmv_timing[8]={ 439,  549,  439,  531,
-/*TODO*///	                            366,  439,  366,  427 };
-/*TODO*///	static int lmmv_timing[8]={ 873,  1135, 873, 1056,
-/*TODO*///	                            732,  909,  732,  854 };
+	static int hmmv_timing[]={ 439,  549,  439,  531,
+	                            366,  439,  366,  427 };
+	static int lmmv_timing[]={ 873,  1135, 873, 1056,
+	                            732,  909,  732,  854 };
 /*TODO*///	static int ymmm_timing[8]={ 586,  952,  586,  610,
 /*TODO*///	                            488,  720,  488,  500 };
-/*TODO*///	static int hmmm_timing[8]={ 818,  1111, 818,  854,
-/*TODO*///	                            684,  879,  684,  708 };
-/*TODO*///	static int lmmm_timing[8]={ 1160, 1599, 1160, 1172,
-/*TODO*///	                            964,  1257, 964,  977 };
-/*TODO*///	
-/*TODO*///	
+	static int hmmm_timing[]={ 818,  1111, 818,  854,
+	                            684,  879,  684,  708 };
+	static int lmmm_timing[]={ 1160, 1599, 1160, 1172,
+	                            964,  1257, 964,  977 };
+	
+	
 /*TODO*///	/** VDPVRMP() **********************************************/
 /*TODO*///	/** Calculate addr of a pixel in vram                       **/
 /*TODO*///	/*************************************************************/
@@ -1743,6 +1771,7 @@ public class v9938
 	/*************************************************************/
 	public static void VDPpsetlowlevel(UBytePtr P, int CL, int M, int OP)
 	{
+          //System.out.println("VDPpsetlowlevel="+OP);
 	  switch (OP)
 	  {
 	    case 0: P.write((P.read() & M) | CL); break;
@@ -1774,6 +1803,7 @@ public class v9938
 	/*************************************************************/
 	public static void VDPpset6(int DX, int DY, int CL, int OP)
 	{
+            //System.out.println("VDPpset6");
 	  int SH = ((~DX)&3)<<1;
 	
 	  VDPpsetlowlevel(VDP_VRMP6(DX, DY),
@@ -1889,6 +1919,7 @@ public class v9938
 	public static _vdpEngine LineEngine = new _vdpEngine() {
             @Override
             public void handler() {
+                //System.out.println("LineEngine");
                 //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
                 int DX=MMC.DX;
                 int DY=MMC.DY;
@@ -1905,10 +1936,12 @@ public class v9938
 
                 delta = GetVdpTimingValue(line_timing);
                 cnt = VdpOpsCnt;
-
+                System.out.println("cntA="+cnt);
+                System.out.println("deltaA="+delta);
 	
                 if ((_vdp.contReg[45]&0x01)==0){
                   /* X-Axis is major direction */
+                  //System.out.println("X-Axis");
                   switch (ScrMode()) {
                     case 5: 
                         while ((cnt-=delta) > 0) { 
@@ -1919,16 +1952,21 @@ public class v9938
                           DY+=TY; 
                         } 
                         ASX&=1023; /* Mask to 10 bits range */ 
-                        if (ADX++==NX || (DX&256)!=0) {}
+                        if (ADX++==NX || (DX&256)!=0)
                           break; 
 	    
-                    case 6: while ((cnt-=delta) > 0) { VDPpset6(DX, DY, CL, LO); } DX+=TX; 
+                    case 6: 
+/*TODO*///                        while ((cnt-=delta) > 0) { 
+                            //System.out.println("cntB="+cnt);
+                            //System.out.println("deltaB="+delta);
+/*TODO*///                            VDPpset6(DX, DY, CL, LO); 
+/*TODO*///                        } DX+=TX; 
                         if ((ASX-=NY)<0) { 
                           ASX+=NX; 
                           DY+=TY; 
                         } 
                         ASX&=1023; /* Mask to 10 bits range */ 
-                        if (ADX++==NX || (DX&512)!=0) {}
+                        if (ADX++==NX || (DX&512)!=0)
                           break;
                     case 7: while ((cnt-=delta) > 0) { VDPpset7(DX, DY, CL, LO); } DX+=TX; 
                         if ((ASX-=NY)<0) { 
@@ -1944,11 +1982,12 @@ public class v9938
                           DY+=TY; 
                         } 
                         ASX&=1023; /* Mask to 10 bits range */ 
-                        if (ADX++==NX || (DX&256)!=0) {}
+                        if (ADX++==NX || (DX&256)!=0)
                           break;
                   }
-                } else
+                } else {
                   /* Y-Axis is major direction */
+                  //System.out.println("Y-Axis");
                   switch (ScrMode()) {
                     case 5: 
                         while ((cnt-=delta) > 0) { 
@@ -1959,7 +1998,7 @@ public class v9938
                           DX+=TX; 
                         } 
                         ASX&=1023; /* Mask to 10 bits range */ 
-                        if (ADX++==NX || (DX&256)!=0) {}
+                        if (ADX++==NX || (DX&256)!=0)
                     break;
                     case 6: 
                         while ((cnt-=delta) > 0) { 
@@ -1980,7 +2019,7 @@ public class v9938
                           DX+=TX; 
                         } 
                         ASX&=1023; /* Mask to 10 bits range */ 
-                        if (ADX++==NX || (DX&512)!=0) {}
+                        if (ADX++==NX || (DX&512)!=0)
                     break;
                     
                     case 8: 
@@ -1992,10 +2031,14 @@ public class v9938
                           DX+=TX; 
                         } 
                         ASX&=1023; /* Mask to 10 bits range */ 
-                        if (ADX++==NX || (DX&256)!=0) {}
+                        if (ADX++==NX || (DX&256)!=0)
                     break;
                   
                   }
+                }
+                
+                //System.out.println("cnt="+cnt);
+                //System.out.println("VdpOpsCnt="+VdpOpsCnt);
 
                 if ((VdpOpsCnt=cnt)>0) {
                   /* Command execution done */
@@ -2075,26 +2118,26 @@ public class v9938
 	public static _vdpEngine LmmmEngine = new _vdpEngine() {
             @Override
             public void handler() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                /*TODO*///	  register int SX=MMC.SX;
-/*TODO*///	  register int SY=MMC.SY;
-/*TODO*///	  register int DX=MMC.DX;
-/*TODO*///	  register int DY=MMC.DY;
-/*TODO*///	  register int TX=MMC.TX;
-/*TODO*///	  register int TY=MMC.TY;
-/*TODO*///	  register int NX=MMC.NX;
-/*TODO*///	  register int NY=MMC.NY;
-/*TODO*///	  register int ASX=MMC.ASX;
-/*TODO*///	  register int ADX=MMC.ADX;
-/*TODO*///	  register int ANX=MMC.ANX;
-/*TODO*///	  register UINT8 LO=MMC.LO;
-/*TODO*///	  register int cnt;
-/*TODO*///	  register int delta;
-/*TODO*///	
-/*TODO*///	  delta = GetVdpTimingValue(lmmm_timing);
-/*TODO*///	  cnt = VdpOpsCnt;
-/*TODO*///	
-/*TODO*///	  switch (ScrMode) {
+                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                int SX=MMC.SX;
+                int SY=MMC.SY;
+                int DX=MMC.DX;
+                int DY=MMC.DY;
+                int TX=MMC.TX;
+                int TY=MMC.TY;
+                int NX=MMC.NX;
+                int NY=MMC.NY;
+                int ASX=MMC.ASX;
+                int ADX=MMC.ADX;
+                int ANX=MMC.ANX;
+                int LO=MMC.LO;
+                int cnt;
+                int delta;
+
+                delta = GetVdpTimingValue(lmmm_timing);
+                cnt = VdpOpsCnt;
+
+                switch (ScrMode()) {
 /*TODO*///	    case 5: pre_loop VDPpset5(ADX, DY, VDPpoint5(ASX, SY), LO); post_xxyy(256)
 /*TODO*///	            break;
 /*TODO*///	    case 6: pre_loop VDPpset6(ADX, DY, VDPpoint6(ASX, SY), LO); post_xxyy(512)
@@ -2103,34 +2146,34 @@ public class v9938
 /*TODO*///	            break;
 /*TODO*///	    case 8: pre_loop VDPpset8(ADX, DY, VDPpoint8(ASX, SY), LO); post_xxyy(256)
 /*TODO*///	            break;
-/*TODO*///	  }
-/*TODO*///	
-/*TODO*///	  if ((VdpOpsCnt=cnt)>0) {
-/*TODO*///	    /* Command execution done */
-/*TODO*///	    _vdp.statReg[2]&=0xFE;
-/*TODO*///	    VdpEngine=0;
-/*TODO*///	    if (NY == 0) {
-/*TODO*///	      SY+=TY;
-/*TODO*///	      DY+=TY;
-/*TODO*///	    }
-/*TODO*///	    else
-/*TODO*///	      if (SY==-1)
-/*TODO*///	        DY+=TY;
-/*TODO*///	    VDP[42]=NY & 0xFF;
-/*TODO*///	    VDP[43]=(NY>>8) & 0x03;
-/*TODO*///	    VDP[34]=SY & 0xFF;
-/*TODO*///	    VDP[35]=(SY>>8) & 0x03;
-/*TODO*///	    VDP[38]=DY & 0xFF;
-/*TODO*///	    VDP[39]=(DY>>8) & 0x03;
-/*TODO*///	  }
-/*TODO*///	  else {
-/*TODO*///	    MMC.SY=SY;
-/*TODO*///	    MMC.DY=DY;
-/*TODO*///	    MMC.NY=NY;
-/*TODO*///	    MMC.ANX=ANX;
-/*TODO*///	    MMC.ASX=ASX;
-/*TODO*///	    MMC.ADX=ADX;
-/*TODO*///	  }
+                }
+
+                if ((VdpOpsCnt=cnt)>0) {
+                  /* Command execution done */
+                  _vdp.statReg[2]&=0xFE;
+                  VdpEngine=null;
+                  if (NY == 0) {
+                    SY+=TY;
+                    DY+=TY;
+                  }
+                  else
+                    if (SY==-1)
+                      DY+=TY;
+                  _vdp.contReg[42]=NY & 0xFF;
+                  _vdp.contReg[43]=(NY>>8) & 0x03;
+                  _vdp.contReg[34]=SY & 0xFF;
+                  _vdp.contReg[35]=(SY>>8) & 0x03;
+                  _vdp.contReg[38]=DY & 0xFF;
+                  _vdp.contReg[39]=(DY>>8) & 0x03;
+                }
+                else {
+                  MMC.SY=SY;
+                  MMC.DY=DY;
+                  MMC.NY=NY;
+                  MMC.ANX=ANX;
+                  MMC.ASX=ASX;
+                  MMC.ADX=ADX;
+                }
             }
         };
 
@@ -2176,32 +2219,32 @@ public class v9938
 	public static _vdpEngine LmmcEngine = new _vdpEngine() {
             @Override
             public void handler() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                /*TODO*///	  if ((_vdp.statReg[2]&0x80)!=0x80) {
-/*TODO*///	    register UINT8 SM=ScrMode-5;
-/*TODO*///	
-/*TODO*///	    _vdp.statReg[7]=VDP[44]&=Mask[SM];
-/*TODO*///	    VDP_PSET(SM, MMC.ADX, MMC.DY, VDP[44], MMC.LO);
-/*TODO*///	    VdpOpsCnt-=GetVdpTimingValue(lmmv_timing);
-/*TODO*///	    _vdp.statReg[2]|=0x80;
-/*TODO*///	
-/*TODO*///	    if (!--MMC.ANX || ((MMC.ADX+=MMC.TX)&MMC.MX)) {
-/*TODO*///	      if (!(--MMC.NY&1023) || (MMC.DY+=MMC.TY)==-1) {
-/*TODO*///	        _vdp.statReg[2]&=0xFE;
-/*TODO*///	        VdpEngine=0;
-/*TODO*///	        if (!MMC.NY)
-/*TODO*///	          MMC.DY+=MMC.TY;
-/*TODO*///	        VDP[42]=MMC.NY & 0xFF;
-/*TODO*///	        VDP[43]=(MMC.NY>>8) & 0x03;
-/*TODO*///	        VDP[38]=MMC.DY & 0xFF;
-/*TODO*///	        VDP[39]=(MMC.DY>>8) & 0x03;
-/*TODO*///	      }
-/*TODO*///	      else {
-/*TODO*///	        MMC.ADX=MMC.DX;
-/*TODO*///	        MMC.ANX=MMC.NX;
-/*TODO*///	      }
-/*TODO*///	    }
-/*TODO*///	  }
+                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                if ((_vdp.statReg[2]&0x80)!=0x80) {
+                    int SM=ScrMode()-5;
+
+                    _vdp.statReg[7]=_vdp.contReg[44]&=Mask[SM];
+                    VDP_PSET(SM, MMC.ADX, MMC.DY, _vdp.contReg[44], MMC.LO);
+                    VdpOpsCnt-=GetVdpTimingValue(lmmv_timing);
+                    _vdp.statReg[2]|=0x80;
+
+                    if (--MMC.ANX == 0 || ((MMC.ADX+=MMC.TX)&MMC.MX)!=0) {
+                      if ((--MMC.NY&1023)==0 || (MMC.DY+=MMC.TY)==-1) {
+                        _vdp.statReg[2]&=0xFE;
+                        VdpEngine=null;
+                        if (MMC.NY==0)
+                          MMC.DY+=MMC.TY;
+                        _vdp.contReg[42]=MMC.NY & 0xFF;
+                        _vdp.contReg[43]=(MMC.NY>>8) & 0x03;
+                        _vdp.contReg[38]=MMC.DY & 0xFF;
+                        _vdp.contReg[39]=(MMC.DY>>8) & 0x03;
+                      }
+                      else {
+                        MMC.ADX=MMC.DX;
+                        MMC.ANX=MMC.NX;
+                      }
+                    }
+                }
             }
         };
 
@@ -2212,23 +2255,23 @@ public class v9938
 	public static _vdpEngine HmmvEngine = new _vdpEngine() {
             @Override
             public void handler() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                /*TODO*///	  register int DX=MMC.DX;
-/*TODO*///	  register int DY=MMC.DY;
-/*TODO*///	  register int TX=MMC.TX;
-/*TODO*///	  register int TY=MMC.TY;
-/*TODO*///	  register int NX=MMC.NX;
-/*TODO*///	  register int NY=MMC.NY;
-/*TODO*///	  register int ADX=MMC.ADX;
-/*TODO*///	  register int ANX=MMC.ANX;
-/*TODO*///	  register UINT8 CL=MMC.CL;
-/*TODO*///	  register int cnt;
-/*TODO*///	  register int delta;
-/*TODO*///	
-/*TODO*///	  delta = GetVdpTimingValue(hmmv_timing);
-/*TODO*///	  cnt = VdpOpsCnt;
-/*TODO*///	
-/*TODO*///	  switch (ScrMode) {
+                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                int DX=MMC.DX;
+                int DY=MMC.DY;
+                int TX=MMC.TX;
+                int TY=MMC.TY;
+                int NX=MMC.NX;
+                int NY=MMC.NY;
+                int ADX=MMC.ADX;
+                int ANX=MMC.ANX;
+                int CL=MMC.CL;
+                int cnt;
+                int delta;
+
+                delta = GetVdpTimingValue(hmmv_timing);
+                cnt = VdpOpsCnt;
+	
+                switch (ScrMode()) {
 /*TODO*///	    case 5: pre_loop *VDP_VRMP5(ADX, DY) = CL; post__x_y(256)
 /*TODO*///	            break;
 /*TODO*///	    case 6: pre_loop *VDP_VRMP6(ADX, DY) = CL; post__x_y(512)
@@ -2237,25 +2280,25 @@ public class v9938
 /*TODO*///	            break;
 /*TODO*///	    case 8: pre_loop *VDP_VRMP8(ADX, DY) = CL; post__x_y(256)
 /*TODO*///	            break;
-/*TODO*///	  }
-/*TODO*///	
-/*TODO*///	  if ((VdpOpsCnt=cnt)>0) {
-/*TODO*///	    /* Command execution done */
-/*TODO*///	    _vdp.statReg[2]&=0xFE;
-/*TODO*///	    VdpEngine=0;
-/*TODO*///	    if (NY == 0)
-/*TODO*///	      DY+=TY;
-/*TODO*///	    VDP[42]=NY & 0xFF;
-/*TODO*///	    VDP[43]=(NY>>8) & 0x03;
-/*TODO*///	    VDP[38]=DY & 0xFF;
-/*TODO*///	    VDP[39]=(DY>>8) & 0x03;
-/*TODO*///	  }
-/*TODO*///	  else {
-/*TODO*///	    MMC.DY=DY;
-/*TODO*///	    MMC.NY=NY;
-/*TODO*///	    MMC.ANX=ANX;
-/*TODO*///	    MMC.ADX=ADX;
-/*TODO*///	  }
+                }
+	
+                if ((VdpOpsCnt=cnt)>0) {
+                  /* Command execution done */
+                  _vdp.statReg[2]&=0xFE;
+                  VdpEngine=null;
+                  if (NY == 0)
+                    DY+=TY;
+                  _vdp.contReg[42]=NY & 0xFF;
+                  _vdp.contReg[43]=(NY>>8) & 0x03;
+                  _vdp.contReg[38]=DY & 0xFF;
+                  _vdp.contReg[39]=(DY>>8) & 0x03;
+                }
+                else {
+                  MMC.DY=DY;
+                  MMC.NY=NY;
+                  MMC.ANX=ANX;
+                  MMC.ADX=ADX;
+                }
             }
         };
 
@@ -2266,25 +2309,25 @@ public class v9938
 	public static _vdpEngine HmmmEngine = new _vdpEngine() {
             @Override
             public void handler() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                /*TODO*///	  register int SX=MMC.SX;
-/*TODO*///	  register int SY=MMC.SY;
-/*TODO*///	  register int DX=MMC.DX;
-/*TODO*///	  register int DY=MMC.DY;
-/*TODO*///	  register int TX=MMC.TX;
-/*TODO*///	  register int TY=MMC.TY;
-/*TODO*///	  register int NX=MMC.NX;
-/*TODO*///	  register int NY=MMC.NY;
-/*TODO*///	  register int ASX=MMC.ASX;
-/*TODO*///	  register int ADX=MMC.ADX;
-/*TODO*///	  register int ANX=MMC.ANX;
-/*TODO*///	  register int cnt;
-/*TODO*///	  register int delta;
-/*TODO*///	
-/*TODO*///	  delta = GetVdpTimingValue(hmmm_timing);
-/*TODO*///	  cnt = VdpOpsCnt;
-/*TODO*///	
-/*TODO*///	  switch (ScrMode) {
+                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                int SX=MMC.SX;
+                int SY=MMC.SY;
+                int DX=MMC.DX;
+                int DY=MMC.DY;
+                int TX=MMC.TX;
+                int TY=MMC.TY;
+                int NX=MMC.NX;
+                int NY=MMC.NY;
+                int ASX=MMC.ASX;
+                int ADX=MMC.ADX;
+                int ANX=MMC.ANX;
+                int cnt;
+                int delta;
+
+                delta = GetVdpTimingValue(hmmm_timing);
+                cnt = VdpOpsCnt;
+
+                switch (ScrMode()) {
 /*TODO*///	    case 5: pre_loop *VDP_VRMP5(ADX, DY) = *VDP_VRMP5(ASX, SY); post_xxyy(256)
 /*TODO*///	            break;
 /*TODO*///	    case 6: pre_loop *VDP_VRMP6(ADX, DY) = *VDP_VRMP6(ASX, SY); post_xxyy(512)
@@ -2293,34 +2336,34 @@ public class v9938
 /*TODO*///	            break;
 /*TODO*///	    case 8: pre_loop *VDP_VRMP8(ADX, DY) = *VDP_VRMP8(ASX, SY); post_xxyy(256)
 /*TODO*///	            break;
-/*TODO*///	  }
-/*TODO*///	
-/*TODO*///	  if ((VdpOpsCnt=cnt)>0) {
-/*TODO*///	    /* Command execution done */
-/*TODO*///	    _vdp.statReg[2]&=0xFE;
-/*TODO*///	    VdpEngine=0;
-/*TODO*///	    if (NY == 0) {
-/*TODO*///	      SY+=TY;
-/*TODO*///	      DY+=TY;
-/*TODO*///	    }
-/*TODO*///	    else
-/*TODO*///	      if (SY==-1)
-/*TODO*///	        DY+=TY;
-/*TODO*///	    VDP[42]=NY & 0xFF;
-/*TODO*///	    VDP[43]=(NY>>8) & 0x03;
-/*TODO*///	    VDP[34]=SY & 0xFF;
-/*TODO*///	    VDP[35]=(SY>>8) & 0x03;
-/*TODO*///	    VDP[38]=DY & 0xFF;
-/*TODO*///	    VDP[39]=(DY>>8) & 0x03;
-/*TODO*///	  }
-/*TODO*///	  else {
-/*TODO*///	    MMC.SY=SY;
-/*TODO*///	    MMC.DY=DY;
-/*TODO*///	    MMC.NY=NY;
-/*TODO*///	    MMC.ANX=ANX;
-/*TODO*///	    MMC.ASX=ASX;
-/*TODO*///	    MMC.ADX=ADX;
-/*TODO*///	  }
+	  }
+	
+	  if ((VdpOpsCnt=cnt)>0) {
+	    /* Command execution done */
+	    _vdp.statReg[2]&=0xFE;
+	    VdpEngine=null;
+	    if (NY == 0) {
+	      SY+=TY;
+	      DY+=TY;
+	    }
+	    else
+	      if (SY==-1)
+	        DY+=TY;
+	    _vdp.contReg[42]=NY & 0xFF;
+	    _vdp.contReg[43]=(NY>>8) & 0x03;
+	    _vdp.contReg[34]=SY & 0xFF;
+	    _vdp.contReg[35]=(SY>>8) & 0x03;
+	    _vdp.contReg[38]=DY & 0xFF;
+	    _vdp.contReg[39]=(DY>>8) & 0x03;
+	  }
+	  else {
+	    MMC.SY=SY;
+	    MMC.DY=DY;
+	    MMC.NY=NY;
+	    MMC.ANX=ANX;
+	    MMC.ASX=ASX;
+	    MMC.ADX=ADX;
+	  }
             }
         };
 
@@ -2605,7 +2648,9 @@ public class v9938
 	  _vdp.statReg[2]|=0x01;
 	
 	  /* Start execution if we still have time slices */
+          //System.out.println("VdpOpsCnt="+VdpOpsCnt);
 	  if(VdpEngine!=null && (VdpOpsCnt>0)) VdpEngine.handler();
+          //System.out.println("End vdpEngine");
 	
 	  /* Operation successfull initiated */
 	  return(1);

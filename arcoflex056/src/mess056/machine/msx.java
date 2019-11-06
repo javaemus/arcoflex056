@@ -708,7 +708,7 @@ public class msx
 	public static InterruptPtr msx2_interrupt = new InterruptPtr() {
             public int handler() {
 		v9938_set_sprite_limit (readinputport (8) & 0x20);
-		v9938_set_resolution (readinputport (8) & 0x03);
+		//v9938_set_resolution (readinputport (8) & 0x03);
 		v9938_interrupt ();
 	
 		return ignore_interrupt.handler();

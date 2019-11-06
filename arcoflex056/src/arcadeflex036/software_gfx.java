@@ -171,6 +171,9 @@ public class software_gfx extends java.awt.Frame implements Runnable, ImageProdu
 
         /* Setup options. */
         _scanlines = scanlines;
+        
+        // hack
+        //_scanlines = false;
 
         /* Setup pixel buffer and dimensions. */
         ratio = ((float) width) / ((float) height);

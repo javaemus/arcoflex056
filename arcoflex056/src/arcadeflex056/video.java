@@ -877,7 +877,7 @@ public class video {
                                             ym*=2;
                                     else xm*=2;
                             }
-
+System.out.println("scanlines="+scanlines);
                             if ((scanlines != 0) && (stretch != 0))
                             {
                                     if (ym == 1)
