@@ -1803,9 +1803,8 @@ public class v9938
           
           UBytePtr P = new UBytePtr(_vdp.vram, ((DY&1023)<<7) + ((DX&511)>>2));
 	
-	  VDPpsetlowlevel(P,
-	                  CL << SH, ~(3<<SH), OP);
-          //P.write((P.read() & ~(3<<SH)) | CL<<SH);
+	  //VDPpsetlowlevel(P,CL << SH, ~(3<<SH), OP);
+          P.write((P.read() & ~(3<<SH)) | CL<<SH);
 	}
 	
 	/** VDPpset7() ***********************************************/
@@ -1954,20 +1953,24 @@ public class v9938
                           break; 
 	    
                     case 6: 
-/*TODO*///                        while ((cnt-=delta) > 0) { 
-                        if ((cnt-=delta) > 0) {
+                        System.out.println("inicio");
+                        while ((cnt-=delta) > 0) { 
+
                             //System.out.println("cntB="+cnt);
                             //System.out.println("deltaB="+delta);
-                            VDPpset6(MMC.DX, MMC.DY, MMC.CL, MMC.LO); 
-                        }
-                        MMC.DX+=MMC.TX;
-                        if ((MMC.ASX-=MMC.NY)<0) {
-                          MMC.ASX+=MMC.NX;
-                          MMC.DY+=MMC.TY;
-                        }
-                        MMC.ASX&=1023; /* Mask to 10 bits range */
-                        if (MMC.ADX++==MMC.NX || (MMC.DX&512)!=0)
-                          break;
+                            VDPpset6(DX, DY, CL, LO); 
+
+                            DX+=TX;
+                            if ((ASX-=NY)<0) {
+                              ASX+=NX;
+                              DY+=TY;
+                            }
+                            ASX&=1023; /* Mask to 10 bits range */
+                            if (ADX++==NX || (DX&512)!=0)
+                              break;
+                          }
+                        System.out.println("FIN");
+                        break;
                     case 7: while ((cnt-=delta) > 0) { VDPpset7(DX, DY, CL, LO); } DX+=TX; 
                         if ((ASX-=NY)<0) { 
                           ASX+=NX; 
@@ -2048,10 +2051,10 @@ public class v9938
                   _vdp.contReg[39]=(MMC.DY>>8) & 0x03;
                 }
                 else {
-                  /*MMC.DX=DX;
+                  MMC.DX=DX;
                   MMC.DY=DY;
                   MMC.ASX=ASX;
-                  MMC.ADX=ADX;*/
+                  MMC.ADX=ADX;
                 }
             }
         };
