@@ -806,7 +806,7 @@ public class c16
 		TED7360PAL_VRETRACERATE, 0, 	/* frames per second, vblank duration */
 		0,
 		c16_init_machine,
-		//c16_shutdown_machine,
+		c16_shutdown_machine,
 	
 	  /* video hardware */
 		336,							   /* screen width */

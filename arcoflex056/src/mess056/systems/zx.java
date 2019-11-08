@@ -517,7 +517,7 @@ public class zx
 		0,								/* vblank handled by vidhrdw */
 		1,
 		zx80_init_machine,
-		//zx_shutdown_machine,
+		zx_shutdown_machine,
 	
 		/* video hardware */
 		32 * 8, 						/* screen width (inc. blank/sync) */
@@ -559,7 +559,7 @@ public class zx
 		0,								/* vblank handled by vidhrdw */
 		1,
 		zx81_init_machine,
-		//zx_shutdown_machine,
+		zx_shutdown_machine,
 	
 		/* video hardware */
 		32 * 8, 						/* screen width (inc. blank/sync) */
@@ -601,7 +601,7 @@ public class zx
 		0,								/* vblank handled by vidhrdw */
 		1,
 		zx81_init_machine,
-		//zx_shutdown_machine,
+		zx_shutdown_machine,
 	
 		/* video hardware */
 		32 * 8, 						/* screen width (inc. blank/sync) */
@@ -643,7 +643,7 @@ public class zx
 		0,								/* vblank handled by vidhrdw */
 		1,
 		pc8300_init_machine,
-		//zx_shutdown_machine,
+		zx_shutdown_machine,
 	
 		/* video hardware */
 		32 * 8, 						/* screen width (inc. blank/sync) */
@@ -685,7 +685,7 @@ public class zx
 		/* vblank handled by vidhrdw */
 		1,
 		pow3000_init_machine,
-		//zx_shutdown_machine,
+		zx_shutdown_machine,
 	
 		/* video hardware */
 		32 * 8, 						/* screen width (inc. blank/sync) */

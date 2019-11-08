@@ -333,6 +333,9 @@ public class cpuexec {
     static void cpu_post_run() {
         /* write hi scores to disk - No scores saving if cheat */
         hs_close();
+        
+        if (Machine.drv.stop_machine != null)
+			(Machine.drv.stop_machine).handler();
 
     }
 

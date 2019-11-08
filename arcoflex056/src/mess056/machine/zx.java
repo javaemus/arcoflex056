@@ -172,9 +172,11 @@ public class zx
             }
         };
 	
-	void zx_shutdown_machine()
-	{
-	}
+	public static StopMachinePtr zx_shutdown_machine = new StopMachinePtr() {
+            public void handler() {
+            
+            }
+        };
 	
 	public static io_initPtr zx_cassette_init = new io_initPtr() {
             public int handler(int id) {

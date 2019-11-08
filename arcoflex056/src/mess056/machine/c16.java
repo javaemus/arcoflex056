@@ -745,9 +745,11 @@ public class c16
             }
         };
 	
-	public static void c16_shutdown_machine ()
-	{
-	}
+	public static StopMachinePtr c16_shutdown_machine = new StopMachinePtr() {
+            public void handler() {
+            
+            }
+        };
 	
 	public static int c16_rom_id (int id)
 	{

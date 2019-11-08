@@ -22,6 +22,8 @@ import static arcadeflex056.fucPtr.*;
 import static arcadeflex056.osdepend.logerror;
 import static common.libc.cstring.*;
 import static common.ptr.*;
+import consoleflex056.funcPtr;
+import consoleflex056.funcPtr.StopMachinePtr;
 import static mame056.common.*;
 import static mame056.commonH.*;
 import static mame056.cpu.m6502.m6502H.M6502_IRQ_LINE;
@@ -861,10 +863,12 @@ public class c64
 			c64_bankswitch (1);
 	} };
 	
-/*TODO*///	void c64_shutdown_machine (void)
-/*TODO*///	{
-/*TODO*///	}
-/*TODO*///	
+	public static StopMachinePtr c64_shutdown_machine = new StopMachinePtr() {
+            public void handler() {
+            
+            }
+        };
+	
 /*TODO*///	int c64_rom_id (int id)
 /*TODO*///	{
 /*TODO*///		/* magic lowrom at offset 0x8003: $c3 $c2 $cd $38 $30 */

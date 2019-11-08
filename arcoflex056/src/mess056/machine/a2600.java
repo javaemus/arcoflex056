@@ -26,6 +26,8 @@ import static common.libc.cstdio.*;
 import static common.libc.cstring.*;
 import static arcadeflex056.osdepend.*;
 import static arcadeflex056.video.osd_skip_this_frame;
+import consoleflex056.funcPtr;
+import consoleflex056.funcPtr.StopMachinePtr;
 import consoleflex056.funcPtr.io_initPtr;
 import static mame056.common.*;
 import static mame056.commonH.*;
@@ -895,9 +897,9 @@ public class a2600
 	  Stop MAchine
 	
 	***************************************************************************/
-	public static void a2600_stop_machine()
-	{
-		/* Make sane the hardware */
+	public static StopMachinePtr a2600_stop_machine = new StopMachinePtr() {
+            public void handler() {
+                /* Make sane the hardware */
 		timer_reset(HSYNC_timer, TIME_IN_CYCLES(76, 0));
 		TIA_pixel_clock = 0;
 		TIA_player_0_finished = 0;
@@ -957,10 +959,8 @@ public class a2600
 		currentline = 0;
 		msize0 = 0;
 		msize1 = 0;
-	}
-	
-	
-	
+            }
+        };
 	
 	/* Video functions for the a2600         */
 	/* Since all software drivern, have here */

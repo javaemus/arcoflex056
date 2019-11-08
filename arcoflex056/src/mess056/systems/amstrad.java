@@ -27,6 +27,8 @@ package mess056.systems;
 import static arcadeflex056.fucPtr.*;
 import static arcadeflex056.osdepend.*;
 import static common.ptr.*;
+import consoleflex056.funcPtr;
+import consoleflex056.funcPtr.StopMachinePtr;
 import static mame056.inptport.*;
 import static mame056.timer.*;
 import static mame056.timerH.*;
@@ -2387,9 +2389,9 @@ public class amstrad
 		/*TODO*///cpunum_set_cycle_tbl(0,Z80_TABLE_ex, amstrad_cycle_table_ex);
 	}
 	
-	public static void amstrad_shutdown_machine()
-	{
-		nec765_stop();
+	public static StopMachinePtr amstrad_shutdown_machine = new StopMachinePtr() {
+            public void handler() {
+                nec765_stop();
 	
 		if (Amstrad_Memory!=null)
 		{
@@ -2411,8 +2413,8 @@ public class amstrad
 		/*TODO*///cpunum_set_cycle_tbl(0,Z80_TABLE_ex, previous_ex_table);
 	
 		cpu_set_irq_callback(0, null);
-	
-	}
+            }
+        };
 	
 	public static InitMachinePtr amstrad_init_machine = new InitMachinePtr() {
             public void handler() {
@@ -2740,7 +2742,7 @@ public class amstrad
 		DEFAULT_60HZ_VBLANK_DURATION,	   /* vblank duration */
 		1,								   /* cpu slices per frame */
 		amstrad_init_machine,			   /* init machine */
-		//amstrad_shutdown_machine,
+		amstrad_shutdown_machine,
 		/* video hardware */
 		AMSTRAD_SCREEN_WIDTH,					   /* screen width */
 		AMSTRAD_SCREEN_HEIGHT,					   /* screen height */

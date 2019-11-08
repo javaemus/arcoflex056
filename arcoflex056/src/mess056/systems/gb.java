@@ -156,7 +156,7 @@ public class gb
 		60, 0,	/* frames per second, vblank duration */
 		1,
 		gb_init_machine,
-		//null,	/* shutdown machine */
+		null,	/* shutdown machine */
 	
 		/* video hardware (double size) */
 		160, 144,

@@ -213,7 +213,7 @@ public class coleco {
             60, DEFAULT_REAL_60HZ_VBLANK_DURATION, /* frames per second, vblank duration */
             1,
             null, /* init_machine */
-            //null, /* stop_machine */
+            null, /* stop_machine */
             32 * 8, 24 * 8, new rectangle(0 * 8, 32 * 8 - 1, 0 * 8, 24 * 8 - 1),
             null, /* gfxdecodeinfo */
             TMS9928A_PALETTE_SIZE,

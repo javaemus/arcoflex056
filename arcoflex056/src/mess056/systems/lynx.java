@@ -262,7 +262,7 @@ public class lynx
 		30, DEFAULT_60HZ_VBLANK_DURATION, // lcd!, varies
 		1,				/* single CPU */
 		lynx_machine_init,
-		/*TODO*///null,//pc1401_machine_stop,
+		null,//pc1401_machine_stop,
 	
 		// 160 x 102
 	//	160, 102, { 0, 160 - 1, 0, 102 - 1},
@@ -305,7 +305,7 @@ public class lynx
 		30, DEFAULT_60HZ_VBLANK_DURATION, // lcd!
 		1,				/* single CPU */
 		lynx_machine_init,
-		//0,//pc1401_machine_stop,
+		null,//pc1401_machine_stop,
 	
 		// 160 x 102
 	//	160, 102, { 0, 160 - 1, 0, 102 - 1},

@@ -351,7 +351,7 @@ public class nes
 	    60, 114*(NTSC_SCANLINES_PER_FRAME-BOTTOM_VISIBLE_SCANLINE), /* frames per second, vblank duration */
 	    1,
 	    nes_init_machine,
-	    /*TODO*///nes_stop_machine,
+	    nes_stop_machine,
 	
 	    /* video hardware */
 	/*TODO*///#ifdef BIG_SCREEN

@@ -787,7 +787,7 @@ public class msx
 	    60, DEFAULT_REAL_60HZ_VBLANK_DURATION,
 	    1,
 	    msx_ch_reset, /* init_machine */
-	    //msx_ch_stop, /* stop_machine */
+	    msx_ch_stop, /* stop_machine */
 	
 	    /* video hardware */
 	    32*8, 24*8, new rectangle( 0*8, 32*8-1, 0*8, 24*8-1 ),
@@ -897,7 +897,7 @@ public class msx
 	    60, 0,
 	    1,
 	    msx2_ch_reset, /* init_machine */
-	    //msx2_ch_stop, /* stop_machine */
+	    msx2_ch_stop, /* stop_machine */
 	
 	    /* video hardware */
 	    512 + 32, (212 + 16) * 2, new rectangle( 0, 512 + 32 - 1, 0, (212 + 16) * 2 - 1 ),

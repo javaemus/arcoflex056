@@ -922,7 +922,7 @@ public class c64
 		VIC6567_VRETRACERATE, DEFAULT_REAL_60HZ_VBLANK_DURATION,	/* frames per second, vblank duration */
 		0,
 		c64_init_machine,
-		//c64_shutdown_machine,
+		c64_shutdown_machine,
 	
                 /* video hardware */
 		336,							   /* screen width */
@@ -1006,7 +1006,7 @@ public class c64
 		DEFAULT_REAL_60HZ_VBLANK_DURATION, /* frames per second, vblank duration */
 		0,
 		c64_init_machine,
-		//c64_shutdown_machine,
+		c64_shutdown_machine,
 	
 	  /* video hardware */
 		336,							   /* screen width */
@@ -1047,8 +1047,8 @@ public class c64
 		VIC6569_VRETRACERATE, DEFAULT_REAL_60HZ_VBLANK_DURATION,	/* frames per second, vblank duration */
 		0,
 		c64_init_machine,
-/*TODO*///		c64_shutdown_machine,
-/*TODO*///	
+		c64_shutdown_machine,
+
 	  /* video hardware */
 		336,							   /* screen width */
 		216,							   /* screen height */

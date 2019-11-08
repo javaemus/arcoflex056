@@ -504,7 +504,7 @@ public class coupe {
 		50, 0,								/* frames per second, vblank duration */
 		1,
 		coupe_init_machine_256,
-		//coupe_shutdown_machine,
+		coupe_shutdown_machine,
 	
 		/* video hardware */
 		64*8,                               /* screen width */
@@ -551,7 +551,7 @@ public class coupe {
 		50, 0,	/* frames per second, vblank duration */
 		1,
 		coupe_init_machine_512,
-		//coupe_shutdown_machine,
+		coupe_shutdown_machine,
 	
 		/* video hardware */
 		64*8,                               /* screen width */

@@ -5,6 +5,8 @@ package mame056;
 
 import static arcadeflex056.fucPtr.*;
 import static common.util.*;
+import consoleflex056.funcPtr;
+import consoleflex056.funcPtr.StopMachinePtr;
 import static mame056.commonH.*;
 import static mame056.drawgfxH.*;
 import static mame056.inptportH.InputPortTiny;
@@ -53,11 +55,22 @@ public class driverH {
             copyArray(sound, snd);
             nvram_handler = null;
         }
+        
+        public MachineDriver(MachineCPU[] mcp, float fps, int vblank, int cpu_slices, InitMachinePtr im, StopMachinePtr sm, int sw, int sh, rectangle va, GfxDecodeInfo[] gdi, int tc, int ctl, VhConvertColorPromPtr vccp, int vattr, VhEofCallbackPtr veof, VhStartPtr vsta, VhStopPtr vsto, VhUpdatePtr vup, int sattr, int obs1, int obs2, int obs3, MachineSound[] snd) {
+            this(mcp, fps, vblank, cpu_slices, im, sw, sh, va, gdi, tc, ctl, vccp, vattr, veof, vsta, vsto, vup, sattr, obs1, obs2, obs3, snd);
+            stop_machine = sm;
+        }
 
         //same as previous but with nvram_handler
         public MachineDriver(MachineCPU[] mcp, float fps, int vblank, int cpu_slices, InitMachinePtr im, int sw, int sh, rectangle va, GfxDecodeInfo[] gdi, int tc, int ctl, VhConvertColorPromPtr vccp, int vattr, VhEofCallbackPtr veof, VhStartPtr vsta, VhStopPtr vsto, VhUpdatePtr vup, int sattr, int obs1, int obs2, int obs3, MachineSound[] snd, nvramPtr nvr) {
             this(mcp, fps, vblank, cpu_slices, im, sw, sh, va, gdi, tc, ctl, vccp, vattr, veof, vsta, vsto, vup, sattr, obs1, obs2, obs3, snd);
             nvram_handler = nvr;
+        }
+        
+        public MachineDriver(MachineCPU[] mcp, float fps, int vblank, int cpu_slices, InitMachinePtr im, StopMachinePtr sm, int sw, int sh, rectangle va, GfxDecodeInfo[] gdi, int tc, int ctl, VhConvertColorPromPtr vccp, int vattr, VhEofCallbackPtr veof, VhStartPtr vsta, VhStopPtr vsto, VhUpdatePtr vup, int sattr, int obs1, int obs2, int obs3, MachineSound[] snd, nvramPtr nvr) {
+            this(mcp, fps, vblank, cpu_slices, im, sw, sh, va, gdi, tc, ctl, vccp, vattr, veof, vsta, vsto, vup, sattr, obs1, obs2, obs3, snd);
+            nvram_handler = nvr;
+            stop_machine = sm;
         }
 
         /* basic machine hardware */
@@ -72,6 +85,8 @@ public class driverH {
  /* However, an higher setting also means slower */
  /* performance. */
         public InitMachinePtr init_machine;
+        
+        public StopMachinePtr stop_machine;
 
         /* video hardware */
         public int screen_width, screen_height;

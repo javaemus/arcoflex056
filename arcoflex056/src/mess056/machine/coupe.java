@@ -184,10 +184,11 @@ public class coupe {
             }
         };
 	
-	public static void coupe_shutdown_machine()
-	{
-		wd179x_exit();
-	}
+	public static StopMachinePtr coupe_shutdown_machine = new StopMachinePtr() {
+            public void handler() {
+                wd179x_exit();
+            }
+        };
 	
 	/*************************************
 	 *

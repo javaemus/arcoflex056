@@ -815,7 +815,7 @@ public class a2600
 	    60, DEFAULT_60HZ_VBLANK_DURATION,
 	    1,
 	    a2600_init_machine,                 /* init_machine */
-	    //a2600_stop_machine,                 /* stop_machine */
+	    a2600_stop_machine,                 /* stop_machine */
 	
 	    /* video hardware */
 	    228, 262,

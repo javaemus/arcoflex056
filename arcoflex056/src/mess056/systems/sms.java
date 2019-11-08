@@ -207,7 +207,7 @@ public class sms
 		60, DEFAULT_REAL_60HZ_VBLANK_DURATION,	/* frames per second, vblank duration */
 		1,
 		sms_init_machine, /* init_machine */
-		//null, /* stop_machine */
+		null, /* stop_machine */
 	
 		/* video hardware */
 		32*8, 28*8, new rectangle( 0*8, 32*8-1, 0*8, 24*8-1 ),
@@ -251,7 +251,7 @@ public class sms
 		60, DEFAULT_REAL_60HZ_VBLANK_DURATION,	/* frames per second, vblank duration */
 		1,
 		sms_init_machine, /* init_machine */
-		//null, /* stop_machine */
+		null, /* stop_machine */
 	
 		/* video hardware */
 		32*8, 28*8, new rectangle( 6*8, 26*8-1, 3*8, 21*8-1 ),

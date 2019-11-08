@@ -926,12 +926,12 @@ public class spectrum
 		}
 	} };
 	
-	public static void spectrum_plus3_exit_machine()
-	{
-		nec765_stop();
+	public static StopMachinePtr spectrum_plus3_exit_machine = new StopMachinePtr() {
+            public void handler() {
+                nec765_stop();
 		spectrum_free_ram();
-	}
-	
+            }
+        };
 	
 	
 	/****************************************************************************************************/
@@ -1435,12 +1435,12 @@ public class spectrum
 			spectrum_init_machine.handler();
 	} };
 	
-	public static void ts2068_exit_machine()
-	{
-            if (ts2068_ram!=null)
+	public static StopMachinePtr ts2068_exit_machine = new StopMachinePtr() {
+            public void handler() {
+                if (ts2068_ram!=null)
                 ts2068_ram = null;
-	}
-	
+            }
+        };
 	
 	
 	/****************************************************************************************************/
@@ -1976,13 +1976,12 @@ public class spectrum
 		}
 	} };
 	
-	public static void	scorpion_exit_machine()
-	{
-		betadisk_exit();
+	public static StopMachinePtr scorpion_exit_machine = new StopMachinePtr() {
+            public void handler() {
+                betadisk_exit();
 		spectrum_free_ram();
-	}
-	
-	
+            }
+        };
 	
 	/****************************************************************************************************/
 	/* pentagon */
@@ -2039,12 +2038,12 @@ public class spectrum
 		}
 	} };
 	
-	public static void	pentagon_exit_machine()
-	{
-		betadisk_exit();
+	public static StopMachinePtr pentagon_exit_machine = new StopMachinePtr() {
+            public void handler() {
+                betadisk_exit();
 		spectrum_free_ram();
-	}
-	
+            }
+        };
 	
 	/****************************************************************************************************/
 	
@@ -2280,7 +2279,7 @@ public class spectrum
 		50, 2500,		/* frames per second, vblank duration */
 		1,
 		spectrum_init_machine,
-		//spectrum_shutdown_machine,
+		spectrum_shutdown_machine,
 	
 		/* video hardware */
 		SPEC_SCREEN_WIDTH,				/* screen width */
@@ -2327,7 +2326,7 @@ public class spectrum
 		50, 2500,		/* frames per second, vblank duration */
 		1,
 		spectrum_128_init_machine,
-		//spectrum_128_exit_machine,
+		spectrum_128_exit_machine,
 	
 		/* video hardware */
 		SPEC_SCREEN_WIDTH,				/* screen width */
@@ -2379,7 +2378,7 @@ public class spectrum
 		50, 2500,		/* frames per second, vblank duration */
 		1,
 		spectrum_plus3_init_machine,
-		//spectrum_plus3_exit_machine,
+		spectrum_plus3_exit_machine,
 	
 		/* video hardware */
 		SPEC_SCREEN_WIDTH,				/* screen width */
@@ -2432,7 +2431,7 @@ public class spectrum
 			60, 2500,		/* frames per second, vblank duration */
 		1,
 		ts2068_init_machine,
-		//ts2068_exit_machine,
+		ts2068_exit_machine,
 	
 		/* video hardware */
 		TS2068_SCREEN_WIDTH,			/* screen width */
@@ -2484,7 +2483,7 @@ public class spectrum
 			50, 2500,		/* frames per second, vblank duration */
 		1,
 		ts2068_init_machine,
-		//ts2068_exit_machine,
+		ts2068_exit_machine,
 	
 		/* video hardware */
 		TS2068_SCREEN_WIDTH,			/* screen width */
@@ -2536,7 +2535,7 @@ public class spectrum
 		50, 2500,		/* frames per second, vblank duration */
 		1,
 		tc2048_init_machine,
-		//ts2068_exit_machine,
+		ts2068_exit_machine,
 	
 		/* video hardware */
 		TS2068_SCREEN_WIDTH,			/* screen width */
@@ -2584,7 +2583,7 @@ public class spectrum
 		50, 2500,		/* frames per second, vblank duration */
 		1,
 		scorpion_init_machine,
-		//scorpion_exit_machine,
+		scorpion_exit_machine,
 	
 		/* video hardware */
 		SPEC_SCREEN_WIDTH,				/* screen width */
@@ -2636,7 +2635,7 @@ public class spectrum
 		50, 2500,		/* frames per second, vblank duration */
 		1,
 		pentagon_init_machine,
-		//pentagon_exit_machine,
+		pentagon_exit_machine,
 	
 		/* video hardware */
 		SPEC_SCREEN_WIDTH,				/* screen width */

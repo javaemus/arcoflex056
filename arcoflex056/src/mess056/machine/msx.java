@@ -686,9 +686,9 @@ public class msx
             tc8521_init (tc);
         }
 	
-	public static void msx_ch_stop ()
-	{
-            int i;
+	public static StopMachinePtr msx_ch_stop = new StopMachinePtr() {
+            public void handler() {
+                int i;
 	
 	    msx1.empty = null;
 	    msx1.ram = null;
@@ -701,13 +701,15 @@ public class msx
             }
 	    msx1.run = 0;
             wd179x_exit ();
-	}
+            }
+        };
 	
-	public static void msx2_ch_stop ()
-	{
-		msx_ch_stop ();
+	public static StopMachinePtr msx2_ch_stop = new StopMachinePtr() {
+            public void handler() {
+                msx_ch_stop.handler();
 		tc8521_stop ();
-	}
+            }
+        };
 	
 	public static InterruptPtr msx2_interrupt = new InterruptPtr() {
             public int handler() {
