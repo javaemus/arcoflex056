@@ -1688,8 +1688,8 @@ public class v9938
 	                            366,  439,  366,  427 };
 	static int lmmv_timing[]={ 873,  1135, 873, 1056,
 	                            732,  909,  732,  854 };
-/*TODO*///	static int ymmm_timing[8]={ 586,  952,  586,  610,
-/*TODO*///	                            488,  720,  488,  500 };
+	static int ymmm_timing[]={ 586,  952,  586,  610,
+	                            488,  720,  488,  500 };
 	static int hmmm_timing[]={ 818,  1111, 818,  854,
 	                            684,  879,  684,  708 };
 	static int lmmm_timing[]={ 1160, 1599, 1160, 1172,
@@ -2477,55 +2477,88 @@ public class v9938
 	public static _vdpEngine YmmmEngine = new _vdpEngine() {
             @Override
             public void handler() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                /*TODO*///	  register int SY=MMC.SY;
-/*TODO*///	  register int DX=MMC.DX;
-/*TODO*///	  register int DY=MMC.DY;
-/*TODO*///	  register int TX=MMC.TX;
-/*TODO*///	  register int TY=MMC.TY;
-/*TODO*///	  register int NY=MMC.NY;
-/*TODO*///	  register int ADX=MMC.ADX;
-/*TODO*///	  register int cnt;
-/*TODO*///	  register int delta;
-/*TODO*///	
-/*TODO*///	  delta = GetVdpTimingValue(ymmm_timing);
-/*TODO*///	  cnt = VdpOpsCnt;
-/*TODO*///	
-/*TODO*///	  switch (ScrMode) {
-/*TODO*///	    case 5: pre_loop *VDP_VRMP5(ADX, DY) = *VDP_VRMP5(ADX, SY); post__xyy(256)
-/*TODO*///	            break;
-/*TODO*///	    case 6: pre_loop *VDP_VRMP6(ADX, DY) = *VDP_VRMP6(ADX, SY); post__xyy(512)
-/*TODO*///	            break;
-/*TODO*///	    case 7: pre_loop *VDP_VRMP7(ADX, DY) = *VDP_VRMP7(ADX, SY); post__xyy(512)
-/*TODO*///	            break;
-/*TODO*///	    case 8: pre_loop *VDP_VRMP8(ADX, DY) = *VDP_VRMP8(ADX, SY); post__xyy(256)
-/*TODO*///	            break;
-/*TODO*///	  }
-/*TODO*///	
-/*TODO*///	  if ((VdpOpsCnt=cnt)>0) {
-/*TODO*///	    /* Command execution done */
-/*TODO*///	    _vdp.statReg[2]&=0xFE;
-/*TODO*///	    VdpEngine=0;
-/*TODO*///	    if (NY == 0) {
-/*TODO*///	      SY+=TY;
-/*TODO*///	      DY+=TY;
-/*TODO*///	    }
-/*TODO*///	    else
-/*TODO*///	      if (SY==-1)
-/*TODO*///	        DY+=TY;
-/*TODO*///	    VDP[42]=NY & 0xFF;
-/*TODO*///	    VDP[43]=(NY>>8) & 0x03;
-/*TODO*///	    VDP[34]=SY & 0xFF;
-/*TODO*///	    VDP[35]=(SY>>8) & 0x03;
-/*TODO*///	    VDP[38]=DY & 0xFF;
-/*TODO*///	    VDP[39]=(DY>>8) & 0x03;
-/*TODO*///	  }
-/*TODO*///	  else {
-/*TODO*///	    MMC.SY=SY;
-/*TODO*///	    MMC.DY=DY;
-/*TODO*///	    MMC.NY=NY;
-/*TODO*///	    MMC.ADX=ADX;
-/*TODO*///	  }
+                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                int SY=MMC.SY;
+                int DX=MMC.DX;
+                int DY=MMC.DY;
+                int TX=MMC.TX;
+                int TY=MMC.TY;
+                int NY=MMC.NY;
+                int ADX=MMC.ADX;
+                int cnt;
+                int delta;
+
+                delta = GetVdpTimingValue(ymmm_timing);
+                cnt = VdpOpsCnt;
+	
+	  switch (ScrMode()) {
+	    case 5: 
+                while ((cnt-=delta) > 0) { VDP_VRMP5(ADX, DY).write( VDP_VRMP5(ADX, SY).read()); 
+                if (((ADX+=TX)&256)!=0) {
+                    if ((--NY&1023)==0 || (SY+=TY)==-1 || (DY+=TY)==-1)
+                      break;
+                    else
+                      ADX=DX;
+                }
+            }
+	            break;
+	    case 6: while ((cnt-=delta) > 0) { VDP_VRMP6(ADX, DY).write(VDP_VRMP6(ADX, SY).read()); 
+                if (((ADX+=TX)&512)!=0) {
+                    if ((--NY&1023)==0 || (SY+=TY)==-1 || (DY+=TY)==-1)
+                      break;
+                    else
+                      ADX=DX;
+                }
+            }
+	            break;
+	    case 7: while ((cnt-=delta) > 0) { 
+                VDP_VRMP7(ADX, DY).write(VDP_VRMP7(ADX, SY).read());
+             
+                if (((ADX+=TX)&512)!=0) {
+                    if ((--NY&1023)==0 || (SY+=TY)==-1 || (DY+=TY)==-1)
+                      break;
+                    else
+                      ADX=DX;
+                }
+            }
+	            break;
+	    case 8: while ((cnt-=delta) > 0) { 
+                VDP_VRMP8(ADX, DY).write(VDP_VRMP8(ADX, SY).read());
+            
+                if (((ADX+=TX)&256)!=0) {
+                    if ((--NY&1023)==0 || (SY+=TY)==-1 || (DY+=TY)==-1)
+                      break;
+                    else
+                      ADX=DX;
+                }
+            }
+	            break;
+	  }
+	
+	  if ((VdpOpsCnt=cnt)>0) {
+	    /* Command execution done */
+	    _vdp.statReg[2]&=0xFE;
+	    VdpEngine=null;
+	    if (NY == 0) {
+	      SY+=TY;
+	      DY+=TY;
+	    }
+	    else
+	      if (SY==-1)
+	        DY+=TY;
+	    _vdp.contReg[42]=NY & 0xFF;
+	    _vdp.contReg[43]=(NY>>8) & 0x03;
+	    _vdp.contReg[34]=SY & 0xFF;
+	    _vdp.contReg[35]=(SY>>8) & 0x03;
+	    _vdp.contReg[38]=DY & 0xFF;
+	    _vdp.contReg[39]=(DY>>8) & 0x03;
+	  }
+	  else {
+	    MMC.SY=SY;
+	    MMC.DY=DY;
+	    MMC.NY=NY;
+	    MMC.ADX=ADX;
+	  }
             }
         };
 
