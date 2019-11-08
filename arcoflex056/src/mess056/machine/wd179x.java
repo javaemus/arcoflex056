@@ -86,7 +86,7 @@ public class wd179x
 	static timer_entry busy_timer = null;
 	
 	/* one wd controlling multiple drives */
-	static WD179X wd;
+	static WD179X wd=null;
 	/* this is the drive currently selected */
 	static int drv = 0;
 	/* this is the head currently selected */
@@ -397,30 +397,33 @@ public class wd179x
 	public static void wd179x_exit()
 	{
 		WD179X w = wd;
+                
+                if (w != null) {
 	
-		if (busy_timer!=null)
-		{
-			timer_remove(busy_timer);
-			busy_timer = null;
-		}
+                    if (busy_timer!=null)
+                    {
+                            timer_remove(busy_timer);
+                            busy_timer = null;
+                    }
 	
-		if (w.timer!=null)
-		{
-			timer_remove(w.timer);
-			w.timer = null;
-		}
-	
-		if (w.timer_rs!=null)
-		{
-			timer_remove(w.timer_rs);
-			w.timer = null;
-		}
-	
-		if (w.timer_ws!=null)
-		{
-			timer_remove(w.timer_ws);
-			w.timer_ws = null;
-		}
+                    if (w.timer!=null)
+                    {
+                            timer_remove(w.timer);
+                            w.timer = null;
+                    }
+
+                    if (w.timer_rs!=null)
+                    {
+                            timer_remove(w.timer_rs);
+                            w.timer = null;
+                    }
+
+                    if (w.timer_ws!=null)
+                    {
+                            timer_remove(w.timer_ws);
+                            w.timer_ws = null;
+                    }
+                }
 	}
 	
 	/*TODO*///#if 0

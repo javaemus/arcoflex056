@@ -1587,7 +1587,7 @@ public class v9938
 /*TODO*///	//#define VDP_VRMP8(X, Y) (VRAM + ((Y&511)<<8) + (X&255))
         public static UBytePtr VDP_VRMP8(int X, int Y){ return new UBytePtr(_vdp.vram, ((X&1)<<16) + ((Y&511)<<7) + ((X>>1)&127)); }
 	
-/*TODO*///	#define VDP_VRMP(M, X, Y) VDPVRMP(M, X, Y)
+        public static UBytePtr VDP_VRMP(int M, int X, int Y){ return VDPVRMP(M, X, Y); }
         public static int VDP_POINT(int M, int X, int Y){ return VDPpoint(M, X, Y); }
         public static void VDP_PSET(int M, int X, int Y, int C, int O){ VDPpset(M, X, Y, C, O); }
 	
@@ -1696,21 +1696,21 @@ public class v9938
 	                            964,  1257, 964,  977 };
 	
 	
-/*TODO*///	/** VDPVRMP() **********************************************/
-/*TODO*///	/** Calculate addr of a pixel in vram                       **/
-/*TODO*///	/*************************************************************/
-/*TODO*///	INLINE UINT8 *VDPVRMP(UINT8 M,int X,int Y)
-/*TODO*///	{
-/*TODO*///	  switch(M)
-/*TODO*///	  {
-/*TODO*///	    case 0: return VDP_VRMP5(X,Y);
-/*TODO*///	    case 1: return VDP_VRMP6(X,Y);
-/*TODO*///	    case 2: return VDP_VRMP7(X,Y);
-/*TODO*///	    case 3: return VDP_VRMP8(X,Y);
-/*TODO*///	  }
-/*TODO*///	
-/*TODO*///	  return(VRAM);
-/*TODO*///	}
+	/** VDPVRMP() **********************************************/
+	/** Calculate addr of a pixel in vram                       **/
+	/*************************************************************/
+	public static UBytePtr VDPVRMP(int M,int X,int Y)
+	{
+	  switch(M)
+	  {
+	    case 0: return VDP_VRMP5(X,Y);
+	    case 1: return VDP_VRMP6(X,Y);
+	    case 2: return VDP_VRMP7(X,Y);
+	    case 3: return VDP_VRMP8(X,Y);
+	  }
+	
+	  return(_vdp.vram);
+	}
 	
 	/** VDPpoint5() ***********************************************/
 	/** Get a pixel on screen 5                                 **/
@@ -2536,30 +2536,30 @@ public class v9938
 	public static _vdpEngine HmmcEngine = new _vdpEngine() {
             @Override
             public void handler() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                /*TODO*///	  if ((_vdp.statReg[2]&0x80)!=0x80) {
-/*TODO*///	
-/*TODO*///	    *VDP_VRMP(ScrMode-5, MMC.ADX, MMC.DY)=VDP[44];
-/*TODO*///	    VdpOpsCnt-=GetVdpTimingValue(hmmv_timing);
-/*TODO*///	    _vdp.statReg[2]|=0x80;
-/*TODO*///	
-/*TODO*///	    if (!--MMC.ANX || ((MMC.ADX+=MMC.TX)&MMC.MX)) {
-/*TODO*///	      if (!(--MMC.NY&1023) || (MMC.DY+=MMC.TY)==-1) {
-/*TODO*///	        _vdp.statReg[2]&=0xFE;
-/*TODO*///	        VdpEngine=0;
-/*TODO*///	        if (!MMC.NY)
-/*TODO*///	          MMC.DY+=MMC.TY;
-/*TODO*///	        VDP[42]=MMC.NY & 0xFF;
-/*TODO*///	        VDP[43]=(MMC.NY>>8) & 0x03;
-/*TODO*///	        VDP[38]=MMC.DY & 0xFF;
-/*TODO*///	        VDP[39]=(MMC.DY>>8) & 0x03;
-/*TODO*///	      }
-/*TODO*///	      else {
-/*TODO*///	        MMC.ADX=MMC.DX;
-/*TODO*///	        MMC.ANX=MMC.NX;
-/*TODO*///	      }
-/*TODO*///	    }
-/*TODO*///	  }
+                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                	  if ((_vdp.statReg[2]&0x80)!=0x80) {
+	
+	    VDP_VRMP(ScrMode()-5, MMC.ADX, MMC.DY).write(_vdp.contReg[44]);
+	    VdpOpsCnt-=GetVdpTimingValue(hmmv_timing);
+	    _vdp.statReg[2]|=0x80;
+	
+	    if (--MMC.ANX==0 || ((MMC.ADX+=MMC.TX)&MMC.MX)!=0) {
+	      if ((--MMC.NY&1023)==0 || (MMC.DY+=MMC.TY)==-1) {
+	        _vdp.statReg[2]&=0xFE;
+	        VdpEngine=null;
+	        if (MMC.NY==0)
+	          MMC.DY+=MMC.TY;
+	        _vdp.contReg[42]=MMC.NY & 0xFF;
+	        _vdp.contReg[43]=(MMC.NY>>8) & 0x03;
+	        _vdp.contReg[38]=MMC.DY & 0xFF;
+	        _vdp.contReg[39]=(MMC.DY>>8) & 0x03;
+	      }
+	      else {
+	        MMC.ADX=MMC.DX;
+	        MMC.ANX=MMC.NX;
+	      }
+	    }
+	  }
             }
         };
 

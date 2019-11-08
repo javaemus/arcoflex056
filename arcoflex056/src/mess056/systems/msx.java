@@ -897,7 +897,7 @@ public class msx
 	    60, 0,
 	    1,
 	    msx2_ch_reset, /* init_machine */
-	    msx2_ch_stop, /* stop_machine */
+	    /*TODO*///msx2_ch_stop, /* stop_machine */
 	
 	    /* video hardware */
 	    512 + 32, (212 + 16) * 2, new rectangle( 0, 512 + 32 - 1, 0, (212 + 16) * 2 - 1 ),

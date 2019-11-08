@@ -690,17 +690,17 @@ public class msx
             public void handler() {
                 int i;
 	
-	    msx1.empty = null;
-	    msx1.ram = null;
+	    /*TODO*///msx1.empty = null;
+	    /*TODO*///msx1.ram = null;
             if (z80_table != null)
             {
-                    for (i=0;i<5;i++)
-                            z80_set_cycle_table (i, old_z80_tables[i]);
+                    /*TODO*///for (i=0;i<5;i++)
+                    /*TODO*///        z80_set_cycle_table (i, old_z80_tables[i]);
 
-                    z80_table = null;
+                    /*TODO*///z80_table = null;
             }
-	    msx1.run = 0;
-            wd179x_exit ();
+	    /*TODO*///msx1.run = 0;
+            /*TODO*///wd179x_exit ();
             }
         };
 	
