@@ -2089,58 +2089,101 @@ public class v9938
 	public static _vdpEngine LmmvEngine = new _vdpEngine() {
             @Override
             public void handler() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-                /*TODO*///	  register int DX=MMC.DX;
-/*TODO*///	  register int DY=MMC.DY;
-/*TODO*///	  register int TX=MMC.TX;
-/*TODO*///	  register int TY=MMC.TY;
-/*TODO*///	  register int NX=MMC.NX;
-/*TODO*///	  register int NY=MMC.NY;
-/*TODO*///	  register int ADX=MMC.ADX;
-/*TODO*///	  register int ANX=MMC.ANX;
-/*TODO*///	  register UINT8 CL=MMC.CL;
-/*TODO*///	  register UINT8 LO=MMC.LO;
-/*TODO*///	  register int cnt;
-/*TODO*///	  register int delta;
-/*TODO*///	
-/*TODO*///	  delta = GetVdpTimingValue(lmmv_timing);
-/*TODO*///	  cnt = VdpOpsCnt;
-/*TODO*///	
-/*TODO*///	  switch (ScrMode) {
-/*TODO*///	    case 5: pre_loop VDPpset5(ADX, DY, CL, LO); post__x_y(256)
-/*TODO*///	            break;
-/*TODO*///	    case 6: pre_loop VDPpset6(ADX, DY, CL, LO); post__x_y(512)
-/*TODO*///	            break;
-/*TODO*///	    case 7: pre_loop VDPpset7(ADX, DY, CL, LO); post__x_y(512)
-/*TODO*///	            break;
-/*TODO*///	    case 8: pre_loop VDPpset8(ADX, DY, CL, LO); post__x_y(256)
-/*TODO*///	            break;
-/*TODO*///	  }
-/*TODO*///	
-/*TODO*///	  if ((VdpOpsCnt=cnt)>0) {
-/*TODO*///	    /* Command execution done */
-/*TODO*///	    _vdp.statReg[2]&=0xFE;
-/*TODO*///	    VdpEngine=0;
-/*TODO*///	    if (NY == 0)
-/*TODO*///	      DY+=TY;
-/*TODO*///	    VDP[38]=DY & 0xFF;
-/*TODO*///	    VDP[39]=(DY>>8) & 0x03;
-/*TODO*///	    VDP[42]=NY & 0xFF;
-/*TODO*///	    VDP[43]=(NY>>8) & 0x03;
-/*TODO*///	  }
-/*TODO*///	  else {
-/*TODO*///	    MMC.DY=DY;
-/*TODO*///	    MMC.NY=NY;
-/*TODO*///	    MMC.ANX=ANX;
-/*TODO*///	    MMC.ADX=ADX;
-/*TODO*///	  }
+                //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                int DX=MMC.DX;
+                int DY=MMC.DY;
+                int TX=MMC.TX;
+                int TY=MMC.TY;
+                int NX=MMC.NX;
+                int NY=MMC.NY;
+                int ADX=MMC.ADX;
+                int ANX=MMC.ANX;
+                int CL=MMC.CL;
+                int LO=MMC.LO;
+                int cnt;
+                int delta;
+
+                delta = GetVdpTimingValue(lmmv_timing);
+                cnt = VdpOpsCnt;
+
+                switch (ScrMode()) {
+                  case 5: 
+                      while ((cnt-=delta) > 0) { 
+                          VDPpset5(ADX, DY, CL, LO); 
+                          if (--ANX==0 || ((ADX+=TX)&256)!=0) {
+                            if ((--NY&1023)==0 || (DY+=TY)==-1)
+                              break;
+                            else {
+                              ADX=DX;
+                              ANX=NX;
+                            }
+                          }
+                    }
+                          break;
+                  case 6: 
+                      while ((cnt-=delta) > 0) { 
+                          VDPpset6(ADX, DY, CL, LO); 
+                          if (--ANX==0 || ((ADX+=TX)&512)!=0) {
+                            if ((--NY&1023)==0 || (DY+=TY)==-1)
+                              break;
+                            else {
+                              ADX=DX;
+                              ANX=NX;
+                            }
+                          }
+                    }
+                          break;
+                  case 7: while ((cnt-=delta) > 0) { 
+                      VDPpset7(ADX, DY, CL, LO); 
+                      if (--ANX==0 || ((ADX+=TX)&512)!=0) {
+                            if ((--NY&1023)==0 || (DY+=TY)==-1)
+                              break;
+                            else {
+                              ADX=DX;
+                              ANX=NX;
+                            }
+                          }
+                    }
+                          break;
+                  case 8: 
+                      while ((cnt-=delta) > 0) { 
+                          VDPpset8(ADX, DY, CL, LO); 
+                          if (--ANX==0 || ((ADX+=TX)&256)!=0) {
+                            if ((--NY&1023)==0 || (DY+=TY)==-1)
+                              break;
+                            else {
+                              ADX=DX;
+                              ANX=NX;
+                            }
+                          }
+                    }
+                          break;
+                }
+
+                if ((VdpOpsCnt=cnt)>0) {
+                  /* Command execution done */
+                  _vdp.statReg[2]&=0xFE;
+                  VdpEngine=null;
+                  if (NY == 0)
+                    DY+=TY;
+                  _vdp.contReg[38]=DY & 0xFF;
+                  _vdp.contReg[39]=(DY>>8) & 0x03;
+                  _vdp.contReg[42]=NY & 0xFF;
+                  _vdp.contReg[43]=(NY>>8) & 0x03;
+                }
+                else {
+                  MMC.DY=DY;
+                  MMC.NY=NY;
+                  MMC.ANX=ANX;
+                  MMC.ADX=ADX;
+                }
             }
         };
 
-/*TODO*///	
-/*TODO*///	/** LmmmEngine() *********************************************/
-/*TODO*///	/** Vram . Vram                                            **/
-/*TODO*///	/*************************************************************/
+	
+	/** LmmmEngine() *********************************************/
+	/** Vram . Vram                                            **/
+	/*************************************************************/
 	public static _vdpEngine LmmmEngine = new _vdpEngine() {
             @Override
             public void handler() {
@@ -2287,10 +2330,10 @@ public class v9938
         };
 
         
-/*TODO*///	
-/*TODO*///	/** LmmcEngine() *********************************************/
-/*TODO*///	/** CPU . Vram                                             **/
-/*TODO*///	/*************************************************************/
+	
+	/** LmmcEngine() *********************************************/
+	/** CPU . Vram                                             **/
+	/*************************************************************/
 	public static _vdpEngine LmmcEngine = new _vdpEngine() {
             @Override
             public void handler() {
@@ -2323,9 +2366,9 @@ public class v9938
         };
 
         
-/*TODO*///	/** HmmvEngine() *********************************************/
-/*TODO*///	/** VDP -. Vram                                            **/
-/*TODO*///	/*************************************************************/
+	/** HmmvEngine() *********************************************/
+	/** VDP -. Vram                                            **/
+	/*************************************************************/
 	public static _vdpEngine HmmvEngine = new _vdpEngine() {
             @Override
             public void handler() {
@@ -2362,12 +2405,49 @@ public class v9938
                         }
                         
 	            break;
-/*TODO*///	    case 6: pre_loop *VDP_VRMP6(ADX, DY) = CL; post__x_y(512)
-/*TODO*///	            break;
-/*TODO*///	    case 7: pre_loop *VDP_VRMP7(ADX, DY) = CL; post__x_y(512)
-/*TODO*///	            break;
-/*TODO*///	    case 8: pre_loop *VDP_VRMP8(ADX, DY) = CL; post__x_y(256)
-/*TODO*///	            break;
+	    case 6: while ((cnt-=delta) > 0) { 
+                VDP_VRMP6(ADX, DY).write( CL );
+                        
+                if (--ANX==0 || ((ADX+=TX)&512)!=0) {
+                    if ((--NY&1023)==0 || (DY+=TY)==-1)
+                      break;
+                    else {
+                      ADX=DX;
+                      ANX=NX;
+                    }
+                  }
+                }
+	            break;
+	    case 7: while ((cnt-=delta) > 0) { 
+                VDP_VRMP7(ADX, DY).write( CL );
+                
+                        
+                if (--ANX==0 || ((ADX+=TX)&512)!=0) {
+                    if ((--NY&1023)==0 || (DY+=TY)==-1)
+                      break;
+                    else {
+                      ADX=DX;
+                      ANX=NX;
+                    }
+                  }
+                }
+	        
+                break;
+	            
+	    case 8: while ((cnt-=delta) > 0) { 
+                VDP_VRMP8(ADX, DY).write( CL );
+                
+                        
+                if (--ANX==0 || ((ADX+=TX)&256)!=0) {
+                    if ((--NY&1023)==0 || (DY+=TY)==-1)
+                      break;
+                    else {
+                      ADX=DX;
+                      ANX=NX;
+                    }
+                  }
+                }
+	        break;
                 }
 	
                 if ((VdpOpsCnt=cnt)>0) {
