@@ -169,8 +169,9 @@ public class software_gfx extends java.awt.Frame implements Runnable, ImageProdu
 
     public synchronized void setSize(boolean scanlines, int width, int height) {
 
+        //System.out.println("Width="+width);
         /* Setup options. */
-        _scanlines = scanlines;
+        _scanlines = false;
         
         // hack
         //_scanlines = false;
@@ -178,12 +179,12 @@ public class software_gfx extends java.awt.Frame implements Runnable, ImageProdu
         /* Setup pixel buffer and dimensions. */
         ratio = ((float) width) / ((float) height);
 
-        _width = width;
-        if (_scanlines) {
+        this._width = width;
+        /*if (_scanlines) {
             width *= 2;
             height *= 2;
-        }
-        _height = height;
+        }*/
+        this._height = height;
         _pixels = new int[width * height];
         /* Setup frame dimensions. */
         _insets = getInsets();
@@ -219,9 +220,13 @@ public class software_gfx extends java.awt.Frame implements Runnable, ImageProdu
             super.setSize(width * 2 + this._insets.left + this._insets.right - (int) (width * 0.14), height * 2 + this._insets.top + this._insets.bottom);
         } else if (Machine.gamedrv.source_file.equals("amstrad.java")) {
             super.setSize(width + this._insets.left + this._insets.right, height * 2 + this._insets.top + this._insets.bottom);
+        } else if ((Machine.gamedrv.name.equals("msx2")) || (Machine.gamedrv.name.equals("msx2a"))) {
+            super.setSize(width + this._insets.left + this._insets.right, height + this._insets.top + this._insets.bottom);
         } else {
             super.setSize(width * 2 + this._insets.left + this._insets.right, height * 2 + this._insets.top + this._insets.bottom);
         }
+        
+        //System.out.println("Width2="+width);
         System.out.println(this.getWidth() + "x" + this.getHeight());
         super.createBufferStrategy(2);//double buffering
         this._strategy = super.getBufferStrategy();

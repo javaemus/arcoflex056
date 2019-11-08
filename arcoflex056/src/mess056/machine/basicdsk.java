@@ -96,8 +96,9 @@ public class basicdsk {
 
             if (id < basicdsk_MAX_DRIVES)
             {
+                
                     _basicdsk w = basicdsk_drives[id];
-
+                    
                     /* do we have an image name ? */
                     //if (name==null || !name[0])
                     if (name==null)
@@ -105,7 +106,8 @@ public class basicdsk {
                             return INIT_PASS;
                     }
                     w.mode = 1;
-                    w.image_file = image_fopen(IO_FLOPPY, id, OSD_FILETYPE_IMAGE_R, OSD_FOPEN_RW);
+                    w.image_file = image_fopen(IO_FLOPPY, id, OSD_FILETYPE_IMAGE_R, OSD_FOPEN_READ);
+                    System.out.println("basicdsk_floppy_init c");
                     if( w.image_file == null )
                     {
                             w.mode = 0;
@@ -123,11 +125,16 @@ public class basicdsk {
                     /* the following line is unsafe, but floppy_drives_init assumes we start on track 0,
                     so we need to reflect this */
                     w.track = 0;
+                    
+                    System.out.println("basicdsk_floppy_init 2");
 
                     floppy_drive_set_disk_image_interface(id,basicdsk_floppy_interface);
+                    
+                    System.out.println("basicdsk_floppy_init 3");
 
                     return  INIT_PASS;
             }
+            System.out.println("basicdsk_floppy_init exit");
 
             return INIT_FAIL;
     }

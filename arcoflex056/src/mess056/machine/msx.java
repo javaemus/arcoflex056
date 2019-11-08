@@ -206,6 +206,10 @@ public class msx
 	    if (type < 0)
 	    {
 	        type = msx_probe_type (pmem, size);
+                
+                //type=15;
+                
+                System.out.println("CART TYPE="+mapper_types[type]);
 	
 	        if ( !( (pmem.read(0) == 'A') && (pmem.read(1) == 'B') ) )
 	        {
@@ -1040,6 +1044,7 @@ public class msx
 
 	public static io_initPtr msx_floppy_init = new io_initPtr() {
             public int handler(int id) {
+                
                 Object f;
 		int size, heads = 2;
 	
@@ -1064,12 +1069,13 @@ public class msx
 			}
 		else
 			return INIT_FAIL;
-	
+                
+                
 		if (basicdsk_floppy_init (id) != INIT_PASS)
 			return INIT_FAIL;
-	
-		basicdsk_set_geometry (id, 80, heads, 9, 512, 1, 0);
-	
+                
+                basicdsk_set_geometry (id, 80, heads, 9, 512, 1, 0);
+                
 		return INIT_PASS;
             }
         };
@@ -1142,6 +1148,7 @@ public class msx
                 {
                     cpu_setbank (1 + page * 2, new UBytePtr(ROM, page * 0x4000));
                     cpu_setbank (2 + page * 2, new UBytePtr(ROM, page * 0x4000 + 0x2000));
+                    //cpu_setbank (3 + page * 2, new UBytePtr(ROM, page * 0x4000 + 0x2000 + 0x2000));
                 } else {
                     cpu_setbank (1 + page * 2, msx1.empty);
                     cpu_setbank (2 + page * 2, msx1.empty);
@@ -1159,18 +1166,25 @@ public class msx
 
                 if (msx1.cart[0].type == 0 && msx1.cart[0].mem!=null)
                 {
+                    //System.out.println("A");
                     cpu_setbank (1 + page * 2, new UBytePtr(msx1.cart[0].mem, page * 0x4000));
                     cpu_setbank (2 + page * 2, new UBytePtr(msx1.cart[0].mem, page * 0x4000 + 0x2000));
                 } else {
+                    //System.out.println("B");
                     if (page == 0 || page == 3 || msx1.cart[0].mem==null)
                     {
+                        //System.out.println("C");
                             if (page==0 && Machine.gamedrv.name.startsWith("msx2") )
                                             {
+                                                //System.out.println("D");
                                     cpu_setbank (1, new UBytePtr(ROM, 0x8000));
                                     cpu_setbank (2, new UBytePtr(ROM, 0xa000));
+                                    //cpu_setbank (3, new UBytePtr(ROM, 0xc000));
+                                    
                                             }
                                     else
                                             {
+                                                //System.out.println("E");
                             cpu_setbank (1 + page * 2, msx1.empty);
                             cpu_setbank (2 + page * 2, msx1.empty);
                                             }

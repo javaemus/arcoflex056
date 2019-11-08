@@ -725,7 +725,7 @@ public class v9938
 /*TODO*///	#undef 	V9938_WIDTH
 	
 	public static ModeSprites_HandlersPtr v9938_sprite_mode1 = new ModeSprites_HandlersPtr() {
-            public void handler(int line, UBytePtr col) {
+            public void handler(int line, UShortPtr col) {
 
 		UBytePtr attrtbl, patterntbl, patternptr;
 		int x, y, p, height, c, p2, i, n, pattern;
@@ -749,7 +749,7 @@ public class v9938
 			{
 			y = attrtbl.read(0);
 			if (y == 208) break;
-			y = (y - _vdp.contReg[23]) & 255;
+			//y = (y - _vdp.contReg[23]) & 255;
 			if (y > 208)
 				y = -(~y&255);
 			else
@@ -767,8 +767,8 @@ public class v9938
 					if (_vdp.sprite_limit != 0) break;
 					}
 				/* get x */
-				x = attrtbl.read(1);
-				if ((attrtbl.read(3) & 0x80)!=0) x -= 32;
+				x = attrtbl.read(1) + 16;
+				//if ((attrtbl.read(3) & 0x80)!=0) x -= 32;
 	
 				/* get pattern */
 				pattern = attrtbl.read(2);
@@ -807,30 +807,30 @@ public class v9938
 								if ( (col.read(x) & 0x80) == 0)
 									{
 									if (c!=0 || (_vdp.contReg[8] & 0x20)!=0 )
-										col.write(x, col.read(x) | 0xc0 | c);
+										col.write(x, (char) (col.read(x) | 0xc0 | c));
 									else
-										col.write(x, col.read(x) | 0x40);
+										col.write(x, (char) (col.read(x) | 0x40));
 									}
 	
 								/* if zoomed, draw another pixel */
 								if ((_vdp.contReg[1] & 1) != 0)
 									{
 									if ((col.read(x+1) & 0x40) != 0)
-	    	                        	{
-	       		                    	/* we have a collision! */
+                                                                        {
+                                                                                /* we have a collision! */
 										if (p2 < 4)
 											_vdp.statReg[0] |= 0x20;
-	                            		}
-	                        		if ( (col.read(x+1) & 0x80) == 0)
-		                            	{
-	   		                         	if (c!=0 || (_vdp.contReg[8] & 0x20)!=0 )
-											col.write(x+1, col.read(x+1) | 0xc0 | c);
-										else
-											col.write(x+1, col.read(x+1) | 0x80);
-	                            		}
-									}
+                                                                        }
+                                                                        if ( (col.read(x+1) & 0x80) == 0)
+                                                                        {
+                                                                                if (c!=0 || (_vdp.contReg[8] & 0x20)!=0 )
+                                                                                                                col.write(x+1, (char) (col.read(x+1) | 0xc0 | c));
+                                                                                                        else
+                                                                                                                col.write(x+1, (char) (col.read(x+1) | 0x80));
+                                                                        }
 								}
 							}
+						}
 						if ((_vdp.contReg[1] & 1)!=0) x += 2; else x++;
 						pattern <<= 1;
 						}
@@ -839,9 +839,9 @@ public class v9938
 				p2++;
 				}
 	
-			if (p >= 31) break;
-			p++;
-			attrtbl.inc( 4 );
+                                if (p >= 31) break;
+                                p++;
+                                attrtbl.inc( 4 );
 			}
 	
 		if ( (_vdp.statReg[0] & 0x40) == 0)
@@ -852,7 +852,7 @@ public class v9938
         
 	public static ModeSprites_HandlersPtr v9938_sprite_mode2 = new ModeSprites_HandlersPtr() {
             @Override
-            public void handler(int line, UBytePtr col) {
+            public void handler(int line, UShortPtr col) {
                 //System.out.println("v9938_sprite_mode2");
                 boolean goto_skip_first_cc_set = false;
 		int attrtbl, patterntbl, patternptr, colourtbl;
@@ -878,10 +878,10 @@ public class v9938
 			{
 			y = v9938_vram_read (attrtbl);
 			if (y == 216) break;
-			y = (y - _vdp.contReg[23]) & 255;
+			/*y = (y - _vdp.contReg[23]) & 255;
 			if (y > 216)
 				y = -(~y&255);
-			else
+			else*/
 				y++;
 	
 			/* if sprite in range, has to be drawn */
@@ -922,7 +922,7 @@ public class v9938
 					v9938_vram_read (patternptr + 16);
 	
 				/* get x */
-				x = v9938_vram_read (attrtbl + 1);
+				x = v9938_vram_read (attrtbl + 1) + 16;
 				if ((c & 0x80)!=0) x -= 32;
 	
 				n = (_vdp.contReg[1] & 2)!=0 ? 16 : 8;
@@ -938,20 +938,20 @@ public class v9938
 									{
 									if ( (c & 0x40)==0 )
 										{
-										if ((col.read(x) & 0x20)!=0) col.write(x, col.read(x) | 0x10 );
+										if ((col.read(x) & 0x20)!=0) col.write(x, (char) (col.read(x) | 0x10));
 										else 
-											col.write(x, col.read(x) | 0x20 | (c & 15) );
+											col.write(x, (char) (col.read(x) | 0x20 | (c & 15)));
 										}
 									else
-										col.write(x, col.read(x)| c & 15);
+										col.write(x, (char) (col.read(x)| c & 15));
 	
-									col.write(x, col.read(x) | 0x80);
+									col.write(x, (char) (col.read(x) | 0x80));
 									}
 								}
 							else
 								{
 								if ( (c & 0x40)==0 && (col.read(x) & 0x20)!=0 )
-									col.write(x, col.read(x) | 0x10 );
+									col.write(x, (char) (col.read(x) | 0x10));
 								}
 	
 							if ( (c & 0x60)==0 && (pattern & 0x8000)!=0 )
@@ -963,7 +963,7 @@ public class v9938
 										_vdp.statReg[0] |= 0x20;
 									}
 								else
-									col.write(x, col.read(x) | 0x40 );
+									col.write(x, (char) (col.read(x) | 0x40));
 								}
 	
 							x++;
@@ -1227,7 +1227,7 @@ public class v9938
 		{
                     //System.out.println("v9938_refresh_16");
 		int i, double_lines;
-		UBytePtr col=new UBytePtr(256);
+		UShortPtr col=new UShortPtr(256 * 2);
 		UShortPtr ln, ln2 = null;
 	
 		double_lines = 0;
@@ -1235,17 +1235,17 @@ public class v9938
 		if (_vdp.size == RENDER_HIGH)
 			{
 			//if ((_vdp.contReg[9] & 0x08)!=0)
-			//	{
+				{
 				_vdp.size_now = RENDER_HIGH;
 			ln = new UShortPtr(bmp.line[line*2+((_vdp.statReg[2]>>1)&1)]);
-			/*	}
-			else
-				{
-				ln = new UShortPtr(bmp.line[line*2]);
-				ln2 = new UShortPtr(bmp.line[line*2+1]);
-				double_lines = 1;
 				}
-                        */
+			//else
+			//	{
+			//	ln = new UShortPtr(bmp.line[line*2]);
+				//ln2 = new UShortPtr(bmp.line[line*2+1]);
+				//double_lines = 1;
+			//	}
+                        
 			}
 		else
 			ln = new UShortPtr(bmp.line[line*2]);
@@ -1486,13 +1486,15 @@ public class v9938
 		{
                     //System.out.println("v9938_interrupt");
                     
-		UBytePtr col=new UBytePtr(256);
+		UShortPtr col=new UShortPtr(256*2);
 		int scanline, max, pal, scanline_start;
 	
 		v9938_update_command ();
 	
 		pal = _vdp.contReg[9] & 2;
-		if (pal!=0) scanline_start = 53; else scanline_start = 26;
+		if (pal!=0) 
+                    scanline_start = 53; 
+                else scanline_start = 26;
 	
 		/* set flags */
 		if (_vdp.scanline == (_vdp.offset_y + scanline_start) )
@@ -1504,6 +1506,7 @@ public class v9938
 			_vdp.statReg[2] |= 0x40;
 			_vdp.statReg[0] |= 0x80;
 			}
+                        
 	
 		max = (pal!=0) ? 255 : (_vdp.contReg[9] & 0x80)!=0 ? 234 : 244;
 		scanline = (_vdp.scanline - scanline_start - _vdp.offset_y);
@@ -1514,7 +1517,8 @@ public class v9938
 			logerror ("V9938: scanline interrupt (%d)\n", scanline);
 			}
 		else
-			if ( (_vdp.contReg[0] & 0x10)==0 ) _vdp.statReg[1] &= 0xfe;
+			if ( (_vdp.contReg[0] & 0x10)==0 ) 
+                            _vdp.statReg[1] &= 0xfe;
 	
 		v9938_check_int ();
 	

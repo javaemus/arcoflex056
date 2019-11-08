@@ -33,11 +33,11 @@ public class v9938mod {
     }
     
     public static abstract interface ModeSprites_HandlersPtr {
-        public abstract void handler(int line, UBytePtr col);
+        public abstract void handler(int line, UShortPtr col);
     }
     
     public static abstract interface ModeDraw_Sprites_HandlersPtr {
-        public abstract void handler(UShortPtr ln, UBytePtr col);
+        public abstract void handler(UShortPtr ln, UShortPtr col);
     }
     
     public static ModeVisible_8_HandlersPtr v9938_mode_text1_8 = new ModeVisible_8_HandlersPtr() {
@@ -304,27 +304,27 @@ if (V9938_WIDTH > 512){
     
     public static ModeDraw_Sprites_HandlersPtr v9938_default_draw_sprite_8 = new ModeDraw_Sprites_HandlersPtr() {
         @Override
-        public void handler(UShortPtr ln, UBytePtr col) {
+        public void handler(UShortPtr ln, UShortPtr col) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     };
     
     public static ModeDraw_Sprites_HandlersPtr v9938_default_draw_sprite_8s = new ModeDraw_Sprites_HandlersPtr() {
         @Override
-        public void handler(UShortPtr ln, UBytePtr col) {
+        public void handler(UShortPtr ln, UShortPtr col) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     };
     
     public static ModeDraw_Sprites_HandlersPtr v9938_default_draw_sprite_16 = new ModeDraw_Sprites_HandlersPtr() {
         @Override
-        public void handler(UShortPtr ln, UBytePtr col) {
+        public void handler(UShortPtr ln, UShortPtr col) {
             int i;
-//if (V9938_WIDTH > 512){
-//	ln.inc( _vdp.offset_x * 4 );
-//} else {
-	ln.inc( _vdp.offset_x * 2);
-//}
+if (V9938_WIDTH > 512){
+	ln.inc( _vdp.offset_x * 2 );
+} else {
+	ln.inc( _vdp.offset_x);
+}
 
 	for (i=0;i<256;i++)
 		{
@@ -332,26 +332,25 @@ if (V9938_WIDTH > 512){
 			{
 			ln.write((char) Machine.pens[pal_ind16[col.read(i)&0x0f]]);
                         ln.inc();
-                        ln.write((char) Machine.pens[pal_ind16[col.read(i)&0x0f]]);
-                        ln.inc();
+
 //if (V9938_WIDTH > 512){
-//			ln.write((char) Machine.pens[pal_ind16[col.read(i)&0x0f]]);
-//                        ln.inc();
+			ln.write((char) Machine.pens[pal_ind16[col.read(i)&0x0f]]);
+                        ln.inc();
 //}
 			}
 		else
 //if (V9938_WIDTH > 512){
-//			ln.inc( 2 );
-//} else {
-			ln.inc(2);
-//}
+			ln.inc( 2 );
+/*} else {
+			ln.inc();
+}*/
 		}
         }
     };
     
     public static ModeDraw_Sprites_HandlersPtr v9938_default_draw_sprite_16s = new ModeDraw_Sprites_HandlersPtr() {
         @Override
-        public void handler(UShortPtr ln, UBytePtr col) {
+        public void handler(UShortPtr ln, UShortPtr col) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     };
@@ -878,14 +877,14 @@ if (V9938_WIDTH > 512){
    
     public static ModeDraw_Sprites_HandlersPtr v9938_graphic5_draw_sprite_8 = new ModeDraw_Sprites_HandlersPtr() {
         @Override
-        public void handler(UShortPtr ln, UBytePtr col) {
+        public void handler(UShortPtr ln, UShortPtr col) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     };
     
     public static ModeDraw_Sprites_HandlersPtr v9938_graphic5_draw_sprite_16 = new ModeDraw_Sprites_HandlersPtr() {
         @Override
-        public void handler(UShortPtr ln, UBytePtr col) {
+        public void handler(UShortPtr ln, UShortPtr col) {
             //System.out.println("v9938_graphic5_draw_sprite_16");
             int i;
 if (V9938_WIDTH > 512){
@@ -917,14 +916,14 @@ if (V9938_WIDTH > 512){
     
     public static ModeDraw_Sprites_HandlersPtr v9938_graphic5_draw_sprite_8s = new ModeDraw_Sprites_HandlersPtr() {
         @Override
-        public void handler(UShortPtr ln, UBytePtr col) {
+        public void handler(UShortPtr ln, UShortPtr col) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     };
     
     public static ModeDraw_Sprites_HandlersPtr v9938_graphic5_draw_sprite_16s = new ModeDraw_Sprites_HandlersPtr() {
         @Override
-        public void handler(UShortPtr ln, UBytePtr col) {
+        public void handler(UShortPtr ln, UShortPtr col) {
             //System.out.println("v9938_graphic5_draw_sprite_16");
             int i;
 if (V9938_WIDTH > 512){
@@ -1185,7 +1184,7 @@ if (V9938_WIDTH > 512){
     
     public static ModeDraw_Sprites_HandlersPtr v9938_graphic7_draw_sprite_8 = new ModeDraw_Sprites_HandlersPtr() {
         @Override
-        public void handler(UShortPtr ln, UBytePtr col) {
+        public void handler(UShortPtr ln, UShortPtr col) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     };
@@ -1196,7 +1195,7 @@ if (V9938_WIDTH > 512){
     
     public static ModeDraw_Sprites_HandlersPtr v9938_graphic7_draw_sprite_16 = new ModeDraw_Sprites_HandlersPtr() {
         @Override
-        public void handler(UShortPtr ln, UBytePtr col) {
+        public void handler(UShortPtr ln, UShortPtr col) {
             int i;
 
 if (V9938_WIDTH > 512){
@@ -1228,14 +1227,14 @@ if (V9938_WIDTH > 512){
     
     public static ModeDraw_Sprites_HandlersPtr v9938_graphic7_draw_sprite_8s = new ModeDraw_Sprites_HandlersPtr() {
         @Override
-        public void handler(UShortPtr ln, UBytePtr col) {
+        public void handler(UShortPtr ln, UShortPtr col) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     };
     
     public static ModeDraw_Sprites_HandlersPtr v9938_graphic7_draw_sprite_16s = new ModeDraw_Sprites_HandlersPtr() {
         @Override
-        public void handler(UShortPtr ln, UBytePtr col) {
+        public void handler(UShortPtr ln, UShortPtr col) {
             throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
         }
     };

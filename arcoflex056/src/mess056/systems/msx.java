@@ -987,9 +987,11 @@ public class msx
 	ROM_END(); }}; 
 	
 	static RomLoadPtr rom_msx2 = new RomLoadPtr(){ public void handler(){
-	    ROM_REGION (0x10000, REGION_CPU1,0);
-	    ROM_LOAD ("msx20.rom", 0x0000, 0x8000, 0xf05ed518);
-	    ROM_LOAD ("msx20ext.rom", 0x8000, 0x4000, 0x95db2959);
+	    ROM_REGION (0x20000, REGION_CPU1,0);
+	    ROM_LOAD ("msx2.rom", 0x0000, 0x8000, 0xf05ed518);
+	    ROM_LOAD ("msx2ext.rom", 0x8000, 0x4000, 0x95db2959);
+            ROM_LOAD_OPTIONAL ("disk.rom", 0xc000, 0x4000, 0xb7c58fad);
+            ROM_LOAD_OPTIONAL ("fmpac.rom", 0x10000, 0x10000, 0x0e84505d);
 	ROM_END(); }}; 
 	
 	static RomLoadPtr rom_msx2a = new RomLoadPtr(){ public void handler(){
@@ -1015,7 +1017,7 @@ public class msx
             new IODevice(
                 IO_CARTSLOT,                /* type */
                 MSX_MAX_CARTS,              /* count */
-                "rom\0",                    /* file extensions */
+                "rom\0mx2\0",                    /* file extensions */
                 IO_RESET_NONE,				/* reset if file changed */
                 null,
                 msx_load_rom,               /* init */
