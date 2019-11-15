@@ -205,7 +205,7 @@ public class vic6567
 /*TODO*///		void (*port_changed)(int);
 
 		public int lines;
-		public timer_entry lightpentimer;
+/*TODO*///		public timer_entry lightpentimer;
 	
 		public int chargenaddr, videoaddr;
 	
@@ -310,12 +310,11 @@ public class vic6567
 	
 	static void vic2_set_interrupt (int mask)
 	{
-            //System.out.println("vic2_set_interrupt "+vic2.reg[0x19]);
-		if ((((vic2.reg[0x19] ^ mask) & vic2.reg[0x1a] & 0xf)) !=0)
+            if ((((vic2.reg[0x19] ^ mask) & vic2.reg[0x1a] & 0xf)) != 0)
 		{
 			if ((vic2.reg[0x19] & 0x80)==0)
 			{
-				/*TODO*///DBG_LOG (2, "vic2", ("irq start %.2x\n", mask));
+                            System.out.println("Dentro!");
 				vic2.reg[0x19] |= 0x80;
 				vic2.interrupt.handler(1);
 			}
@@ -1509,13 +1508,13 @@ System.out.println("vic2_timer_timeout");
 				double tme = 0.0;
 	
 				/* lightpen timer starten */
-				vic2.lightpentimer = timer_set (tme, 1, vic2_timer_timeout);
+/*TODO*///				vic2.lightpentimer = timer_set (tme, 1, vic2_timer_timeout);
 			}
 			//state_display(vic2.bitmap);
 		}
 		if (vic2.rasterline == C64_2_RASTERLINE (RASTERLINE()))
 		{
-			if (vic2.on)
+                    	if (vic2.on)
 				vic2_drawlines (vic2.lastline, vic2.rasterline);
 			vic2_set_interrupt(1);
 		}

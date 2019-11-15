@@ -51,6 +51,7 @@ import static mame056.timer.*;
 import static mame056.timerH.*;
 import static mess056.device.*;
 import static mess056.deviceH.*;
+import static mess056.formats.fmsx_cas.*;
 import static mess056.includes.flopdrvH.*;
 import static mess056.includes.msxH.*;
 import static mess056.includes.tc8521H.*;
@@ -671,7 +672,7 @@ public class msx
                                 {
                                     z80_table[i][0x100+n] = old_z80_tables[i][n] + (i > 1 ? 2 : 1);
                                 }
-				/*TODO*///z80_set_cycle_table (i, z80_table + i*0x100);
+				//z80_set_cycle_table (i, z80_table + i*0x100);
                                 z80_set_cycle_table(i, z80_table[i*0x100]);
                     }
                 }
@@ -1723,6 +1724,7 @@ public class msx
 		int caslen, ret=0;
 	
                 caslen = osd_fsize (f);
+                System.out.println("CAS len="+caslen);
 		if (caslen < 9) return -1;
 	
                 casdata = new UBytePtr (caslen);
@@ -1736,7 +1738,8 @@ public class msx
 	 	if (caslen != osd_fread (f, casdata, caslen) ) return -1;
 	   	osd_fseek (f, 0, SEEK_SET);
 	
-	    /*TODO*///ret = fmsx_cas_to_wav (casdata, caslen, cas_samples, cas_len);
+	    ret = fmsx_cas_to_wav (casdata, caslen, cas_samples, cas_len);
+            
 	    if (ret == 2)
 		logerror ("cas2wav: out of memory\n");
 	    else if (ret != 0)

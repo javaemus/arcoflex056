@@ -192,6 +192,16 @@ public class cstring {
         return 0;
     }
 
+    public static int memcmp(UBytePtr dst, char[] src, int size) {
+        for (int i = 0; i < size; i++) {
+            if (dst.read(i) != src[i]) {
+                return -1;
+
+            }
+        }
+        return 0;
+    }
+    
     public static int memcmp(char[] dist, int dstoffs, String src, int size) {
         char[] srcc = src.toCharArray();
         for (int i = 0; i < size; i++) {

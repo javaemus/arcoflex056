@@ -301,8 +301,8 @@ public class cbmserb
 	{
 		int i;
 	
-		/*TODO*///for (i = 0; i < cbm_serial.count; i++)
-		/*TODO*///	vc1541_reset_write (cbm_serial.drives[i], level);
+		for (i = 0; i < cbm_serial.count; i++)
+			vc1541_reset_write (cbm_serial.drives[i], level);
 		/* init bus signals */
 	}
 	

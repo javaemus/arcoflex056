@@ -64,7 +64,7 @@ public class cia6526
 		public int out_a;
 		public int ddr_a;
 	
-		public int in_b;
+		public int in_b=2;
 		public int out_b;
 		public int ddr_b;
 	
@@ -102,10 +102,10 @@ public class cia6526
 	
 	public static _CIA6526[] cia=new _CIA6526[MAX_CIA];
         
-        static {
+        /*static {
             for (int _i=0 ; _i<MAX_CIA ; _i++)
                 cia[_i] = new _CIA6526();
-        }
+        }*/
 /*TODO*///	{
 /*TODO*///		{0}
 /*TODO*///	};
@@ -122,7 +122,7 @@ public class cia6526
 		if (which >= MAX_CIA)
 			return;
 		//memset (cia + which, 0, sizeof (cia[which]));
-                //cia[which] = new _CIA6526();
+                cia[which] = new _CIA6526();
 		cia[which].number=which;
 		cia[which].intf = intf;
 	}
@@ -145,18 +145,18 @@ public class cia6526
 		{
                     if (cia[i]!=null){
                         
-                        //cia6526_interface intf = cia[i].intf;
+                        cia6526_interface intf = cia[i].intf;
 	
-			/*if (cia[i].timer1 != null)
-				timer_remove (cia[i].timer1);
-			if (cia[i].timer2 != null)
-				timer_remove (cia[i].timer2);
-			if (cia[i].todtimer != null)
-				timer_remove (cia[i].todtimer);*/
+/*TODO*///			if (cia[i].timer1 != null)
+/*TODO*///				timer_remove (cia[i].timer1);
+/*TODO*///			if (cia[i].timer2 != null)
+/*TODO*///				timer_remove (cia[i].timer2);
+/*TODO*///			if (cia[i].todtimer != null)
+/*TODO*///				timer_remove (cia[i].todtimer);
 			//memset (&cia[i], 0, sizeof (cia[i]));
-                        //cia[i] = new _CIA6526();
-			//cia[i].number = i;
-			//cia[i].intf = intf;
+/*TODO*///                        cia[i] = new _CIA6526();
+			cia[i].number = i;
+			cia[i].intf = intf;
 			cia[i].t1l = 0xffff;
 			cia[i].t2l = 0xffff;
 			if (cia[i].intf!=null) cia[i].todtimer=timer_set(0.1,i,cia_tod_timeout);
@@ -229,10 +229,10 @@ public class cia6526
 				}
 			}
 		}
-		if ((cia[which].todhour == cia[which].alarmhour)
+		/*if ((cia[which].todhour == cia[which].alarmhour)
 			&& (cia[which].todmin == cia[which].alarmmin)
 			&& (cia[which].todsec == cia[which].alarmsec)
-			&& (cia[which].tod10ths == cia[which].alarm10ths))
+			&& (cia[which].tod10ths == cia[which].alarm10ths))*/
 			cia_set_interrupt(which, 4);
 		if (TODIN_50HZ(cia[which]) != 0)
 		{
@@ -467,23 +467,24 @@ public class cia6526
 	public static int cia6526_read (int This, int offset)
 	{
             
+            System.out.println("cia6526_read "+offset);
 		int val = 0;
 	
 		//offset &= 0xf;
 		switch (offset & 0xf)
 		{
 		case 0:
-                    System.out.println("0="+(cia[This].intf.in_a_func != null));
-                    System.out.println(This);
-                    System.out.println((cia[This].number));
-                    System.out.println(cia[This].intf.in_a_func.handler(cia[This].number));
+                    //System.out.println("0="+(cia[This].intf.in_a_func != null));
+                    //System.out.println(This);
+                    //System.out.println((cia[This].number));
+                    //System.out.println(cia[This].intf.in_a_func.handler(cia[This].number));
 			if (cia[This].intf.in_a_func != null)
 				cia[This].in_a = cia[This].intf.in_a_func.handler(cia[This].number);
 			val = ((cia[This].out_a & cia[This].ddr_a)
 				   | (cia[This].intf.a_pullup & ~cia[This].ddr_a)) & cia[This].in_a;
 			break;
 		case 1:
-                    System.out.println("1="+cia[This].intf.in_b_func);
+                    //System.out.println("1="+cia[This].intf.in_b_func);
 			if (cia[This].intf.in_b_func != null)
 				cia[This].in_b = cia[This].intf.in_b_func.handler(cia[This].number);
 			val = ((cia[This].out_b & cia[This].ddr_b)
@@ -565,6 +566,7 @@ public class cia6526
 		}
 /*TODO*///		DBG_LOG (1, "cia read", ("%d %.2x:%.2x\n", cia[This].number, offset, val));
                 //System.out.println("cia6526_read "+offset+" ,"+This+"="+val);
+                //System.out.println("cia6526_read "+offset+" ,"+This+"="+val);
 		return val;
 	}
 	
@@ -575,11 +577,11 @@ public class cia6526
 	{
                 //System.out.println("cia6526_write 1 "+offset);
 /*TODO*///		DBG_LOG (1, "cia write", ("%d %.2x:%.2x\n", This->number, offset, data));
-		//offset &= 0xf;
+		offset &= 0xf;
                 
                 //System.out.println("cia6526_write 2 "+offset);
 	
-		switch (offset & 0xf)
+		switch (offset)
 		{
 		case 0:
 			cia[This].out_a = data;

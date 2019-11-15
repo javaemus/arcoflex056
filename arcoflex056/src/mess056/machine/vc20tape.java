@@ -1260,6 +1260,7 @@ public class vc20tape
 			break;
 		}
 		return data;
+                //return 0;
 	}
 	
 	public static int vc20_tape_read ()

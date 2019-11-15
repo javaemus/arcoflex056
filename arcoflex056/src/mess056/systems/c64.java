@@ -254,57 +254,54 @@ public class c64
 	public static Memory_ReadAddress c64_readmem[]={
 		new Memory_ReadAddress(MEMPORT_MARKER, MEMPORT_DIRECTION_READ | MEMPORT_TYPE_MEM | MEMPORT_WIDTH_8),
 		new Memory_ReadAddress(0x0000, 0x0001, c64_m6510_port_r),
-		new Memory_ReadAddress(0x0002, 0x7fff, MRA_RAM),
-		new Memory_ReadAddress(0x8000, 0x9fff, MRA_BANK1),	   /* ram or external roml */
-		new Memory_ReadAddress(0xa000, 0xbfff, MRA_BANK3),	   /* ram or basic rom or external romh */
-		new Memory_ReadAddress(0xc000, 0xcfff, MRA_RAM),
-	/*TODO*///#if 1
-		new Memory_ReadAddress(0xd000, 0xdfff, MRA_BANK5),
+                new Memory_ReadAddress(0x0002, 0x7fff, MRA_RAM),
+                new Memory_ReadAddress(0x8000, 0x9fff, MRA_BANK1),	   /* ram or external roml */
+                new Memory_ReadAddress(0xa000, 0xbfff, MRA_BANK3),	   /* ram or basic rom or external romh */
+                new Memory_ReadAddress(0xc000, 0xcfff, MRA_RAM),
+/*TODO*///
+                new Memory_ReadAddress(0xd000, 0xdfff, MRA_BANK5),
 	/*TODO*///#else
 	/* dram */
-	/* or character rom */
-/*TODO*///		new Memory_ReadAddress(0xd000, 0xd3ff, MRA_BANK9),
-/*TODO*///		new Memory_ReadAddress(0xd400, 0xd7ff, MRA_BANK10),
-/*TODO*///		new Memory_ReadAddress(0xd800, 0xdbff, MRA_BANK11),		   /* colorram  */
-/*TODO*///		new Memory_ReadAddress(0xdc00, 0xdcff, MRA_BANK12),
-/*TODO*///		new Memory_ReadAddress(0xdd00, 0xddff, MRA_BANK13),
-/*TODO*///		new Memory_ReadAddress(0xde00, 0xdeff, MRA_BANK14),		   /* csline expansion port */
-/*TODO*///		new Memory_ReadAddress(0xdf00, 0xdfff, MRA_BANK15),		   /* csline expansion port */
-	/*TODO*///#endif
-		new Memory_ReadAddress(0xe000, 0xffff, MRA_BANK7),	   /* ram or kernel rom or external romh */
-		//new Memory_ReadAddress(0x10000, 0x11fff, MRA_ROM),	   /* basic at 0xa000 */
-		//new Memory_ReadAddress(0x12000, 0x13fff, MRA_ROM),	   /* kernal at 0xe000 */
-		//new Memory_ReadAddress(0x14000, 0x14fff, MRA_ROM),	   /* charrom at 0xd000 */
-		//new Memory_ReadAddress(0x15000, 0x153ff, MRA_RAM),
+/* or character rom */
+/*TODO*///	{0xd000, 0xd3ff, vic2_port_r},
+/*TODO*///	{0xd400, 0xd7ff, sid6581_0_port_r},
+/*TODO*///	{0xd800, 0xdbff, MRA_RAM},		   /* colorram  */
+/*TODO*///	{0xdc00, 0xdcff, cia6526_0_port_r},
+/*TODO*///	{0xdd00, 0xddff, cia6526_1_port_r},
+/*TODO*///	{0xde00, 0xdeff, MRA_NOP},		   /* csline expansion port */
+/*TODO*///	{0xdf00, 0xdfff, MRA_NOP},		   /* csline expansion port */
+/*TODO*///#endif
+                new Memory_ReadAddress(0xe000, 0xffff, MRA_BANK7),	   /* ram or kernel rom or external romh */
+/*TODO*///                new Memory_ReadAddress(0x10000, 0x11fff, MRA_ROM),	   /* basic at 0xa000 */
+/*TODO*///                new Memory_ReadAddress(0x12000, 0x13fff, MRA_ROM),	   /* kernal at 0xe000 */
+/*TODO*///                new Memory_ReadAddress(0x14000, 0x14fff, MRA_ROM),	   /* charrom at 0xd000 */
+/*TODO*///                new Memory_ReadAddress(0x15000, 0x153ff, MRA_RAM),	   /* colorram at 0xd800 */
 		new Memory_ReadAddress(MEMPORT_MARKER, 0)
 	};
 	
 	public static Memory_WriteAddress c64_writemem[]={
 		new Memory_WriteAddress(MEMPORT_MARKER, MEMPORT_DIRECTION_WRITE | MEMPORT_TYPE_MEM | MEMPORT_WIDTH_8),
 		new Memory_WriteAddress(0x0000, 0x0001, c64_m6510_port_w, c64_memory),
-		new Memory_WriteAddress(0x0002, 0x7fff, MWA_RAM),
-		new Memory_WriteAddress(0x8000, 0x9fff, MWA_BANK2),
-		new Memory_WriteAddress(0xa000, 0xcfff, MWA_RAM),
-	//	new Memory_WriteAddress(0xa000, 0xcfff, MWA_BANK16),
-	/*TODO*///#if 1
-		new Memory_WriteAddress(0xd000, 0xdfff, MWA_BANK6),
-	/*TODO*///#else
-		/* or dram memory */
-/*TODO*///		new Memory_WriteAddress(0xd000, 0xd3ff, vic2_port_w),
-/*TODO*///		new Memory_WriteAddress(0xd400, 0xd7ff, sid6581_0_port_w),
-/*TODO*///		new Memory_WriteAddress(0xd800, 0xdbff, c64_colorram_write),
-/*TODO*///		new Memory_WriteAddress(0xdc00, 0xdcff, cia6526_0_port_w),
-/*TODO*///		new Memory_WriteAddress(0xdd00, 0xddff, cia6526_1_port_w),
-/*TODO*///		new Memory_WriteAddress(0xde00, 0xdeff, MWA_NOP),		   /* csline expansion port */
-/*TODO*///		new Memory_WriteAddress(0xdf00, 0xdfff, MWA_NOP),		   /* csline expansion port */
-	/*TODO*///#endif
-		new Memory_WriteAddress(0xe000, 0xffff, MWA_BANK8),
-		//new Memory_WriteAddress(0x10000, 0x11fff, MWA_ROM, c64_basic),	/* basic at 0xa000 */
-		//new Memory_WriteAddress(0x12000, 0x13fff, MWA_ROM, c64_kernal),	/* kernal at 0xe000 */
-		//new Memory_WriteAddress(0x14000, 0x14fff, MWA_ROM, c64_chargen),	/* charrom at 0xd000 */
-		//new Memory_WriteAddress(0x15000, 0x153ff, MWA_RAM, c64_colorram),		/* colorram at 0xd800 */
-		//new Memory_WriteAddress(0x15400, 0x173ff, MWA_ROM, c64_roml),	/* basic at 0xa000 */
-		//new Memory_WriteAddress(0x17400, 0x193ff, MWA_ROM, c64_romh),
+                new Memory_WriteAddress(0x0002, 0x7fff, MWA_RAM),
+                new Memory_WriteAddress(0x8000, 0x9fff, MWA_BANK2),
+                new Memory_WriteAddress(0xa000, 0xcfff, MWA_RAM),
+/*TODO*///        #if 1
+                new Memory_WriteAddress(0xd000, 0xdfff, MWA_BANK6),
+/*TODO*///        #else
+/*TODO*///                /* or dram memory */
+/*TODO*///                {0xd000, 0xd3ff, vic2_port_w},
+/*TODO*///                {0xd400, 0xd7ff, sid6581_0_port_w},
+/*TODO*///                {0xd800, 0xdbff, c64_colorram_write},
+/*TODO*///                {0xdc00, 0xdcff, cia6526_0_port_w},
+/*TODO*///                {0xdd00, 0xddff, cia6526_1_port_w},
+/*TODO*///                {0xde00, 0xdeff, MWA_NOP},		   /* csline expansion port */
+/*TODO*///                {0xdf00, 0xdfff, MWA_NOP},		   /* csline expansion port */
+/*TODO*///        #endif
+                new Memory_WriteAddress(0xe000, 0xffff, MWA_BANK8),
+/*TODO*///                new Memory_WriteAddress(0x10000, 0x11fff, MWA_ROM, c64_basic),	/* basic at 0xa000 */
+/*TODO*///                new Memory_WriteAddress(0x12000, 0x13fff, MWA_ROM, c64_kernal),	/* kernal at 0xe000 */
+/*TODO*///                new Memory_WriteAddress(0x14000, 0x14fff, MWA_ROM, c64_chargen),	/* charrom at 0xd000 */
+/*TODO*///                new Memory_WriteAddress(0x15000, 0x153ff, MWA_RAM, c64_colorram),		/* colorram at 0xd800 */
 		new Memory_WriteAddress(MEMPORT_MARKER, 0)
 	};
 	
@@ -675,10 +672,14 @@ public class c64
 	ROM_END(); }}; 
 	
 	static RomLoadPtr rom_c64pal = new RomLoadPtr() { public void handler() {
-		ROM_REGION (0x19400, REGION_CPU1, 0);
-		ROM_LOAD ("901226.01", 0x10000, 0x2000, 0xf833d117);
-		ROM_LOAD( "901227.03",   0x12000, 0x2000, 0xdbe3e7c7 );
-		ROM_LOAD ("901225-01.u5", 0x14000, 0x1000, 0xec4272ee);
+		ROM_REGION (0x15400, REGION_CPU1, 0);
+                //ROM_LOAD ("390852.01", 0x10000, 0x4000, 0xb0a9c2da);
+		//ROM_LOAD ("901226.01", 0x10000, 0x2000, 0xf833d117);
+                ROM_LOAD ("basic.rom", 0x10000, 0x2000, 0xf833d117);
+		//ROM_LOAD( "901227.03",   0x12000, 0x2000, 0xdbe3e7c7 );
+		ROM_LOAD( "kernal_1.rom",   0x12000, 0x2000, 0xdbe3e7c7 );
+		//ROM_LOAD ("901225-01.u5", 0x14000, 0x1000, 0xec4272ee);
+                ROM_LOAD ("char.rom", 0x14000, 0x1000, 0xec4272ee);
 	ROM_END(); }}; 
 	
 	static RomLoadPtr rom_vic64s = new RomLoadPtr() { public void handler() {
@@ -911,23 +912,24 @@ public class c64
 		/* basic machine hardware */
 		new MachineCPU[] {
 			new MachineCPU(
-				CPU_M6510|CPU_16BIT_PORT,
-				VIC6567_CLOCK,
+				CPU_M6510,
+                                //CPU_M6502,
+				VIC6569_CLOCK,
 				c64_readmem, c64_writemem,
 				null, null,
 				c64_frame_interrupt, 1,
 				vic2_raster_irq, VIC2_HRETRACERATE
-                        )
+                            )
 		},
-		VIC6567_VRETRACERATE, DEFAULT_REAL_60HZ_VBLANK_DURATION,	/* frames per second, vblank duration */
+		VIC6569_VRETRACERATE, DEFAULT_REAL_60HZ_VBLANK_DURATION,	/* frames per second, vblank duration */
 		0,
 		c64_init_machine,
 		c64_shutdown_machine,
-	
-                /* video hardware */
+
+	  /* video hardware */
 		336,							   /* screen width */
 		216,							   /* screen height */
-		new rectangle(0, 336 - 1, 0, 216 - 1),		   /* visible_area */
+		new rectangle(0, 336 - 1, 0, 216 - 1),                      /* visible_area */
 		null,								   /* graphics decode info */
 		vic2_palette.length / 3,
 		0,
@@ -938,13 +940,12 @@ public class c64
 		vic2_vh_stop,
 		vic2_vh_screenrefresh,
 	
-                /* sound hardware */
+	  /* sound hardware */
 		0, 0, 0, 0,
-		/*TODO*///new MachineSound[] {
-		/*TODO*///	new MachineSound(SOUND_CUSTOM, ntsc_sound_interface ),
-		/*TODO*///	new MachineSound(SOUND_DAC, vc20tape_sound_interface)		
-		/*TODO*///}
-                
+/*TODO*///		{
+/*TODO*///			{ SOUND_CUSTOM, &pal_sound_interface },
+/*TODO*///			{ 0 }
+/*TODO*///		}
                 null
 	);
 	

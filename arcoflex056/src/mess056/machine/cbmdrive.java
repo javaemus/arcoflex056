@@ -781,7 +781,7 @@ public class cbmdrive
 	/*TODO*///#endif
 	}
 	
-	public static void vc1541_state (CBM_Drive vc1541)
+	public static CBM_Drive vc1541_state (CBM_Drive vc1541)
 	{
 	/*TODO*///#if VERBOSE_DBG
 	/*TODO*///	int oldstate = vc1541.i.serial.state;
@@ -1395,12 +1395,14 @@ public class cbmdrive
 	/*TODO*///				 cbm_serial.clock[0] ? "CLOCK" : "clock",
 	/*TODO*///				 cbm_serial.data[0] ? "DATA" : "data");
 	/*TODO*///#endif
+        
+            return vc1541;
 	}
 	
 	/* difference between vic20 and pet (first series)
 	   pet lowers atn and wants a reaction on ndac */
 	
-	public static void c2031_state(CBM_Drive drive)
+	public static CBM_Drive c2031_state(CBM_Drive drive)
 	{
 	/*TODO*///#if VERBOSE_DBG
 	/*TODO*///	int oldstate = drive.i.ieee.state;
@@ -1552,5 +1554,7 @@ public class cbmdrive
 	/*TODO*///				 drive.i.ieee.state, drive.state
 	/*TODO*///				 );
 	/*TODO*///#endif
+        
+            return drive;
 	}
 }

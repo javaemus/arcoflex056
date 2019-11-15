@@ -1001,8 +1001,8 @@ public class spectrum
 	
 				/* go to next block */
 				pSource.inc(3 + length);
-			}
-			while (( pSource.memory.length - pSnapshot.memory.length) < SnapshotDataSize);
+                                
+			} while (( pSource.offset - pSnapshot.offset) < SnapshotDataSize);
 	
 			if ((spectrum_128_port_7ffd_data != -1) && (z80_type != SPECTRUM_Z80_SNAPSHOT_48K))
 			{

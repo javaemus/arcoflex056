@@ -33,6 +33,7 @@ import static mess056.systems.gb.*;
 import static mess056.systems.c16.*;
 import static mess056.systems.nes.*;
 import static mess056.systems.c64.*;
+import static mess056.systems.k64.*;
 
 public class system {
 	/*TODO*///	
@@ -333,7 +334,8 @@ public class system {
 	/*TODO*///		DRIVER( vic20i )	/* Commodore Vic-20 IEEE488 Interface			  */
 	/*TODO*///	
 	/*TODO*///		DRIVER( max )		/* Max (Japan)/Ultimax (US)/VC10 (German)		  */
-	driver_c64,		/* Commodore 64 - NTSC							  */
+	driver_k64,
+        driver_c64,		/* Commodore 64 - NTSC							  */
 	/*TODO*///	/*	DRIVER( j64 )*/		/* Commodore 64 - NTSC (Japan)					  */
 	driver_c64pal,	/* Commodore 64 - PAL							  */
 	/*TODO*///		DRIVER( vic64s )	/* Commodore VIC64S (Swedish)					  */

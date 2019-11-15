@@ -2477,7 +2477,7 @@ public class v9938
 	public static _vdpEngine HmmmEngine = new _vdpEngine() {
             @Override
             public void handler() {
-                //System.out.println("HmmmEngine mode="+ScrMode());
+                System.out.println("HmmmEngine mode="+ScrMode());
                 //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
                 int SX=MMC.SX;
                 int SY=MMC.SY;
