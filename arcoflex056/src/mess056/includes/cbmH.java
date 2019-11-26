@@ -134,7 +134,7 @@ public class cbmH
             IO_QUICKLOAD,          /* type */
             1,                                      /* count */
             "p00\0prg\0",            /*file extensions */
-            IO_RESET_CPU,	   /* reset if file changed */
+            IO_RESET_NONE,	   /* reset if file changed */
             null,               /* id */
             cbm_quick_init,     /* init */
             cbm_quick_exit,     /* exit */

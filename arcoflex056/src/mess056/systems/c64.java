@@ -994,8 +994,8 @@ public class c64
 		/* basic machine hardware */
 		new MachineCPU[] {
 			new MachineCPU(
-				//CPU_M6510,
-                                CPU_M6502,
+				CPU_M6510,
+                                //CPU_M6502,
 				VIC6569_CLOCK,
 				c64_readmem, c64_writemem,
 				null, null,
@@ -1037,8 +1037,8 @@ public class c64
 		/* basic machine hardware */
 		new MachineCPU[] {
 			new MachineCPU(
-				//CPU_M6510,
-                                CPU_M6502,
+				CPU_M6510,
+                                //CPU_M6502,
 				VIC6569_CLOCK,
 				c64_readmem, c64_writemem,
 				null, null,

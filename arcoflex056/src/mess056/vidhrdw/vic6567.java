@@ -209,7 +209,7 @@ public class vic6567
 	
 		public int chargenaddr, videoaddr;
 	
-		//public mame_bitmap bitmap;		   /* Machine.scrbitmap for speedup */
+		public mame_bitmap bitmap;		   /* Machine.scrbitmap for speedup */
 		public int x_begin, x_end;
 		public int y_begin, y_end;
 	
@@ -314,8 +314,7 @@ public class vic6567
 		{
 			if ((vic2.reg[0x19] & 0x80)==0)
 			{
-                            System.out.println("Dentro!");
-				vic2.reg[0x19] |= 0x80;
+                            	vic2.reg[0x19] |= 0x80;
 				vic2.interrupt.handler(1);
 			}
 		}
@@ -487,7 +486,7 @@ System.out.println("vic2_timer_timeout");
 			}
 			break;
 		case 0x16:
-			//if (vic2.reg[offset] != data)
+			if (vic2.reg[offset] != data)
 			{
 				if (vic2.on)
 					vic2_drawlines (vic2.lastline, vic2.rasterline);
@@ -687,7 +686,7 @@ System.out.println("vic2_timer_timeout");
                 
                 int i;
 	
-		//Machine.scrbitmap = Machine.scrbitmap;
+		vic2.bitmap = Machine.scrbitmap;
 	
 		if (vic2.vic3) {
 			vic2.screen[0] = new UBytePtr(216 * 656 / 8);
@@ -830,7 +829,7 @@ System.out.println("vic2_timer_timeout");
 	static void vic2_draw_character_multi (int ybegin, int yend, int ch,
 										   int yoff, int xoff)
 	{
-            System.out.println("vic2_draw_character_multi "+ch);
+            //System.out.println("vic2_draw_character_multi "+ch);
 		int y, code;
 	
 	/*	if (Machine.color_depth == 8)
@@ -893,14 +892,14 @@ System.out.println("vic2_timer_timeout");
 			{
 				code = vic2.dma_read.handler((vic2.chargenaddr&0x2000) + ch * 8 + y);
 				vic2.screen[y + yoff].write(xoff >> 3, code);
-				new UShortPtr(Machine.scrbitmap.line[y + yoff + xoff]).write( (char) vic2.c64_bitmap[code >> 7]);
-				new UShortPtr(Machine.scrbitmap.line[y + yoff + 1 + xoff]).write( (char) vic2.c64_bitmap[(code >> 6) & 1]);
-				new UShortPtr(Machine.scrbitmap.line[y + yoff + 2 + xoff]).write( (char) vic2.c64_bitmap[(code >> 5) & 1]);
-				new UShortPtr(Machine.scrbitmap.line[y + yoff + 3 + xoff]).write( (char) vic2.c64_bitmap[(code >> 4) & 1]);
-				new UShortPtr(Machine.scrbitmap.line[y + yoff + 4 + xoff]).write( (char) vic2.c64_bitmap[(code >> 3) & 1]);
-				new UShortPtr(Machine.scrbitmap.line[y + yoff + 5 + xoff]).write( (char) vic2.c64_bitmap[(code >> 2) & 1]);
-				new UShortPtr(Machine.scrbitmap.line[y + yoff + 6 + xoff]).write( (char) vic2.c64_bitmap[(code >> 1) & 1]);
-				new UShortPtr(Machine.scrbitmap.line[y + yoff + 7 + xoff]).write( (char) vic2.c64_bitmap[code & 1]);
+				new UShortPtr(vic2.bitmap.line[y + yoff]).write(xoff, (char) vic2.c64_bitmap[code >> 7]);
+				new UShortPtr(vic2.bitmap.line[y + yoff]).write(1 + xoff, (char) vic2.c64_bitmap[(code >> 6) & 1]);
+				new UShortPtr(vic2.bitmap.line[y + yoff]).write(2 + xoff, (char) vic2.c64_bitmap[(code >> 5) & 1]);
+				new UShortPtr(vic2.bitmap.line[y + yoff]).write(3 + xoff, (char) vic2.c64_bitmap[(code >> 4) & 1]);
+				new UShortPtr(vic2.bitmap.line[y + yoff]).write(4 + xoff, (char) vic2.c64_bitmap[(code >> 3) & 1]);
+				new UShortPtr(vic2.bitmap.line[y + yoff]).write(5 + xoff, (char) vic2.c64_bitmap[(code >> 2) & 1]);
+				new UShortPtr(vic2.bitmap.line[y + yoff]).write(6 + xoff, (char) vic2.c64_bitmap[(code >> 1) & 1]);
+				new UShortPtr(vic2.bitmap.line[y + yoff]).write(7 + xoff, (char) vic2.c64_bitmap[code & 1]);
 			}
 		}
 	}

@@ -14,6 +14,7 @@ import static mame056.mame.*;
 import static mame056.osdependH.*;
 import static mess056.deviceH.*;
 import static mess056.includes.cbmH.*;
+import static mess056.machine.c64.quickload;
 import static mess056.mess.*;
 import static mess056.messH.*;
 
@@ -47,15 +48,15 @@ public class cbm
 	};
         
         public static _quick quick = new _quick();
-	
-	public static io_initPtr cbm_quick_init = new io_initPtr() {
+        
+        public static io_initPtr cbm_quick_init = new io_initPtr() {
             public int handler(int id) {
-                System.out.println("cbm_quick_init");
                 Object fp;
 		int read;
-		String cp="";
+		String cp;
 	
-		quick = new _quick();
+		//memset (&quick, 0, sizeof (quick));
+                quick = new _quick();
 	
 		if (device_filename(IO_QUICKLOAD, id) == null)
 			return INIT_PASS;
@@ -70,20 +71,29 @@ public class cbm
 	
 		if ((cp = strrchr (device_filename(IO_QUICKLOAD, id), '.')) != null)
 		{
-			if (stricmp (cp, ".prg") == 0)
+                    System.out.println("CP="+cp);
+			if (device_filename(IO_QUICKLOAD, id).toLowerCase().endsWith(".prg") )
 			{
-				osd_fread_lsbfirst (fp, new char[]{(char)quick.addr}, 2);
+                            System.out.println("Dentro!");
+                                char[] _b = new char[2];
+				osd_fread_lsbfirst (fp, _b, 2);
+                                quick.addr = (_b[1]&0xff)<<8|_b[0];
+                                //quick.addr = (_b[ 0] & 0xff) + (_b[ 1] & 0xff) * 256;;
+                                //quick.addr = 0x801;
+                                System.out.println("Address="+quick.addr); // other option: 0x801 and load"*",8,1
 				quick.length -= 2;
 			}
-			else if (stricmp (cp, ".p00") == 0)
+			else if (device_filename(IO_QUICKLOAD, id).toLowerCase().endsWith(".p00"))
 			{
 				char[] buffer=new char[7];
 	
 				osd_fread (fp, buffer, buffer.length);
-				if (strncmp (buffer, "C64File", buffer.length) == false)
+				if (!strncmp (buffer, "C64File", buffer.length))
 				{
 					osd_fseek (fp, 26, SEEK_SET);
-					osd_fread_lsbfirst (fp, new char[]{(char)quick.addr}, 2);
+					byte[] _b = new byte[2];
+                                        osd_fread_lsbfirst (fp, _b, 2);
+                                        quick.addr = (_b[1]&0xff)<<8|_b[0];
 					quick.length -= 28;
 				}
 			}
@@ -98,9 +108,89 @@ public class cbm
 			osd_fclose (fp);
 			return INIT_FAIL;
 		}
+                
 		read = osd_fread (fp, quick.data, quick.length);
 		osd_fclose (fp);
-		return read != quick.length ? 1 : 0;
+                System.out.println("Retorno "+((read != quick.length)?1:0));
+                quickload=1;
+		return (read != quick.length)?1:0;
+            }
+        };
+	
+	public static io_initPtr cbm_quick_init2 = new io_initPtr() {
+            public int handler(int id) {
+                System.out.println("cbm_quick_init");
+                Object fp;
+		int read;
+		String cp="";
+	
+		//quick = new _quick();
+	
+		if (device_filename(IO_QUICKLOAD, id) == null)
+			return INIT_PASS;
+	
+		quick.specified = 1;
+	
+		fp = image_fopen (IO_QUICKLOAD, id, OSD_FILETYPE_IMAGE_R, 0);
+                System.out.println(fp);
+		if (fp == null)
+			return INIT_FAIL;
+	
+		quick.length = osd_fsize (fp);
+                System.out.println("Size: "+quick.length);
+	
+		if ((cp = strrchr (device_filename(IO_QUICKLOAD, id), '.')) != null)
+		{
+                        System.out.println("Check! "+cp);
+			if (device_filename(IO_QUICKLOAD, id).toLowerCase().endsWith(".prg"))
+			{
+                            System.out.println("PRG!");
+                                char[] _b = new char[2];
+				osd_fread_lsbfirst (fp, _b, 2);
+                                quick.addr = (_b[1]&0xff)<<8|_b[0];
+                                System.out.println("ADDRESSL: "+quick.addr);
+                                System.out.println("ADDRESS1: "+((((int)_b[0])<<8)+(int)_b[1]));
+                                System.out.println("ADDRESS2: "+((((int)_b[1])<<8)+(int)_b[0]));
+                                //quick.addr = ((int)_c[0]&0xff);
+				quick.length -= 2;
+			}
+			else if (device_filename(IO_QUICKLOAD, id).toLowerCase().endsWith(".p00"))
+			{
+                            System.out.println("P00!");
+				char[] buffer=new char[7];
+                                char[] _b = new char[2];
+	
+				osd_fread (fp, buffer, buffer.length);
+				if (strncmp (buffer, "C64File", buffer.length) == false)
+				{
+					osd_fseek (fp, 26, SEEK_SET);
+					osd_fread_lsbfirst (fp, _b, 2);
+                                        quick.addr = (_b[1]&0xff)<<8|_b[0];
+                                        System.out.println("ADDRESSL: "+quick.addr);
+					quick.length -= 28;
+				}
+			}
+		}
+		if (quick.addr == 0)
+		{
+			osd_fclose (fp);
+                        System.out.println("LOAD FAILS!");
+			return INIT_FAIL;
+		}
+		if ((quick.data = new UBytePtr(quick.length)) == null)
+		{
+			osd_fclose (fp);
+                        System.out.println("LOAD FAILS 2!");
+			return INIT_FAIL;
+		}
+                UBytePtr b = quick.data;
+		read = osd_fread (fp, b, quick.length);
+                quick.data = new UBytePtr(b);
+		osd_fclose (fp);
+                //System.out.println("LOAD RESULT: "+(read != quick.length ? 1 : 0));
+		//return read != quick.length ? 1 : 0;
+                quickload = 1;
+                return INIT_PASS;
             }
         };
 
@@ -296,20 +386,22 @@ public class cbm
 	
 		if ((cp = strrchr (device_filename(IO_CARTSLOT,id), '.')) != null)
 		{
-			if (stricmp (cp, ".prg") == 0)
+                    System.out.println("Dentro");
+			if (device_filename(IO_CARTSLOT, id).toLowerCase().endsWith(".prg"))
 			{
-				char[] in=new char[1];
+				char[] _in=new char[2];
 	
-				osd_fread_lsbfirst (fp, in, 2);
-				logerror("rom prg %.4x\n", in);
+				osd_fread_lsbfirst (fp, _in, 2);
+				logerror("rom prg %.4x\n", _in);
 				size -= 2;
 				logerror("loading rom %s at %.4x size:%.4x\n",
-							 device_filename(IO_CARTSLOT,id), in, size);
+							 device_filename(IO_CARTSLOT,id), _in, size);
 				if ((cbm_rom[i].chip=new UBytePtr(size)) == null) {
 					osd_fclose(fp);
 					return INIT_FAIL;
 				}
-				cbm_rom[i].addr=in[0];
+				//cbm_rom[i].addr=in[0];
+                                cbm_rom[i].addr=((((int)_in[1]&0xff)<<8)+(int)_in[0]);
 				cbm_rom[i].size=size;
 				read = osd_fread (fp, cbm_rom[i].chip, size);
 				osd_fclose (fp);
@@ -409,6 +501,7 @@ public class cbm
 					return INIT_FAIL;
 			}
 		}
+                System.out.println("SALIMOS!!!!");
 		return INIT_OK;
 	}
             };
