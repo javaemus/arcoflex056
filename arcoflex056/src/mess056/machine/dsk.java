@@ -293,171 +293,171 @@ public class dsk
 	public static void dsk_dsk_init_track_offsets(int thedrive)
 	{
 		int track_offset;
-		int i;
-		int track_size;
-		int tracks, sides;
-		int skip, length,offs;
-		//UBytePtr file_loaded = new UBytePtr(drives[thedrive].data);
-	
-	
-		/* get size of each track from main header. Size of each
-		track includes a 0x0100 byte header, and the actual sector data for
-		all sectors on the track */
-		track_size = drives[thedrive].data.read(0x032) | (drives[thedrive].data.read(0x033)<<8);
-	
-		/* main header is 0x0100 in size */
-		track_offset = 0x0100;
-	
-		sides = drives[thedrive].data.read(0x031);
-		tracks = drives[thedrive].data.read(0x030);
-	
-	
-		/* single sided? */
-		if (sides==1)
-		{
-			skip = 2;
-			length = tracks;
-		}
-		else
-		{
-			skip = 1;
-			length = tracks*sides;
-		}
-	
-		offs = 0;
-		for (i=0; i<length; i++)
-		{
-			drives[thedrive].track_offsets[offs] = track_offset;
-			track_offset+=track_size;
-			offs+=skip;
-		}
+                int i;
+                int track_size;
+                int tracks, sides;
+                int skip, length,offs;
+                UBytePtr file_loaded = drives[thedrive].data;
+
+
+                /* get size of each track from main header. Size of each
+                track includes a 0x0100 byte header, and the actual sector data for
+                all sectors on the track */
+                track_size = file_loaded.read(0x032) | (file_loaded.read(0x033)<<8);
+
+                /* main header is 0x0100 in size */
+                track_offset = 0x0100;
+
+                sides = file_loaded.read(0x031);
+                tracks = file_loaded.read(0x030);
+
+
+                /* single sided? */
+                if (sides==1)
+                {
+                        skip = 2;
+                        length = tracks;
+                }
+                else
+                {
+                        skip = 1;
+                        length = tracks*sides;
+                }
+
+                offs = 0;
+                for (i=0; i<length; i++)
+                {
+                        drives[thedrive].track_offsets[offs] = track_offset;
+                        track_offset+=track_size;
+                        offs+=skip;
+                }
 	
 	}
 	
 	public static void dsk_dsk_init_sector_offsets(int thedrive,int track,int side)
 	{
 		int track_offset;
-	
-		side = side & 0x01;
-	
-		/* get offset to track header in image */
-		track_offset = drives[thedrive].track_offsets[(track<<1) + side];
-	
-		if (track_offset!=0)
-		{
-			int spt;
-			int sector_offset;
-			int sector_size;
-			int i;
-	
-			UBytePtr track_header;
-	
-			track_header= new UBytePtr(drives[thedrive].data, track_offset);
-	
-			/* sectors per track as specified in nec765 format command */
-			/* sectors on this track */
-			spt = track_header.read(0x015);
-	
-			sector_size = (1<<(track_header.read(0x014)+7));
-	
-			/* track header is 0x0100 bytes in size */
-			sector_offset = 0x0100;
-	
-			for (i=0; i<spt; i++)
-			{
-				drives[thedrive].sector_offsets[i] = sector_offset;
-				sector_offset+=sector_size;
-			}
-		}
+
+                side = side & 0x01;
+
+                /* get offset to track header in image */
+                track_offset = drives[thedrive].track_offsets[(track<<1) + side];
+
+                if (track_offset!=0)
+                {
+                        int spt;
+                        int sector_offset;
+                        int sector_size;
+                        int i;
+
+                        UBytePtr track_header;
+
+                        track_header = new UBytePtr(drives[thedrive].data, track_offset);
+
+                        /* sectors per track as specified in nec765 format command */
+                        /* sectors on this track */
+                        spt = track_header.read(0x015);
+
+                        sector_size = (1<<(track_header.read(0x014)+7));
+
+                        /* track header is 0x0100 bytes in size */
+                        sector_offset = 0x0100;
+
+                        for (i=0; i<spt; i++)
+                        {
+                                drives[thedrive].sector_offsets[i] = sector_offset;
+                                sector_offset+=sector_size;
+                        }
+                }
 	}
 	
 	public static void dsk_extended_dsk_init_track_offsets(int thedrive)
 	{
 		int track_offset;
-		int i;
-		int track_size;
-		int tracks, sides;
-		int offs, skip, length;
-		//UBytePtr file_loaded = new UBytePtr(drives[thedrive].data);
-	
-		sides = drives[thedrive].data.read(0x031);
-		tracks = drives[thedrive].data.read(0x030);
-	
-		if (sides==1)
-		{
-			skip = 2;
-			length = tracks;
-		}
-		else
-		{
-			skip = 1;
-			length = tracks*sides;
-		}
-	
-		/* main header is 0x0100 in size */
-		track_offset = 0x0100;
-		offs = 0;
-		for (i=0; i<length; i++)
-		{
-			int track_size_high_byte;
-	
-			/* track size is specified as a byte, and is multiplied
-			by 256 to get size in bytes. If 0, track doesn't exist and
-			is unformatted, otherwise it exists. Track size includes 0x0100
-			header */
-			track_size_high_byte = drives[thedrive].data.read(0x034 + i);
-	
-			if (track_size_high_byte != 0)
-			{
-				/* formatted track */
-				track_size = track_size_high_byte<<8;
-	
-				drives[thedrive].track_offsets[offs] = track_offset;
-				track_offset+=track_size;
-			}
-	
-			offs+=skip;
-		}
+                int i;
+                int track_size;
+                int tracks, sides;
+                int offs, skip, length;
+                UBytePtr file_loaded = drives[thedrive].data;
+
+                sides = file_loaded.read(0x031);
+                tracks = file_loaded.read(0x030);
+
+                if (sides==1)
+                {
+                        skip = 2;
+                        length = tracks;
+                }
+                else
+                {
+                        skip = 1;
+                        length = tracks*sides;
+                }
+
+                /* main header is 0x0100 in size */
+                track_offset = 0x0100;
+                offs = 0;
+                for (i=0; i<length; i++)
+                {
+                        int track_size_high_byte;
+
+                        /* track size is specified as a byte, and is multiplied
+                        by 256 to get size in bytes. If 0, track doesn't exist and
+                        is unformatted, otherwise it exists. Track size includes 0x0100
+                        header */
+                        track_size_high_byte = file_loaded.read(0x034 + i);
+
+                        if (track_size_high_byte != 0)
+                        {
+                                /* formatted track */
+                                track_size = track_size_high_byte<<8;
+
+                                drives[thedrive].track_offsets[offs] = track_offset;
+                                track_offset+=track_size;
+                        }
+
+                        offs+=skip;
+                }
 	}
 	
 	
 	public static void dsk_extended_dsk_init_sector_offsets(int thedrive,int track,int side)
 	{
 		int track_offset;
-	
-		side = side & 0x01;
-	
-		/* get offset to track header in image */
-		track_offset = drives[thedrive].track_offsets[(track<<1) + side];
-	
-		if (track_offset!=0)
-		{
-			int spt;
-			int sector_offset;
-			int sector_size;
-			int i;
-			UBytePtr id_info;
-			UBytePtr track_header;
-	
-			track_header= new UBytePtr(drives[thedrive].data, track_offset);
-	
-			/* sectors per track as specified in nec765 format command */
-			/* sectors on this track */
-			spt = track_header.read(0x015);
-	
-			id_info = new UBytePtr(track_header, 0x018);
-	
-			/* track header is 0x0100 bytes in size */
-			sector_offset = 0x0100;
-	
-			for (i=0; i<spt; i++)
-			{
-	                        sector_size = id_info.read((i<<3) + 6) + (id_info.read((i<<3) + 7)<<8);
-	
-				drives[thedrive].sector_offsets[i] = sector_offset;
-				sector_offset+=sector_size;
-			}
-		}
+
+                side = side & 0x01;
+
+                /* get offset to track header in image */
+                track_offset = drives[thedrive].track_offsets[(track<<1) + side];
+
+                if (track_offset!=0)
+                {
+                        int spt;
+                        int sector_offset;
+                        int sector_size;
+                        int i;
+                        UBytePtr id_info;
+                        UBytePtr track_header;
+
+                        track_header= new UBytePtr(drives[thedrive].data, track_offset);
+
+                        /* sectors per track as specified in nec765 format command */
+                        /* sectors on this track */
+                        spt = track_header.read(0x015);
+
+                        id_info = new UBytePtr(track_header, 0x018);
+
+                        /* track header is 0x0100 bytes in size */
+                        sector_offset = 0x0100;
+
+                        for (i=0; i<spt; i++)
+                        {
+                                sector_size = id_info.read((i<<3) + 6) + (id_info.read((i<<3) + 7)<<8);
+
+                                drives[thedrive].sector_offsets[i] = sector_offset;
+                                sector_offset+=sector_size;
+                        }
+                }
 	}
 	
 	
@@ -520,47 +520,47 @@ public class dsk
 	public static void dsk_get_id_callback(int drive, chrn_id id, int id_index, int side)
 	{
 		int id_offset;
-		int track_offset;
-		UBytePtr track_header;
-		char[] data;
-	
-		drive = drive & 0x03;
-		side = side & 0x01;
-	
-		/* get offset to track header in image */
-		track_offset = get_track_offset(drive, side);
-	
-		/* track exists? */
-		if (track_offset==0)
-			return;
-	
-		/* yes */
-		data = get_floppy_data(drive);
-	
-		if (data==null)
-			return;
-	
-		track_header = new UBytePtr(data, track_offset);
-	
-		id_offset = 0x018 + (id_index<<3);
-	
-		id.C = track_header.read(id_offset + 0);
-		id.H = track_header.read(id_offset + 1);
-		id.R = track_header.read(id_offset + 2);
-		id.N = track_header.read(id_offset + 3);
-		id.flags = 0;
-		id.data_id = id_index;
-	
-		if ((track_header.read(id_offset + 5) & 0x040) != 0)
-		{
-			id.flags |= ID_FLAG_DELETED_DATA;
-		}
-	
-	
-	
-	
-	//	id->ST0 = track_header[id_offset + 4];
-	//	id->ST1 = track_header[id_offset + 5];
+                int track_offset;
+                UBytePtr track_header;
+                UBytePtr data;
+
+                side = side & 0x01;
+
+                /* get offset to track header in image */
+                track_offset = get_track_offset(drive, side);
+
+                /* track exists? */
+                if (track_offset==0)
+                        return;
+
+                /* yes */
+                data = get_floppy_data(drive);
+
+                if (data==null)
+                        return;
+
+                track_header = new UBytePtr(data, track_offset);
+
+                id_offset = 0x018 + (id_index<<3);
+
+                id.C = track_header.read(id_offset + 0)& 0xffff;
+                id.H = track_header.read(id_offset + 1)& 0xffff;
+                id.R = track_header.read(id_offset + 2)& 0xffff;
+                id.N = track_header.read(id_offset + 3)& 0xffff;
+                id.flags = 0;
+                id.data_id = id_index;
+
+                if ((track_header.read(id_offset + 5) & 0x040) != 0)
+                {
+                        id.flags |= ID_FLAG_DELETED_DATA;
+                }
+
+
+
+
+        //	id->ST0 = track_header[id_offset + 4];
+        //	id->ST1 = track_header[id_offset + 5];
+
 	
 	}
 	
@@ -625,65 +625,63 @@ public class dsk
             System.out.println("----end printSector----");
         }
         
-        static char[] get_floppy_data(int drive)
+        static UBytePtr get_floppy_data(int drive)
 	{
 		drive = drive & 0x03;
-		return drives[drive].data.memory;
+		return drives[drive].data;
 	}
         
 	public static UBytePtr dsk_get_sector_ptr_callback(int drive, int sector_index, int side)
 	{
 		int track_offset;
-		int sector_offset;
-		int track;
-		//dsk_drive thedrive;
-		char[] data;
-	
-		drive = drive & 0x03;
-		side = side & 0x01;
-	
-		//thedrive = drives[drive];
-	
-		track = drives[drive].current_track;
-	
-		/* offset to track header in image */
-		track_offset = get_track_offset(drive, side);
-	
-		/* track exists? */
-		if (track_offset==0)
-			return null;
-	
-	
-		/* setup sector offsets */
-		switch (drives[drive].disk_image_type)
-		{
-		case 0:
-			dsk_dsk_init_sector_offsets(drive,track, side);
-			break;
-	
-	
-		case 1:
-			dsk_extended_dsk_init_sector_offsets(drive, track, side);
-			break;
-	
-		default:
-			break;
-		}
-	
-		sector_offset = drives[drive].sector_offsets[sector_index];
-	
-		data = get_floppy_data(drive);
-	
-		if (data==null)
-			return null;
-                
-                //drives[drive] = thedrive;
-	
-		return (new UBytePtr(data, track_offset + sector_offset));
+                int sector_offset;
+                int track;
+                dsk_drive thedrive;
+                UBytePtr data;
+
+                side = side & 0x01;
+
+                thedrive = drives[drive];
+
+                track = thedrive.current_track;
+
+                /* offset to track header in image */
+                track_offset = get_track_offset(drive, side);
+
+                /* track exists? */
+                if (track_offset==0)
+                        return null;
+
+
+                /* setup sector offsets */
+                switch (thedrive.disk_image_type)
+                {
+                case 0:
+                        dsk_dsk_init_sector_offsets(drive,track, side);
+                        break;
+
+
+                case 1:
+                        dsk_extended_dsk_init_sector_offsets(drive, track, side);
+                        break;
+
+                default:
+                        break;
+                }
+
+                sector_offset = thedrive.sector_offsets[sector_index];
+
+                data = get_floppy_data(drive);
+
+                if (data==null)
+                        return null;
+
+                return new UBytePtr(data, track_offset + sector_offset);
 	}
 	
 	public static void dsk_write_sector_data_from_buffer(int drive, int side, int index1, char[] ptr, int length, int ddam)
 	{
+            System.out.println("dsk_write_sector_data_from_buffer");
 		UBytePtr pSectorData;
 	
 		pSectorData = new UBytePtr(dsk_get_sector_ptr_callback(drive, index1, side));
@@ -700,14 +698,11 @@ public class dsk
 	public static void dsk_read_sector_data_into_buffer(int drive, int side, int index1, UBytePtr ptr, int length)
 	{
 		UBytePtr pSectorData;
-	
-		pSectorData = dsk_get_sector_ptr_callback(drive, index1, side);
-	
-		if (pSectorData!=null)
-		{
-			memcpy(ptr, pSectorData, length);
-	
-		}
+
+                pSectorData = dsk_get_sector_ptr_callback(drive, index1, side);
+
+                if (pSectorData!=null)
+                        memcpy(ptr, pSectorData, length);
 	}
 	
 	public static int dsk_get_sectors_per_track(int drive, int side)

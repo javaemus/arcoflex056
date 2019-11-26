@@ -58,9 +58,11 @@ public class c64
         public static int c64_pal = 0;
         public static int c64_game=1, c64_exrom=1;
 
-/*TODO*////* cpu port */
+        /* cpu port */
         public static int c64_port6510, c64_ddr6510;
-/*TODO*///int c128_va1617;
+        public static int c128_va1617;
+        public static int c128;
+        public static int c65;
         public static UBytePtr c64_vicaddr, c128_vicaddr;
         public static UBytePtr c64_memory = new UBytePtr(64 * 1024);
         public static UBytePtr c64_colorram;
@@ -69,11 +71,11 @@ public class c64
         public static UBytePtr c64_chargen;
         public static UBytePtr c64_roml=null;
         public static UBytePtr c64_romh=null;
-/*TODO*///
+
 /*TODO*///static int ultimax = 0;
         public static int c64_tape_on = 1;
         public static int c64_cia1_on = 1;
-/*TODO*///static UINT8 cartridge = 0;
+        public static int cartridge = 0;
 /*TODO*///static enum
 /*TODO*///{
 /*TODO*///	CartridgeAuto = 0, CartridgeUltimax, CartridgeC64,
@@ -107,8 +109,9 @@ public class c64
             int value = 0xff;
             System.out.println("c64_cia0_port_a_r");
 
-/*TODO*///            if (JOYSTICK_SWAP) value = c64_keyline[8];
-/*TODO*///        else 
+            if (JOYSTICK_SWAP() != 0) 
+                value = c64_keyline[8];
+            else 
                 value = c64_keyline[9];
                 
             return value;
@@ -117,32 +120,30 @@ public class c64
     
     public static ReadHandlerPtr c64_cia0_port_b_r = new ReadHandlerPtr() {
         public int handler(int offset) {
-            System.out.println("c64_cia0_port_b_r");
+            //System.out.println("c64_cia0_port_b_r");
                 int value = 0xff;
 
                 if ((cia0porta & 0x80)==0){
-                        System.out.println("Leo la tecla Q");
-                        value &= c64_keyline[7];
-                        System.out.println("valor="+value);
+                        value &= c64_keyline[7];                        
                 }
-    /*TODO*///	if (!(cia0porta & 0x40))
-    /*TODO*///		value &= c64_keyline[6];
-    /*TODO*///	if (!(cia0porta & 0x20))
-    /*TODO*///		value &= c64_keyline[5];
-    /*TODO*///	if (!(cia0porta & 0x10))
-    /*TODO*///		value &= c64_keyline[4];
-    /*TODO*///	if (!(cia0porta & 8))
-    /*TODO*///		value &= c64_keyline[3];
-    /*TODO*///	if (!(cia0porta & 4))
-    /*TODO*///		value &= c64_keyline[2];
-    /*TODO*///	if (!(cia0porta & 2))
-    /*TODO*///		value &= c64_keyline[1];
-    /*TODO*///	if (!(cia0porta & 1))
-    /*TODO*///		value &= c64_keyline[0];
-    /*TODO*///
-    /*TODO*///	if (JOYSTICK_SWAP) value &= c64_keyline[9];
-    /*TODO*///	else value &= c64_keyline[8];
-    /*TODO*///
+                if ((cia0porta & 0x40)==0)
+                        value &= c64_keyline[6];
+                if ((cia0porta & 0x20)==0)
+                        value &= c64_keyline[5];
+                if ((cia0porta & 0x10)==0)
+                        value &= c64_keyline[4];
+                if ((cia0porta & 8)==0)
+                        value &= c64_keyline[3];
+                if ((cia0porta & 4)==0)
+                        value &= c64_keyline[2];
+                if ((cia0porta & 2)==0)
+                        value &= c64_keyline[1];
+                if ((cia0porta & 1)==0)
+                        value &= c64_keyline[0];
+
+                if (JOYSTICK_SWAP()!=0) value &= c64_keyline[9];
+                else value &= c64_keyline[8];
+    
     /*TODO*///	if (c128)
     /*TODO*///	{
     /*TODO*///		if (!vic2e_k0_r ())
@@ -165,7 +166,7 @@ public class c64
 
     public static WriteHandlerPtr c64_cia0_port_a_w = new WriteHandlerPtr() {
         public void handler(int offset, int data) {
-            System.out.println("Escribo "+data+" en port a");
+            //System.out.println("Escribo "+data+" en port a");
             cia0porta = data;
         }
     };
@@ -378,24 +379,25 @@ public class c64
 /*TODO*///}
 /*TODO*///
         public static WriteHandlerPtr c64_write_io = new WriteHandlerPtr() {
-            public void handler(int offset, int value) {
-                System.out.println("c64_write_io "+offset+" value="+value);
-                vic2_port_w.handler(18, 0xff);
-                if (offset < 0x400){ // 1024                    
-        		vic2_port_w.handler(offset & 0x3ff, value);
-                } else if (offset < 0x800){ // 2048
-        		sid6581_0_port_w.handler(offset & 0x3ff, value);
-        	} else if (offset < 0xc00){ // 3072
-        		c64_colorram.write(offset & 0x3ff, value | 0xf0);
-        	} else if (offset < 0xd00){ //3328
-        		cia6526_0_port_w.handler(offset & 0xff, value);
-        	} else if (offset < 0xe00)
-        	{
-        		if (c64_cia1_on != 0){
-        			cia6526_1_port_w.handler(offset & 0xff, value);
+            public void handler(int offset, int data) {
+                if (offset < 0x400) {
+                        vic2_port_w.handler(offset & 0x3ff, data);
+                } else if (offset < 0x800) {
+                        sid6581_0_port_w.handler(offset & 0x3ff, data);
+                } else if (offset < 0xc00)
+                        c64_colorram.write(offset & 0x3ff, data | 0xf0);
+                else if (offset < 0xd00)
+                        cia6526_0_port_w.handler(offset & 0xff, data);
+                else if (offset < 0xe00)
+                {
+                        if (c64_cia1_on != 0)
+                                cia6526_1_port_w.handler(offset & 0xff, data);
+//                        else
+//                                DBG_LOG (1, "io write", ("%.3x %.2x\n", offset, data));
+//                }
         /*TODO*///		else
         /*TODO*///			DBG_LOG (1, "io write", (errorlog, "%.3x %.2x\n", offset, value));
-                        }
+//                        }
         	}
         /*TODO*///	else if (offset < 0xf00)
         /*TODO*///	{
@@ -423,19 +425,17 @@ public class c64
         
         public static ReadHandlerPtr c64_read_io = new ReadHandlerPtr() {
             public int handler(int offset) {
-                System.out.println("c64_read_io "+offset);
-                if (offset < 0x400){
+                if (offset < 0x400)
                         return vic2_port_r.handler(offset & 0x3ff);
-                } else if (offset < 0x800){
+                else if (offset < 0x800)
                         return sid6581_0_port_r.handler(offset & 0x3ff);
-                } else if (offset < 0xc00){
+                else if (offset < 0xc00)
                         return c64_colorram.read(offset & 0x3ff);
-                } else if (offset < 0xd00){
+                else if (offset < 0xd00)
                         return cia6526_0_port_r.handler(offset & 0xff);
-                } else if (c64_cia1_on!=0 && (offset < 0xe00)){
+                else if (c64_cia1_on!=0 && (offset < 0xe00))
                         return cia6526_1_port_r.handler(offset & 0xff);
-        /*TODO*///	DBG_LOG (1, "io read", (errorlog, "%.3x\n", offset));
-                }
+/*TODO*///                DBG_LOG (1, "io read", ("%.3x\n", offset));
                 return 0xff;
             }
         };
@@ -702,16 +702,19 @@ public class c64
                 if (c64_game==0 && c64_exrom!=0)
         	{
         		if (offset < 0x3000){
+                                System.out.println("Leo memory");
         			return c64_memory.read(offset);
                         }
-                        System.out.println("Leo romh");
+                        //System.out.println("Leo romh");
         		return c64_romh.read(offset & 0x1fff);
         	}
         	if (((c64_vicaddr.offset - c64_memory.offset + offset) & 0x7000) == 0x1000){
                     //System.out.println("Leo char");
         		return c64_chargen.read(offset & 0xfff);
                 }
-                //System.out.println("Leo vicaddr");
+                //System.out.println("Leo vicaddr "+(int)(c64_vicaddr.read(offset)));
+                //if (offset==1024)
+                //    return 0x01;
         	return c64_vicaddr.read(offset);
             }
         };
@@ -855,8 +858,8 @@ public class c64
             public void handler() {
                 c64_common_init_machine ();
         
-        /*TODO*///	c64_rom_recognition ();
-        /*TODO*///	c64_rom_load();
+        	c64_rom_recognition ();
+        	c64_rom_load();
         /*TODO*///
         /*TODO*///	if (c128)
         /*TODO*///		c128_bankswitch_64 ();
@@ -929,12 +932,13 @@ public class c64
 /*TODO*///#define BETWEEN(value1,value2,bottom,top) \
 /*TODO*///    ( ((value2)>=(bottom))&&((value1)<(top)) )
 /*TODO*///
-/*TODO*///void c64_rom_recognition (void)
-/*TODO*///{
+        public static void c64_rom_recognition ()
+        {
+            
 /*TODO*///	int i;
 /*TODO*///	for (i=0; (i<sizeof(cbm_rom)/sizeof(cbm_rom[0]))
 /*TODO*///			 &&(cbm_rom[i].size!=0); i++) {
-/*TODO*///		cartridge=1;
+//		cartridge=1;
 /*TODO*///		if ( BETWEEN(0xa000, 0xbfff, cbm_rom[i].addr,
 /*TODO*///					 cbm_rom[i].addr+cbm_rom[i].size) ) {
 /*TODO*///			cartridgetype=CartridgeC64;
@@ -945,14 +949,14 @@ public class c64
 /*TODO*///	}
 /*TODO*///	if (i==4) cartridgetype=CartridgeSuperGames;
 /*TODO*///	if (i==32) cartridgetype=CartridgeRobocop2;
-/*TODO*///}
+        }
 /*TODO*///
-/*TODO*///void c64_rom_load(void)
-/*TODO*///{
-/*TODO*///	int i;
-/*TODO*///
-/*TODO*///	c64_exrom = 1;
-/*TODO*///	c64_game = 1;
+        public static void c64_rom_load()
+        {
+            int i;
+
+            c64_exrom = 1;
+            c64_game = 1;
 /*TODO*///	if (cartridge)
 /*TODO*///	{
 /*TODO*///		if (AUTO_MODULE && (cartridgetype == CartridgeAuto))
@@ -981,7 +985,7 @@ public class c64
 /*TODO*///		if (ultimax || (cartridgetype == CartridgeUltimax)) {
 /*TODO*///			c64_game = 0;
 /*TODO*///		} else {
-/*TODO*///			c64_exrom = 0;
+//			c64_exrom = 0;
 /*TODO*///		}
 /*TODO*///		if (ultimax) {
 /*TODO*///			for (i=0; (i<sizeof(cbm_rom)/sizeof(cbm_rom[0]))
@@ -1047,7 +1051,7 @@ public class c64
 /*TODO*///			}
 /*TODO*///		}
 /*TODO*///	}
-/*TODO*///}
+        }
 
         static int quickload = 0;
 	static int nmilevel = 0;
@@ -1057,32 +1061,33 @@ public class c64
             public int handler() {
                 
 	int value, value2;
-/*TODO*///
-/*TODO*///	sid6581_update();
+
+	sid6581_update();
 	if (nmilevel != KEY_RESTORE())
 	{
-/*TODO*///		if (c128) {
-/*TODO*///			if (cpu_getactivecpu()==0) { /* z80 */
-/*TODO*///				cpu_set_nmi_line (0, KEY_RESTORE);
-/*TODO*///			} else {
-/*TODO*///				cpu_set_nmi_line (1, KEY_RESTORE);
-/*TODO*///			}
-/*TODO*///		} else {
+		if (c128 != 0) {
+			if (cpu_getactivecpu()==0) { /* z80 */
+				cpu_set_nmi_line (0, KEY_RESTORE());
+			} else {
+				cpu_set_nmi_line (1, KEY_RESTORE());
+			}
+		} else {
                         System.out.println("no es keyrestore");
 			cpu_set_nmi_line (0, KEY_RESTORE());
-/*TODO*///		}
+		}
 		nmilevel = KEY_RESTORE();
 	}
-/*TODO*///
-/*TODO*///	if (!quickload && QUICKLOAD) {
-/*TODO*///		if (c65) {
+
+	if (quickload==0 && QUICKLOAD() != 0) {
+		if (c65 != 0) {
 /*TODO*///			cbm_c65_quick_open (0, 0, c64_memory);
-/*TODO*///		} else
+		} else {
 /*TODO*///			cbm_quick_open (0, 0, c64_memory);
-/*TODO*///	}
-/*TODO*///	quickload = QUICKLOAD;
-/*TODO*///
-/*TODO*///	if (c128) {
+                }
+	}
+	quickload = QUICKLOAD();
+
+	if (c128 != 0) {
 /*TODO*///		if (MONITOR_TV!=monitor) {
 /*TODO*///			if (MONITOR_TV) {
 /*TODO*///				vic2_set_rastering(0);
@@ -1100,11 +1105,11 @@ public class c64
 /*TODO*///			vdc8563_update();
 /*TODO*///			monitor=MONITOR_TV;
 /*TODO*///		}
-/*TODO*///	}
-/*TODO*///
+	}
+
 	value = 0xff;
-/*TODO*///	if (c128) {
-/*TODO*///		if (C128_KEY_CURSOR_DOWN)
+	if (c128 != 0) {
+/*TODO*///		if (C128_KEY_CURSOR_DOWN() != 0)
 /*TODO*///			value &= ~0x80;
 /*TODO*///		if (C128_KEY_F5)
 /*TODO*///			value &= ~0x40;
@@ -1116,7 +1121,7 @@ public class c64
 /*TODO*///			value &= ~8;
 /*TODO*///		if (C128_KEY_CURSOR_RIGHT)
 /*TODO*///			value &= ~4;
-/*TODO*///	} else if (c65) {
+	} else if (c65 != 0) {
 /*TODO*///		if (C65_KEY_CURSOR_DOWN)
 /*TODO*///			value &= ~0x80;
 /*TODO*///		if (C65_KEY_F5)
@@ -1129,7 +1134,7 @@ public class c64
 /*TODO*///			value &= ~8;
 /*TODO*///		if (C65_KEY_CURSOR_RIGHT)
 /*TODO*///			value &= ~4;
-/*TODO*///	} else {
+	} else {
 		if (KEY_CURSOR_DOWN()!=0){
 			value &= ~0x80;
                         
@@ -1144,213 +1149,215 @@ public class c64
 			value &= ~8;
 		if (KEY_CURSOR_RIGHT()!=0)
 			value &= ~4;
-/*TODO*///	}
-/*TODO*///	if (KEY_RETURN)
-/*TODO*///		value &= ~2;
-/*TODO*///	if (KEY_DEL)
-/*TODO*///		value &= ~1;
+	}
+	if (KEY_RETURN()!=0)
+		value &= ~2;
+	if (KEY_DEL()!=0)
+		value &= ~1;
                 c64_keyline[0] = (char) value;
 
                 value = 0xff;
-/*TODO*///	if (KEY_LEFT_SHIFT)
-/*TODO*///		value &= ~0x80;
-/*TODO*///	if (KEY_E)
-/*TODO*///		value &= ~0x40;
-/*TODO*///	if (KEY_S)
-/*TODO*///		value &= ~0x20;
-/*TODO*///	if (KEY_Z)
-/*TODO*///		value &= ~0x10;
-/*TODO*///	if (KEY_4) value &= ~8;
+	if (KEY_LEFT_SHIFT()!=0)
+		value &= ~0x80;
+	if (KEY_E()!=0)
+		value &= ~0x40;
+	if (KEY_S()!=0)
+		value &= ~0x20;
+	if (KEY_Z()!=0)
+		value &= ~0x10;
+	if (KEY_4()!=0) value &= ~8;
 	if (KEY_A()!=0){
 		value &= ~4;
-                System.out.println("Pulso A");
         }
-/*TODO*///	if (KEY_W)
-/*TODO*///		value &= ~2;
-/*TODO*///	if (KEY_3) value &= ~1;
-/*TODO*///	c64_keyline[1] = value;
-/*TODO*///
-/*TODO*///	value = 0xff;
-/*TODO*///	if (KEY_X)
-/*TODO*///		value &= ~0x80;
-/*TODO*///	if (KEY_T)
-/*TODO*///		value &= ~0x40;
-/*TODO*///	if (KEY_F)
-/*TODO*///		value &= ~0x20;
-/*TODO*///	if (KEY_C)
-/*TODO*///		value &= ~0x10;
-/*TODO*///	if (KEY_6) value &= ~8;
-/*TODO*///	if (KEY_D)
-/*TODO*///		value &= ~4;
-/*TODO*///	if (KEY_R)
-/*TODO*///		value &= ~2;
-/*TODO*///	if (KEY_5) value &= ~1;
+	if (KEY_W()!=0)
+		value &= ~2;
+	if (KEY_3()!=0) value &= ~1;
+        c64_keyline[1] = (char) value;
+
+	value = 0xff;
+	if (KEY_X()!=0)
+		value &= ~0x80;
+	if (KEY_T()!=0)
+		value &= ~0x40;
+	if (KEY_F()!=0)
+		value &= ~0x20;
+	if (KEY_C()!=0)
+		value &= ~0x10;
+	if (KEY_6()!=0) value &= ~8;
+	if (KEY_D()!=0)
+		value &= ~4;
+	if (KEY_R()!=0)
+		value &= ~2;
+	if (KEY_5()!=0) value &= ~1;
 	c64_keyline[2] = (char) value;
 
 	value = 0xff;
-/*TODO*///	if (KEY_V)
-/*TODO*///		value &= ~0x80;
-/*TODO*///	if (KEY_U)
-/*TODO*///		value &= ~0x40;
-/*TODO*///	if (KEY_H)
-/*TODO*///		value &= ~0x20;
-/*TODO*///	if (KEY_B)
-/*TODO*///		value &= ~0x10;
-/*TODO*///	if (KEY_8) value &= ~8;
-/*TODO*///	if (KEY_G)
-/*TODO*///		value &= ~4;
-/*TODO*///	if (KEY_Y)
-/*TODO*///		value &= ~2;
-/*TODO*///	if (KEY_7) value &= ~1;
-/*TODO*///	c64_keyline[3] = value;
-/*TODO*///
-/*TODO*///	value = 0xff;
-/*TODO*///	if (KEY_N)
-/*TODO*///		value &= ~0x80;
-/*TODO*///	if (KEY_O)
-/*TODO*///		value &= ~0x40;
-/*TODO*///	if (KEY_K)
-/*TODO*///		value &= ~0x20;
-/*TODO*///	if (KEY_M)
-/*TODO*///		value &= ~0x10;
-/*TODO*///	if (KEY_0)
-/*TODO*///		value &= ~8;
-/*TODO*///	if (KEY_J)
-/*TODO*///		value &= ~4;
-/*TODO*///	if (KEY_I)
-/*TODO*///		value &= ~2;
-/*TODO*///	if (KEY_9)
-/*TODO*///		value &= ~1;
-/*TODO*///	c64_keyline[4] = value;
-/*TODO*///
-/*TODO*///	value = 0xff;
-/*TODO*///	if (KEY_COMMA)
-/*TODO*///		value &= ~0x80;
-/*TODO*///	if (KEY_ATSIGN)
-/*TODO*///		value &= ~0x40;
-/*TODO*///	if (KEY_SEMICOLON)
-/*TODO*///		value &= ~0x20;
-/*TODO*///	if (KEY_POINT)
-/*TODO*///		value &= ~0x10;
-/*TODO*///	if (KEY_MINUS)
-/*TODO*///		value &= ~8;
-/*TODO*///	if (KEY_L)
-/*TODO*///		value &= ~4;
-/*TODO*///	if (KEY_P)
-/*TODO*///		value &= ~2;
-/*TODO*///	if (KEY_PLUS)
-/*TODO*///		value &= ~1;
-/*TODO*///	c64_keyline[5] = value;
-/*TODO*///
-/*TODO*///
-/*TODO*///	value = 0xff;
-/*TODO*///	if (KEY_SLASH)
-/*TODO*///		value &= ~0x80;
-/*TODO*///	if (KEY_ARROW_UP)
-/*TODO*///		value &= ~0x40;
-/*TODO*///	if (KEY_EQUALS)
-/*TODO*///		value &= ~0x20;
-/*TODO*///	if (c128) {
+	if (KEY_V()!=0)
+		value &= ~0x80;
+	if (KEY_U()!=0)
+		value &= ~0x40;
+	if (KEY_H()!=0)
+		value &= ~0x20;
+	if (KEY_B()!=0)
+		value &= ~0x10;
+	if (KEY_8()!=0) value &= ~8;
+	if (KEY_G()!=0)
+		value &= ~4;
+	if (KEY_Y()!=0)
+		value &= ~2;
+	if (KEY_7()!=0) value &= ~1;
+	c64_keyline[3] = (char) value;
+
+	value = 0xff;
+	if (KEY_N()!=0)
+		value &= ~0x80;
+	if (KEY_O()!=0)
+		value &= ~0x40;
+	if (KEY_K()!=0)
+		value &= ~0x20;
+	if (KEY_M()!=0)
+		value &= ~0x10;
+	if (KEY_0()!=0)
+		value &= ~8;
+	if (KEY_J()!=0)
+		value &= ~4;
+	if (KEY_I()!=0)
+		value &= ~2;
+	if (KEY_9()!=0)
+		value &= ~1;
+	c64_keyline[4] = (char) value;
+
+	value = 0xff;
+	if (KEY_COMMA()!=0)
+		value &= ~0x80;
+	if (KEY_ATSIGN()!=0)
+		value &= ~0x40;
+	if (KEY_SEMICOLON()!=0)
+		value &= ~0x20;
+	if (KEY_POINT()!=0)
+		value &= ~0x10;
+	if (KEY_MINUS()!=0)
+		value &= ~8;
+	if (KEY_L()!=0)
+		value &= ~4;
+	if (KEY_P()!=0)
+		value &= ~2;
+	if (KEY_PLUS()!=0)
+		value &= ~1;
+	c64_keyline[5] = (char) value;
+
+
+	value = 0xff;
+	if (KEY_SLASH()!=0)
+		value &= ~0x80;
+	if (KEY_ARROW_UP()!=0)
+		value &= ~0x40;
+	if (KEY_EQUALS()!=0)
+		value &= ~0x20;
+	if (c128 != 0) {
 /*TODO*///		if (C128_KEY_RIGHT_SHIFT)
 /*TODO*///		value &= ~0x10;
-/*TODO*///	} else if (c65) {
+	} else if (c65 != 0) {
 /*TODO*///		if (C65_KEY_RIGHT_SHIFT)
 /*TODO*///		value &= ~0x10;
-/*TODO*///	} else {
-/*TODO*///		if (KEY_RIGHT_SHIFT)
-/*TODO*///		value &= ~0x10;
-/*TODO*///	}
-/*TODO*///	if (KEY_HOME)
-/*TODO*///		value &= ~8;
-/*TODO*///	if (KEY_COLON)
-/*TODO*///		value &= ~4;
-/*TODO*///	if (KEY_ASTERIX)
-/*TODO*///		value &= ~2;
-/*TODO*///	if (KEY_POUND)
-/*TODO*///		value &= ~1;
-/*TODO*///	c64_keyline[6] = value;
-/*TODO*///
-/*TODO*///	value = 0xff;
-/*TODO*///	if (c65) {
+	} else {
+		if (KEY_RIGHT_SHIFT()!=0)
+		value &= ~0x10;
+	}
+	if (KEY_HOME()!=0)
+		value &= ~8;
+	if (KEY_COLON()!=0)
+		value &= ~4;
+	if (KEY_ASTERIX()!=0)
+		value &= ~2;
+	if (KEY_POUND()!=0)
+		value &= ~1;
+	c64_keyline[6] = (char) value;
+
+	value = 0xff;
+	if (c65 != 0) {
 /*TODO*///		if (C65_KEY_STOP)
 /*TODO*///			value &= ~0x80;
 /*TODO*///		if (C65_KEY_SPACE)
 /*TODO*///			value &= ~0x10;
 /*TODO*///		if (C65_KEY_CTRL)
 /*TODO*///			value &= ~4;
-/*TODO*///	} else {
-/*TODO*///		if (KEY_STOP)
-/*TODO*///			value &= ~0x80;
-/*TODO*///		if (KEY_SPACE)
-/*TODO*///			value &= ~0x10;
-/*TODO*///		if (KEY_CTRL)
-/*TODO*///			value &= ~4;
-/*TODO*///	}
+	} else {
+		if (KEY_STOP()!=0)
+			value &= ~0x80;
+		if (KEY_SPACE()!=0)
+			value &= ~0x10;
+		if (KEY_CTRL()!=0)
+			value &= ~4;
+	}
 	if (KEY_Q()!=0){
-            System.out.println("Pulso Q");
+            //System.out.println("Pulso Q");
+            //c64_memory.write(1024, 0xff);
 		value &= ~0x40;
+        //} else {
+        //    c64_memory.write(1024, 32);
         }
-/*TODO*///	if (KEY_CBM)
-/*TODO*///		value &= ~0x20;
-/*TODO*///	if (KEY_2) value &= ~8;
-/*TODO*///	if (KEY_ARROW_LEFT)
-/*TODO*///		value &= ~2;
-/*TODO*///	if (KEY_1) value &= ~1;
+	if (KEY_CBM()!=0)
+		value &= ~0x20;
+	if (KEY_2()!=0) value &= ~8;
+	if (KEY_ARROW_LEFT()!=0)
+		value &= ~2;
+	if (KEY_1()!=0) value &= ~1;
 	c64_keyline[7] = (char) value;
-/*TODO*///
+
 	value = 0xff;
-/*TODO*///	if (JOYSTICK1||JOYSTICK1_2BUTTON) {
-/*TODO*///		if (JOYSTICK_1_BUTTON)
-/*TODO*///			value &= ~0x10;
-/*TODO*///		if (JOYSTICK_1_RIGHT)
-/*TODO*///			value &= ~8;
-/*TODO*///		if (JOYSTICK_1_LEFT)
-/*TODO*///			value &= ~4;
-/*TODO*///		if (JOYSTICK_1_DOWN)
-/*TODO*///			value &= ~2;
-/*TODO*///		if (JOYSTICK_1_UP)
-/*TODO*///			value &= ~1;
-/*TODO*///	} else if (PADDLES12) {
-/*TODO*///		if (PADDLE2_BUTTON)
-/*TODO*///			value &= ~8;
-/*TODO*///		if (PADDLE1_BUTTON)
-/*TODO*///			value &= ~4;
-/*TODO*///	} else if (MOUSE1) {
-/*TODO*///		if (MOUSE1_BUTTON1)
-/*TODO*///			value &= ~0x10;
-/*TODO*///		if (MOUSE1_BUTTON2)
-/*TODO*///			value &= ~1;
-/*TODO*///	}
-/*TODO*///	c64_keyline[8] = value;
-/*TODO*///
-/*TODO*///	value2 = 0xff;
-/*TODO*///	if (JOYSTICK2||JOYSTICK2_2BUTTON) {
-/*TODO*///		if (JOYSTICK_2_BUTTON)
-/*TODO*///			value2 &= ~0x10;
-/*TODO*///		if (JOYSTICK_2_RIGHT)
-/*TODO*///			value2 &= ~8;
-/*TODO*///		if (JOYSTICK_2_LEFT)
-/*TODO*///			value2 &= ~4;
-/*TODO*///		if (JOYSTICK_2_DOWN)
-/*TODO*///			value2 &= ~2;
-/*TODO*///		if (JOYSTICK_2_UP)
-/*TODO*///			value2 &= ~1;
-/*TODO*///	} else if (PADDLES34) {
-/*TODO*///		if (PADDLE4_BUTTON)
-/*TODO*///			value2 &= ~8;
-/*TODO*///		if (PADDLE3_BUTTON)
-/*TODO*///			value2 &= ~4;
-/*TODO*///	} else if (MOUSE2) {
-/*TODO*///		if (MOUSE2_BUTTON1)
-/*TODO*///			value2 &= ~0x10;
-/*TODO*///		if (MOUSE2_BUTTON2)
-/*TODO*///			value2 &= ~1;
-/*TODO*///	}
-/*TODO*///	c64_keyline[9] = value2;
-/*TODO*///
-/*TODO*///	if ( c128 ) {
+	if (JOYSTICK1()!=0||JOYSTICK1_2BUTTON()!=0) {
+		if (JOYSTICK_1_BUTTON()!=0)
+			value &= ~0x10;
+		if (JOYSTICK_1_RIGHT()!=0)
+			value &= ~8;
+		if (JOYSTICK_1_LEFT()!=0)
+			value &= ~4;
+		if (JOYSTICK_1_DOWN()!=0)
+			value &= ~2;
+		if (JOYSTICK_1_UP()!=0)
+			value &= ~1;
+	} else if (PADDLES12()!=0) {
+		if (PADDLE2_BUTTON()!=0)
+			value &= ~8;
+		if (PADDLE1_BUTTON()!=0)
+			value &= ~4;
+	} else if (MOUSE1()!=0) {
+		if (MOUSE1_BUTTON1()!=0)
+			value &= ~0x10;
+		if (MOUSE1_BUTTON2()!=0)
+			value &= ~1;
+	}
+	c64_keyline[8] = (char) value;
+
+	value2 = 0xff;
+	if (JOYSTICK2()!=0||JOYSTICK2_2BUTTON()!=0) {
+		if (JOYSTICK_2_BUTTON()!=0)
+			value2 &= ~0x10;
+		if (JOYSTICK_2_RIGHT()!=0)
+			value2 &= ~8;
+		if (JOYSTICK_2_LEFT()!=0)
+			value2 &= ~4;
+		if (JOYSTICK_2_DOWN()!=0)
+			value2 &= ~2;
+		if (JOYSTICK_2_UP()!=0)
+			value2 &= ~1;
+	} else if (PADDLES34()!=0) {
+		if (PADDLE4_BUTTON()!=0)
+			value2 &= ~8;
+		if (PADDLE3_BUTTON()!=0)
+			value2 &= ~4;
+	} else if (MOUSE2()!=0) {
+		if (MOUSE2_BUTTON1()!=0)
+			value2 &= ~0x10;
+		if (MOUSE2_BUTTON2()!=0)
+			value2 &= ~1;
+	}
+	c64_keyline[9] = (char) value2;
+
+	if ( c128 != 0 ) {
 /*TODO*///		value = 0xff;
-/*TODO*///		if (KEY_NUM1)
+/*TODO*///		if (KEY_NUM1()!=0)
 /*TODO*///			value &= ~0x80;
 /*TODO*///		if (KEY_NUM7)
 /*TODO*///			value &= ~0x40;
@@ -1367,7 +1374,7 @@ public class c64
 /*TODO*///		if (KEY_HELP)
 /*TODO*///			value &= ~1;
 /*TODO*///		c128_keyline[0] = value;
-/*TODO*///
+
 /*TODO*///		value = 0xff;
 /*TODO*///		if (KEY_NUM3)
 /*TODO*///			value &= ~0x80;
@@ -1386,7 +1393,7 @@ public class c64
 /*TODO*///		if (KEY_ESCAPE)
 /*TODO*///			value &= ~1;
 /*TODO*///		c128_keyline[1] = value;
-/*TODO*///
+
 /*TODO*///		value = 0xff;
 /*TODO*///		if (KEY_NOSCRL)
 /*TODO*///			value &= ~0x80;
@@ -1405,9 +1412,9 @@ public class c64
 /*TODO*///		if (KEY_ALT)
 /*TODO*///			value &= ~1;
 /*TODO*///		c128_keyline[2] = value;
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	if (c65) {
+	}
+
+	if (c65 != 0) {
 /*TODO*///		value = 0xff;
 /*TODO*///		if (C65_KEY_ESCAPE)
 /*TODO*///			value &= ~0x80;
@@ -1431,10 +1438,10 @@ public class c64
 /*TODO*///		/*if (KEY_5) value &= ~0x8; // left */
 /*TODO*///		/*if (KEY_6) value &= ~0x4; // down */
 /*TODO*///		c65_keyline[1] = value;
-/*TODO*///	}
-/*TODO*///
+	}
+
                 vic2_frame_interrupt ();
-/*TODO*///
+
 /*TODO*///	if (c64_tape_on) {
 /*TODO*///		vc20_tape_config (DATASSETTE, DATASSETTE_TONE);
 /*TODO*///		vc20_tape_buttons (DATASSETTE_PLAY, DATASSETTE_RECORD, DATASSETTE_STOP);

@@ -1037,7 +1037,8 @@ public class c64
 		/* basic machine hardware */
 		new MachineCPU[] {
 			new MachineCPU(
-				CPU_M6510,
+				//CPU_M6510,
+                                CPU_M6502,
 				VIC6569_CLOCK,
 				c64_readmem, c64_writemem,
 				null, null,
@@ -1122,7 +1123,7 @@ public class c64
 	static IODevice io_c64[] =
 	{
 		IODEVICE_CBM_QUICK,
-/*TODO*///		IODEVICE_CBM_ROM("crt\080\0"),
+		IODEVICE_CBM_ROM("crt\080\0"),
 		IODEVICE_VC20TAPE,
 		IODEVICE_CBM_DRIVE,
 		new IODevice(IO_END)

@@ -287,6 +287,10 @@ public class memory {
     public static void memory_set_opcode_base(int cpunum, UBytePtr base) {
         cpudata[cpunum].rombase = base;
     }
+    
+    public static void memory_set_opcode_arg_base(int cpunum, UBytePtr base) {
+        cpudata[cpunum].rambase = base;
+    }
 
     /*TODO*///
 /*TODO*///

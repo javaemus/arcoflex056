@@ -779,6 +779,7 @@ public class msx
             new MachineCPU[] {
                     new MachineCPU(
                         CPU_Z80,
+                        //CPU_Z80_MSX,
                         3579545,    /* 3.579545 Mhz */
                         readmem,writemem,readport,writeport,
                         msx_interrupt,1

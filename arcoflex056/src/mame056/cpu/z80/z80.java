@@ -423,9 +423,10 @@ public class z80 extends cpu_interface {
     public static /*UINT8*/ int ARG() {
         int pc = Z80.PC & 0xFFFF;
         
-        if (isZ80_MSX)
-		if ( (pc & 0x1fff) == 0) change_pc16 (pc);
-	
+        if (isZ80_MSX){
+            if ( (pc & 0x1fff) == 0 ) change_pc16 (pc);
+        }
+            
         Z80.PC = (Z80.PC + 1 & 0xFFFF);
         return cpu_readop_arg(pc) & 0xFF;
     }

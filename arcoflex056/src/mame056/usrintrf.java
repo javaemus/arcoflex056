@@ -1959,7 +1959,7 @@ public class usrintrf {
             buf = ui_getstring(UI_knownproblems);
             buf += "\n\n";
             
-            if (settings.MESS){
+            if (MESS){
                 if ((Machine.gamedrv.flags & GAME_COMPUTER) != 0)
                 {
                         buf = ui_getstring (UI_comp1);
@@ -3197,10 +3197,71 @@ public class usrintrf {
         messagetext = sprintf(text, arg);
         messagecounter = (int) (seconds * Machine.drv.frames_per_second);
     }
+    
+    static int ui_active = 0, ui_toggle_key = 0;
+    static int ui_display_count = 4 * 60;
 
     public static int handle_user_interface(mame_bitmap bitmap) {
         /*TODO*///	int request_loadsave = LOADSAVE_NONE;
 /*TODO*///
+        
+        if ((MESS)&&(Machine.gamedrv.flags & GAME_COMPUTER) != 0)
+	{
+		
+	
+		if( input_ui_pressed(IPT_UI_TOGGLE_UI) != 0 )
+		{
+			if (ui_toggle_key == 0)
+			{
+				ui_toggle_key = 1;
+				ui_active = ui_active!=0 ? 0 : 1;
+				ui_display_count = 4 * 60;
+				schedule_full_refresh();
+			 }
+		}
+		else
+		{
+			ui_toggle_key = 0;
+		}
+	
+		if( ui_active != 0 )
+		{
+			if( ui_display_count > 0 )
+			{
+				String text = "KBD: UI  (ScrLock)";
+				int x, x0 = Machine.uiwidth - text.length() * Machine.uifont.width - 2;
+				int y0 = Machine.uiymin + Machine.uiheight - Machine.uifont.height - 2;
+				for( x = 0; x<text.length() ; x++ )
+				{
+					drawgfx(bitmap,
+						Machine.uifont,text.charAt(x),0,0,0,
+						x0+x*Machine.uifont.width,
+						y0,null,TRANSPARENCY_NONE,0);
+				}
+				if( --ui_display_count == 0 )
+					schedule_full_refresh();
+			}
+		}
+		else
+		{
+			if( ui_display_count > 0 )
+			{
+				String text = "KBD: EMU (ScrLock)";
+				int x, x0 = Machine.uiwidth - text.length() * Machine.uifont.width - 2;
+				int y0 = Machine.uiymin + Machine.uiheight - Machine.uifont.height - 2;
+				for( x = 0; x<text.length() ; x++ )
+				{
+					drawgfx(bitmap,
+						Machine.uifont,text.charAt(x),0,0,0,
+						x0+x*Machine.uifont.width,
+						y0,null,TRANSPARENCY_NONE,0);
+				}
+				if( --ui_display_count == 0 )
+					schedule_full_refresh();
+			}
+			return 0;
+		}
+	}
 
         /* if the user pressed F12, save the screen to a file */
         if (input_ui_pressed(IPT_UI_SNAPSHOT) != 0) {

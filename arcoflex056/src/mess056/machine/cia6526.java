@@ -40,7 +40,7 @@ public class cia6526
 /*TODO*///	#define TIMER1_B6 (This->cra&2)
 /*TODO*///	#define TIMER1_B6_TOGGLE (This->cra&4)	/* else single pulse */
         public static int TIMER1_ONESHOT(_CIA6526 This){ return((This.cra&8)!=0?1:0); } /* else continuous */
-        public static int TIMER1_STOP(_CIA6526 This){ return((This.cra&1)!=0?1:0); }
+        public static int TIMER1_STOP(_CIA6526 This){ return((This.cra&1)==0?1:0); }
         public static int TIMER1_RELOAD(_CIA6526 This){ return((This.cra&0x10)!=0?1:0); }
         public static int TIMER1_COUNT_CNT(_CIA6526 This){ return((This.cra&0x20)!=0?1:0); }	/* else clock 2 input */
 
@@ -57,6 +57,7 @@ public class cia6526
         public static int BCD_INC(int v){ return ( ((v)&0xf)==9?(v)+=0x10-9:(v)++); }
 	
 	public static class _CIA6526 {
+                public int active;
                 public int number; /* number of cia, to allow callback generate address */
 		public cia6526_interface intf;
 
@@ -102,10 +103,10 @@ public class cia6526
 	
 	public static _CIA6526[] cia=new _CIA6526[MAX_CIA];
         
-        /*static {
+        static {
             for (int _i=0 ; _i<MAX_CIA ; _i++)
                 cia[_i] = new _CIA6526();
-        }*/
+        }
 /*TODO*///	{
 /*TODO*///		{0}
 /*TODO*///	};
@@ -118,13 +119,25 @@ public class cia6526
 	
 	public static void cia6526_config (int which, cia6526_interface intf)
 	{
-            System.out.println("cia6526_config "+which);
-		if (which >= MAX_CIA)
-			return;
-		//memset (cia + which, 0, sizeof (cia[which]));
+            
+            if (which >= MAX_CIA)
+		return;
+            //if (cia[which].active != 0){
+                //memset (cia + which, 0, sizeof (cia[which]));
                 cia[which] = new _CIA6526();
-		cia[which].number=which;
-		cia[which].intf = intf;
+                cia[which].active = 1;
+                cia[which].number = which;
+                cia[which].intf = intf;
+                /*TODO*///cia[which].timer1 = (cia_timer1_timeout);
+                //cia[which].timer1 = new timer_entry();
+                //cia[which].timer1.callback = (cia_timer1_timeout);
+                /*TODO*///cia[which].timer2 = (cia_timer2_timeout);
+                //cia[which].timer2 = new timer_entry();
+                //cia[which].timer2.callback = (cia_timer2_timeout);
+                /*TODO*///cia[which].todtimer = (cia_tod_timeout);
+                //cia[which].todtimer = new timer_entry();
+                //cia[which].todtimer.callback = (cia_tod_timeout);
+            //}
 	}
 	
 	
@@ -132,55 +145,57 @@ public class cia6526
 	
 	public static void cia6526_reset ()
 	{
-            System.out.println("cia6526_reset");
-		int i;
-/*TODO*///	
-/*TODO*///		assert (((int) cia[0].intf & 3) == 0);
-/*TODO*///	
-                if ((cia[0].intf) == null){
-                    return;
-                }
-		/* zap each structure, preserving the interface and swizzle */
-		for (i = 0; i < MAX_CIA; i++)
-		{
-                    if (cia[i]!=null){
-                        
-                        cia6526_interface intf = cia[i].intf;
-	
-/*TODO*///			if (cia[i].timer1 != null)
-/*TODO*///				timer_remove (cia[i].timer1);
-/*TODO*///			if (cia[i].timer2 != null)
-/*TODO*///				timer_remove (cia[i].timer2);
-/*TODO*///			if (cia[i].todtimer != null)
-/*TODO*///				timer_remove (cia[i].todtimer);
-			//memset (&cia[i], 0, sizeof (cia[i]));
-/*TODO*///                        cia[i] = new _CIA6526();
-			cia[i].number = i;
-			cia[i].intf = intf;
-			cia[i].t1l = 0xffff;
-			cia[i].t2l = 0xffff;
-			if (cia[i].intf!=null) cia[i].todtimer=timer_set(0.1,i,cia_tod_timeout);
+            int i;
+            /* zap each structure, preserving the interface and swizzle */
+            for (i = 0; i < MAX_CIA; i++)
+            {
+                    if (cia[i].active != 0)
+                    {
+                            cia6526_interface intf = cia[i].intf;
+                            timer_entry timer1 = cia[i].timer1;
+                            timer_entry timer2 = cia[i].timer2;
+                            timer_entry todtimer = cia[i].todtimer;
+
+                            cia[i] = new _CIA6526();
+                            cia[i].active = 1;
+                            cia[i].number = i;
+                            cia[i].intf = intf;
+                            
+                            cia[i].t1l = 0xffff;
+                            cia[i].t2l = 0xffff;
+                            cia[i].timer1 = timer1;
+                            cia[i].timer2 = timer2;
+                            cia[i].todtimer = todtimer;
+
+                            if (cia[i].timer1 != null)
+                                timer_reset(cia[i].timer1, TIME_NEVER);
+                            
+                            if (cia[i].timer2 != null)
+                                timer_reset(cia[i].timer2, TIME_NEVER);
+                            /*if (cia[i].intf != null)
+                                    timer_adjust(cia[i].todtimer, 0.1, i);
+                            else*/
+                            //        timer_reset(cia[i].todtimer, TIME_NEVER);
+                            if (cia[i].intf!=null) 
+                                cia[i].todtimer=timer_set(0.1,i,cia_tod_timeout);
                     }
-		}
+            }
 	}
 	
 	/******************* external interrupt check *******************/
 	
 	public static void cia_set_interrupt (int This, int data)
 	{
-            //System.out.println("cia_set_interrupt "+cia[This].ifr+", "+cia[This].ifr+", "+cia[This].intf.irq_func);
             
 		cia[This].ifr |= data;
-                //System.out.println("cia_set_interrupt 1 "+data);
+                
 		if ((cia[This].ier & data) != 0)
 		{
-                    System.out.println("cia_set_interrupt 2");
-			if ((cia[This].ifr & 0x80)==0)
+                	if ((cia[This].ifr & 0x80)==0)
 			{
-                            System.out.println("cia_set_interrupt 3");
+                
 /*TODO*///				DBG_LOG (3, "cia set interrupt", ("%d %.2x\n", This.number, data));
 				if (cia[This].intf.irq_func != null){
-                                    System.out.println("Lanzo INTR!");
                                     cia[This].intf.irq_func.handler(1);
                                 }
 				cia[This].ifr |= 0x80;
@@ -254,25 +269,25 @@ public class cia6526
 	
 	public static void cia_timer1_state (int This)
 	{
-	
+                
 /*TODO*///		DBG_LOG (1, "timer1 state", ("%d\n", This.timer1_state));
 		switch (cia[This].timer1_state)
 		{
 		case 0:						   /* timer stopped */
 			if (TIMER1_RELOAD(cia[This]) != 0)
 			{
-				cia[This].cra &= ~0x10;
+                            	cia[This].cra &= ~0x10;
 				cia[This].t1c = cia[This].t1l;
 			}
 			if (TIMER1_STOP(cia[This]) == 0)
 			{
-				if (TIMER1_COUNT_CNT(cia[This]) != 0)
+                            	if (TIMER1_COUNT_CNT(cia[This]) != 0)
 				{
-					cia[This].timer1_state = 2;
+                                    	cia[This].timer1_state = 2;
 				}
 				else
 				{
-					cia[This].timer1_state = 1;
+                                    	cia[This].timer1_state = 1;
 					cia[This].timer1 = timer_set (TIME_IN_CYCLES (cia[This].t1c, 0),
 											  cia[This].number, cia_timer1_timeout);
 				}
@@ -322,7 +337,7 @@ public class cia6526
 
 	public static void cia_timer2_state (int This)
 	{
-		switch (cia[This].timer2_state)
+                switch (cia[This].timer2_state)
 		{
 		case 0:						   /* timer stopped */
 			if (TIMER2_RELOAD(cia[This]) != 0)
@@ -467,7 +482,7 @@ public class cia6526
 	public static int cia6526_read (int This, int offset)
 	{
             
-            System.out.println("cia6526_read "+offset);
+            //System.out.println("cia6526_read "+offset);
 		int val = 0;
 	
 		//offset &= 0xf;
@@ -774,15 +789,13 @@ public class cia6526
 /*TODO*///	
         public static ReadHandlerPtr cia6526_0_port_r = new ReadHandlerPtr() {
             public int handler(int offset) {
-                System.out.println("Leo 0 offset="+offset);
                 return cia6526_read (0, offset);
             }
         };
 
         public static ReadHandlerPtr cia6526_1_port_r = new ReadHandlerPtr() {
             public int handler(int offset) {
-                System.out.println("Leo 1 offset="+offset);
-		return cia6526_read (1, offset);
+                return cia6526_read (1, offset);
             }
         };
         

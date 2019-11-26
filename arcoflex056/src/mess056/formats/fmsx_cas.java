@@ -146,8 +146,13 @@ public class fmsx_cas
 	
 		wavdata = new UBytePtr(samples);
 		wavlen = samples_pos;
+                
+                wavdata_loaded = new UBytePtr(samples);
+		wavlen_loaded = samples_pos;
 	
 		return 0;
 		}
 	
+        public static UBytePtr wavdata_loaded;
+        public static int wavlen_loaded;
 }

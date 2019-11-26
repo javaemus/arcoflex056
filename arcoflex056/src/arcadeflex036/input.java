@@ -115,9 +115,9 @@ public class input {
 	new KeyboardInfo( "ALTGR",		KeyEvent.VK_ALT,		KEYCODE_RALT ),
 	/*new KeyboardInfo( "LWIN",		KEY_LWIN,			KEYCODE_OTHER ),
 	new KeyboardInfo( "RWIN",		KEY_RWIN,			KEYCODE_OTHER ),
-	new KeyboardInfo( "MENU",		KEY_MENU,			KEYCODE_OTHER ),
-	new KeyboardInfo( "SCRLOCK",    KEY_SCRLOCK,        KEYCODE_SCRLOCK ),
-	new KeyboardInfo( "NUMLOCK",    KEY_NUMLOCK,        KEYCODE_NUMLOCK ),
+	new KeyboardInfo( "MENU",		KEY_MENU,			KEYCODE_OTHER ),*/
+	new KeyboardInfo( "SCRLOCK",    KeyEvent.VK_SCROLL_LOCK,        KEYCODE_SCRLOCK ),
+	/*new KeyboardInfo( "NUMLOCK",    KEY_NUMLOCK,        KEYCODE_NUMLOCK ),
 	new KeyboardInfo( "CAPSLOCK",   KEY_CAPSLOCK,       KEYCODE_CAPSLOCK ),*/   
 	new KeyboardInfo( null, 0, 0 )	/* end of table */
     };

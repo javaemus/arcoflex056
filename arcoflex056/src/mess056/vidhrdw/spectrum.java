@@ -43,8 +43,8 @@ import static mess056.vidhrdw.border.*;
 public class spectrum
 {
 	
-static UBytePtr spectrum_characterram;
-	static UBytePtr spectrum_colorram;
+        public static UBytePtr spectrum_characterram;
+	public static UBytePtr spectrum_colorram;
 	static UBytePtr charsdirty;
 	static int frame_number;    /* Used for handling FLASH 1 */
 	static int flash_invert=0;

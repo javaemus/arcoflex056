@@ -50,7 +50,7 @@ public class nec765
 	//#define VERBOSE
 	
 	/* uncomment this to not allow end of cylinder "error" */
-	public static int NO_END_OF_CYLINDER;
+	public static boolean NO_END_OF_CYLINDER = true;
 	
 	//#ifdef VERBOSE
 	/* uncomment the following line for super-verbose information i.e. data
@@ -748,11 +748,11 @@ public class nec765
 					}
 				}
 	
-	/*TODO*///#ifdef NO_END_OF_CYLINDER
-	/*TODO*///			nec765_continue_command();
-	/*TODO*///#else
-				nec765_update_state();
-	/*TODO*///#endif
+                                if( NO_END_OF_CYLINDER ){
+                                                        nec765_continue_command();
+                                } else {
+                                                        nec765_update_state();
+                                }
 			}
 		}
 	}
@@ -910,26 +910,26 @@ public class nec765
 	static void nec765_read_complete()
 	{
 	
-	/* causes problems!!! - need to fix */
-	/*TODO*///#ifdef NO_END_OF_CYLINDER
-	        /* set end of cylinder */
-	/*TODO*///        fdc.nec765_status[1] &= ~NEC765_ST1_END_OF_CYLINDER;
-	/*TODO*///#else
-		/* completed read command */
-	
-		/* end of cylinder is set when:
-		 - a whole sector has been read
-		 - terminal count input is not set
-		 - AND the the sector specified by EOT was read
-		 */
-		
-		/* if end of cylinder is set, and we did receive a terminal count, then clear it */
-		if ((fdc.nec765_flags & NEC765_TC)!=0)
-		{
-			/* set end of cylinder */
-			fdc.nec765_status[1] &= ~NEC765_ST1_END_OF_CYLINDER;
-		}
-	/*TODO*///#endif
+                /* causes problems!!! - need to fix */
+                if( NO_END_OF_CYLINDER ){
+                        /* set end of cylinder */
+                        fdc.nec765_status[1] &= ~NEC765_ST1_END_OF_CYLINDER;
+                } else {
+                        /* completed read command */
+
+                        /* end of cylinder is set when:
+                         - a whole sector has been read
+                         - terminal count input is not set
+                         - AND the the sector specified by EOT was read
+                         */
+
+                        /* if end of cylinder is set, and we did receive a terminal count, then clear it */
+                        if ((fdc.nec765_flags & NEC765_TC)!=0)
+                        {
+                                /* set end of cylinder */
+                                fdc.nec765_status[1] &= ~NEC765_ST1_END_OF_CYLINDER;
+                        }
+                }
 	
 		nec765_setup_st0();
 	
@@ -947,25 +947,25 @@ public class nec765
 	static void nec765_read_data()
 	{
 	
-		if ((floppy_drive_get_flag_state(fdc.drive, FLOPPY_DRIVE_READY)) == 0)
+		if ((floppy_drive_get_flag_state(fdc.drive, FLOPPY_DRIVE_READY))==0)
 		{
-			fdc.nec765_status[0] = (0x0c0 | (1<<4) | fdc.drive | (fdc.side<<2))&0xFF;
+			fdc.nec765_status[0] = 0x0c0 | (1<<4) | fdc.drive | (fdc.side<<2);
 			fdc.nec765_status[1] = 0x00;
 			fdc.nec765_status[2] = 0x00;
 	
-			fdc.nec765_result_bytes[0] = fdc.nec765_status[0]&0xFF;
-			fdc.nec765_result_bytes[1] = fdc.nec765_status[1]&0xFF;
-			fdc.nec765_result_bytes[2] = fdc.nec765_status[2]&0xFF;
-			fdc.nec765_result_bytes[3] = fdc.nec765_command_bytes[2]&0xFF; /* C */
-			fdc.nec765_result_bytes[4] = fdc.nec765_command_bytes[3]&0xFF; /* H */
-			fdc.nec765_result_bytes[5] = fdc.nec765_command_bytes[4]&0xFF; /* R */
-			fdc.nec765_result_bytes[6] = fdc.nec765_command_bytes[5]&0xFF; /* N */
+			fdc.nec765_result_bytes[0] = fdc.nec765_status[0]&0xffff;
+			fdc.nec765_result_bytes[1] = fdc.nec765_status[1]&0xffff;
+			fdc.nec765_result_bytes[2] = fdc.nec765_status[2]&0xffff;
+			fdc.nec765_result_bytes[3] = fdc.nec765_command_bytes[2]&0xffff; /* C */
+			fdc.nec765_result_bytes[4] = fdc.nec765_command_bytes[3]&0xffff; /* H */
+			fdc.nec765_result_bytes[5] = fdc.nec765_command_bytes[4]&0xffff; /* R */
+			fdc.nec765_result_bytes[6] = fdc.nec765_command_bytes[5]&0xffff; /* N */
 			nec765_setup_result_phase(7);
 			return;
 		}
-	/*TODO*///#ifdef VERBOSE
-	/*TODO*///	logerror("sector c: %02x h: %02x r: %02x n: %02x\n",fdc.nec765_command_bytes[2], fdc.nec765_command_bytes[3],fdc.nec765_command_bytes[4], fdc.nec765_command_bytes[5]);
-	/*TODO*///#endif
+/*TODO*///	#ifdef VERBOSE
+/*TODO*///		logerror("sector c: %02x h: %02x r: %02x n: %02x\n",fdc.nec765_command_bytes[2], fdc.nec765_command_bytes[3],fdc.nec765_command_bytes[4], fdc.nec765_command_bytes[5]);
+/*TODO*///	#endif
 		/* find a sector to read data from */
 		{
 			int found_sector_to_read;
@@ -984,7 +984,7 @@ public class nec765
 						/* yes */
 	
 						/* check that we haven't finished reading all sectors */
-						if (nec765_sector_count_complete() != 0)
+						if (nec765_sector_count_complete()!=0)
 						{
 							/* read complete */
 							nec765_read_complete();
@@ -1018,8 +1018,6 @@ public class nec765
 			data_size = nec765_n_to_bytes(fdc.nec765_command_bytes[5]);
 	
 			floppy_drive_read_sector_data(fdc.drive, fdc.side, fdc.sector_id,nec765_data_buffer,data_size);
-                        //System.out.println("nec765_data_buffer");
-                        //System.out.println(nec765_data_buffer);
 	
 	        nec765_setup_execution_phase_read(nec765_data_buffer, data_size);
 		}
@@ -1101,26 +1099,26 @@ public class nec765
 	static void nec765_write_complete()
 	{
 	
-	/* causes problems!!! - need to fix */
-	/*TODO*///#ifdef NO_END_OF_CYLINDER
-	/*TODO*///        /* set end of cylinder */
-	/*TODO*///        fdc.nec765_status[1] &= ~NEC765_ST1_END_OF_CYLINDER;
-	/*TODO*///#else
-		/* completed read command */
-	
-		/* end of cylinder is set when:
-		 - a whole sector has been read
-		 - terminal count input is not set
-		 - AND the the sector specified by EOT was read
-		 */
-		
-		/* if end of cylinder is set, and we did receive a terminal count, then clear it */
-		if ((fdc.nec765_flags & NEC765_TC)!=0)
-		{
-			/* set end of cylinder */
-			fdc.nec765_status[1] &= ~NEC765_ST1_END_OF_CYLINDER;
-		}
-	/*TODO*///#endif
+            /* causes problems!!! - need to fix */
+            if( NO_END_OF_CYLINDER ){
+                    /* set end of cylinder */
+                    fdc.nec765_status[1] &= ~NEC765_ST1_END_OF_CYLINDER;
+            } else {
+                    /* completed read command */
+
+                    /* end of cylinder is set when:
+                     - a whole sector has been read
+                     - terminal count input is not set
+                     - AND the the sector specified by EOT was read
+                     */
+
+                    /* if end of cylinder is set, and we did receive a terminal count, then clear it */
+                    if ((fdc.nec765_flags & NEC765_TC)!=0)
+                    {
+                            /* set end of cylinder */
+                            fdc.nec765_status[1] &= ~NEC765_ST1_END_OF_CYLINDER;
+                    }
+            }
 	
 		nec765_setup_st0();
 	

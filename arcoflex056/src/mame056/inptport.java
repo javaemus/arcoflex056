@@ -129,6 +129,7 @@ public class inptport {
                 new ipd(IPT_UI_THROTTLE, "Throttle", SEQ_DEF_1(KEYCODE_F10)),
                 new ipd(IPT_UI_SHOW_FPS, "Show FPS", SEQ_DEF_5(KEYCODE_F11, CODE_NOT, KEYCODE_LCONTROL, CODE_NOT, KEYCODE_LSHIFT)),
                 new ipd(IPT_UI_SHOW_PROFILER, "Show Profiler", SEQ_DEF_2(KEYCODE_F11, KEYCODE_LSHIFT)),
+                new ipd(IPT_UI_TOGGLE_UI, "UI Toggle",SEQ_DEF_1(KEYCODE_SCRLOCK) ),
                 new ipd(IPT_UI_SNAPSHOT, "Save Snapshot", SEQ_DEF_1(KEYCODE_F12)),
                 new ipd(IPT_UI_TOGGLE_CHEAT, "Toggle Cheat", SEQ_DEF_1(KEYCODE_F6)),
                 new ipd(IPT_UI_UP, "UI Up", SEQ_DEF_3(KEYCODE_UP, CODE_OR, JOYCODE_1_UP)),

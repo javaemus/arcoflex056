@@ -749,7 +749,7 @@ public class v9938
 			{
 			y = attrtbl.read(0);
 			if (y == 208) break;
-			//y = (y - _vdp.contReg[23]) & 255;
+			y = (y - _vdp.contReg[23]) & 255;
 			if (y > 208)
 				y = -(~y&255);
 			else
@@ -776,7 +776,8 @@ public class v9938
 					pattern &= 0xfc;
 				n = line - y;
 				patternptr = new UBytePtr(patterntbl, pattern * 8 +
-					((_vdp.contReg[1] & 1)!=0 ? n/2  : n));
+                                        n);
+					//((_vdp.contReg[1] & 1)!=0 ? n/2  : n));
 				pattern = patternptr.read(0) << 8 | patternptr.read(16);
 	
 				/* get colour */
@@ -871,17 +872,18 @@ public class v9938
 		/* 16x16 or 8x8 sprites */
 		height = (_vdp.contReg[1] & 2)!=0 ? 16 : 8;
 		/* magnified sprites (zoomed) */
-		if ((_vdp.contReg[1] & 1) != 0) height *= 2;
+		if ((_vdp.contReg[1] & 1) != 0) 
+                    height *= 2;
 	
 		p2 = p = first_cc_seen = 0;
 		while (true)
 			{
 			y = v9938_vram_read (attrtbl);
 			if (y == 216) break;
-			/*y = (y - _vdp.contReg[23]) & 255;
+			y = (y - _vdp.contReg[23]) & 255;
 			if (y > 216)
 				y = -(~y&255);
-			else*/
+			else
 				y++;
 	
 			/* if sprite in range, has to be drawn */
@@ -896,7 +898,9 @@ public class v9938
 					if (_vdp.sprite_limit != 0) break;
 					}
 	
-				n = line - y; if ((_vdp.contReg[1] & 1)!=0) n /= 2;
+				n = line - y; 
+                                //if ((_vdp.contReg[1] & 1)!=0) 
+                                //    n /= 2;
 				/* get colour */
 				c = v9938_vram_read (colourtbl + (((p&colourmask)*16) + n));
 	
@@ -1240,11 +1244,11 @@ public class v9938
 			ln = new UShortPtr(bmp.line[line*2+((_vdp.statReg[2]>>1)&1)]);
 				}
 			//else
-			//	{
+				{
 			//	ln = new UShortPtr(bmp.line[line*2]);
 				//ln2 = new UShortPtr(bmp.line[line*2+1]);
 				//double_lines = 1;
-			//	}
+				}
                         
 			}
 		else
@@ -1488,66 +1492,62 @@ public class v9938
                     
 		UShortPtr col=new UShortPtr(256*2);
 		int scanline, max, pal, scanline_start;
-	
-		v9938_update_command ();
-	
-		pal = _vdp.contReg[9] & 2;
-		if (pal!=0) 
-                    scanline_start = 53; 
-                else scanline_start = 26;
-	
-		/* set flags */
-		if (_vdp.scanline == (_vdp.offset_y + scanline_start) )
-			{
-			_vdp.statReg[2] &= ~0x40;
-			}
-		else if (_vdp.scanline == (_vdp.offset_y + _vdp.visible_y + scanline_start) )
-			{
-			_vdp.statReg[2] |= 0x40;
-			_vdp.statReg[0] |= 0x80;
-			}
-                        
-	
-		max = (pal!=0) ? 255 : (_vdp.contReg[9] & 0x80)!=0 ? 234 : 244;
-		scanline = (_vdp.scanline - scanline_start - _vdp.offset_y);
-		if ( (scanline >= 0) && (scanline <= max) &&
-		   ( ( (scanline + _vdp.contReg[23]) & 255) == _vdp.contReg[19]) )
-			{
-			_vdp.statReg[1] |= 1;
-			logerror ("V9938: scanline interrupt (%d)\n", scanline);
-			}
-		else
-			if ( (_vdp.contReg[0] & 0x10)==0 ) 
-                            _vdp.statReg[1] &= 0xfe;
-	
-		v9938_check_int ();
-	
-		/* check for start of vblank */
-		if ((pal!=0 && (_vdp.scanline == 310)) ||
-			(pal==0 && (_vdp.scanline == 259)))
-			v9938_interrupt_start_vblank ();
-	
-		/* render the current line */
-		if ((_vdp.scanline >= scanline_start) && (_vdp.scanline < (212 + 16 + scanline_start)))
-			{
-			scanline = (_vdp.scanline - scanline_start) & 255;
-	
-			if (osd_skip_this_frame () != 0 )
-			{
-				if ( (_vdp.statReg[2] & 0x40)==0 && (modes[_vdp.mode].sprites)!=null )
-					modes[_vdp.mode].sprites.handler((scanline - _vdp.offset_y) & 255, col);
-			}
-			else
+
+                v9938_update_command ();
+
+                pal = _vdp.contReg[9] & 2;
+                if (pal != 0) scanline_start = 53; else scanline_start = 22;
+
+                /* set flags */
+                if (_vdp.scanline == (_vdp.offset_y + scanline_start) )
                         {
-                            v9938_refresh_line (Machine.scrbitmap, scanline);
+                        _vdp.statReg[2] &= ~0x40;
                         }
-		}
-	
-		max = (_vdp.contReg[9] & 2)!=0 ? 313 : 262;
-		if (++_vdp.scanline == max)
-			_vdp.scanline = 0;
-	
-		return _vdp.INT;
+                else if (_vdp.scanline == (_vdp.offset_y + _vdp.visible_y + scanline_start) )
+                        {
+                        _vdp.statReg[2] |= 0x40;
+                        _vdp.statReg[0] |= 0x80;
+                        }
+
+                max = (pal!=0) ? 255 : (_vdp.contReg[9] & 0x80)!=0 ? 234 : 244;
+                scanline = (_vdp.scanline - scanline_start - _vdp.offset_y);
+                if ( (scanline >= 0) && (scanline <= max) &&
+                   ( ( (scanline + _vdp.contReg[23]) & 255) == _vdp.contReg[19]) )
+                        {
+                        _vdp.statReg[1] |= 1;
+                        logerror ("V9938: scanline interrupt (%d)\n", scanline);
+                        }
+                else
+                        if ( (_vdp.contReg[0] & 0x10) == 0 ) _vdp.statReg[1] &= 0xfe;
+
+                v9938_check_int ();
+
+                /* check for start of vblank */
+                if ((pal!=0 && (_vdp.scanline == 310)) ||
+                        (pal==0 && (_vdp.scanline == 259)))
+                        v9938_interrupt_start_vblank ();
+
+                /* render the current line */
+                if ((_vdp.scanline >= scanline_start) && (_vdp.scanline < (212 + 28 + scanline_start)))
+                        {
+                        scanline = (_vdp.scanline - scanline_start) & 255;
+
+                        if (osd_skip_this_frame () != 0 )
+                                {
+                                if ( (_vdp.statReg[2] & 0x40)==0 && (modes[_vdp.mode].sprites)!=null )
+                                        modes[_vdp.mode].sprites.handler((scanline - _vdp.offset_y) & 255, col);
+                                }
+                        else
+                                {
+                                v9938_refresh_line (Machine.scrbitmap, scanline);
+                                }
+                        }
+
+                max = (_vdp.contReg[9] & 2)!=0 ? 313 : 262;
+                if (++_vdp.scanline == max)
+                        _vdp.scanline = 0;
+
+                return _vdp.INT;
                     
 		}
 /*TODO*///	

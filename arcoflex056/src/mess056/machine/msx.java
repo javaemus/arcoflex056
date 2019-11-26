@@ -1740,6 +1740,9 @@ public class msx
 	
 	    ret = fmsx_cas_to_wav (casdata, caslen, cas_samples, cas_len);
             
+            cas_samples = wavdata_loaded;
+            cas_len = wavlen_loaded;
+            
 	    if (ret == 2)
 		logerror ("cas2wav: out of memory\n");
 	    else if (ret != 0)
@@ -1752,6 +1755,7 @@ public class msx
 	
 	public static io_initPtr msx_cassette_init = new io_initPtr() {
             public int handler(int id) {
+                System.out.println("msx_cassette_init");
                 Object file;
 		int ret;
 	
@@ -1769,6 +1773,7 @@ public class msx
                             cas_len = -1;
                             if (check_fmsx_cas (file) == 0 )
                             {
+                                System.out.println("Dentro");
                                     wa.smpfreq = 22050;
                                     wa.fill_wave = msx_cassette_fill_wave;
                                     wa.header_samples = cas_len;
@@ -1777,6 +1782,7 @@ public class msx
                                     wa.chunk_samples = 0;
                             }
                             ret = device_open(IO_CASSETTE,id,0,wa);
+                            System.out.println("ret="+ret);
                             cas_samples = null;
                             cas_len = -1;
 
@@ -1786,6 +1792,7 @@ public class msx
                     OSD_FOPEN_RW_CREATE);
                 if( file != null )
                 {
+                    System.out.println("Dentro2");
                     wave_args wa = new wave_args(file);
                     wa.file = file;
                     wa.display = 1;

@@ -510,7 +510,7 @@ public class ted7360
 	
 	static int[] c16_bitmap=new int[2], bitmapmulti=new int[4], mono=new int[2], monoinversed=new int[2], multi=new int[4], ecmcolor=new int[2], colors=new int[5];
 	
-	static mame_bitmap ted7360_bitmap;	/* Machine.scrbitmap for speedup */
+	//static mame_bitmap ted7360_bitmap;	/* Machine.scrbitmap for speedup */
 	static int rasterline = 0, lastline = 0;
 	static double rastertime;
 	
@@ -955,7 +955,7 @@ public class ted7360
 		cursorelement.colortable = new IntArray(cursorcolortable);
 		cursorcolortable[1] = Machine.pens[1];
 		cursorelement.total_colors = 2;
-		ted7360_bitmap = Machine.scrbitmap;
+		//ted7360_bitmap = Machine.scrbitmap;
 		return 0;
             }
         };
@@ -996,14 +996,14 @@ public class ted7360
 					code = vic_dma_read_rom.handler(chargenaddr + ch * 8 + y);
 				else
 					code = vic_dma_read.handler(chargenaddr + ch * 8 + y);
-				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(xoff, (char) color[code >> 7]);
-				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(1 + xoff, (char) color[(code >> 6) & 1]);
-				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(2 + xoff, (char) color[(code >> 5) & 1]);
-				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(3 + xoff, (char) color[(code >> 4) & 1]);
-				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(4 + xoff, (char) color[(code >> 3) & 1]);
-				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(5 + xoff, (char) color[(code >> 2) & 1]);
-				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(6 + xoff, (char) color[(code >> 1) & 1]);
-				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(7 + xoff, (char) color[code & 1]);
+				new UShortPtr(Machine.scrbitmap.line[y + yoff]).write(xoff, (char) color[code >> 7]);
+				new UShortPtr(Machine.scrbitmap.line[y + yoff]).write(1 + xoff, (char) color[(code >> 6) & 1]);
+				new UShortPtr(Machine.scrbitmap.line[y + yoff]).write(2 + xoff, (char) color[(code >> 5) & 1]);
+				new UShortPtr(Machine.scrbitmap.line[y + yoff]).write(3 + xoff, (char) color[(code >> 4) & 1]);
+				new UShortPtr(Machine.scrbitmap.line[y + yoff]).write(4 + xoff, (char) color[(code >> 3) & 1]);
+				new UShortPtr(Machine.scrbitmap.line[y + yoff]).write(5 + xoff, (char) color[(code >> 2) & 1]);
+				new UShortPtr(Machine.scrbitmap.line[y + yoff]).write(6 + xoff, (char) color[(code >> 1) & 1]);
+				new UShortPtr(Machine.scrbitmap.line[y + yoff]).write(7 + xoff, (char) color[code & 1]);
 			}
 		}
 	}
@@ -1038,14 +1038,14 @@ public class ted7360
 					code = vic_dma_read_rom.handler(chargenaddr + ch * 8 + y);
 				else
 					code = vic_dma_read.handler(chargenaddr + ch * 8 + y);
-				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(xoff, (char) multi[code >> 6]);
-				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(xoff + 1, (char) multi[code >> 6]);
-				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(xoff + 2, (char) multi[(code >> 4) & 3]);
-				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(xoff + 3, (char) multi[(code >> 4) & 3]);
-				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(xoff + 4, (char) multi[(code >> 2) & 3]);
-				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(xoff + 5, (char) multi[(code >> 2) & 3]);
-				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(xoff + 6, (char) multi[code & 3]);
-				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(xoff + 7, (char) multi[code & 3]);
+				new UShortPtr(Machine.scrbitmap.line[y + yoff]).write(xoff, (char) multi[code >> 6]);
+				new UShortPtr(Machine.scrbitmap.line[y + yoff]).write(xoff + 1, (char) multi[code >> 6]);
+				new UShortPtr(Machine.scrbitmap.line[y + yoff]).write(xoff + 2, (char) multi[(code >> 4) & 3]);
+				new UShortPtr(Machine.scrbitmap.line[y + yoff]).write(xoff + 3, (char) multi[(code >> 4) & 3]);
+				new UShortPtr(Machine.scrbitmap.line[y + yoff]).write(xoff + 4, (char) multi[(code >> 2) & 3]);
+				new UShortPtr(Machine.scrbitmap.line[y + yoff]).write(xoff + 5, (char) multi[(code >> 2) & 3]);
+				new UShortPtr(Machine.scrbitmap.line[y + yoff]).write(xoff + 6, (char) multi[code & 3]);
+				new UShortPtr(Machine.scrbitmap.line[y + yoff]).write(xoff + 7, (char) multi[code & 3]);
 			}
 		}
 	}
@@ -1074,14 +1074,14 @@ public class ted7360
 			for (y = ybegin; y <= yend; y++)
 			{
 				code = vic_dma_read.handler(bitmapaddr + ch * 8 + y);
-				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(xoff, (char) c16_bitmap[code >> 7]);
-				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(1 + xoff, (char) c16_bitmap[(code >> 6) & 1]);
-				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(2 + xoff, (char) c16_bitmap[(code >> 5) & 1]);
-				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(3 + xoff, (char) c16_bitmap[(code >> 4) & 1]);
-				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(4 + xoff, (char) c16_bitmap[(code >> 3) & 1]);
-				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(5 + xoff, (char) c16_bitmap[(code >> 2) & 1]);
-				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(6 + xoff, (char) c16_bitmap[(code >> 1) & 1]);
-				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(7 + xoff, (char) c16_bitmap[code & 1]);
+				new UShortPtr(Machine.scrbitmap.line[y + yoff]).write(xoff, (char) c16_bitmap[code >> 7]);
+				new UShortPtr(Machine.scrbitmap.line[y + yoff]).write(1 + xoff, (char) c16_bitmap[(code >> 6) & 1]);
+				new UShortPtr(Machine.scrbitmap.line[y + yoff]).write(2 + xoff, (char) c16_bitmap[(code >> 5) & 1]);
+				new UShortPtr(Machine.scrbitmap.line[y + yoff]).write(3 + xoff, (char) c16_bitmap[(code >> 4) & 1]);
+				new UShortPtr(Machine.scrbitmap.line[y + yoff]).write(4 + xoff, (char) c16_bitmap[(code >> 3) & 1]);
+				new UShortPtr(Machine.scrbitmap.line[y + yoff]).write(5 + xoff, (char) c16_bitmap[(code >> 2) & 1]);
+				new UShortPtr(Machine.scrbitmap.line[y + yoff]).write(6 + xoff, (char) c16_bitmap[(code >> 1) & 1]);
+				new UShortPtr(Machine.scrbitmap.line[y + yoff]).write(7 + xoff, (char) c16_bitmap[code & 1]);
 			}
 		}
 	}
@@ -1110,14 +1110,14 @@ public class ted7360
 			for (y = ybegin; y <= yend; y++)
 			{
 				code = vic_dma_read.handler(bitmapaddr + ch * 8 + y);
-				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(xoff, (char) bitmapmulti[code >> 6]);
-				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(xoff + 1, (char) bitmapmulti[code >> 6]);
-				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(xoff + 2, (char) bitmapmulti[(code >> 4) & 3]);
-				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(xoff + 3, (char) bitmapmulti[(code >> 4) & 3]);
-				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(xoff + 4, (char) bitmapmulti[(code >> 2) & 3]);
-				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(xoff + 5, (char) bitmapmulti[(code >> 2) & 3]);
-				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(xoff + 6, (char) bitmapmulti[code & 3]);
-				new UShortPtr(ted7360_bitmap.line[y + yoff]).write(xoff + 7, (char) bitmapmulti[code & 3]);
+				new UShortPtr(Machine.scrbitmap.line[y + yoff]).write(xoff, (char) bitmapmulti[code >> 6]);
+				new UShortPtr(Machine.scrbitmap.line[y + yoff]).write(xoff + 1, (char) bitmapmulti[code >> 6]);
+				new UShortPtr(Machine.scrbitmap.line[y + yoff]).write(xoff + 2, (char) bitmapmulti[(code >> 4) & 3]);
+				new UShortPtr(Machine.scrbitmap.line[y + yoff]).write(xoff + 3, (char) bitmapmulti[(code >> 4) & 3]);
+				new UShortPtr(Machine.scrbitmap.line[y + yoff]).write(xoff + 4, (char) bitmapmulti[(code >> 2) & 3]);
+				new UShortPtr(Machine.scrbitmap.line[y + yoff]).write(xoff + 5, (char) bitmapmulti[(code >> 2) & 3]);
+				new UShortPtr(Machine.scrbitmap.line[y + yoff]).write(xoff + 6, (char) bitmapmulti[code & 3]);
+				new UShortPtr(Machine.scrbitmap.line[y + yoff]).write(xoff + 7, (char) bitmapmulti[code & 3]);
 			}
 		}
 	}
@@ -1138,7 +1138,7 @@ public class ted7360
 			for (y = ybegin; y <= yend; y++)
 			{
 				/*TODO*///memset16 (new UShortPtr(ted7360_bitmap.line[yoff + y], xoff), color, 8);
-                                memset(new UShortPtr(ted7360_bitmap.line[yoff + y], xoff), color, 8);
+                                memset(new UShortPtr(Machine.scrbitmap.line[yoff + y], xoff), color, 8);
 			}
 		}
 	}
@@ -1172,9 +1172,9 @@ public class ted7360
 		}
 		else
 	*/	{
-		    for (line = first; (line < last) && (line < ted7360_bitmap.height); line++){
+		    for (line = first; (line < last) && (line < Machine.scrbitmap.height); line++){
 			/*TODO*///memset16 (ted7360_bitmap.line[line], Machine.pens[0], ted7360_bitmap.width);
-                        memset(ted7360_bitmap.line[line], Machine.pens[0], ted7360_bitmap.width);
+                        memset(Machine.scrbitmap.line[line], Machine.pens[0], Machine.scrbitmap.width);
                     }
 		}
 		return;
@@ -1200,7 +1200,7 @@ public class ted7360
 	*/   {
 		for (line = first; line < end; line++){
 		    /*TODO*///memset16 (ted7360_bitmap.line[line], Machine.pens[FRAMECOLOR()], ted7360_bitmap.width);
-                    memset(ted7360_bitmap.line[line], Machine.pens[FRAMECOLOR()], ted7360_bitmap.width);
+                    memset(Machine.scrbitmap.line[line], Machine.pens[FRAMECOLOR()], Machine.scrbitmap.width);
                 }
 	    }
 	    if (LINES25() != 0)
@@ -1269,7 +1269,7 @@ public class ted7360
 			    ted7360_draw_cursor (ybegin, yend, yoff, xoff,
 						 Machine.pens[attr & 0x7f]);
 	/*TODO*///#else
-			    drawgfx (ted7360_bitmap, cursorelement, 0, Machine.pens[attr & 0x7f], 0, 0,
+			    drawgfx (Machine.scrbitmap, cursorelement, 0, Machine.pens[attr & 0x7f], 0, 0,
 				     xoff, yoff, null, TRANSPARENCY_NONE, 0);
 	/*TODO*///#endif
 			} else if (REVERSEON()!=0 && (ch & 0x80)!=0) {
@@ -1304,16 +1304,16 @@ public class ted7360
 		    for (i = ybegin; i <= yend; i++)
 		    {
 			/*TODO*///memset16 (ted7360_bitmap.line[yoff + i], Machine.pens[FRAMECOLOR()], xbegin);
-                        memset(ted7360_bitmap.line[yoff + i], Machine.pens[FRAMECOLOR()], xbegin);
+                        memset(Machine.scrbitmap.line[yoff + i], Machine.pens[FRAMECOLOR()], xbegin);
 			/*TODO*///memset16 (new UShortPtr(ted7360_bitmap.line[yoff + i], xend), Machine.pens[FRAMECOLOR()], ted7360_bitmap.width - xend);
-                        memset(new UShortPtr(ted7360_bitmap.line[yoff + i], xend), Machine.pens[FRAMECOLOR()], ted7360_bitmap.width - xend);
+                        memset(new UShortPtr(Machine.scrbitmap.line[yoff + i], xend), Machine.pens[FRAMECOLOR()], Machine.scrbitmap.width - xend);
 		    }
 		}
 	    }
-	    if (last < ted7360_bitmap.height)
+	    if (last < Machine.scrbitmap.height)
 		end = last;
 	    else
-		end = ted7360_bitmap.height;
+		end = Machine.scrbitmap.height;
 	/*    if (Machine.color_depth == 8)
 	    {
 		for (; line < end; line++)
@@ -1324,7 +1324,7 @@ public class ted7360
 	*/    {
 		for (; line < end; line++){
 		    /*TODO*///memset16 (ted7360_bitmap.line[line], Machine.pens[FRAMECOLOR()], ted7360_bitmap.width);
-                    memset(ted7360_bitmap.line[line], Machine.pens[FRAMECOLOR()], ted7360_bitmap.width);
+                    memset(Machine.scrbitmap.line[line], Machine.pens[FRAMECOLOR()], Machine.scrbitmap.width);
                 }
 	    }
 	}
@@ -1373,24 +1373,24 @@ public class ted7360
 			y = Machine.visible_area.max_y + 1 - Machine.uifont.height;
 	
 		/*TODO*///	vc20_tape_status (text, sizeof (text));
-			ted7360_draw_text (ted7360_bitmap, text, new int[]{y});
+			ted7360_draw_text (Machine.scrbitmap, text, new int[]{y});
 	
 			if (REAL_C1551() != 0) {
 		/*TODO*///		vc1541_drive_status (text, sizeof (text));
-				ted7360_draw_text (ted7360_bitmap, text, new int[]{y});
+				ted7360_draw_text (Machine.scrbitmap, text, new int[]{y});
 			}
 	
 		/*TODO*///	cbm_drive_0_status (text, text.length);
-			ted7360_draw_text (ted7360_bitmap, text, new int[]{y});
+			ted7360_draw_text (Machine.scrbitmap, text, new int[]{y});
 	
 		/*TODO*///	cbm_drive_1_status (text, text.length);
-			ted7360_draw_text (ted7360_bitmap, text, new int[]{y});
+			ted7360_draw_text (Machine.scrbitmap, text, new int[]{y});
 		}
-		/*TODO*///if (rasterline == C16_2_RASTERLINE (RASTERLINE()))
-		/*TODO*///{
+		if (rasterline == C16_2_RASTERLINE (RASTERLINE()))
+		{
 			ted7360_drawlines (lastline, rasterline);
 			ted7360_set_interrupt (2);
-		/*TODO*///}
+		}
 		return ignore_interrupt.handler();
             }
         };
