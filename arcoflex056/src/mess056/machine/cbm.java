@@ -49,6 +49,23 @@ public class cbm
         
         public static _quick quick = new _quick();
         
+        public static String readC64Filename(final char[] buffer, final int offset, final int length) {
+            final StringBuffer filename = new StringBuffer();
+            
+            int _longo = offset + length;
+
+            for (int i = offset; i < _longo; ++i) {
+                if ((byte)(buffer[i]&0xff) == (byte) 0xa0) {
+                    filename.append(' ');
+                } else {
+                    filename.append((char) buffer[i]);
+                }
+            }
+
+            return filename.toString();
+        }
+
+        
         public static io_initPtr cbm_quick_init = new io_initPtr() {
             public int handler(int id) {
                 Object fp;
@@ -77,9 +94,9 @@ public class cbm
                             System.out.println("Dentro!");
                                 char[] _b = new char[2];
 				osd_fread_lsbfirst (fp, _b, 2);
-                                quick.addr = (_b[1]&0xff)<<8|_b[0];
+                                //quick.addr = (_b[1]&0xff)<<8|_b[0];
                                 //quick.addr = (_b[ 0] & 0xff) + (_b[ 1] & 0xff) * 256;;
-                                //quick.addr = 0x801;
+                                quick.addr = 0x801;
                                 System.out.println("Address="+quick.addr); // other option: 0x801 and load"*",8,1
 				quick.length -= 2;
 			}
@@ -95,6 +112,52 @@ public class cbm
                                         osd_fread_lsbfirst (fp, _b, 2);
                                         quick.addr = (_b[1]&0xff)<<8|_b[0];
 					quick.length -= 28;
+				}
+			}
+                        else if (device_filename(IO_QUICKLOAD, id).toLowerCase().endsWith(".t64"))
+			{
+				char[] buffer=new char[64*3];
+	
+				osd_fread (fp, buffer, buffer.length);
+				if (new String(buffer).toUpperCase().startsWith("C64"))
+				{
+                                    if (new String(buffer).toUpperCase().startsWith("C64S")) {
+                                        System.out.println("Es T64 C64S!!!!");
+                                        int _pos = ((buffer[0x48] & 0xff) + (buffer[0x49] & 0xff) * 256);
+                                        int _entries = Math.max(1, (buffer[0x24] & 0xff) + (buffer[0x25] & 0xff) * 256);
+                                        System.out.println("Entradas: "+_entries);
+                                        //System.out.println(readC64Filename(buffer, 64+8+2, 64+16));
+                                        char[] _k = new char[24];
+                                        
+                                        System.arraycopy(buffer, 64+8+2, _k, 0, 24);
+                                        //System.out.println(new String (buffer));
+                                        System.out.println(new String (_k));
+                                        System.out.println("Ubicado en: "+_pos);
+                                        osd_fseek (fp, _pos-2, SEEK_SET);
+					byte[] _b = new byte[2];
+                                        osd_fread_lsbfirst (fp, _b, 2);
+                                        quick.addr = 2049;
+					quick.length -= _pos;
+                                    } else {
+                                        System.out.println("Es T64!!!!");
+                                        int _pos = ((buffer[0x48] & 0xff) + (buffer[0x49] & 0xff) * 256);
+                                        int _entries = Math.max(1, (buffer[0x24] & 0xff) + (buffer[0x25] & 0xff) * 256);
+                                        System.out.println("Entradas: "+_entries);
+                                        //System.out.println(readC64Filename(buffer, 64+8+2, 64+16));
+                                        char[] _k = new char[24];
+                                        
+                                        System.arraycopy(buffer, 64+8+2, _k, 0, 24);
+                                        //System.out.println(new String (buffer));
+                                        System.out.println(new String (_k));
+                                        System.out.println("Ubicado en: "+_pos);
+					osd_fseek (fp, _pos-2, SEEK_SET);
+					byte[] _b = new byte[2];
+                                        osd_fread_lsbfirst (fp, _b, 2);
+                                        //quick.addr = (_b[1]&0xff)<<8|_b[0];
+                                        //System.out.println("ADDR T64="+quick.addr);
+                                        quick.addr = 2049;
+					quick.length -= _pos;
+                                    }
 				}
 			}
 		}
@@ -223,7 +286,7 @@ public class cbm
                 memory.write(0x30, addr >> 8);
                 memory.write(0x2e, addr >> 8);
 		logerror("quick loading %s at %.4x size:%.4x\n",
-					 device_filename(IO_QUICKLOAD,id), quick.addr, quick.length);
+		device_filename(IO_QUICKLOAD,id), quick.addr, quick.length);
 	
 		return 0;
             }
