@@ -95,8 +95,8 @@ public class cbm
                                 char[] _b = new char[2];
 				osd_fread_lsbfirst (fp, _b, 2);
                                 //quick.addr = (_b[1]&0xff)<<8|_b[0];
-                                //quick.addr = (_b[ 0] & 0xff) + (_b[ 1] & 0xff) * 256;;
-                                quick.addr = 0x801;
+                                quick.addr = (_b[ 0] & 0xff) + (_b[ 1] & 0xff) * 256;;
+                                //quick.addr = 0x801;
                                 System.out.println("Address="+quick.addr); // other option: 0x801 and load"*",8,1
 				quick.length -= 2;
 			}
@@ -110,7 +110,8 @@ public class cbm
 					osd_fseek (fp, 26, SEEK_SET);
 					byte[] _b = new byte[2];
                                         osd_fread_lsbfirst (fp, _b, 2);
-                                        quick.addr = (_b[1]&0xff)<<8|_b[0];
+                                        //quick.addr = (_b[1]&0xff)<<8|_b[0];
+                                        quick.addr = 0x801;
 					quick.length -= 28;
 				}
 			}
@@ -136,7 +137,7 @@ public class cbm
                                         osd_fseek (fp, _pos-2, SEEK_SET);
 					byte[] _b = new byte[2];
                                         osd_fread_lsbfirst (fp, _b, 2);
-                                        quick.addr = 2049;
+                                        quick.addr = 0x801;
 					quick.length -= _pos;
                                     } else {
                                         System.out.println("Es T64!!!!");
@@ -155,7 +156,7 @@ public class cbm
                                         osd_fread_lsbfirst (fp, _b, 2);
                                         //quick.addr = (_b[1]&0xff)<<8|_b[0];
                                         //System.out.println("ADDR T64="+quick.addr);
-                                        quick.addr = 2049;
+                                        quick.addr = 0x801;
 					quick.length -= _pos;
                                     }
 				}
