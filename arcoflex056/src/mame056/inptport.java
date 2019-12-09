@@ -641,7 +641,7 @@ public class inptport {
             }
         }
 
-        /*TODO*///            update_input_ports();
+                    update_input_ports();
 
         /* if we didn't find a saved config, return 0 so the main core knows that it */
  /* is the first time the game is run and it should diplay the disclaimer. */

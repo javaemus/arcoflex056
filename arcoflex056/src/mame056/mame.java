@@ -241,7 +241,7 @@ public class mame {
         for (int i = 0; i < MAX_MEMORY_REGIONS; i++) {
             Machine.memory_region[i] = new RegionInfo();
         }
-
+        
         if (gamedrv.input_ports != null) {
             Machine.input_ports = input_port_allocate(gamedrv.input_ports);
             if (Machine.input_ports == null) {
@@ -255,6 +255,20 @@ public class mame {
                 Machine.input_ports = null;
                 return out_code();
             }
+        }
+        
+        if (settings.MESS) {
+		if (gamedrv.rom == null)
+		{
+			logerror("Going to load_next tag\n");
+			if (settings.MESS) {
+                                if (init_devices(gamedrv) != 0)
+                                {
+                                        logerror("init_devices failed\n");
+                                        return out_free();
+                                }
+                        }
+		}
         }
         
         if (readroms() != 0) {
@@ -276,9 +290,11 @@ public class mame {
         /* Mish:  Multi-session safety - set spriteram size to zero before memory map is set up */
         spriteram_size[0] = 0;
         spriteram_2_size[0] = 0;
+        
+        
 
         /* first of all initialize the memory handlers, which could be used by the */
- /* other initialization routines */
+        /* other initialization routines */
         cpu_init();
 
         /* load input ports settings (keys, dip switches, and so on) */
