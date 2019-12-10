@@ -15,6 +15,8 @@ import static mess056.includes.cbmserbH.*;
 import static mess056.machine.cbmdrive.*;
 import static mess056.mess.*;
 import static common.libc.cstdio.*;
+import static mame056.mame.Machine;
+import static mame056.usrintrf.ui_text;
 
 public class cbmserb
 {
@@ -396,6 +398,7 @@ public class cbmserb
 	/* delivers status for displaying */
 	static void cbm_drive_status (CBM_Drive c1551, String text, int size)
 	{
+            System.out.println("cbm_drive_status");
 	/*TODO*///	text[0] = 0;
 	/*TODO*///#if VERBOSE_DBG
 	/*TODO*///	if ((c1551.interface == SERIAL) /*&&(c1551.i.serial.device==8) */ )
@@ -431,33 +434,39 @@ public class cbmserb
 	/*TODO*///			break;
 	/*TODO*///		}
 	/*TODO*///	}
-	/*TODO*///	else if (c1551.drive == D64_IMAGE)
-	/*TODO*///	{
-	/*TODO*///		switch (c1551.state)
-	/*TODO*///		{
-	/*TODO*///		case OPEN:
-	/*TODO*///			snprintf (text, size, "Image File %s open",
-	/*TODO*///					  c1551.d.d64.filename);
-	/*TODO*///			break;
-	/*TODO*///		case READING:
-	/*TODO*///			snprintf (text, size, "Image File %s loading %d",
-	/*TODO*///					  c1551.d.d64.filename,
-	/*TODO*///					  c1551.size - c1551.pos - 1);
-	/*TODO*///			break;
-	/*TODO*///		case WRITING:
-	/*TODO*///			snprintf (text, size, "Image File %s saving %d",
-	/*TODO*///					  c1551.d.d64.filename, c1551.pos);
-	/*TODO*///			break;
-	/*TODO*///		}
-	/*TODO*///	}
+	/*TODO*///	else 
+            if (c1551.drive == D64_IMAGE)
+            {
+                    switch (c1551.state)
+                    {
+                    case OPEN:
+                            sprintf (text, size, "Image File %s open",
+                                              c1551.d.d64.filename);
+                            
+                            break;
+                    case READING:
+                            sprintf (text, size, "Image File %s loading %d",
+                                              c1551.d.d64.filename,
+                                              c1551.size - c1551.pos - 1);
+                            break;
+                    case WRITING:
+                            sprintf (text, size, "Image File %s saving %d",
+                                              c1551.d.d64.filename, c1551.pos);
+                            break;
+                    }
+            }
+            System.out.println(new String(text));
+            //int x = Machine.uixmin + 1 * Machine.uifontwidth * 16 + 1;
+            //int y = Machine.uiymin + Machine.uiheight - 9;
+            ui_text(Machine.scrbitmap, text, 0, 0);
 	}
 	
-	void cbm_drive_0_status (String text, int size)
+	public static void cbm_drive_0_status (String text, int size)
 	{
 		cbm_drive_status (cbm_drive[0], text, size);
 	}
 	
-	void cbm_drive_1_status (String text, int size)
+	public static void cbm_drive_1_status (String text, int size)
 	{
 		cbm_drive_status (cbm_drive[1], text, size);
 	}

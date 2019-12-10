@@ -176,7 +176,7 @@ public class cia6526
                                     timer_adjust(cia[i].todtimer, 0.1, i);
                             else*/
                             //        timer_reset(cia[i].todtimer, TIME_NEVER);
-                            if (cia[i].intf!=null) 
+                            //if (cia[i].intf!=null) 
                                 cia[i].todtimer=timer_set(0.1,i,cia_tod_timeout);
                             
                     }

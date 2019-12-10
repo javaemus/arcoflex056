@@ -4,14 +4,17 @@
  */ 
 package mess056.machine;
 
+import static arcadeflex036.libc_old.strcpy;
 import static mess056.includes.cbmdriveH.*;
 import static mess056.machine.cbmserb.*;
 import static mame056.timer.*;
 import static arcadeflex056.osdepend.logerror;
-import static common.libc.cstdio.printf;
+import static common.libc.cstdio.*;
 import static common.libc.cstring.*;
 import static common.ptr.*;
-
+import static mame056.mame.Machine;
+import static mame056.usrintrf.ui_text;
+import static mess056.vidhrdw.vic6567.vic2;
 
 public class cbmdrive
 {
@@ -218,125 +221,135 @@ public class cbmdrive
 	{
                 System.out.println("d64_read_directory");
 		int pos, track, sector, i, j, blocksfree, addr = 0x0101/*0x1001*/;
+                
+                int _offset = c1551.d.d64.image.offset;
 	
-		c1551.buffer = new UBytePtr(c1551.buffer, 8 * 18 * 25);
+		c1551.buffer = new UBytePtr(8 * 18 * 25);
 /*TODO*///		if (!c1551.buffer) {
 /*TODO*///			logerror("out of memory %s %d\n",
 /*TODO*///					__FILE__, __LINE__);
 /*TODO*///			osd_exit();
 /*TODO*///			exit(1);
 /*TODO*///		}
-/*TODO*///	
-/*TODO*///		c1551.size = 0;
-/*TODO*///	
-/*TODO*///		pos = d64_tracksector2offset (18, 0);
-/*TODO*///		track = c1551.d.d64.image[pos];
-/*TODO*///		sector = c1551.d.d64.image[pos + 1];
-/*TODO*///	
-/*TODO*///		blocksfree = 0;
-/*TODO*///		for (j = 1, i = 4; j <= 35; j++, i += 4)
-/*TODO*///		{
-/*TODO*///			blocksfree += c1551.d.d64.image[pos + i];
-/*TODO*///		}
-/*TODO*///		c1551.buffer[c1551.size++] = addr & 0xff;
-/*TODO*///		c1551.buffer[c1551.size++] = addr >> 8;
-/*TODO*///		addr += 29;
-/*TODO*///		c1551.buffer[c1551.size++] = addr & 0xff;
-/*TODO*///		c1551.buffer[c1551.size++] = addr >> 8;
-/*TODO*///		c1551.buffer[c1551.size++] = 0;
-/*TODO*///		c1551.buffer[c1551.size++] = 0;
-/*TODO*///		c1551.buffer[c1551.size++] = '\"';
-/*TODO*///		for (j = 0; j < 16; j++)
-/*TODO*///			c1551.buffer[c1551.size++] = c1551.d.d64.image[pos + 0x90 + j];
-/*TODO*///	/*memcpy(c1551.buffer+c1551.size,c1551.image+pos+0x90, 16);c1551.size+=16; */
-/*TODO*///		c1551.buffer[c1551.size++] = '\"';
-/*TODO*///		c1551.buffer[c1551.size++] = ' ';
-/*TODO*///		c1551.buffer[c1551.size++] = c1551.d.d64.image[pos + 162];
-/*TODO*///		c1551.buffer[c1551.size++] = c1551.d.d64.image[pos + 163];
-/*TODO*///		c1551.buffer[c1551.size++] = ' ';
-/*TODO*///		c1551.buffer[c1551.size++] = c1551.d.d64.image[pos + 165];
-/*TODO*///		c1551.buffer[c1551.size++] = c1551.d.d64.image[pos + 166];
-/*TODO*///		c1551.buffer[c1551.size++] = 0;
-/*TODO*///	
-/*TODO*///		while ((track >= 1) && (track <= 35))
-/*TODO*///		{
-/*TODO*///			pos = d64_tracksector2offset (track, sector);
-/*TODO*///			for (i = 2; i < 256; i += 32)
-/*TODO*///			{
-/*TODO*///				if (c1551.d.d64.image[pos + i] & 0x80)
-/*TODO*///				{
-/*TODO*///					int len, blocks = c1551.d.d64.image[pos + i + 28]
-/*TODO*///					+ 256 * c1551.d.d64.image[pos + i + 29];
-/*TODO*///					char dummy[10];
-/*TODO*///	
-/*TODO*///					sprintf (dummy, "%d", blocks);
-/*TODO*///					len = strlen (dummy);
-/*TODO*///					addr += 29 - len;
-/*TODO*///					c1551.buffer[c1551.size++] = addr & 0xff;
-/*TODO*///					c1551.buffer[c1551.size++] = addr >> 8;
-/*TODO*///					c1551.buffer[c1551.size++] = c1551.d.d64.image[pos + i + 28];
-/*TODO*///					c1551.buffer[c1551.size++] = c1551.d.d64.image[pos + i + 29];
-/*TODO*///					for (j = 4; j > len; j--)
-/*TODO*///						c1551.buffer[c1551.size++] = ' ';
-/*TODO*///					c1551.buffer[c1551.size++] = '\"';
-/*TODO*///					for (j = 0; j < 16; j++)
-/*TODO*///						c1551.buffer[c1551.size++] = c1551.d.d64.image[pos + i + 3 + j];
-/*TODO*///					c1551.buffer[c1551.size++] = '\"';
-/*TODO*///					c1551.buffer[c1551.size++] = ' ';
-/*TODO*///					switch (c1551.d.d64.image[pos + i] & 0x3f)
-/*TODO*///					{
-/*TODO*///					case 0:
-/*TODO*///						c1551.buffer[c1551.size++] = 'D';
-/*TODO*///						c1551.buffer[c1551.size++] = 'E';
-/*TODO*///						c1551.buffer[c1551.size++] = 'L';
-/*TODO*///						break;
-/*TODO*///					case 1:
-/*TODO*///						c1551.buffer[c1551.size++] = 'S';
-/*TODO*///						c1551.buffer[c1551.size++] = 'E';
-/*TODO*///						c1551.buffer[c1551.size++] = 'Q';
-/*TODO*///						break;
-/*TODO*///					case 2:
-/*TODO*///						c1551.buffer[c1551.size++] = 'P';
-/*TODO*///						c1551.buffer[c1551.size++] = 'R';
-/*TODO*///						c1551.buffer[c1551.size++] = 'G';
-/*TODO*///						break;
-/*TODO*///					case 3:
-/*TODO*///						c1551.buffer[c1551.size++] = 'U';
-/*TODO*///						c1551.buffer[c1551.size++] = 'S';
-/*TODO*///						c1551.buffer[c1551.size++] = 'R';
-/*TODO*///						break;
-/*TODO*///					case 4:
-/*TODO*///						c1551.buffer[c1551.size++] = 'R';
-/*TODO*///						c1551.buffer[c1551.size++] = 'E';
-/*TODO*///						c1551.buffer[c1551.size++] = 'L';
-/*TODO*///						break;
-/*TODO*///					}
-/*TODO*///					c1551.buffer[c1551.size++] = 0;
-/*TODO*///				}
-/*TODO*///			}
-/*TODO*///			track = c1551.d.d64.image[pos];
-/*TODO*///			sector = c1551.d.d64.image[pos + 1];
-/*TODO*///		}
-/*TODO*///		addr += 14;
-/*TODO*///		c1551.buffer[c1551.size++] = addr & 0xff;
-/*TODO*///		c1551.buffer[c1551.size++] = addr >> 8;
-/*TODO*///		c1551.buffer[c1551.size++] = blocksfree & 0xff;
-/*TODO*///		c1551.buffer[c1551.size++] = blocksfree >> 8;
-/*TODO*///		memcpy (c1551.buffer + c1551.size, "BLOCKS FREE", 11);
-/*TODO*///		c1551.size += 11;
-/*TODO*///		c1551.buffer[c1551.size++] = 0;
-/*TODO*///	
-/*TODO*///		strcpy (c1551.d.d64.filename, "$");
+	
+		c1551.size = 0;
+	
+		pos = d64_tracksector2offset (18, 0);
+		track = c1551.d.d64.image.read(pos);
+		sector = c1551.d.d64.image.read(pos + 1);
+	
+		blocksfree = 0;
+		for (j = 1, i = 4; j <= 35; j++, i += 4)
+		{
+			blocksfree += c1551.d.d64.image.read(pos + i);
+		}
+		c1551.buffer.write(c1551.size++, addr & 0xff);
+		c1551.buffer.write(c1551.size++, addr >> 8);
+		addr += 29;
+		c1551.buffer.write(c1551.size++, addr & 0xff);
+		c1551.buffer.write(c1551.size++,  addr >> 8);
+		c1551.buffer.write(c1551.size++,  0);
+		c1551.buffer.write(c1551.size++,  0);
+		c1551.buffer.write(c1551.size++,  '\"');
+		for (j = 0; j < 16; j++)
+			c1551.buffer.write(c1551.size++,  c1551.d.d64.image.read(pos + 0x90 + j));
+	/*memcpy(c1551.buffer+c1551.size,c1551.image+pos+0x90, 16);c1551.size+=16; */
+		c1551.buffer.write(c1551.size++,  '\"');
+		c1551.buffer.write(c1551.size++,  ' ');
+		c1551.buffer.write(c1551.size++,  c1551.d.d64.image.read(pos + 162));
+		c1551.buffer.write(c1551.size++,  c1551.d.d64.image.read(pos + 163));
+		c1551.buffer.write(c1551.size++,  ' ');
+		c1551.buffer.write(c1551.size++,  c1551.d.d64.image.read(pos + 165));
+		c1551.buffer.write(c1551.size++,  c1551.d.d64.image.read(pos + 166));
+		c1551.buffer.write(c1551.size++,  0);
+	
+		while ((track >= 1) && (track <= 35))
+		{
+			pos = d64_tracksector2offset (track, sector);
+			for (i = 2; i < 256; i += 32)
+			{
+				if ((c1551.d.d64.image.read(pos + i) & 0x80) != 0)
+				{
+					int len, blocks = c1551.d.d64.image.read(pos + i + 2)
+					+ 256 * c1551.d.d64.image.read(pos + i + 29);
+					char[] dummy = new char[10];
+	
+					/*sprintf (new String(dummy), "%d", blocks);
+                                        System.out.println(new String(dummy));
+                                        //int x = Machine.uixmin + 1 * Machine.uifontwidth * 16 + 1;
+                                        //int y = Machine.uiymin + Machine.uiheight - 9;
+                                        ui_text(vic2.bitmap, new String(dummy), 0, 0);*/
+					len = dummy.length;
+					addr += 29 - len;
+					c1551.buffer.write(c1551.size++, addr & 0xff);
+					c1551.buffer.write(c1551.size++, addr >> 8);
+					c1551.buffer.write(c1551.size++, c1551.d.d64.image.read(pos + i + 28));
+					c1551.buffer.write(c1551.size++, c1551.d.d64.image.read(pos + i + 29));
+					for (j = 4; j > len; j--)
+						c1551.buffer.write(c1551.size++, ' ');
+					c1551.buffer.write(c1551.size++, '\"');
+					for (j = 0; j < 16; j++)
+						c1551.buffer.write(c1551.size++, c1551.d.d64.image.read(pos + i + 3 + j));
+					c1551.buffer.write(c1551.size++, '\"');
+					c1551.buffer.write(c1551.size++, ' ');
+					switch (c1551.d.d64.image.read(pos + i) & 0x3f)
+					{
+					case 0:
+						c1551.buffer.write(c1551.size++, 'D');
+						c1551.buffer.write(c1551.size++, 'E');
+						c1551.buffer.write(c1551.size++, 'L');
+						break;
+					case 1:
+						c1551.buffer.write(c1551.size++, 'S');
+						c1551.buffer.write(c1551.size++, 'E');
+						c1551.buffer.write(c1551.size++, 'Q');
+						break;
+					case 2:
+						c1551.buffer.write(c1551.size++, 'P');
+						c1551.buffer.write(c1551.size++, 'R');
+						c1551.buffer.write(c1551.size++, 'G');
+						break;
+					case 3:
+						c1551.buffer.write(c1551.size++, 'U');
+						c1551.buffer.write(c1551.size++, 'S');
+						c1551.buffer.write(c1551.size++, 'R');
+						break;
+					case 4:
+						c1551.buffer.write(c1551.size++, 'R');
+						c1551.buffer.write(c1551.size++,'E');
+						c1551.buffer.write(c1551.size++, 'L');
+						break;
+					}
+					c1551.buffer.write(c1551.size++, 0);
+				}
+			}
+			track = c1551.d.d64.image.read(pos);
+			sector = c1551.d.d64.image.read(pos + 1);
+		}
+		addr += 14;
+		c1551.buffer.write(c1551.size++, addr & 0xff);
+		c1551.buffer.write(c1551.size++, addr >> 8);
+		c1551.buffer.write(c1551.size++, blocksfree & 0xff);
+		c1551.buffer.write(c1551.size++, blocksfree >> 8);
+		memcpy (new UBytePtr(c1551.buffer, c1551.size), "BLOCKS FREE".toCharArray(), 11);
+		c1551.size += 11;
+		c1551.buffer.write(c1551.size++, 0);
+	
+		strcpy (c1551.d.d64.filename, "$");
+                //c1551.d.d64.filename="$".toCharArray();
+                
+                //hack
+                c1551.d.d64.image.offset = _offset;
 	}
 	
 	public static int c1551_d64_command (CBM_Drive c1551, String name)
 	{
-                System.out.println("c1551_d64_command");
+                System.out.println("c1551_d64_command "+name);
 		int pos;
 	
 		/* name eventuell mit 0xa0 auffuellen */
 	
-		if (stricmp (name, "$") == 0)
+		if (name.trim().equals("$"))
 		{
 			d64_read_directory (c1551);
 		}

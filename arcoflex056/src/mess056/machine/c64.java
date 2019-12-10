@@ -34,6 +34,7 @@ import static mame056.cpuintrfH.cpu_getactivecpu;
 import static mame056.mame.Machine;
 import static mame056.memory.*;
 import static mame056.memoryH.*;
+import static mame056.usrintrf.ui_text;
 import static mess056.includes.c64H.*;
 import static mess056.includes.cbmH.*;
 import static mess056.includes.cbmserbH.*;
@@ -904,6 +905,7 @@ public class c64
         					  c64_vic_interrupt);
         /*TODO*///	}
         /*TODO*///	raster1.display_state=c64_state;
+            
         }
         
         public static InitDriverPtr c64_driver_init = new InitDriverPtr() {
@@ -1573,13 +1575,14 @@ public class c64
         };
 
         
-/*TODO*///void c64_state(PRASTER *this)
-/*TODO*///{
-/*TODO*///	int y;
-/*TODO*///	char text[70];
-/*TODO*///
-/*TODO*///	y = Machine->gamedrv->drv->visible_area.max_y + 1 - Machine->uifont->height;
-/*TODO*///
+//public static void c64_state(PRASTER *this)
+public static void c64_state()
+{
+	int y;
+	char[] text=new char[70];
+
+	y = Machine.visible_area.max_y + 1 - Machine.uifont.height;
+
 /*TODO*///#if VERBOSE_DBG
 /*TODO*///#if 0
 /*TODO*///	cia6526_status (text, sizeof (text));
@@ -1600,14 +1603,14 @@ public class c64
 /*TODO*///#ifdef VC1541
 /*TODO*///	vc1541_drive_status (text, sizeof (text));
 /*TODO*///#else
-/*TODO*///	cbm_drive_0_status (text, sizeof (text));
+	cbm_drive_0_status (new String(text), text.length);
 /*TODO*///#endif
 /*TODO*///	praster_draw_text (this, text, &y);
 /*TODO*///
 /*TODO*///	cbm_drive_1_status (text, sizeof (text));
 /*TODO*///	praster_draw_text (this, text, &y);
-/*TODO*///}
-/*TODO*///
+    }
+
 	
 }
 
