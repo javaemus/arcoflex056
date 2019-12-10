@@ -78,12 +78,12 @@ public class input {
 	/*new KeyboardInfo( "[",          KEY_OPENBRACE,      KEYCODE_OPENBRACE ),
 	new KeyboardInfo( "]",          KEY_CLOSEBRACE,     KEYCODE_CLOSEBRACE ),*/
 	new KeyboardInfo( "ENTER",		KeyEvent.VK_ENTER,			KEYCODE_ENTER ),
-	/*new KeyboardInfo( ";",          KEY_COLON,          KEYCODE_COLON ),
-	new KeyboardInfo( ":",          KEY_QUOTE,          KEYCODE_QUOTE ),
-	new KeyboardInfo( "\\",         KEY_BACKSLASH,      KEYCODE_BACKSLASH ),
-	new KeyboardInfo( "<",          KEY_BACKSLASH2,     KEYCODE_BACKSLASH2 ),
-	new KeyboardInfo( ",",          KEY_COMMA,          KEYCODE_COMMA ),
-	new KeyboardInfo( ".",          KEY_STOP,           KEYCODE_STOP ),
+	new KeyboardInfo( ";",          KeyEvent.VK_COLON,          KEYCODE_COLON ),
+	new KeyboardInfo( ":",          KeyEvent.VK_QUOTE,          KEYCODE_QUOTE ),
+	new KeyboardInfo( "\\",         KeyEvent.VK_BACK_SLASH,      KEYCODE_BACKSLASH ),
+	//new KeyboardInfo( "<",          KEY_BACKSLASH2,     KEYCODE_BACKSLASH2 ),
+	new KeyboardInfo( ",",          KeyEvent.VK_COMMA,          KEYCODE_COMMA ),
+	/*new KeyboardInfo( ".",          KEY_STOP,           KEYCODE_STOP ),
 	new KeyboardInfo( "/",          KEY_SLASH,          KEYCODE_SLASH ),*/
 	new KeyboardInfo( "SPACE",		KeyEvent.VK_SPACE,		KEYCODE_SPACE ),
 	/*new KeyboardInfo( "INS",		KEY_INSERT,			KEYCODE_INSERT ),
@@ -96,12 +96,12 @@ public class input {
 	new KeyboardInfo( "RIGHT",		KeyEvent.VK_RIGHT,		KEYCODE_RIGHT ),
 	new KeyboardInfo( "UP",			KeyEvent.VK_UP,                 KEYCODE_UP ),
 	new KeyboardInfo( "DOWN",		KeyEvent.VK_DOWN,		KEYCODE_DOWN ),
-	/*new KeyboardInfo( "/ PAD",      KEY_SLASH_PAD,      KEYCODE_SLASH_PAD ),
-	new KeyboardInfo( "* PAD",      KEY_ASTERISK,       KEYCODE_ASTERISK ),
-	new KeyboardInfo( "- PAD",      KEY_MINUS_PAD,      KEYCODE_MINUS_PAD ),
-	new KeyboardInfo( "+ PAD",      KEY_PLUS_PAD,       KEYCODE_PLUS_PAD ),
-	new KeyboardInfo( ". PAD",      KEY_DEL_PAD,        KEYCODE_DEL_PAD ),
-	new KeyboardInfo( "ENTER PAD",  KEY_ENTER_PAD,      KEYCODE_ENTER_PAD ),
+	/*new KeyboardInfo( "/ PAD",      KEY_SLASH_PAD,      KEYCODE_SLASH_PAD ),*/
+	new KeyboardInfo( "* PAD",      KeyEvent.VK_ASTERISK,       KEYCODE_ASTERISK ),
+	new KeyboardInfo( "- PAD",      KeyEvent.VK_MINUS,      KEYCODE_MINUS_PAD ),
+	new KeyboardInfo( "+ PAD",      KeyEvent.VK_PLUS,       KEYCODE_PLUS_PAD ),
+	//new KeyboardInfo( ". PAD",      KeyEvent.VK_DEL_PAD,        KEYCODE_DEL_PAD ),
+	/*new KeyboardInfo( "ENTER PAD",  KEY_ENTER_PAD,      KEYCODE_ENTER_PAD ),
 	new KeyboardInfo( "PRTSCR",     KEY_PRTSCR,         KEYCODE_PRTSCR ),
 	new KeyboardInfo( "PAUSE",      KEY_PAUSE,          KEYCODE_PAUSE ),*/
 //LSHIFT + RSHOFT SAME IN JAVA
@@ -148,7 +148,10 @@ public class input {
 
                     return res;
             }*/ 
-                return screen.key[keycode] ? 1 :0;            
+                if (screen != null && screen.key != null)
+                    return screen.key[keycode] ? 1 :0;            
+                else
+                    return 0;
     }
 
     public static WriteHandlerPtr osd_led_w = new WriteHandlerPtr() { public void handler(int led,int on)

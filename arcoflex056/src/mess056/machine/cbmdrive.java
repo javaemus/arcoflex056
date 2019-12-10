@@ -9,10 +9,13 @@ import static mess056.machine.cbmserb.*;
 import static mame056.timer.*;
 import static arcadeflex056.osdepend.logerror;
 import static common.libc.cstdio.printf;
+import static common.libc.cstring.*;
+import static common.ptr.*;
+
 
 public class cbmdrive
 {
-	/*
+/*
 	#define VERBOSE_DBG 1				   /* general debug messages */
 	
 	
@@ -56,7 +59,7 @@ public class cbmdrive
 		17, 17, 17, 17, 17
 	};
 	
-	public static int[] d64_offset = new int[D64_MAX_TRACKS];		   /* offset of begin of track in d64 file */
+	static int[] d64_offset = new int[D64_MAX_TRACKS];		   /* offset of begin of track in d64 file */
 	
 	/* must be called before other functions */
 	public static void cbm_drive_open_helper ()
@@ -64,7 +67,7 @@ public class cbmdrive
 		int i;
 	
 		d64_offset[0] = 0;
-		for (i = 1; i <= 35; i++)
+		for (i = 1; i < 35; i++)
 			d64_offset[i] = d64_offset[i - 1] + d64_sectors_per_track[i - 1] * 256;
 	}
 	
@@ -74,19 +77,19 @@ public class cbmdrive
 		return d64_offset[track - 1] + sector * 256;
 	}
 	
-	static int cbm_compareNames (char[] left, char[] right)
+	public static int cbm_compareNames (String left, UBytePtr right)
 	{
 		int i;
 	
 		for (i = 0; i < 16; i++)
 		{
-			if ((left[i] == '*') || (right[i] == '*'))
+			if ((left.charAt(i) == '*') || (right.read(i) == '*'))
 				return 1;
-			if (left[i] == right[i])
+			if (left.charAt(i) == right.read(i))
 				continue;
-			if ((left[i] == 0xa0) && (right[i] == 0))
+			if ((left.charAt(i) == 0xa0) && (right.read(i) == 0))
 				return 1;
-			if ((right[i] == 0xa0) && (left[i] == 0))
+			if ((right.read(i) == 0xa0) && (left.charAt(i) == 0))
 				return 1;
 			return 0;
 		}
@@ -96,8 +99,9 @@ public class cbmdrive
 	/* searches program with given name in directory
 	 * delivers -1 if not found
 	 * or pos in image of directory node */
-	static int d64_find (CBM_Drive drive, String name)
+	public static int d64_find (CBM_Drive drive, String name)
 	{
+                System.out.println("d64_find");
 		int pos, track, sector, i;
 	
 		pos = d64_tracksector2offset (18, 0);
@@ -111,10 +115,10 @@ public class cbmdrive
 			{
 				if ((drive.d.d64.image.read(pos + i) & 0x80) != 0)
 				{
-					if (name.compareTo("*") == 0)
+					if (stricmp (name, "*") == 0)
 						return pos + i;
-		/*TODO*///			if (cbm_compareNames (name, drive.d.d64.image + pos + i + 3))
-		/*TODO*///				return pos + i;
+					if (cbm_compareNames (name, new UBytePtr(drive.d.d64.image, pos + i + 3)) != 0)
+						return pos + i;
 				}
 			}
 			track = drive.d.d64.image.read(pos);
@@ -124,167 +128,175 @@ public class cbmdrive
 	}
 	
 	/* reads file into buffer */
-	static void d64_readprg (CBM_Drive c1551, int pos)
+	public static void d64_readprg (CBM_Drive c1551, int pos)
 	{
+                System.out.println("d64_readprg");
 		int i;
 	
-	/*TODO*///	for (i = 0; i < 16; i++)
-	/*TODO*///		c1551.d.d64.filename[i] = toupper (c1551.d.d64.image[pos + i + 3]);
+		for (i = 0; i < 16; i++){
+                        char[] _c = new char[1];
+                        _c[0] = c1551.d.d64.image.read(pos + i + 3);
+                        String _s=new String(_c).toUpperCase();
+			c1551.d.d64.filename[i] = _s.charAt(0);
+                }
 	
-	/*TODO*///	c1551.d.d64.filename[i] = 0;
+		c1551.d.d64.filename[i] = 0;
 	
-	/*TODO*///	pos = d64_tracksector2offset (c1551.d.d64.image[pos + 1], c1551.d.d64.image[pos + 2]);
+		pos = d64_tracksector2offset (c1551.d.d64.image.read(pos + 1), c1551.d.d64.image.read(pos + 2));
 	
 		i = pos;
 		c1551.size = 0;
-	/*TODO*///	while (c1551.d.d64.image[i] != 0)
-	/*TODO*///	{
-	/*TODO*///		c1551.size += 254;
-	/*TODO*///		i = d64_tracksector2offset (c1551.d.d64.image[i], c1551.d.d64.image[i + 1]);
-	/*TODO*///	}
-	/*TODO*///	c1551.size += c1551.d.d64.image[i + 1];
+		while (c1551.d.d64.image.read(i) != 0)
+		{
+			c1551.size += 254;
+			i = d64_tracksector2offset (c1551.d.d64.image.read(i), c1551.d.d64.image.read(i + 1));
+		}
+		c1551.size += c1551.d.d64.image.read(i + 1);
 	
-		/*TODO*///DBG_LOG (3, "d64 readprg", ("size %d\n", c1551.size));
+/*TODO*///		DBG_LOG (3, "d64 readprg", ("size %d\n", c1551.size));
 	
-	/*TODO*///	c1551.buffer = (UINT8*)realloc (c1551.buffer, c1551.size);
-	/*TODO*///	if (!c1551.buffer) {
-	/*TODO*///		logerror("out of memory %s %d\n",
-	/*TODO*///				__FILE__, __LINE__);
-	/*TODO*///		osd_exit();
-	/*TODO*///		exit(1);
-	/*TODO*///	}
+		//c1551.buffer = new UBytePtr(c1551.buffer, c1551.size);
+                c1551.buffer = new UBytePtr(c1551.size);
+/*TODO*///		if (c1551.buffer==null) {
+/*TODO*///			logerror("out of memory %s %d\n",
+/*TODO*///					__FILE__, __LINE__);
+/*TODO*///			osd_exit();
+/*TODO*///			exit(1);
+/*TODO*///		}
 	
 		c1551.size--;
 	
-		/*TODO*///DBG_LOG (3, "d64 readprg", ("track: %d sector: %d\n",
-		/*TODO*///							c1551.d.d64.image[pos + 1],
-		/*TODO*///							c1551.d.d64.image[pos + 2]));
+/*TODO*///		DBG_LOG (3, "d64 readprg", ("track: %d sector: %d\n",
+/*TODO*///									c1551.d.d64.image[pos + 1],
+/*TODO*///									c1551.d.d64.image[pos + 2]));
 	
 		for (i = 0; i < c1551.size; i += 254)
 		{
 			if (i + 254 < c1551.size)
 			{							   /* not last sector */
-	/*TODO*///			memcpy (c1551.buffer + i, c1551.d.d64.image + pos + 2, 254);
-	/*TODO*///			pos = d64_tracksector2offset (c1551.d.d64.image[pos + 0],
-	/*TODO*///									  c1551.d.d64.image[pos + 1]);
-				/*TODO*///DBG_LOG (3, "d64 readprg", ("track: %d sector: %d\n",
-				/*TODO*///							c1551.d.d64.image[pos],
-				/*TODO*///							c1551.d.d64.image[pos + 1]));
+				memcpy (new UBytePtr(c1551.buffer, i), new UBytePtr(c1551.d.d64.image, pos + 2), 254);
+				pos = d64_tracksector2offset (c1551.d.d64.image.read(pos + 0),
+										  c1551.d.d64.image.read(pos + 1));
+/*TODO*///				DBG_LOG (3, "d64 readprg", ("track: %d sector: %d\n",
+/*TODO*///											c1551.d.d64.image[pos],
+/*TODO*///											c1551.d.d64.image[pos + 1]));
 			}
 			else
 			{
-	/*TODO*///			memcpy (c1551.buffer + i, c1551.d.d64.image + pos + 2, c1551.size - i);
+				memcpy (new UBytePtr(c1551.buffer, i), new UBytePtr(c1551.d.d64.image, pos + 2), c1551.size - i);
 			}
 		}
 	}
 	
 	/* reads sector into buffer */
-	static void d64_read_sector (CBM_Drive c1551, int track, int sector)
+	public static void d64_read_sector (CBM_Drive c1551, int track, int sector)
 	{
-		int pos;
-	
-		printf (c1551.d.d64.filename, c1551.d.d64.filename.length(),
-				  "track %d sector %d", track, sector);
-	
-		pos = d64_tracksector2offset (track, sector);
-	
-		/*TODO*///c1551.buffer = (UINT8*)realloc (c1551.buffer,256);
-		/*TODO*///if (!c1551.buffer) {
-		/*TODO*///	logerror("out of memory %s %d\n",__FILE__, __LINE__);
-		/*TODO*///	osd_exit();
-		/*TODO*///	exit(1);
-		/*TODO*///}
-	
-		logerror("d64 read track %d sector %d\n", track, sector);
-	
-		/*TODO*///memcpy (c1551.buffer, c1551.d.d64.image + pos, 256);
-		c1551.size = 256;
-		c1551.pos = 0;
+		System.out.println("d64_read_sector TO BE IMPLEMENTED!");
+                int pos;
+/*TODO*///	
+/*TODO*///		snprintf (c1551.d.d64.filename, sizeof (c1551.d.d64.filename),
+/*TODO*///				  "track %d sector %d", track, sector);
+/*TODO*///	
+/*TODO*///		pos = d64_tracksector2offset (track, sector);
+/*TODO*///	
+/*TODO*///		c1551.buffer = (UINT8*)realloc (c1551.buffer,256);
+/*TODO*///		if (!c1551.buffer) {
+/*TODO*///			logerror("out of memory %s %d\n",__FILE__, __LINE__);
+/*TODO*///			osd_exit();
+/*TODO*///			exit(1);
+/*TODO*///		}
+/*TODO*///	
+/*TODO*///		logerror("d64 read track %d sector %d\n", track, sector);
+/*TODO*///	
+/*TODO*///		memcpy (c1551.buffer, c1551.d.d64.image + pos, 256);
+/*TODO*///		c1551.size = 256;
+/*TODO*///		c1551.pos = 0;
 	}
 	
 	/* reads directory into buffer */
-	static void d64_read_directory (CBM_Drive c1551)
+	public static void d64_read_directory (CBM_Drive c1551)
 	{
+                System.out.println("d64_read_directory");
 		int pos, track, sector, i, j, blocksfree, addr = 0x0101/*0x1001*/;
 	
-	/*TODO*///	c1551.buffer = (UINT8*)realloc (c1551.buffer, 8 * 18 * 25);
-	/*TODO*///	if (!c1551.buffer) {
-	/*TODO*///		logerror("out of memory %s %d\n",
-	/*TODO*///				__FILE__, __LINE__);
-	/*TODO*///		osd_exit();
-	/*TODO*///		exit(1);
-	/*TODO*///	}
-	
-		c1551.size = 0;
-	
-		pos = d64_tracksector2offset (18, 0);
-	/*TODO*///	track = c1551.d.d64.image[pos];
-	/*TODO*///	sector = c1551.d.d64.image[pos + 1];
-	
-		blocksfree = 0;
-		for (j = 1, i = 4; j <= 35; j++, i += 4)
-		{
-	/*TODO*///		blocksfree += c1551.d.d64.image[pos + i];
-		}
-	/*TODO*///	c1551.buffer[c1551.size++] = addr & 0xff;
-	/*TODO*///	c1551.buffer[c1551.size++] = addr >> 8;
-		addr += 29;
-	/*TODO*///	c1551.buffer[c1551.size++] = addr & 0xff;
-	/*TODO*///	c1551.buffer[c1551.size++] = addr >> 8;
-	/*TODO*///	c1551.buffer[c1551.size++] = 0;
-	/*TODO*///	c1551.buffer[c1551.size++] = 0;
-	/*TODO*///	c1551.buffer[c1551.size++] = '\"';
-	/*TODO*///	for (j = 0; j < 16; j++)
-	/*TODO*///		c1551.buffer[c1551.size++] = c1551.d.d64.image[pos + 0x90 + j];
-	/*memcpy(c1551.buffer+c1551.size,c1551.image+pos+0x90, 16);c1551.size+=16; */
-	/*TODO*///	c1551.buffer[c1551.size++] = '\"';
-	/*TODO*///	c1551.buffer[c1551.size++] = ' ';
-	/*TODO*///	c1551.buffer[c1551.size++] = c1551.d.d64.image[pos + 162];
-	/*TODO*///	c1551.buffer[c1551.size++] = c1551.d.d64.image[pos + 163];
-	/*TODO*///	c1551.buffer[c1551.size++] = ' ';
-	/*TODO*///	c1551.buffer[c1551.size++] = c1551.d.d64.image[pos + 165];
-	/*TODO*///	c1551.buffer[c1551.size++] = c1551.d.d64.image[pos + 166];
-	/*TODO*///	c1551.buffer[c1551.size++] = 0;
-	/*TODO*///
-	/*TODO*///	while ((track >= 1) && (track <= 35))
-	/*TODO*///	{
-	/*TODO*///		pos = d64_tracksector2offset (track, sector);
-	/*TODO*///		for (i = 2; i < 256; i += 32)
-	/*TODO*///		{
-	/*TODO*///			if (c1551.d.d64.image[pos + i] & 0x80)
-	/*TODO*///			{
-	/*TODO*///				int len, blocks = c1551.d.d64.image[pos + i + 28]
-	/*TODO*///				+ 256 * c1551.d.d64.image[pos + i + 29];
-	/*TODO*///				char dummy[10];
-	/*TODO*///
-	/*TODO*///				sprintf (dummy, "%d", blocks);
-	/*TODO*///				len = strlen (dummy);
-	/*TODO*///				addr += 29 - len;
-	/*TODO*///				c1551.buffer[c1551.size++] = addr & 0xff;
-	/*TODO*///				c1551.buffer[c1551.size++] = addr >> 8;
-	/*TODO*///				c1551.buffer[c1551.size++] = c1551.d.d64.image[pos + i + 28];
-	/*TODO*///				c1551.buffer[c1551.size++] = c1551.d.d64.image[pos + i + 29];
-	/*TODO*///				for (j = 4; j > len; j--)
-	/*TODO*///					c1551.buffer[c1551.size++] = ' ';
-	/*TODO*///				c1551.buffer[c1551.size++] = '\"';
-	/*TODO*///				for (j = 0; j < 16; j++)
-	/*TODO*///					c1551.buffer[c1551.size++] = c1551.d.d64.image[pos + i + 3 + j];
-	/*TODO*///				c1551.buffer[c1551.size++] = '\"';
-	/*TODO*///				c1551.buffer[c1551.size++] = ' ';
-	/*TODO*///				switch (c1551.d.d64.image[pos + i] & 0x3f)
-	/*TODO*///				{
-	/*TODO*///				case 0:
-	/*TODO*///					c1551.buffer[c1551.size++] = 'D';
-	/*TODO*///					c1551.buffer[c1551.size++] = 'E';
-	/*TODO*///					c1551.buffer[c1551.size++] = 'L';
-	/*TODO*///					break;
-	/*TODO*///				case 1:
-	/*TODO*///					c1551.buffer[c1551.size++] = 'S';
-	/*TODO*///					c1551.buffer[c1551.size++] = 'E';
-	/*TODO*///					c1551.buffer[c1551.size++] = 'Q';
-	/*TODO*///					break;
-	/*TODO*///				case 2:
-	/*TODO*///					c1551.buffer[c1551.size++] = 'P';
+		c1551.buffer = new UBytePtr(c1551.buffer, 8 * 18 * 25);
+/*TODO*///		if (!c1551.buffer) {
+/*TODO*///			logerror("out of memory %s %d\n",
+/*TODO*///					__FILE__, __LINE__);
+/*TODO*///			osd_exit();
+/*TODO*///			exit(1);
+/*TODO*///		}
+/*TODO*///	
+/*TODO*///		c1551.size = 0;
+/*TODO*///	
+/*TODO*///		pos = d64_tracksector2offset (18, 0);
+/*TODO*///		track = c1551.d.d64.image[pos];
+/*TODO*///		sector = c1551.d.d64.image[pos + 1];
+/*TODO*///	
+/*TODO*///		blocksfree = 0;
+/*TODO*///		for (j = 1, i = 4; j <= 35; j++, i += 4)
+/*TODO*///		{
+/*TODO*///			blocksfree += c1551.d.d64.image[pos + i];
+/*TODO*///		}
+/*TODO*///		c1551.buffer[c1551.size++] = addr & 0xff;
+/*TODO*///		c1551.buffer[c1551.size++] = addr >> 8;
+/*TODO*///		addr += 29;
+/*TODO*///		c1551.buffer[c1551.size++] = addr & 0xff;
+/*TODO*///		c1551.buffer[c1551.size++] = addr >> 8;
+/*TODO*///		c1551.buffer[c1551.size++] = 0;
+/*TODO*///		c1551.buffer[c1551.size++] = 0;
+/*TODO*///		c1551.buffer[c1551.size++] = '\"';
+/*TODO*///		for (j = 0; j < 16; j++)
+/*TODO*///			c1551.buffer[c1551.size++] = c1551.d.d64.image[pos + 0x90 + j];
+/*TODO*///	/*memcpy(c1551.buffer+c1551.size,c1551.image+pos+0x90, 16);c1551.size+=16; */
+/*TODO*///		c1551.buffer[c1551.size++] = '\"';
+/*TODO*///		c1551.buffer[c1551.size++] = ' ';
+/*TODO*///		c1551.buffer[c1551.size++] = c1551.d.d64.image[pos + 162];
+/*TODO*///		c1551.buffer[c1551.size++] = c1551.d.d64.image[pos + 163];
+/*TODO*///		c1551.buffer[c1551.size++] = ' ';
+/*TODO*///		c1551.buffer[c1551.size++] = c1551.d.d64.image[pos + 165];
+/*TODO*///		c1551.buffer[c1551.size++] = c1551.d.d64.image[pos + 166];
+/*TODO*///		c1551.buffer[c1551.size++] = 0;
+/*TODO*///	
+/*TODO*///		while ((track >= 1) && (track <= 35))
+/*TODO*///		{
+/*TODO*///			pos = d64_tracksector2offset (track, sector);
+/*TODO*///			for (i = 2; i < 256; i += 32)
+/*TODO*///			{
+/*TODO*///				if (c1551.d.d64.image[pos + i] & 0x80)
+/*TODO*///				{
+/*TODO*///					int len, blocks = c1551.d.d64.image[pos + i + 28]
+/*TODO*///					+ 256 * c1551.d.d64.image[pos + i + 29];
+/*TODO*///					char dummy[10];
+/*TODO*///	
+/*TODO*///					sprintf (dummy, "%d", blocks);
+/*TODO*///					len = strlen (dummy);
+/*TODO*///					addr += 29 - len;
+/*TODO*///					c1551.buffer[c1551.size++] = addr & 0xff;
+/*TODO*///					c1551.buffer[c1551.size++] = addr >> 8;
+/*TODO*///					c1551.buffer[c1551.size++] = c1551.d.d64.image[pos + i + 28];
+/*TODO*///					c1551.buffer[c1551.size++] = c1551.d.d64.image[pos + i + 29];
+/*TODO*///					for (j = 4; j > len; j--)
+/*TODO*///						c1551.buffer[c1551.size++] = ' ';
+/*TODO*///					c1551.buffer[c1551.size++] = '\"';
+/*TODO*///					for (j = 0; j < 16; j++)
+/*TODO*///						c1551.buffer[c1551.size++] = c1551.d.d64.image[pos + i + 3 + j];
+/*TODO*///					c1551.buffer[c1551.size++] = '\"';
+/*TODO*///					c1551.buffer[c1551.size++] = ' ';
+/*TODO*///					switch (c1551.d.d64.image[pos + i] & 0x3f)
+/*TODO*///					{
+/*TODO*///					case 0:
+/*TODO*///						c1551.buffer[c1551.size++] = 'D';
+/*TODO*///						c1551.buffer[c1551.size++] = 'E';
+/*TODO*///						c1551.buffer[c1551.size++] = 'L';
+/*TODO*///						break;
+/*TODO*///					case 1:
+/*TODO*///						c1551.buffer[c1551.size++] = 'S';
+/*TODO*///						c1551.buffer[c1551.size++] = 'E';
+/*TODO*///						c1551.buffer[c1551.size++] = 'Q';
+/*TODO*///						break;
+/*TODO*///					case 2:
+/*TODO*///						c1551.buffer[c1551.size++] = 'P';
 /*TODO*///						c1551.buffer[c1551.size++] = 'R';
 /*TODO*///						c1551.buffer[c1551.size++] = 'G';
 /*TODO*///						break;
@@ -317,30 +329,32 @@ public class cbmdrive
 /*TODO*///		strcpy (c1551.d.d64.filename, "$");
 	}
 	
-	static int c1551_d64_command (CBM_Drive c1551, String name)
+	public static int c1551_d64_command (CBM_Drive c1551, String name)
 	{
+                System.out.println("c1551_d64_command");
 		int pos;
 	
 		/* name eventuell mit 0xa0 auffuellen */
 	
-		/*TODO*///if (stricmp ((char *) name, (char *) "$") == 0)
-		/*TODO*///{
-		/*TODO*///	d64_read_directory (c1551);
-		/*TODO*///}
-		/*TODO*///else
-		/*TODO*///{
-		/*TODO*///	if ((pos = d64_find (c1551, name)) == -1)
-		/*TODO*///	{
-		/*TODO*///		return 1;
-		/*TODO*///	}
-		/*TODO*///	d64_readprg (c1551, pos);
-		/*TODO*///}
+		if (stricmp (name, "$") == 0)
+		{
+			d64_read_directory (c1551);
+		}
+		else
+		{
+			if ((pos = d64_find (c1551, name)) == -1)
+			{
+				return 1;
+			}
+			d64_readprg (c1551, pos);
+		}
 		return 0;
 	}
 	
-	static int c1551_fs_command (CBM_Drive c1551, String name)
+	public static int c1551_fs_command (CBM_Drive c1551, String name)
 	{
-	/*TODO*///	FILE *fp;
+            System.out.println("c1551_fs_command TO BE IMPLEMENTED!!!!");
+/*TODO*///		FILE *fp;
 /*TODO*///		int type=0;
 /*TODO*///		int read;
 /*TODO*///		int i;
@@ -475,318 +489,323 @@ public class cbmdrive
 	 load
 	  20 f0 name 3f
 	 */
-	static void cbm_command (CBM_Drive drive)
+	public static void cbm_command (CBM_Drive drive)
 	{
-/*TODO*///		unsigned char name[20], type = 'P', mode = 0;
-/*TODO*///		int channel, head, track, sector;
-/*TODO*///		int j, i, rc;
+            System.out.println("cbm_command");
+        
+		char[] name=new char[20];
+                char type = 'P';
+                int mode = 0;
+		int channel=0, head=0, track=0, sector=0;
+		int j, i, rc;
+	
+		if ((drive.cmdpos == 4)
+			&& ((drive.cmdbuffer[0] & 0xf0) == 0x20)
+			&& ((drive.cmdbuffer[1] & 0xf0) == 0xf0)
+			&& (drive.cmdbuffer[2] == '#')
+			&& (drive.cmdbuffer[3] == 0x3f))
+		{
+			logerror("floppy direct access channel %d opened\n",
+						 drive.cmdbuffer[1] & 0xf);
+		}
+		else if ((drive.cmdpos >= 4)
+				 && ((drive.cmdbuffer[0] & 0xf0) == 0x20)
+				 && ((drive.cmdbuffer[1] & 0xf0) == 0xf0)
+				 && (drive.cmdbuffer[drive.cmdpos - 1] == 0x3f))
+		{
+			if (drive.cmdbuffer[3] == ':')
+				j = 4;
+			else
+				j = 2;
+	
+			for (i = 0; (j < name.length) && (drive.cmdbuffer[j] != 0x3f)
+				 && (drive.cmdbuffer[j] != ',');
+				 i++, j++)
+				name[i] = drive.cmdbuffer[j];
+			name[i] = 0;
+	
+			if (drive.cmdbuffer[j] == ',')
+			{
+				j++;
+				if (j < drive.cmdpos)
+				{
+					type = drive.cmdbuffer[j];
+					j++;
+					if ((j < drive.cmdpos) && (drive.cmdbuffer[j] == 'j'))
+					{
+						j++;
+						if (j < drive.cmdpos)
+							mode = drive.cmdbuffer[j];
+					}
+				}
+			}
+			rc = 1;
+			if (drive.drive == D64_IMAGE)
+			{
+				if ((type == 'P') || (type == 'S'))
+					rc = c1551_d64_command (drive, new String(name));
+			}
+			else if (drive.drive == FILESYSTEM)
+			{
+				if (type == 'P')
+					rc = c1551_fs_command (drive, new String(name));
+			}
+			if (rc == 0)
+			{
+				drive.state = OPEN;
+				drive.pos = 0;
+			}
+			/*TODO*///DBG_LOG (1, "cbm_open", ("%s %s type:%c %c\n", name,
+			/*TODO*///						 rc ? "failed" : "success", type, mode ? mode : ' '));
+		}
+		else if ((drive.cmdpos == 1) && (drive.cmdbuffer[0] == 0x5f))
+		{
+			drive.state = OPEN;
+		}
+		else if ((drive.cmdpos == 3) && ((drive.cmdbuffer[0] & 0xf0) == 0x20)
+				 && ((drive.cmdbuffer[1] & 0xf0) == 0xe0)
+				 && (drive.cmdbuffer[2] == 0x3f))
+		{
+	/*    if (drive.buffer) free(drive.buffer);drive.buffer=0; */
+			drive.state = 0;
+		}
+		else if ((drive.cmdpos == 2) && ((drive.cmdbuffer[0] & 0xf0) == 0x40)
+				 && ((drive.cmdbuffer[1] & 0xf0) == 0x60))
+		{
+			if (drive.state == OPEN)
+			{
+				drive.state = READING;
+			}
+		}
+		else if ((drive.cmdpos == 2) && ((drive.cmdbuffer[0] & 0xf0) == 0x20)
+				 && ((drive.cmdbuffer[1] & 0xf0) == 0x60))
+		{
+			drive.state = WRITING;
+		}
+		else if ((drive.cmdpos == 1) && (drive.cmdbuffer[0] == 0x3f))
+		{
+			drive.state = OPEN;
+		}
+		else if ((drive.drive == D64_IMAGE)
+				 /*TODO*///&& (4 == sscanf (drive.cmdbuffer, "U1: %d %d %d %d\x0d",
+				 /*TODO*///				  channel, head, track, sector))
+                                                                  )
+		{
+			d64_read_sector (drive, track, sector);
+			drive.state = OPEN;
+		}
+		else
+		{
+	
+			logerror("unknown floppycommand(size:%d):", drive.cmdpos);
+			for (i = 0; i < drive.cmdpos; i++)
+				logerror("%.2x", drive.cmdbuffer[i]);
+			logerror(" ");
+			for (i = 0; i < drive.cmdpos; i++)
+				logerror("%c", drive.cmdbuffer[i]);
+			logerror("\n");
+	
+			drive.state = 0;
+		}
+		drive.cmdpos = 0;
+	}
 /*TODO*///	
-/*TODO*///		if ((drive.cmdpos == 4)
-/*TODO*///			&& ((drive.cmdbuffer[0] & 0xf0) == 0x20)
-/*TODO*///			&& ((drive.cmdbuffer[1] & 0xf0) == 0xf0)
-/*TODO*///			&& (drive.cmdbuffer[2] == '#')
-/*TODO*///			&& (drive.cmdbuffer[3] == 0x3f))
+/*TODO*///	 /*
+/*TODO*///	  * 0x55 begin of command
+/*TODO*///	  *
+/*TODO*///	  * frame
+/*TODO*///	  * selector
+/*TODO*///	  * 0x81 device id
+/*TODO*///	  * 0x82 command
+/*TODO*///	  * 0x83 data
+/*TODO*///	  * 0x84 read byte
+/*TODO*///	  * handshake low
+/*TODO*///	  *
+/*TODO*///	  * byte (like in serial bus!)
+/*TODO*///	  *
+/*TODO*///	  * floppy drive delivers
+/*TODO*///	  * status 3 for file not found
+/*TODO*///	  * or filedata ended with status 3
+/*TODO*///	  */
+/*TODO*///	void c1551_state (CBM_Drive * c1551)
+/*TODO*///	{
+/*TODO*///	#if VERBOSE_DBG
+/*TODO*///		static int oldstate;
+/*TODO*///	
+/*TODO*///		oldstate = c1551.i.iec.state;
+/*TODO*///	#endif
+/*TODO*///	
+/*TODO*///		switch (c1551.i.iec.state)
 /*TODO*///		{
-/*TODO*///			logerror("floppy direct access channel %d opened\n",
-/*TODO*///						 (unsigned) drive.cmdbuffer[1] & 0xf);
-/*TODO*///		}
-/*TODO*///		else if ((drive.cmdpos >= 4)
-/*TODO*///				 && (((unsigned) drive.cmdbuffer[0] & 0xf0) == 0x20)
-/*TODO*///				 && (((unsigned) drive.cmdbuffer[1] & 0xf0) == 0xf0)
-/*TODO*///				 && (drive.cmdbuffer[drive.cmdpos - 1] == 0x3f))
-/*TODO*///		{
-/*TODO*///			if (drive.cmdbuffer[3] == ':')
-/*TODO*///				j = 4;
-/*TODO*///			else
-/*TODO*///				j = 2;
-/*TODO*///	
-/*TODO*///			for (i = 0; (j < sizeof (name)) && (drive.cmdbuffer[j] != 0x3f)
-/*TODO*///				 && (drive.cmdbuffer[j] != ',');
-/*TODO*///				 i++, j++)
-/*TODO*///				name[i] = drive.cmdbuffer[j];
-/*TODO*///			name[i] = 0;
-/*TODO*///	
-/*TODO*///			if (drive.cmdbuffer[j] == ',')
+/*TODO*///		case -1:						   /* currently neccessary for correct init */
+/*TODO*///			if (c1551.i.iec.handshakein)
 /*TODO*///			{
-/*TODO*///				j++;
-/*TODO*///				if (j < drive.cmdpos)
+/*TODO*///				c1551.i.iec.state++;
+/*TODO*///			}
+/*TODO*///			break;
+/*TODO*///		case 0:
+/*TODO*///			if (c1551.i.iec.datain == 0x55)
+/*TODO*///			{
+/*TODO*///				c1551.i.iec.status = 0;
+/*TODO*///				c1551.i.iec.state++;
+/*TODO*///			}
+/*TODO*///			break;
+/*TODO*///		case 1:
+/*TODO*///			if (c1551.i.iec.datain != 0x55)
+/*TODO*///			{
+/*TODO*///				c1551.i.iec.state = 10;
+/*TODO*///			}
+/*TODO*///			break;
+/*TODO*///		case 10:
+/*TODO*///			if (c1551.i.iec.datain != 0)
+/*TODO*///			{
+/*TODO*///				c1551.i.iec.handshakeout = 0;
+/*TODO*///				if (c1551.i.iec.datain == 0x84)
 /*TODO*///				{
-/*TODO*///					type = drive.cmdbuffer[j];
-/*TODO*///					j++;
-/*TODO*///					if ((j < drive.cmdpos) && (drive.cmdbuffer[j] == 'j'))
-/*TODO*///					{
-/*TODO*///						j++;
-/*TODO*///						if (j < drive.cmdpos)
-/*TODO*///							mode = drive.cmdbuffer[j];
-/*TODO*///					}
+/*TODO*///					c1551.i.iec.state = 20;
+/*TODO*///					if (c1551.pos + 1 == c1551.size)
+/*TODO*///						c1551.i.iec.status = 3;
+/*TODO*///				}
+/*TODO*///				else if (c1551.i.iec.datain == 0x83)
+/*TODO*///				{
+/*TODO*///					c1551.i.iec.state = 40;
+/*TODO*///				}
+/*TODO*///				else
+/*TODO*///				{
+/*TODO*///					c1551.i.iec.status = 0;
+/*TODO*///					c1551.i.iec.state++;
 /*TODO*///				}
 /*TODO*///			}
-/*TODO*///			rc = 1;
-/*TODO*///			if (drive.drive == D64_IMAGE)
+/*TODO*///			break;
+/*TODO*///		case 11:
+/*TODO*///			if (!c1551.i.iec.handshakein)
 /*TODO*///			{
-/*TODO*///				if ((type == 'P') || (type == 'S'))
-/*TODO*///					rc = c1551_d64_command (drive, name);
+/*TODO*///				c1551.i.iec.state++;
+/*TODO*///				DBG_LOG(1,"c1551",("taken data %.2x\n",c1551.i.iec.datain));
+/*TODO*///				if (c1551.cmdpos < sizeof (c1551.cmdbuffer))
+/*TODO*///					c1551.cmdbuffer[c1551.cmdpos++] = c1551.i.iec.datain;
+/*TODO*///				if ((c1551.i.iec.datain == 0x3f) || (c1551.i.iec.datain == 0x5f))
+/*TODO*///				{
+/*TODO*///					cbm_command (c1551);
+/*TODO*///					c1551.i.iec.state = 30;
+/*TODO*///				}
+/*TODO*///				else if (((c1551.i.iec.datain & 0xf0) == 0x60))
+/*TODO*///				{
+/*TODO*///					cbm_command (c1551);
+/*TODO*///					if (c1551.state == READING)
+/*TODO*///					{
+/*TODO*///					}
+/*TODO*///					else if (c1551.state == WRITING)
+/*TODO*///					{
+/*TODO*///					}
+/*TODO*///					else
+/*TODO*///						c1551.i.iec.status = 3;
+/*TODO*///				}
+/*TODO*///				c1551.i.iec.handshakeout = 1;
 /*TODO*///			}
-/*TODO*///			else if (drive.drive == FILESYSTEM)
+/*TODO*///			break;
+/*TODO*///		case 12:
+/*TODO*///			if (c1551.i.iec.datain == 0)
 /*TODO*///			{
-/*TODO*///				if (type == 'P')
-/*TODO*///					rc = c1551_fs_command (drive, name);
+/*TODO*///				c1551.i.iec.state++;
 /*TODO*///			}
-/*TODO*///			if (rc == 0)
+/*TODO*///			break;
+/*TODO*///		case 13:
+/*TODO*///			if (c1551.i.iec.handshakein)
 /*TODO*///			{
-/*TODO*///				drive.state = OPEN;
-/*TODO*///				drive.pos = 0;
+/*TODO*///				c1551.i.iec.state = 10;
 /*TODO*///			}
-/*TODO*///			/*TODO*///DBG_LOG (1, "cbm_open", ("%s %s type:%c %c\n", name,
-/*TODO*///									 rc ? "failed" : "success", type, mode ? mode : ' '));
-/*TODO*///		}
-/*TODO*///		else if ((drive.cmdpos == 1) && (drive.cmdbuffer[0] == 0x5f))
-/*TODO*///		{
-/*TODO*///			drive.state = OPEN;
-/*TODO*///		}
-/*TODO*///		else if ((drive.cmdpos == 3) && ((drive.cmdbuffer[0] & 0xf0) == 0x20)
-/*TODO*///				 && ((drive.cmdbuffer[1] & 0xf0) == 0xe0)
-/*TODO*///				 && (drive.cmdbuffer[2] == 0x3f))
-/*TODO*///		{
-/*TODO*///	/*    if (drive.buffer) free(drive.buffer);drive.buffer=0; */
-/*TODO*///			drive.state = 0;
-/*TODO*///		}
-/*TODO*///		else if ((drive.cmdpos == 2) && ((drive.cmdbuffer[0] & 0xf0) == 0x40)
-/*TODO*///				 && ((drive.cmdbuffer[1] & 0xf0) == 0x60))
-/*TODO*///		{
-/*TODO*///			if (drive.state == OPEN)
-/*TODO*///			{
-/*TODO*///				drive.state = READING;
-/*TODO*///			}
-/*TODO*///		}
-/*TODO*///		else if ((drive.cmdpos == 2) && ((drive.cmdbuffer[0] & 0xf0) == 0x20)
-/*TODO*///				 && ((drive.cmdbuffer[1] & 0xf0) == 0x60))
-/*TODO*///		{
-/*TODO*///			drive.state = WRITING;
-/*TODO*///		}
-/*TODO*///		else if ((drive.cmdpos == 1) && (drive.cmdbuffer[0] == 0x3f))
-/*TODO*///		{
-/*TODO*///			drive.state = OPEN;
-/*TODO*///		}
-/*TODO*///		else if ((drive.drive == D64_IMAGE)
-/*TODO*///				 && (4 == sscanf ((char *) drive.cmdbuffer, "U1: %d %d %d %d\x0d",
-/*TODO*///								  &channel, &head, &track, &sector)))
-/*TODO*///		{
-/*TODO*///			d64_read_sector (drive, track, sector);
-/*TODO*///			drive.state = OPEN;
-/*TODO*///		}
-/*TODO*///		else
-/*TODO*///		{
+/*TODO*///			break;
 /*TODO*///	
-/*TODO*///			logerror("unknown floppycommand(size:%d):", drive.cmdpos);
-/*TODO*///			for (i = 0; i < drive.cmdpos; i++)
-/*TODO*///				logerror("%.2x", drive.cmdbuffer[i]);
-/*TODO*///			logerror(" ");
-/*TODO*///			for (i = 0; i < drive.cmdpos; i++)
-/*TODO*///				logerror("%c", drive.cmdbuffer[i]);
-/*TODO*///			logerror("\n");
+/*TODO*///		case 20:						   /* reading data */
+/*TODO*///			if (!c1551.i.iec.handshakein)
+/*TODO*///			{
+/*TODO*///				c1551.i.iec.handshakeout = 1;
+/*TODO*///				if (c1551.state == READING)
+/*TODO*///					c1551.i.iec.dataout = c1551.buffer[c1551.pos++];
+/*TODO*///				c1551.i.iec.state++;
+/*TODO*///			}
+/*TODO*///			break;
+/*TODO*///		case 21:						   /* reading data */
+/*TODO*///			if (c1551.i.iec.handshakein)
+/*TODO*///			{
+/*TODO*///				c1551.i.iec.handshakeout = 0;
+/*TODO*///				c1551.i.iec.state++;
+/*TODO*///			}
+/*TODO*///			break;
+/*TODO*///		case 22:
+/*TODO*///			if (c1551.i.iec.datain == 0)
+/*TODO*///			{
+/*TODO*///				c1551.i.iec.state++;
+/*TODO*///			}
+/*TODO*///			break;
+/*TODO*///		case 23:
+/*TODO*///			if (!c1551.i.iec.handshakein)
+/*TODO*///			{
+/*TODO*///				c1551.i.iec.handshakeout = 1;
+/*TODO*///				if (c1551.state == READING)
+/*TODO*///					c1551.i.iec.state = 10;
+/*TODO*///				else
+/*TODO*///					c1551.i.iec.state = 0;
+/*TODO*///			}
+/*TODO*///			break;
 /*TODO*///	
-/*TODO*///			drive.state = 0;
+/*TODO*///		case 30:						   /* end of command */
+/*TODO*///			if (c1551.i.iec.datain == 0)
+/*TODO*///			{
+/*TODO*///				c1551.i.iec.state++;
+/*TODO*///			}
+/*TODO*///			break;
+/*TODO*///		case 31:
+/*TODO*///			if (c1551.i.iec.handshakein)
+/*TODO*///			{
+/*TODO*///				c1551.i.iec.state = 0;
+/*TODO*///			}
+/*TODO*///			break;
+/*TODO*///	
+/*TODO*///		case 40:						   /* simple write */
+/*TODO*///			if (!c1551.i.iec.handshakein)
+/*TODO*///			{
+/*TODO*///				c1551.i.iec.state++;
+/*TODO*///				if ((c1551.state == 0) || (c1551.state == OPEN))
+/*TODO*///				{
+/*TODO*///					DBG_LOG (1, "c1551", ("taken data %.2x\n",
+/*TODO*///										  c1551.i.iec.datain));
+/*TODO*///					if (c1551.cmdpos < sizeof (c1551.cmdbuffer))
+/*TODO*///						c1551.cmdbuffer[c1551.cmdpos++] = c1551.i.iec.datain;
+/*TODO*///				}
+/*TODO*///				else if (c1551.state == WRITING)
+/*TODO*///				{
+/*TODO*///					DBG_LOG (1, "c1551", ("written data %.2x\n", c1551.i.iec.datain));
+/*TODO*///				}
+/*TODO*///				c1551.i.iec.handshakeout = 1;
+/*TODO*///			}
+/*TODO*///			break;
+/*TODO*///		case 41:
+/*TODO*///			if (c1551.i.iec.datain == 0)
+/*TODO*///			{
+/*TODO*///				c1551.i.iec.state++;
+/*TODO*///			}
+/*TODO*///			break;
+/*TODO*///		case 42:
+/*TODO*///			if (c1551.i.iec.handshakein)
+/*TODO*///			{
+/*TODO*///				c1551.i.iec.state = 10;
+/*TODO*///			}
+/*TODO*///			break;
 /*TODO*///		}
-/*TODO*///		drive.cmdpos = 0;
-	}
-	
-	 /*
-	  * 0x55 begin of command
-	  *
-	  * frame
-	  * selector
-	  * 0x81 device id
-	  * 0x82 command
-	  * 0x83 data
-	  * 0x84 read byte
-	  * handshake low
-	  *
-	  * byte (like in serial bus!)
-	  *
-	  * floppy drive delivers
-	  * status 3 for file not found
-	  * or filedata ended with status 3
-	  */
-	public static void c1551_state (CBM_Drive c1551)
+/*TODO*///	#if VERBOSE_DBG
+/*TODO*///		if (oldstate != c1551.i.iec.state)
+/*TODO*///			logerror ("state %d.%d %d\n", oldstate, c1551.i.iec.state, c1551.state);
+/*TODO*///	#endif
+/*TODO*///	}
+/*TODO*///	
+	public static void vc1541_state (CBM_Drive vc1541)
 	{
-	/*TODO*///#if VERBOSE_DBG
-	/*TODO*///	static int oldstate;
-	/*TODO*///
-	/*TODO*///	oldstate = c1551.i.iec.state;
-	/*TODO*///#endif
-	
-		switch (c1551.i.iec.state)
-		{
-		case -1:						   /* currently neccessary for correct init */
-			if (c1551.i.iec.handshakein != 0)
-			{
-				c1551.i.iec.state++;
-			}
-			break;
-		case 0:
-			if (c1551.i.iec.datain == 0x55)
-			{
-				c1551.i.iec.status = 0;
-				c1551.i.iec.state++;
-			}
-			break;
-		case 1:
-			if (c1551.i.iec.datain != 0x55)
-			{
-				c1551.i.iec.state = 10;
-			}
-			break;
-		case 10:
-			if (c1551.i.iec.datain != 0)
-			{
-				c1551.i.iec.handshakeout = 0;
-				if (c1551.i.iec.datain == 0x84)
-				{
-					c1551.i.iec.state = 20;
-					if (c1551.pos + 1 == c1551.size)
-						c1551.i.iec.status = 3;
-				}
-				else if (c1551.i.iec.datain == 0x83)
-				{
-					c1551.i.iec.state = 40;
-				}
-				else
-				{
-					c1551.i.iec.status = 0;
-					c1551.i.iec.state++;
-				}
-			}
-			break;
-		case 11:
-			if (c1551.i.iec.handshakein==0)
-			{
-				c1551.i.iec.state++;
-				/*TODO*///DBG_LOG(1,"c1551",("taken data %.2x\n",c1551.i.iec.datain));
-				/*TODO*///if (c1551.cmdpos < sizeof (c1551.cmdbuffer))
-				/*TODO*///	c1551.cmdbuffer[c1551.cmdpos++] = c1551.i.iec.datain;
-				if ((c1551.i.iec.datain == 0x3f) || (c1551.i.iec.datain == 0x5f))
-				{
-					cbm_command (c1551);
-					c1551.i.iec.state = 30;
-				}
-				else if (((c1551.i.iec.datain & 0xf0) == 0x60))
-				{
-					cbm_command (c1551);
-					if (c1551.state == READING)
-					{
-					}
-					else if (c1551.state == WRITING)
-					{
-					}
-					else
-						c1551.i.iec.status = 3;
-				}
-				c1551.i.iec.handshakeout = 1;
-			}
-			break;
-		case 12:
-			if (c1551.i.iec.datain == 0)
-			{
-				c1551.i.iec.state++;
-			}
-			break;
-		case 13:
-			if (c1551.i.iec.handshakein != 0)
-			{
-				c1551.i.iec.state = 10;
-			}
-			break;
-	
-		case 20:						   /* reading data */
-			if (c1551.i.iec.handshakein == 0)
-			{
-				c1551.i.iec.handshakeout = 1;
-				/*TODO*///if (c1551.state == READING)
-				/*TODO*///	c1551.i.iec.dataout = c1551.buffer[c1551.pos++];
-				c1551.i.iec.state++;
-			}
-			break;
-		case 21:						   /* reading data */
-			if (c1551.i.iec.handshakein != 0)
-			{
-				c1551.i.iec.handshakeout = 0;
-				c1551.i.iec.state++;
-			}
-			break;
-		case 22:
-			if (c1551.i.iec.datain == 0)
-			{
-				c1551.i.iec.state++;
-			}
-			break;
-		case 23:
-			if (c1551.i.iec.handshakein == 0)
-			{
-				c1551.i.iec.handshakeout = 1;
-				if (c1551.state == READING)
-					c1551.i.iec.state = 10;
-				else
-					c1551.i.iec.state = 0;
-			}
-			break;
-	
-		case 30:						   /* end of command */
-			if (c1551.i.iec.datain == 0)
-			{
-				c1551.i.iec.state++;
-			}
-			break;
-		case 31:
-			if (c1551.i.iec.handshakein != 0)
-			{
-				c1551.i.iec.state = 0;
-			}
-			break;
-	
-		case 40:						   /* simple write */
-			if (c1551.i.iec.handshakein == 0)
-			{
-				c1551.i.iec.state++;
-				if ((c1551.state == 0) || (c1551.state == OPEN))
-				{
-					/*TODO*///DBG_LOG (1, "c1551", ("taken data %.2x\n",
-					/*TODO*///					  c1551.i.iec.datain));
-					/*TODO*///if (c1551.cmdpos < sizeof (c1551.cmdbuffer))
-					/*TODO*///	c1551.cmdbuffer[c1551.cmdpos++] = c1551.i.iec.datain;
-				}
-				else if (c1551.state == WRITING)
-				{
-					/*TODO*///DBG_LOG (1, "c1551", ("written data %.2x\n", c1551.i.iec.datain));
-				}
-				c1551.i.iec.handshakeout = 1;
-			}
-			break;
-		case 41:
-			if (c1551.i.iec.datain == 0)
-			{
-				c1551.i.iec.state++;
-			}
-			break;
-		case 42:
-			if (c1551.i.iec.handshakein != 0)
-			{
-				c1551.i.iec.state = 10;
-			}
-			break;
-		}
-	/*TODO*///#if VERBOSE_DBG
-	/*TODO*///	if (oldstate != c1551.i.iec.state)
-	/*TODO*///		logerror ("state %d.%d %d\n", oldstate, c1551.i.iec.state, c1551.state);
-	/*TODO*///#endif
-	}
-	
-	public static CBM_Drive vc1541_state (CBM_Drive vc1541)
-	{
-	/*TODO*///#if VERBOSE_DBG
-	/*TODO*///	int oldstate = vc1541.i.serial.state;
-	/*TODO*///
-	/*TODO*///#endif
+/*TODO*///	#if VERBOSE_DBG
+/*TODO*///		int oldstate = vc1541.i.serial.state;
+/*TODO*///	
+/*TODO*///	#endif
 	
 		switch (vc1541.i.serial.state)
 		{
@@ -810,7 +829,7 @@ public class cbmdrive
 				vc1541.i.serial.state++;
 				break;
 			}
-			if (cbm_serial.clock[0] != 0)
+			if (cbm_serial.clock[0]!=0)
 			{
 				vc1541.i.serial.broadcast = 0;
 				vc1541.i.serial.data = 1;
@@ -822,7 +841,7 @@ public class cbmdrive
 			}
 			break;
 		case 2:
-			if (cbm_serial.clock[0] != 0)
+			if (cbm_serial.clock[0]!=0)
 			{
 				vc1541.i.serial.broadcast = 1;
 				vc1541.i.serial.data = 1;
@@ -835,7 +854,7 @@ public class cbmdrive
 			break;
 			/* bits to byte fitting */
 		case 100:
-			if (cbm_serial.clock[0] == 0)
+			if (cbm_serial.clock[0]==0)
 			{
 				vc1541.i.serial.state++;
 				break;
@@ -848,68 +867,68 @@ public class cbmdrive
 		case 110:
 		case 112:
 		case 114:
-			if (cbm_serial.clock[0] == 0)
+			if (cbm_serial.clock[0]==0)
 				vc1541.i.serial.state++;
 			break;
 		case 101:
-			if (cbm_serial.clock[0] != 0)
+			if (cbm_serial.clock[0]!=0)
 			{
 				vc1541.i.serial.value |= cbm_serial.data[0]!=0 ? 1 : 0;
 				vc1541.i.serial.state++;
 			}
 			break;
 		case 103:
-			if (cbm_serial.clock[0] != 0)
+			if (cbm_serial.clock[0]!=0)
 			{
 				vc1541.i.serial.value |= cbm_serial.data[0]!=0 ? 2 : 0;
 				vc1541.i.serial.state++;
 			}
 			break;
 		case 105:
-			if (cbm_serial.clock[0] != 0)
+			if (cbm_serial.clock[0]!=0)
 			{
 				vc1541.i.serial.value |= cbm_serial.data[0]!=0 ? 4 : 0;
 				vc1541.i.serial.state++;
 			}
 			break;
 		case 107:
-			if (cbm_serial.clock[0] != 0)
+			if (cbm_serial.clock[0]!=0)
 			{
-				vc1541.i.serial.value |= cbm_serial.data[0]!= 0 ? 8 : 0;
+				vc1541.i.serial.value |= cbm_serial.data[0]!=0 ? 8 : 0;
 				vc1541.i.serial.state++;
 			}
 			break;
 		case 109:
-			if (cbm_serial.clock[0] != 0)
+			if (cbm_serial.clock[0]!=0)
 			{
-				vc1541.i.serial.value |= cbm_serial.data[0]!= 0 ? 0x10 : 0;
+				vc1541.i.serial.value |= cbm_serial.data[0]!=0 ? 0x10 : 0;
 				vc1541.i.serial.state++;
 			}
 			break;
 		case 111:
-			if (cbm_serial.clock[0] != 0)
+			if (cbm_serial.clock[0]!=0)
 			{
-				vc1541.i.serial.value |= cbm_serial.data[0]!= 0 ? 0x20 : 0;
+				vc1541.i.serial.value |= cbm_serial.data[0]!=0 ? 0x20 : 0;
 				vc1541.i.serial.state++;
 			}
 			break;
 		case 113:
-			if (cbm_serial.clock[0] != 0)
+			if (cbm_serial.clock[0]!=0)
 			{
-				vc1541.i.serial.value |= cbm_serial.data[0]!= 0 ? 0x40 : 0;
+				vc1541.i.serial.value |= cbm_serial.data[0]!=0 ? 0x40 : 0;
 				vc1541.i.serial.state++;
 			}
 			break;
 		case 115:
-			if (cbm_serial.clock[0] != 0)
+			if (cbm_serial.clock[0]!=0)
 			{
-				vc1541.i.serial.value |= cbm_serial.data[0]!= 0 ? 0x80 : 0;
-				if (vc1541.i.serial.broadcast != 0
+				vc1541.i.serial.value |= cbm_serial.data[0]!=0 ? 0x80 : 0;
+				if (vc1541.i.serial.broadcast!=0
 					&& (((vc1541.i.serial.value & 0xf0) == 0x20)
 						|| ((vc1541.i.serial.value & 0xf0) == 0x40)))
 				{
-					vc1541.i.serial.forme = (vc1541.i.serial.value & 0xf)
-						== vc1541.i.serial.device ? 1 : 0;
+					vc1541.i.serial.forme = ((vc1541.i.serial.value & 0xf)
+						== vc1541.i.serial.device)?1:0;
 					if (vc1541.i.serial.forme==0)
 					{
 						vc1541.i.serial.state = 160;
@@ -918,8 +937,8 @@ public class cbmdrive
 				}
 				if (vc1541.i.serial.forme != 0)
 				{
-					/*TODO*///if (vc1541.cmdpos < sizeof (vc1541.cmdbuffer))
-					/*TODO*///	vc1541.cmdbuffer[vc1541.cmdpos++] = vc1541.i.serial.value;
+					if (vc1541.cmdpos < vc1541.cmdbuffer.length)
+						vc1541.cmdbuffer[vc1541.cmdpos++] = (char) vc1541.i.serial.value;
 					/*TODO*///DBG_LOG (1, "serial read", ("%s %s %.2x\n",
 					/*TODO*///			vc1541.i.serial.broadcast ? "broad" : "",
 					/*TODO*///			vc1541.i.serial.last ? "last" : "",
@@ -935,7 +954,7 @@ public class cbmdrive
 					vc1541.i.serial.state = 130;
 				else
 					vc1541.i.serial.state++;
-				if (vc1541.i.serial.broadcast != 0 &&
+				if (vc1541.i.serial.broadcast!=0 &&
 					((vc1541.i.serial.value == 0x3f) || (vc1541.i.serial.value == 0x5f)
 					 || ((vc1541.i.serial.value & 0xf0) == 0x60)))
 				{
@@ -947,8 +966,8 @@ public class cbmdrive
 			}
 			break;
 		case 117:
-			if (vc1541.i.serial.forme != 0 && ((vc1541.i.serial.value & 0xf0) == 0x60)
-				&& vc1541.i.serial.broadcast != 0 && cbm_serial.atn[0] != 0)
+			if (vc1541.i.serial.forme!=0 && ((vc1541.i.serial.value & 0xf0) == 0x60)
+				&& vc1541.i.serial.broadcast!=0 && cbm_serial.atn[0]!=0)
 			{
 				if (vc1541.state == READING)
 				{
@@ -963,7 +982,7 @@ public class cbmdrive
 			}
 			if (((vc1541.i.serial.value == 0x3f)
 				 || (vc1541.i.serial.value == 0x5f))
-				&& vc1541.i.serial.broadcast != 0 && cbm_serial.atn[0] != 0)
+				&& vc1541.i.serial.broadcast!=0 && cbm_serial.atn[0]!=0)
 			{
 				vc1541.i.serial.data = 1;
 				vc1541.i.serial.state = 140;
@@ -982,7 +1001,7 @@ public class cbmdrive
 			/* if computer lowers clk not in 200micros (last byte following)
 			 * negativ pulse on data by listener */
 		case 118:
-			if (cbm_serial.clock[0]==0)
+			if (cbm_serial.clock[0] == 0)
 			{
 				vc1541.i.serial.value = 0;
 				vc1541.i.serial.state = 101;
@@ -1101,7 +1120,7 @@ public class cbmdrive
 			}
 			if (cbm_serial.data[0] != 0)
 			{
-				/*TODO*///vc1541.i.serial.value = vc1541.buffer[vc1541.pos];
+				vc1541.i.serial.value = vc1541.buffer.read(vc1541.pos);
 				vc1541.i.serial.clock = 0;
 				vc1541.i.serial.data = (vc1541.i.serial.value & 1) != 0 ? 1 : 0;
 				vc1541.i.serial.state++;
@@ -1385,176 +1404,172 @@ public class cbmdrive
 			vc1541.i.serial.state = 0;
 			break;
 		}
-	/*TODO*///#if VERBOSE_DBG
-	/*TODO*///	if (oldstate != vc1541.i.serial.state)
-	/*TODO*///		logerror ("%d state %d.%d %d %s %s %s\n",
-	/*TODO*///				 vc1541.i.serial.device,
-	/*TODO*///				 oldstate,
-	/*TODO*///				 vc1541.i.serial.state, vc1541.state,
-	/*TODO*///				 cbm_serial.atn[0] ? "ATN" : "atn",
-	/*TODO*///				 cbm_serial.clock[0] ? "CLOCK" : "clock",
-	/*TODO*///				 cbm_serial.data[0] ? "DATA" : "data");
-	/*TODO*///#endif
-        
-            return vc1541;
+/*TODO*///	#if VERBOSE_DBG
+/*TODO*///		if (oldstate != vc1541.i.serial.state)
+/*TODO*///			logerror ("%d state %d.%d %d %s %s %s\n",
+/*TODO*///					 vc1541.i.serial.device,
+/*TODO*///					 oldstate,
+/*TODO*///					 vc1541.i.serial.state, vc1541.state,
+/*TODO*///					 cbm_serial.atn[0] ? "ATN" : "atn",
+/*TODO*///					 cbm_serial.clock[0] ? "CLOCK" : "clock",
+/*TODO*///					 cbm_serial.data[0] ? "DATA" : "data");
+/*TODO*///	#endif
 	}
-	
-	/* difference between vic20 and pet (first series)
-	   pet lowers atn and wants a reaction on ndac */
-	
-	public static CBM_Drive c2031_state(CBM_Drive drive)
-	{
-	/*TODO*///#if VERBOSE_DBG
-	/*TODO*///	int oldstate = drive.i.ieee.state;
-	/*TODO*///#endif
-		int data;
-	
-		switch (drive.i.ieee.state)
-		{
-		case 0:
-			/*TODO*///if (cbm_ieee_dav_r()==0) {
-			/*TODO*///	drive.i.ieee.state=10;
-			/*TODO*///} else if (cbm_ieee_atn_r()==0) {
-			/*TODO*///	drive.i.ieee.state=11;
-			/*TODO*///	cbm_ieee_ndac_w(1,0);
-			/*TODO*///	logerror("arsch\n");
-			/*TODO*///}
-			break;
-		case 1:
-			break;
-		case 10:
-			/*TODO*///if (cbm_ieee_dav_r()!=0) {
-			/*TODO*///	drive.i.ieee.state++;
-			/*TODO*///	cbm_ieee_nrfd_w(1,1);
-			/*TODO*///	cbm_ieee_ndac_w(1,0);
-			/*TODO*///}
-			break;
-		case 11:
-			/*TODO*///if (cbm_ieee_dav_r()==0) {
-			/*TODO*///	cbm_ieee_nrfd_w(1,0);
-			/*TODO*///	data=cbm_ieee_data_r()^0xff;
-			/*TODO*///	cbm_ieee_ndac_w(1,1);
-			/*TODO*///	logerror("byte received %.2x\n",data);
-			/*TODO*///	if (cbm_ieee_atn_r()==0&&((data&0x0f)==drive.i.ieee.device) ) {
-			/*TODO*///		if ((data&0xf0)==0x40)
-			/*TODO*///			drive.i.ieee.state=30;
-			/*TODO*///		else
-			/*TODO*///			drive.i.ieee.state=20;
-			/*TODO*///		if (drive.cmdpos < sizeof (drive.cmdbuffer))
-			/*TODO*///			drive.cmdbuffer[drive.cmdpos++] = data;
-			/*TODO*///	} else if ((data&0xf)==0xf) {
-			/*TODO*///		drive.i.ieee.state--;
-			/*TODO*///	} else {
-			/*TODO*///		drive.i.ieee.state++;
-			/*TODO*///	}
-			/*TODO*///}
-			break;
-			/* wait until atn is released */
-		case 12:
-			/*TODO*///if (cbm_ieee_atn_r()!=0) {
-			/*TODO*///	drive.i.ieee.state++;
-			/*TODO*///	cbm_ieee_nrfd_w(1,0);
-			/*TODO*///}
-			break;
-		case 13:
-			/*TODO*///if (cbm_ieee_atn_r()==0) {
-			/*TODO*///	drive.i.ieee.state=10;
-	/*			cbm_ieee_nrfd_w(1,0); */
-			/*TODO*///}
-			break;
-	
-			/* receiving rest of command */
-		case 20:
-			/*TODO*///if (cbm_ieee_dav_r()!=0) {
-			/*TODO*///	drive.i.ieee.state++;
-			/*TODO*///	cbm_ieee_nrfd_w(1,1);
-			/*TODO*///	cbm_ieee_ndac_w(1,0);
-			/*TODO*///}
-			break;
-		case 21:
-			/*TODO*///if (cbm_ieee_dav_r()==0) {
-			/*TODO*///	cbm_ieee_nrfd_w(1,0);
-			/*TODO*///	data=cbm_ieee_data_r()^0xff;
-			/*TODO*///	logerror("byte received %.2x\n",data);
-			/*TODO*///	if (drive.cmdpos < sizeof (drive.cmdbuffer))
-			/*TODO*///		drive.cmdbuffer[drive.cmdpos++] = data;
-			/*TODO*///	if (cbm_ieee_atn_r()==0&&((data&0xf)==0xf)) {
-			/*TODO*///		cbm_command(drive);
-			/*TODO*///		drive.i.ieee.state=10;
-			/*TODO*///	} else
-			/*TODO*///		drive.i.ieee.state=20;
-			/*TODO*///	cbm_ieee_ndac_w(1,1);
-			/*TODO*///}
-			break;
-	
-			/* read command */
-		case 30:
-			/*TODO*///if (cbm_ieee_dav_r()!=0) {
-			/*TODO*///	drive.i.ieee.state++;
-			/*TODO*///	cbm_ieee_nrfd_w(1,1);
-			/*TODO*///	cbm_ieee_ndac_w(1,0);
-			/*TODO*///}
-			break;
-		case 31:
-			/*TODO*///if (cbm_ieee_dav_r()==0) {
-			/*TODO*///	cbm_ieee_nrfd_w(1,0);
-			/*TODO*///	data=cbm_ieee_data_r()^0xff;
-			/*TODO*///	logerror("byte received %.2x\n",data);
-			/*TODO*///	if (drive.cmdpos < sizeof (drive.cmdbuffer))
-			/*TODO*///		drive.cmdbuffer[drive.cmdpos++] = data;
-			/*TODO*///	cbm_command(drive);
-			/*TODO*///	if (drive.state==READING)
-			/*TODO*///		drive.i.ieee.state++;
-			/*TODO*///	else
-			/*TODO*///		drive.i.ieee.state=10;
-			/*TODO*///	cbm_ieee_ndac_w(1,1);
-			/*TODO*///}
-			break;
-		case 32:
-			/*TODO*///if (cbm_ieee_dav_r()!=0) {
-			/*TODO*///	cbm_ieee_nrfd_w(1,1);
-			/*TODO*///	drive.i.ieee.state=40;
-			/*TODO*///}
-			break;
-		case 40:
-			/*TODO*///if (cbm_ieee_ndac_r()==0) {
-			/*TODO*///	cbm_ieee_data_w(1,drive.buffer[drive.pos++]^0xff);
-			/*TODO*///	if (drive.pos>=drive.size)
-			/*TODO*///		cbm_ieee_eoi_w(1,0);
-			/*TODO*///	cbm_ieee_dav_w(1,0);
-			/*TODO*///	drive.i.ieee.state++;
-			/*TODO*///}
-			break;
-		case 41:
-			/*TODO*///if (cbm_ieee_nrfd_r()==0) {
-			/*TODO*///	drive.i.ieee.state++;
-			/*TODO*///}
-			break;
-		case 42:
-			/*TODO*///if (cbm_ieee_ndac_r()!=0) {
-			/*TODO*///	if (cbm_ieee_eoi_r())
-			/*TODO*///		drive.i.ieee.state=40;
-			/*TODO*///	else {
-			/*TODO*///		cbm_ieee_data_w(1,0xff);
-			/*TODO*///		cbm_ieee_ndac_w(1,0);
-			/*TODO*///		cbm_ieee_nrfd_w(1,0);
-			/*TODO*///		cbm_ieee_eoi_w(1,1);
-			/*TODO*///		drive.i.ieee.state=10;
-			/*TODO*///	}
-			/*TODO*///	cbm_ieee_dav_w(1,1);
-			/*TODO*///}
-			break;
-		}
-	
-	/*TODO*///#if VERBOSE_DBG
-	/*TODO*///	if (oldstate != drive.i.ieee.state)
-	/*TODO*///		logerror("%d state %d.%d %d\n",
-	/*TODO*///				 drive.i.ieee.device,
-	/*TODO*///				 oldstate,
-	/*TODO*///				 drive.i.ieee.state, drive.state
-	/*TODO*///				 );
-	/*TODO*///#endif
-        
-            return drive;
-	}
+/*TODO*///	
+/*TODO*///	/* difference between vic20 and pet (first series)
+/*TODO*///	   pet lowers atn and wants a reaction on ndac */
+/*TODO*///	
+/*TODO*///	void c2031_state(CBM_Drive *drive)
+/*TODO*///	{
+/*TODO*///	#if VERBOSE_DBG
+/*TODO*///		int oldstate = drive.i.ieee.state;
+/*TODO*///	#endif
+/*TODO*///		int data;
+/*TODO*///	
+/*TODO*///		switch (drive.i.ieee.state)
+/*TODO*///		{
+/*TODO*///		case 0:
+/*TODO*///			if (!cbm_ieee_dav_r()) {
+/*TODO*///				drive.i.ieee.state=10;
+/*TODO*///			} else if (!cbm_ieee_atn_r()) {
+/*TODO*///				drive.i.ieee.state=11;
+/*TODO*///				cbm_ieee_ndac_w(1,0);
+/*TODO*///				logerror("arsch\n");
+/*TODO*///			}
+/*TODO*///			break;
+/*TODO*///		case 1:
+/*TODO*///			break;
+/*TODO*///		case 10:
+/*TODO*///			if (cbm_ieee_dav_r()) {
+/*TODO*///				drive.i.ieee.state++;
+/*TODO*///				cbm_ieee_nrfd_w(1,1);
+/*TODO*///				cbm_ieee_ndac_w(1,0);
+/*TODO*///			}
+/*TODO*///			break;
+/*TODO*///		case 11:
+/*TODO*///			if (!cbm_ieee_dav_r()) {
+/*TODO*///				cbm_ieee_nrfd_w(1,0);
+/*TODO*///				data=cbm_ieee_data_r()^0xff;
+/*TODO*///				cbm_ieee_ndac_w(1,1);
+/*TODO*///				logerror("byte received %.2x\n",data);
+/*TODO*///				if (!cbm_ieee_atn_r()&&((data&0x0f)==drive.i.ieee.device) ) {
+/*TODO*///					if ((data&0xf0)==0x40)
+/*TODO*///						drive.i.ieee.state=30;
+/*TODO*///					else
+/*TODO*///						drive.i.ieee.state=20;
+/*TODO*///					if (drive.cmdpos < sizeof (drive.cmdbuffer))
+/*TODO*///						drive.cmdbuffer[drive.cmdpos++] = data;
+/*TODO*///				} else if ((data&0xf)==0xf) {
+/*TODO*///					drive.i.ieee.state--;
+/*TODO*///				} else {
+/*TODO*///					drive.i.ieee.state++;
+/*TODO*///				}
+/*TODO*///			}
+/*TODO*///			break;
+/*TODO*///			/* wait until atn is released */
+/*TODO*///		case 12:
+/*TODO*///			if (cbm_ieee_atn_r()) {
+/*TODO*///				drive.i.ieee.state++;
+/*TODO*///				cbm_ieee_nrfd_w(1,0);
+/*TODO*///			}
+/*TODO*///			break;
+/*TODO*///		case 13:
+/*TODO*///			if (!cbm_ieee_atn_r()) {
+/*TODO*///				drive.i.ieee.state=10;
+/*TODO*///	/*			cbm_ieee_nrfd_w(1,0); */
+/*TODO*///			}
+/*TODO*///			break;
+/*TODO*///	
+/*TODO*///			/* receiving rest of command */
+/*TODO*///		case 20:
+/*TODO*///			if (cbm_ieee_dav_r()) {
+/*TODO*///				drive.i.ieee.state++;
+/*TODO*///				cbm_ieee_nrfd_w(1,1);
+/*TODO*///				cbm_ieee_ndac_w(1,0);
+/*TODO*///			}
+/*TODO*///			break;
+/*TODO*///		case 21:
+/*TODO*///			if (!cbm_ieee_dav_r()) {
+/*TODO*///				cbm_ieee_nrfd_w(1,0);
+/*TODO*///				data=cbm_ieee_data_r()^0xff;
+/*TODO*///				logerror("byte received %.2x\n",data);
+/*TODO*///				if (drive.cmdpos < sizeof (drive.cmdbuffer))
+/*TODO*///					drive.cmdbuffer[drive.cmdpos++] = data;
+/*TODO*///				if (!cbm_ieee_atn_r()&&((data&0xf)==0xf)) {
+/*TODO*///					cbm_command(drive);
+/*TODO*///					drive.i.ieee.state=10;
+/*TODO*///				} else
+/*TODO*///					drive.i.ieee.state=20;
+/*TODO*///				cbm_ieee_ndac_w(1,1);
+/*TODO*///			}
+/*TODO*///			break;
+/*TODO*///	
+/*TODO*///			/* read command */
+/*TODO*///		case 30:
+/*TODO*///			if (cbm_ieee_dav_r()) {
+/*TODO*///				drive.i.ieee.state++;
+/*TODO*///				cbm_ieee_nrfd_w(1,1);
+/*TODO*///				cbm_ieee_ndac_w(1,0);
+/*TODO*///			}
+/*TODO*///			break;
+/*TODO*///		case 31:
+/*TODO*///			if (!cbm_ieee_dav_r()) {
+/*TODO*///				cbm_ieee_nrfd_w(1,0);
+/*TODO*///				data=cbm_ieee_data_r()^0xff;
+/*TODO*///				logerror("byte received %.2x\n",data);
+/*TODO*///				if (drive.cmdpos < sizeof (drive.cmdbuffer))
+/*TODO*///					drive.cmdbuffer[drive.cmdpos++] = data;
+/*TODO*///				cbm_command(drive);
+/*TODO*///				if (drive.state==READING)
+/*TODO*///					drive.i.ieee.state++;
+/*TODO*///				else
+/*TODO*///					drive.i.ieee.state=10;
+/*TODO*///				cbm_ieee_ndac_w(1,1);
+/*TODO*///			}
+/*TODO*///			break;
+/*TODO*///		case 32:
+/*TODO*///			if (cbm_ieee_dav_r()) {
+/*TODO*///				cbm_ieee_nrfd_w(1,1);
+/*TODO*///				drive.i.ieee.state=40;
+/*TODO*///			}
+/*TODO*///			break;
+/*TODO*///		case 40:
+/*TODO*///			if (!cbm_ieee_ndac_r()) {
+/*TODO*///				cbm_ieee_data_w(1,drive.buffer[drive.pos++]^0xff);
+/*TODO*///				if (drive.pos>=drive.size)
+/*TODO*///					cbm_ieee_eoi_w(1,0);
+/*TODO*///				cbm_ieee_dav_w(1,0);
+/*TODO*///				drive.i.ieee.state++;
+/*TODO*///			}
+/*TODO*///			break;
+/*TODO*///		case 41:
+/*TODO*///			if (!cbm_ieee_nrfd_r()) {
+/*TODO*///				drive.i.ieee.state++;
+/*TODO*///			}
+/*TODO*///			break;
+/*TODO*///		case 42:
+/*TODO*///			if (cbm_ieee_ndac_r()) {
+/*TODO*///				if (cbm_ieee_eoi_r())
+/*TODO*///					drive.i.ieee.state=40;
+/*TODO*///				else {
+/*TODO*///					cbm_ieee_data_w(1,0xff);
+/*TODO*///					cbm_ieee_ndac_w(1,0);
+/*TODO*///					cbm_ieee_nrfd_w(1,0);
+/*TODO*///					cbm_ieee_eoi_w(1,1);
+/*TODO*///					drive.i.ieee.state=10;
+/*TODO*///				}
+/*TODO*///				cbm_ieee_dav_w(1,1);
+/*TODO*///			}
+/*TODO*///			break;
+/*TODO*///		}
+/*TODO*///	
+/*TODO*///	#if VERBOSE_DBG
+/*TODO*///		if (oldstate != drive.i.ieee.state)
+/*TODO*///			logerror("%d state %d.%d %d\n",
+/*TODO*///					 drive.i.ieee.device,
+/*TODO*///					 oldstate,
+/*TODO*///					 drive.i.ieee.state, drive.state
+/*TODO*///					 );
+/*TODO*///	#endif
+/*TODO*///	}
 }

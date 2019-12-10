@@ -498,7 +498,7 @@ public class ted7360
 	public static boolean ted7360_pal;
 	public static boolean ted7360_rom;
 	
-	static int lines;
+	static int lines=312;
 	static timer_entry timer1 = null, timer2 = null, timer3 = null;
 	static boolean cursor1 = false;
 	static ReadHandlerPtr vic_dma_read;

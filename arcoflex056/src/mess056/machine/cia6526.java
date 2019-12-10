@@ -41,18 +41,18 @@ public class cia6526
 /*TODO*///	#define TIMER1_B6_TOGGLE (This->cra&4)	/* else single pulse */
         public static int TIMER1_ONESHOT(_CIA6526 This){ return((This.cra&8)!=0?1:0); } /* else continuous */
         public static int TIMER1_STOP(_CIA6526 This){ return((This.cra&1)==0?1:0); }
-        public static int TIMER1_RELOAD(_CIA6526 This){ return((This.cra&0x10)!=0?1:0); }
-        public static int TIMER1_COUNT_CNT(_CIA6526 This){ return((This.cra&0x20)!=0?1:0); }	/* else clock 2 input */
+        public static int TIMER1_RELOAD(_CIA6526 This){ return((This.cra&0x10)); }
+        public static int TIMER1_COUNT_CNT(_CIA6526 This){ return((This.cra&0x20)); }	/* else clock 2 input */
 
-        public static int TIMER2_ONESHOT(_CIA6526 This){ return(This.crb&8)!=0 ? 1: 0; } /* else continuous */
-        public static int TIMER2_STOP(_CIA6526 This){ return ((This.crb&1)!=0?1:0); }
-        public static int TIMER2_RELOAD(_CIA6526 This){ return ((This.crb&0x10)!=0?1:0); }
+        public static int TIMER2_ONESHOT(_CIA6526 This){ return(This.crb&8)!=0?1:0; } /* else continuous */
+        public static int TIMER2_STOP(_CIA6526 This){ return ((This.crb&1)==0?1:0); }
+        public static int TIMER2_RELOAD(_CIA6526 This){ return ((This.crb&0x10)); }
         public static int TIMER2_COUNT_CLOCK(_CIA6526 This){ return (This.crb&0x60)==0?1:0; }
 /*TODO*///	#define TIMER2_COUNT_CNT ((This->crb&0x60)==0x20)
         public static int TIMER2_COUNT_TIMER1(_CIA6526 This){ return (This.crb&0x60)==0x40?1:0; }
         public static int TIMER2_COUNT_TIMER1_CNT(_CIA6526 This){ return (This.crb&0x60)==0x60?1:0; }
 
-        public static int SERIAL_MODE_OUT(_CIA6526 This){ return (This.cra&0x40)!=0 ? 1:0; }
+        public static int SERIAL_MODE_OUT(_CIA6526 This){ return (This.cra&0x40); }
         public static int TOD_ALARM(_CIA6526 This){ return (This.crb&0x80); }   /* else write to tod clock */
         public static int BCD_INC(int v){ return ( ((v)&0xf)==9?(v)+=0x10-9:(v)++); }
 	
@@ -152,20 +152,20 @@ public class cia6526
                     if (cia[i].active != 0)
                     {
                             cia6526_interface intf = cia[i].intf;
-                            timer_entry timer1 = cia[i].timer1;
-                            timer_entry timer2 = cia[i].timer2;
-                            timer_entry todtimer = cia[i].todtimer;
+                            //timer_entry timer1 = cia[i].timer1;
+                            //timer_entry timer2 = cia[i].timer2;
+                            //timer_entry todtimer = cia[i].todtimer;
 
-                            cia[i] = new _CIA6526();
+                            //cia[i] = new _CIA6526();
                             cia[i].active = 1;
                             cia[i].number = i;
                             cia[i].intf = intf;
                             
                             cia[i].t1l = 0xffff;
                             cia[i].t2l = 0xffff;
-                            cia[i].timer1 = timer1;
-                            cia[i].timer2 = timer2;
-                            cia[i].todtimer = todtimer;
+                            //cia[i].timer1 = timer1;
+                            //cia[i].timer2 = timer2;
+                            //cia[i].todtimer = todtimer;
 
                             if (cia[i].timer1 != null)
                                 timer_reset(cia[i].timer1, TIME_NEVER);
@@ -178,6 +178,7 @@ public class cia6526
                             //        timer_reset(cia[i].todtimer, TIME_NEVER);
                             if (cia[i].intf!=null) 
                                 cia[i].todtimer=timer_set(0.1,i,cia_tod_timeout);
+                            
                     }
             }
 	}
@@ -209,6 +210,7 @@ public class cia6526
 		cia[This].ifr &= ~data;
 		if ((cia[This].ifr & 0x9f) == 0x80)
 		{
+                    //System.out.println("cia_clear_interrupt");
 			cia[This].ifr &= ~0x80;
 			if (cia[This].intf.irq_func != null)
 				cia[This].intf.irq_func.handler(0);
@@ -244,10 +246,10 @@ public class cia6526
 				}
 			}
 		}
-		/*if ((cia[which].todhour == cia[which].alarmhour)
+		if ((cia[which].todhour == cia[which].alarmhour)
 			&& (cia[which].todmin == cia[which].alarmmin)
 			&& (cia[which].todsec == cia[which].alarmsec)
-			&& (cia[which].tod10ths == cia[which].alarm10ths))*/
+			&& (cia[which].tod10ths == cia[which].alarm10ths))
 			cia_set_interrupt(which, 4);
 		if (TODIN_50HZ(cia[which]) != 0)
 		{

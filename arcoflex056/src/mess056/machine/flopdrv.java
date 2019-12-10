@@ -182,6 +182,7 @@ public class flopdrv
 	*/
 	public static io_statusPtr floppy_status = new io_statusPtr() {
             public int handler(int id, int new_status) {
+                System.out.println("floppy_status");
                 //floppy_drive pDrive;
 	
 		/* check it's in range */
@@ -407,6 +408,8 @@ public class flopdrv
 		}
 	
 	    flags &= flag;
+            
+            System.out.println("Retorno flags="+flags);
 	
 		return flags;
 	}

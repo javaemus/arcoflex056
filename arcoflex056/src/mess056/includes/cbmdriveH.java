@@ -61,14 +61,14 @@ public class cbmdriveH {
     
     public static class _d64 {
     
-        public UBytePtr image = new UBytePtr();	   /*d64 image */
+        public UBytePtr image = null;	   /*d64 image */
         /*    int track, sector; */
         /*    int sectorbuffer[256]; */
 
         /* for visualization */
         public int image_type;
         public int image_id;
-        public String filename;
+        public char[] filename = new char[21];
 
     }
             
@@ -81,11 +81,11 @@ public class cbmdriveH {
     public static class CBM_Drive
     {
             public int _interface;
-            /*TODO*///unsigned char cmdbuffer[32];
+            public char[] cmdbuffer = new char[32];
             public int cmdpos;
     
             public int state;						   /*0 nothing */
-            /*TODO*///unsigned char *buffer;
+            public UBytePtr buffer;
             public int size;
             public int pos;
             
@@ -105,6 +105,13 @@ public class cbmdriveH {
             public CBM_Drive[] drives = new CBM_Drive[4];
             /* whole + computer + drives */
             public int[] /*reset, request[6], */ data=new int[6], clock=new int[6], atn=new int[6];
+            
+            public CBM_Serial(){
+                
+            for (int _i=0 ; _i<2 ; _i++)
+                drives[_i] = new CBM_Drive();
+        
+            }
     };
 
 }

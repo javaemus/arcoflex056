@@ -913,8 +913,7 @@ public class c64
 		new MachineCPU[] {
 			new MachineCPU(
 				CPU_M6510,
-                                //CPU_M6502,
-				VIC6569_CLOCK,
+                                VIC6569_CLOCK,
 				c64_readmem, c64_writemem,
 				null, null,
 				c64_frame_interrupt, 1,
@@ -995,8 +994,7 @@ public class c64
 		new MachineCPU[] {
 			new MachineCPU(
 				CPU_M6510,
-                                //CPU_M6502,
-				VIC6569_CLOCK,
+                                VIC6569_CLOCK,
 				c64_readmem, c64_writemem,
 				null, null,
 				c64_frame_interrupt, 1,

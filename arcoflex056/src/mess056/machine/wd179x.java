@@ -189,12 +189,14 @@ public class wd179x
 	
 	public static void wd179x_reset()
 	{
+            System.out.println("wd179x_reset");
 		wd179x_restore(wd);
 	}
 	
 	
 	public static void wd179x_init(int type, timer_callback callback)
 	{
+            System.out.println("wd179x_init");
 		//memset(&wd, 0, sizeof(WD179X));
                 wd = new WD179X();
 		wd.status = STA_1_TRACK0;
@@ -466,6 +468,7 @@ public class wd179x
 	/* read the next data address mark */
 	static void wd179x_read_id(WD179X w)
 	{
+            System.out.println("wd179x_read_id");
 		chrn_id id = new chrn_id();
 	
 		w.status &= ~(STA_2_CRC_ERR | STA_2_REC_N_FND);
@@ -519,6 +522,7 @@ public class wd179x
 	
 	static int wd179x_find_sector(WD179X w)
 	{
+            System.out.println("wd179x_find_sector");
 		int revolution_count;
 		chrn_id id=new chrn_id();
 	
@@ -571,6 +575,7 @@ public class wd179x
 	/* read a sector */
 	static void wd179x_read_sector(WD179X w)
 	{
+            System.out.println("wd179x_read_sector");
 		w.data_offset = 0;
 	
 		if (wd179x_find_sector(w) != 0)

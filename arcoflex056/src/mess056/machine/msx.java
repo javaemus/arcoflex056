@@ -66,6 +66,8 @@ import static mess056.vidhrdw.tms9928a.*;
 import static mess056.vidhrdw.v9938.*;
 import static mess056.vidhrdw.v9938H.*;
 
+import static mess056.machine.flopdrv.*;
+
 public class msx
 {
 	
@@ -629,6 +631,7 @@ public class msx
 	
 	public static InitMachinePtr msx_ch_reset = new InitMachinePtr() {
             public void handler() {
+                init_msx();
                 TMS9928A_reset();
 		msx_ch_reset_core ();
             }
@@ -673,7 +676,7 @@ public class msx
                                     z80_table[i][0x100+n] = old_z80_tables[i][n] + (i > 1 ? 2 : 1);
                                 }
 				//z80_set_cycle_table (i, z80_table + i*0x100);
-                                z80_set_cycle_table(i, z80_table[i*0x100]);
+                                /*TODO*///z80_set_cycle_table(i, z80_table[i*0x100]);
                     }
                 }
 	}
@@ -881,6 +884,14 @@ public class msx
                 return 0xff;
             }
         };
+        
+        public static ReadHandlerPtr msx_temp_r = new ReadHandlerPtr() {
+            public int handler(int offset) {
+		System.out.println("msx_temp_r");
+	
+                return 0xff;
+            }
+        };
 	
 	public static WriteHandlerPtr msx_fmpac_w = new WriteHandlerPtr() {
             public void handler(int offset, int data) {
@@ -964,6 +975,7 @@ public class msx
 	
 	static timer_callback msx_wd179x_int = new timer_callback() {
             public void handler(int state) {
+                System.out.println("msx_wd179x_int");
                 switch (state)
                 {
                     case WD179X_IRQ_CLR: 
@@ -984,6 +996,7 @@ public class msx
         
 	public static ReadHandlerPtr msx_disk_p1_r = new ReadHandlerPtr() {
             public int handler(int offset) {
+                System.out.println("msx_disk_p1_r");
 		switch (offset)
                 {
                     case 0x1ff8: return wd179x_status_r.handler(0);
@@ -998,6 +1011,7 @@ public class msx
 	
 	public static ReadHandlerPtr msx_disk_p2_r = new ReadHandlerPtr() {
             public int handler(int offset) {
+                System.out.println("msx_disk_p2_r");
 		if (offset >= 0x1ff8)
 			{
 			switch (offset)
@@ -1017,6 +1031,7 @@ public class msx
 	
 	public static WriteHandlerPtr msx_disk_w = new WriteHandlerPtr() {
             public void handler(int offset, int data) {
+                System.out.println("msx_disk_w");
                 switch (offset)
 			{
 			case 0x1ff8:
@@ -1078,6 +1093,10 @@ public class msx
 			return INIT_FAIL;
                 
                 basicdsk_set_geometry (id, 80, heads, 9, 512, 1, 0);
+                
+                floppy_drive_set_ready_state(0, 1, 1);
+		floppy_drive_set_ready_state(1, 1, 1);
+                
                 
 		return INIT_PASS;
             }
@@ -1163,6 +1182,7 @@ public class msx
 	
 	static ReadHandlerPtr msx_set_slot_1 = new ReadHandlerPtr() {
             public int handler(int page) {
+                
                 int n;
                 UBytePtr ROM;
                 ROM = new UBytePtr(memory_region(REGION_CPU1));
@@ -1173,36 +1193,39 @@ public class msx
                     cpu_setbank (1 + page * 2, new UBytePtr(msx1.cart[0].mem, page * 0x4000));
                     cpu_setbank (2 + page * 2, new UBytePtr(msx1.cart[0].mem, page * 0x4000 + 0x2000));
                 } else {
-                    //System.out.println("B");
+                    System.out.println("B");
                     if (page == 0 || page == 3 || msx1.cart[0].mem==null)
                     {
                         //System.out.println("C");
                             if (page==0 && Machine.gamedrv.name.startsWith("msx2") )
-                                            {
-                                                //System.out.println("D");
+                            {
+                                    //System.out.println("D");
                                     cpu_setbank (1, new UBytePtr(ROM, 0x8000));
                                     cpu_setbank (2, new UBytePtr(ROM, 0xa000));
                                     //cpu_setbank (3, new UBytePtr(ROM, 0xc000));
                                     
-                                            }
+                            }
                                     else
-                                            {
-                                                //System.out.println("E");
-                            cpu_setbank (1 + page * 2, msx1.empty);
-                            cpu_setbank (2 + page * 2, msx1.empty);
-                                            }
-                        return 1;
+                            {
+                                    System.out.println("E");
+                                    cpu_setbank (1 + page * 2, msx1.empty);
+                                    cpu_setbank (2 + page * 2, msx1.empty);
+                            }
+                            return 1;
                     }
+                    System.out.println("F");
                     n = (page - 1) * 2;
                     cpu_setbank (3 + n, new UBytePtr(msx1.cart[0].mem, msx1.cart[0].banks[n] * 0x2000));
                     cpu_setbank (4 + n, new UBytePtr(msx1.cart[0].mem, msx1.cart[0].banks[1 + n] * 0x2000));
                             if (page == 1) {
+                                System.out.println("page == 1");
                                     if (msx1.cart[0].type == 15) {
                                             memory_set_bankhandler_r (4, 0, msx_disk_p1_r);
                                             msx1.disk = new UBytePtr(msx1.cart[0].mem, 0x2000);
                                     }
                             }
                             if (page == 2) {
+                                System.out.println("page == 2 "+msx1.cart[0].type);
                                     if (msx1.cart[0].type == 15) {
                                             memory_set_bankhandler_r (6, 0, msx_disk_p2_r);
                                             msx1.disk = new UBytePtr(msx1.cart[0].mem, 0x2000);

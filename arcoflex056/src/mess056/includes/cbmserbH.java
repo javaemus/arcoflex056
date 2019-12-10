@@ -32,8 +32,8 @@ public class cbmserbH
 	   null                /* output_chunk */
         );
 	
-	public static int IEC = 1;
-	public static int SERIAL = 2;
-	public static int IEEE = 3;
+	public static final int IEC = 1;
+	public static final int SERIAL = 2;
+	public static final int IEEE = 3;
 	
 }

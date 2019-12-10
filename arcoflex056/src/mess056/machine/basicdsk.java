@@ -46,36 +46,43 @@ public class basicdsk {
     public static floppy_interface basicdsk_floppy_interface=new floppy_interface() {
         @Override
         public void seek_callback(int drive, int physical_track) {
+            System.out.println("seek_callback");
             basicdsk_seek_callback(drive, physical_track);
         }
 
         @Override
         public int get_sectors_per_track(int drive, int physical_side) {
+            System.out.println("get_sectors_per_track");
             return basicdsk_get_sectors_per_track(drive, physical_side);
         }
 
         @Override
         public void get_id_callback(int drive, chrn_id id_chrn, int id_index, int physical_side) {
+            System.out.println("get_id_callback");
             basicdsk_get_id_callback(drive, id_chrn, id_index, physical_side);
         }
 
         @Override
         public void read_sector_data_into_buffer(int drive, int side, int data_id, char[] buf, int length) {
+            System.out.println("read_sector_data_into_buffer");
             basicdsk_read_sector_data_into_buffer(drive, side, data_id, buf, length);
         }
 
         @Override
         public void write_sector_data_from_buffer(int drive, int side, int data_id, char[] buf, int length, int ddam) {
+            System.out.println("write_sector_data_from_buffer");
             basicdsk_write_sector_data_from_buffer(drive, side, data_id, buf, length, ddam);
         }
 
         @Override
         public void read_track_data_info_buffer(int drive, int side, char[] ptr, int length) {
+            System.out.println("read_track_data_info_buffer");
             // nothing to do
         }
 
         @Override
         public void format_sector(int drive, int side, int sector_index, int c, int h, int r, int n, int filler) {
+            System.out.println("format_sector");
             // nothing to do
         }
     };
@@ -92,12 +99,13 @@ public class basicdsk {
     /* attempt to insert a disk into the drive specified with id */
     public static int basicdsk_floppy_init(int id)
     {
+        System.out.println("basicdsk_floppy_init "+id);
             String name = device_filename(IO_FLOPPY, id);
 
             if (id < basicdsk_MAX_DRIVES)
             {
                 
-                    _basicdsk w = basicdsk_drives[id];
+                    //_basicdsk w = basicdsk_drives[id];
                     
                     /* do we have an image name ? */
                     //if (name==null || !name[0])
@@ -105,33 +113,30 @@ public class basicdsk {
                     {
                             return INIT_PASS;
                     }
-                    w.mode = 1;
-                    w.image_file = image_fopen(IO_FLOPPY, id, OSD_FILETYPE_IMAGE_R, OSD_FOPEN_READ);
-                    System.out.println("basicdsk_floppy_init c");
-                    if( w.image_file == null )
+                    basicdsk_drives[id].mode = 1;
+                    basicdsk_drives[id].image_file = image_fopen(IO_FLOPPY, id, OSD_FILETYPE_IMAGE_R, OSD_FOPEN_READ);
+                    
+                    if( basicdsk_drives[id].image_file == null )
                     {
-                            w.mode = 0;
-                            w.image_file = image_fopen(IO_FLOPPY, id, OSD_FILETYPE_IMAGE_R, OSD_FOPEN_READ);
-                            if( w.image_file == null )
+                            basicdsk_drives[id].mode = 0;
+                            basicdsk_drives[id].image_file = image_fopen(IO_FLOPPY, id, OSD_FILETYPE_IMAGE_R, OSD_FOPEN_READ);
+                            if( basicdsk_drives[id].image_file == null )
                             {
-                                    w.mode = 1;
-                                    w.image_file = image_fopen(IO_FLOPPY, id, OSD_FILETYPE_IMAGE_R, OSD_FOPEN_RW_CREATE);
+                                    basicdsk_drives[id].mode = 1;
+                                    basicdsk_drives[id].image_file = image_fopen(IO_FLOPPY, id, OSD_FILETYPE_IMAGE_R, OSD_FOPEN_RW_CREATE);
                             }
                     }
 
                     /* this will be setup in the set_geometry function */
-                    w.ddam_map = null;
+                    basicdsk_drives[id].ddam_map = null;
 
                     /* the following line is unsafe, but floppy_drives_init assumes we start on track 0,
                     so we need to reflect this */
-                    w.track = 0;
-                    
-                    System.out.println("basicdsk_floppy_init 2");
-
+                    basicdsk_drives[id].track = 0;
+                    //basicdsk_drives[id] = w;
+                                        
                     floppy_drive_set_disk_image_interface(id,basicdsk_floppy_interface);
-                    
-                    System.out.println("basicdsk_floppy_init 3");
-
+                                        
                     return  INIT_PASS;
             }
             System.out.println("basicdsk_floppy_init exit");
@@ -171,6 +176,7 @@ public class basicdsk {
     have a deleted data mark, if ddam==0, the sector will have a data mark */
     public static void basicdsk_set_ddam(int id, int physical_track, int physical_side, int sector_id, int ddam)
     {
+        System.out.println("basicdsk_set_ddam exit");
             long ddam_bit_offset, ddam_bit_index, ddam_byte_offset;
             _basicdsk pDisk;
 
@@ -212,6 +218,7 @@ public class basicdsk {
     /* get dam state for specified sector */
     public static int basicdsk_get_ddam(int id, int physical_track, int physical_side, int sector_id)
     {
+        System.out.println("basicdsk_get_ddam exit");
             long ddam_bit_offset, ddam_bit_index, ddam_byte_offset;
             _basicdsk pDisk;
 
@@ -246,7 +253,8 @@ public class basicdsk {
     dir_length is a relative offset from the start of the disc */
     public static void basicdsk_set_geometry(int drive, int tracks, int heads, int sec_per_track, int sector_length, int first_sector_id, int offset_track_zero)
     {
-            _basicdsk pDisk;
+        System.out.println("basicdsk_set_geometry");
+            //_basicdsk pDisk;
             long N;
             long ShiftCount;
 
@@ -257,7 +265,7 @@ public class basicdsk {
                     return;
             }
 
-            pDisk = basicdsk_drives[drive];
+            //pDisk = basicdsk_drives[drive];
 
 
             if (VERBOSE != 0){
@@ -265,35 +273,35 @@ public class basicdsk {
                             drive, tracks, heads, sec_per_track, sector_length, first_sector_id, offset_track_zero);
             }
 
-            pDisk.tracks = tracks;
-            pDisk.heads = heads;
-            pDisk.first_sector_id = first_sector_id;
-            pDisk.sec_per_track = sec_per_track;
-            pDisk.sector_length = sector_length;
-            pDisk.offset = offset_track_zero;
+            basicdsk_drives[drive].tracks = tracks;
+            basicdsk_drives[drive].heads = heads;
+            basicdsk_drives[drive].first_sector_id = first_sector_id;
+            basicdsk_drives[drive].sec_per_track = sec_per_track;
+            basicdsk_drives[drive].sector_length = sector_length;
+            basicdsk_drives[drive].offset = offset_track_zero;
 
             floppy_drive_set_geometry_absolute( drive, tracks, heads );
 
-            pDisk.image_size = pDisk.tracks * pDisk.heads * pDisk.sec_per_track * pDisk.sector_length;
+            basicdsk_drives[drive].image_size = basicdsk_drives[drive].tracks * basicdsk_drives[drive].heads * basicdsk_drives[drive].sec_per_track * basicdsk_drives[drive].sector_length;
 
             /* if a ddam map was already set up clear it */
-            if (pDisk.ddam_map!=null)
+            if (basicdsk_drives[drive].ddam_map!=null)
             {
-                    pDisk.ddam_map = null;
+                    basicdsk_drives[drive].ddam_map = null;
             }
             /* setup a new ddam map */
-            pDisk.ddam_map_size = ((pDisk.tracks * pDisk.heads * pDisk.sec_per_track)+7)>>3;
-            pDisk.ddam_map = new UBytePtr((int)pDisk.ddam_map_size);
+            basicdsk_drives[drive].ddam_map_size = ((basicdsk_drives[drive].tracks * basicdsk_drives[drive].heads * basicdsk_drives[drive].sec_per_track)+7)>>3;
+            basicdsk_drives[drive].ddam_map = new UBytePtr((int)basicdsk_drives[drive].ddam_map_size);
 
-            if (pDisk.ddam_map!=null)
+            if (basicdsk_drives[drive].ddam_map!=null)
             {
-                    memset(pDisk.ddam_map, 0, (int)pDisk.ddam_map_size);
+                    memset(basicdsk_drives[drive].ddam_map, 0, (int)basicdsk_drives[drive].ddam_map_size);
             }
 
 
             /* from sector length calculate N value for sector id's */
             /* N = 0 for 128, N = 1 for 256, N = 2 for 512 ... */
-            N = (pDisk.sector_length);
+            N = (basicdsk_drives[drive].sector_length);
             ShiftCount = 0;
 
             if (N!=0)
@@ -307,18 +315,21 @@ public class basicdsk {
                     /* get left-shift required to shift 1 to this
                     power of 2 */
 
-                    pDisk.N = (int) ((31 - ShiftCount)-7);
+                    basicdsk_drives[drive].N = (int) ((31 - ShiftCount)-7);
             }
             else
             {
-                    pDisk.N = 0;
+                    basicdsk_drives[drive].N = 0;
             }
+            
+            //basicdsk_drives[drive] = pDisk;
     }
 
 
     /* seek to track/head/sector relative position in image file */
     public static int basicdsk_seek(_basicdsk w, int t, int h, int s)
     {
+        System.out.println("basicdsk_seek");
         int offset;
             /* allow two additional tracks */
         if (t >= w.tracks + 2)
@@ -432,6 +443,7 @@ public class basicdsk {
 
     public static void basicdsk_step_callback(_basicdsk w, int drive, int direction)
     {
+        System.out.println("basicdsk_step_callback");
                             w.track += direction;
     }
 
@@ -588,6 +600,7 @@ public class basicdsk {
 
     public static void basicdsk_get_id_callback(int drive, chrn_id id, int id_index, int side)
     {
+        System.out.println("basicdsk_get_id_callback");
             _basicdsk w = basicdsk_drives[drive];
 
             /* construct a id value */
@@ -608,6 +621,7 @@ public class basicdsk {
 
     public static int  basicdsk_get_sectors_per_track(int drive, int side)
     {
+        System.out.println("basicdsk_get_sectors_per_track");
             _basicdsk w = basicdsk_drives[drive];
 
             /* attempting to access an invalid side or track? */
@@ -622,6 +636,7 @@ public class basicdsk {
 
     public static void basicdsk_seek_callback(int drive, int physical_track)
     {
+        System.out.println("basicdsk_seek_callback");
             _basicdsk w = basicdsk_drives[drive];
 
             w.track = physical_track;
@@ -629,6 +644,7 @@ public class basicdsk {
 
     public static void basicdsk_write_sector_data_from_buffer(int drive, int side, int index1, char[] ptr, int length, int ddam)
     {
+        System.out.println("basicdsk_write_sector_data_from_buffer");
             _basicdsk w = basicdsk_drives[drive];
 
             if (basicdsk_seek(w, w.track, side, index1)!=0 && w.mode!=0)
@@ -641,6 +657,7 @@ public class basicdsk {
 
     public static void basicdsk_read_sector_data_into_buffer(int drive, int side, int index1, char[] ptr, int length)
     {
+        System.out.println("basicdsk_read_sector_data_into_buffer exit");
             _basicdsk w = basicdsk_drives[drive];
 
             if (basicdsk_seek(w, w.track, side, index1) != 0)

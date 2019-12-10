@@ -697,7 +697,24 @@ public class mess
         GameDriver gamedrv = game;
         IODevice[] dev = gamedrv.dev;
         int dev_ptr = 0;
-        int id;
+        int i, id;
+        
+        logerror("Initialising Devices...\n");
+	
+        /* Check that the driver supports all devices requested (options struct)*/
+        for( i = 0; i < options.image_count; i++ )
+        {
+                if (supported_device(dev, options.image_files[i].type)==0)
+                {
+                        mess_printf(" ERROR: Device [%s] is not supported by this system\n",device_typename(options.image_files[i].type));
+                        return 1;
+                }
+        }
+
+        /* Ok! All devices are supported.  Now distribute them to the appropriate device..... */
+        //if (distribute_images() == 1)
+        //        return 1;
+        
         
         /* Initialise all floppy drives here if the device is Setting can be overriden by the drivers and UI */
     	floppy_drives_init();

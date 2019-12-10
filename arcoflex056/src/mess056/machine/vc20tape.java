@@ -1382,7 +1382,8 @@ public class vc20tape
 				printf (text, size, "Tape saving");
 				break;
 			case 3:
-				/*TODO*///printf (text, size, "Tape (%s) File %s loading %d",
+				System.out.println("device_filename(zip.image_type... NOT IMPLEMENTED!!!!");
+                                /*TODO*///printf (text, size, "Tape (%s) File %s loading %d",
 				/*TODO*///	device_filename(zip.image_type,zip.image_id), zip.zipentry.name, prg.pos);
 				break;
 			}

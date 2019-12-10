@@ -52,7 +52,7 @@ public class cbmserb
 		int i;
 	
 		cbm_serial.count = 0;
-		for (i = 0; i < cbm_drive.length ; i++)
+		for (i = 0; i < cbm_drive.length; i++)
 		{
 			cbm_drive[i]._interface = 0;
 	
@@ -65,7 +65,7 @@ public class cbmserb
 		}
 	}
 	
-	static void cbm_drive_config (CBM_Drive drive, int _interface, int serialnr)
+	public static void cbm_drive_config (CBM_Drive drive, int _interface, int serialnr)
 	{
 		int i;
 	
@@ -120,10 +120,11 @@ public class cbmserb
 		if (drive.drive == D64_IMAGE)
 		{
 			return 1;					   /* as long as floppy system is called before driver init */
-			/*TODO*///if (drive.d.d64.image != null)
-			/*TODO*///	free (drive.d.d64.image);
+			//if (drive.d.d64.image != null)
+			//	drive.d.d64.image = null;
 		}
-		drive.d.fs = new _fs();
+		//memset (&(drive.d.fs), 0, sizeof (drive.d.fs));
+                drive.d.fs = new _fs(); 
 		drive.drive = FILESYSTEM;
 		return 0;
 	}
@@ -133,7 +134,7 @@ public class cbmserb
 		Object in;
 		int size;
 	
-		cbm_drive[id].d.d64 = new _d64();
+		cbm_drive[id].d.d64 = new _d64(); 
 	
 		cbm_drive[id].d.d64.image_type = IO_FLOPPY;
 		cbm_drive[id].d.d64.image_id = id;
@@ -143,7 +144,7 @@ public class cbmserb
 			return 1;
 		}
 		size = osd_fsize (in);
-		if ((cbm_drive[id].d.d64.image = new UBytePtr (size))==null)
+		if ((cbm_drive[id].d.d64.image = new UBytePtr(size))==null)
 		{
 			osd_fclose (in);
 			return 1;
@@ -179,84 +180,85 @@ public class cbmserb
             }
         };
 	
-	static void c1551_write_data (CBM_Drive c1551, int data)
-	{
-		c1551.i.iec.datain = data;
-		c1551_state (c1551);
-	}
 	
-	static int c1551_read_data (CBM_Drive c1551)
-	{
-		c1551_state (c1551);
-		return c1551.i.iec.dataout;
-	}
+	/*TODO*///static void c1551_write_data (CBM_Drive c1551, int data)
+	/*TODO*///{
+	/*TODO*///	c1551.i.iec.datain = data;
+	/*TODO*///	c1551_state (c1551);
+	/*TODO*///}
 	
-	static void c1551_write_handshake (CBM_Drive c1551, int data)
-	{
-		c1551.i.iec.handshakein = (data&0x40)!=0?1:0;
-		c1551_state (c1551);
-	}
+	/*TODO*///static int c1551_read_data (CBM_Drive c1551)
+	/*TODO*///{
+	/*TODO*///	c1551_state (c1551);
+	/*TODO*///	return c1551.i.iec.dataout;
+	/*TODO*///}
 	
-	static int c1551_read_handshake (CBM_Drive c1551)
-	{
-		c1551_state (c1551);
-		return c1551.i.iec.handshakeout!=0?0x80:0;
-	}
+	/*TODO*///static void c1551_write_handshake (CBM_Drive c1551, int data)
+	/*TODO*///{
+	/*TODO*///	c1551.i.iec.handshakein = (data&0x40)!=0?1:0;
+	/*TODO*///	c1551_state (c1551);
+	/*TODO*///}
 	
-	static int c1551_read_status (CBM_Drive c1551)
-	{
-		c1551_state (c1551);
-		return c1551.i.iec.status;
-	}
+	/*TODO*///static int c1551_read_handshake (CBM_Drive c1551)
+	/*TODO*///{
+	/*TODO*///	c1551_state (c1551);
+	/*TODO*///	return c1551.i.iec.handshakeout!=0?0x80:0;
+	/*TODO*///}
 	
-	void c1551_0_write_data (int data)
-	{
-		c1551_write_data (cbm_drive[0], data);
-	}
-	int c1551_0_read_data ()
-	{
-		return c1551_read_data (cbm_drive[0]);
-	}
-	void c1551_0_write_handshake (int data)
-	{
-		c1551_write_handshake (cbm_drive[0], data);
-	}
-	int c1551_0_read_handshake ()
-	{
-		return c1551_read_handshake (cbm_drive[0]);
-	}
-	int c1551_0_read_status ()
-	{
-		return c1551_read_status (cbm_drive[0]);
-	}
+	/*TODO*///public static int c1551_read_status (CBM_Drive c1551)
+	/*TODO*///{
+	/*TODO*///	c1551_state (c1551);
+	/*TODO*///	return c1551.i.iec.status;
+	/*TODO*///}
 	
-	void c1551_1_write_data (int data)
-	{
-		c1551_write_data (cbm_drive[1], data);
-	}
-	int c1551_1_read_data ()
-	{
-		return c1551_read_data (cbm_drive[1]);
-	}
-	void c1551_1_write_handshake (int data)
-	{
-		c1551_write_handshake (cbm_drive[1], data);
-	}
-	int c1551_1_read_handshake ()
-	{
-		return c1551_read_handshake (cbm_drive[1]);
-	}
-	int c1551_1_read_status ()
-	{
-		return c1551_read_status (cbm_drive[1]);
-	}
+	/*TODO*///public static void c1551_0_write_data (int data)
+	/*TODO*///{
+	/*TODO*///	c1551_write_data (cbm_drive[0], data);
+	/*TODO*///}
+	/*TODO*///public static int c1551_0_read_data ()
+	/*TODO*///{
+	/*TODO*///	return c1551_read_data (cbm_drive[0]);
+	/*TODO*///}
+	/*TODO*///public static void c1551_0_write_handshake (int data)
+	/*TODO*///{
+	/*TODO*///	c1551_write_handshake (cbm_drive[0], data);
+	/*TODO*///}
+	/*TODO*///public static int c1551_0_read_handshake ()
+	/*TODO*///{
+	/*TODO*///	return c1551_read_handshake (cbm_drive[0]);
+	/*TODO*///}
+	/*TODO*///public static int c1551_0_read_status ()
+	/*TODO*///{
+	/*TODO*///	return c1551_read_status (cbm_drive[0]);
+	/*TODO*///}
+	
+	/*TODO*///public static void c1551_1_write_data (int data)
+	/*TODO*///{
+	/*TODO*///	c1551_write_data (cbm_drive[1], data);
+	/*TODO*///}
+	/*TODO*///public static int c1551_1_read_data ()
+	/*TODO*///{
+	/*TODO*///	return c1551_read_data (cbm_drive[1]);
+	/*TODO*///}
+	/*TODO*///public static void c1551_1_write_handshake (int data)
+	/*TODO*///{
+	/*TODO*///	c1551_write_handshake (cbm_drive[1], data);
+	/*TODO*///}
+	/*TODO*///public static int c1551_1_read_handshake ()
+	/*TODO*///{
+	/*TODO*///	return c1551_read_handshake (cbm_drive[1]);
+	/*TODO*///}
+	/*TODO*///public static int c1551_1_read_status ()
+	/*TODO*///{
+	/*TODO*///	return c1551_read_status (cbm_drive[1]);
+	/*TODO*///}
 	
 	static void vc1541_reset_write (CBM_Drive vc1541, int level)
 	{
 		if (level == 0)
 		{
 			vc1541.i.serial.data =
-			vc1541.i.serial.clock =
+				vc1541.i.serial.clock =
 				vc1541.i.serial.atn = 1;
 			vc1541.i.serial.state = 0;
 		}
@@ -306,17 +308,17 @@ public class cbmserb
 		/* init bus signals */
 	}
 	
-	int cbm_serial_request_read ()
+	public static int cbm_serial_request_read ()
 	{
 		/* in c16 not connected */
 		return 1;
 	}
 	
-	void cbm_serial_request_write (int level)
+	public static void cbm_serial_request_write (int level)
 	{
 	}
 	
-	int cbm_serial_atn_read ()
+	public static int cbm_serial_atn_read ()
 	{
 		int i;
 	
@@ -394,7 +396,7 @@ public class cbmserb
 	/* delivers status for displaying */
 	static void cbm_drive_status (CBM_Drive c1551, String text, int size)
 	{
-		text = "";
+	/*TODO*///	text[0] = 0;
 	/*TODO*///#if VERBOSE_DBG
 	/*TODO*///	if ((c1551.interface == SERIAL) /*&&(c1551.i.serial.device==8) */ )
 	/*TODO*///	{
@@ -412,50 +414,50 @@ public class cbmserb
 	/*TODO*///		return;
 	/*TODO*///	}
 	/*TODO*///#endif
-		if (c1551.drive == FILESYSTEM)
-		{
-			switch (c1551.state)
-			{
-			case OPEN:
-				printf (text, size, "Romdir File %s open", c1551.d.fs.filename);
-				break;
-			case READING:
-				printf (text, size, "Romdir File %s loading %d",
-						  c1551.d.fs.filename, c1551.size - c1551.pos - 1);
-				break;
-			case WRITING:
-				printf (text, size, "Romdir File %s saving %d",
-						  c1551.d.fs.filename, c1551.pos);
-				break;
-			}
-		}
-		else if (c1551.drive == D64_IMAGE)
-		{
-			switch (c1551.state)
-			{
-			case OPEN:
-				printf (text, size, "Image File %s open",
-						  c1551.d.d64.filename);
-				break;
-			case READING:
-                                printf (text, size, "Image File %s loading %d",
-						  c1551.d.d64.filename,
-						  c1551.size - c1551.pos - 1);
-				break;
-			case WRITING:
-				printf (text, size, "Image File %s saving %d",
-						  c1551.d.d64.filename, c1551.pos);
-				break;
-			}
-		}
+	/*TODO*///	if (c1551.drive == FILESYSTEM)
+	/*TODO*///	{
+	/*TODO*///		switch (c1551.state)
+	/*TODO*///		{
+	/*TODO*///		case OPEN:
+	/*TODO*///			printf (text, size, "Romdir File %s open", c1551.d.fs.filename);
+	/*TODO*///			break;
+	/*TODO*///		case READING:
+	/*TODO*///			snprintf (text, size, "Romdir File %s loading %d",
+	/*TODO*///					  c1551.d.fs.filename, c1551.size - c1551.pos - 1);
+	/*TODO*///			break;
+	/*TODO*///		case WRITING:
+	/*TODO*///			snprintf (text, size, "Romdir File %s saving %d",
+	/*TODO*///					  c1551.d.fs.filename, c1551.pos);
+	/*TODO*///			break;
+	/*TODO*///		}
+	/*TODO*///	}
+	/*TODO*///	else if (c1551.drive == D64_IMAGE)
+	/*TODO*///	{
+	/*TODO*///		switch (c1551.state)
+	/*TODO*///		{
+	/*TODO*///		case OPEN:
+	/*TODO*///			snprintf (text, size, "Image File %s open",
+	/*TODO*///					  c1551.d.d64.filename);
+	/*TODO*///			break;
+	/*TODO*///		case READING:
+	/*TODO*///			snprintf (text, size, "Image File %s loading %d",
+	/*TODO*///					  c1551.d.d64.filename,
+	/*TODO*///					  c1551.size - c1551.pos - 1);
+	/*TODO*///			break;
+	/*TODO*///		case WRITING:
+	/*TODO*///			snprintf (text, size, "Image File %s saving %d",
+	/*TODO*///					  c1551.d.d64.filename, c1551.pos);
+	/*TODO*///			break;
+	/*TODO*///		}
+	/*TODO*///	}
 	}
 	
-	public static void cbm_drive_0_status (String text, int size)
+	void cbm_drive_0_status (String text, int size)
 	{
 		cbm_drive_status (cbm_drive[0], text, size);
 	}
 	
-	public static void cbm_drive_1_status (String text, int size)
+	void cbm_drive_1_status (String text, int size)
 	{
 		cbm_drive_status (cbm_drive[1], text, size);
 	}

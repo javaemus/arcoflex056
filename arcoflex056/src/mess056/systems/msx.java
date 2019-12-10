@@ -80,6 +80,7 @@ public class msx
 	    new IO_ReadPort( 0xa8, 0xab, ppi8255_0_r ),
             new IO_ReadPort( 0x98, 0x98, TMS9928A_vram_r ),
             new IO_ReadPort( 0x99, 0x99, TMS9928A_register_r ),
+            //new IO_ReadPort( 0x00, 0xff, msx_temp_r ),
 	new IO_ReadPort(MEMPORT_MARKER, 0) /* end of table */};
 	
 	public static IO_WritePort writeport[] = {
@@ -991,8 +992,8 @@ public class msx
 	    ROM_REGION (0x20000, REGION_CPU1,0);
 	    ROM_LOAD ("msx2.rom", 0x0000, 0x8000, 0xf05ed518);
 	    ROM_LOAD ("msx2ext.rom", 0x8000, 0x4000, 0x95db2959);
-            ROM_LOAD_OPTIONAL ("disk.rom", 0xc000, 0x4000, 0xb7c58fad);
-            ROM_LOAD_OPTIONAL ("fmpac.rom", 0x10000, 0x10000, 0x0e84505d);
+            //ROM_LOAD_OPTIONAL ("disk.rom", 0xc000, 0x4000, 0xb7c58fad);
+            //ROM_LOAD_OPTIONAL ("fmpac.rom", 0x10000, 0x10000, 0x0e84505d);
 	ROM_END(); }}; 
 	
 	static RomLoadPtr rom_msx2a = new RomLoadPtr(){ public void handler(){
