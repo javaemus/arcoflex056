@@ -14,6 +14,7 @@ import static common.libc.cstring.*;
 import static common.ptr.*;
 import static mame056.mame.Machine;
 import static mame056.usrintrf.ui_text;
+import static mess056.machine.c64.c64_state;
 import static mess056.vidhrdw.vic6567.vic2;
 
 public class cbmdrive
@@ -104,7 +105,7 @@ public class cbmdrive
 	 * or pos in image of directory node */
 	public static int d64_find (CBM_Drive drive, String name)
 	{
-                System.out.println("d64_find");
+                //System.out.println("d64_find");
 		int pos, track, sector, i;
 	
 		pos = d64_tracksector2offset (18, 0);
@@ -133,7 +134,7 @@ public class cbmdrive
 	/* reads file into buffer */
 	public static void d64_readprg (CBM_Drive c1551, int pos)
 	{
-                System.out.println("d64_readprg");
+                //System.out.println("d64_readprg");
 		int i;
 	
 		for (i = 0; i < 16; i++){
@@ -151,6 +152,7 @@ public class cbmdrive
 		c1551.size = 0;
 		while (c1551.d.d64.image.read(i) != 0)
 		{
+                    c64_state();
 			c1551.size += 254;
 			i = d64_tracksector2offset (c1551.d.d64.image.read(i), c1551.d.d64.image.read(i + 1));
 		}
@@ -175,6 +177,7 @@ public class cbmdrive
 	
 		for (i = 0; i < c1551.size; i += 254)
 		{
+                    c64_state();
 			if (i + 254 < c1551.size)
 			{							   /* not last sector */
 				memcpy (new UBytePtr(c1551.buffer, i), new UBytePtr(c1551.d.d64.image, pos + 2), 254);
@@ -223,7 +226,7 @@ public class cbmdrive
 		int pos, track, sector, i, j, blocksfree, addr = 0x0101/*0x1001*/;
                 
                 //int _offset = c1551.d.d64.image.offset;
-	
+                c1551.buffer = null;
 		c1551.buffer = new UBytePtr(8 * 18 * 25);
 /*TODO*///		if (!c1551.buffer) {
 /*TODO*///			logerror("out of memory %s %d\n",
@@ -239,7 +242,7 @@ public class cbmdrive
 		sector = c1551.d.d64.image.read(pos + 1);
 	
 		blocksfree = 0;
-		for (j = 1, i = 4; j <= 35; j++, i += 4)
+		for (j = 1, i = 4; j < 35; j++, i += 4)
 		{
 			blocksfree += c1551.d.d64.image.read(pos + i);
 		}
@@ -272,17 +275,31 @@ public class cbmdrive
 				{
 					int len, blocks = c1551.d.d64.image.read(pos + i + 2)
 					+ 256 * c1551.d.d64.image.read(pos + i + 29);
-					char[] dummy = new char[10];
+					String dummy = "";
 	
-					sprintf (new String(dummy), "%d", blocks);
-					len = dummy.length;
+					//dummy = sprintf (dummy, "%d", blocks);
+                                        dummy = Integer.toString(blocks);
+                                        //System.out.println("Dummy: "+dummy);
+					len = dummy.length();
+                                        //System.out.println("Len: "+len);
 					addr += 29 - len;
+                                        //String _s = "";
 					c1551.buffer.write(c1551.size++, addr & 0xff);
+                                        //_s += Integer.toString(addr & 0xff);
 					c1551.buffer.write(c1551.size++, addr >> 8);
+                                        //_s += Integer.toString(addr >> 8);
 					c1551.buffer.write(c1551.size++, c1551.d.d64.image.read(pos + i + 28));
-					c1551.buffer.write(c1551.size++, c1551.d.d64.image.read(pos + i + 29));
-					for (j = 4; j > len; j--)
+                                        //_s += (char)(c1551.d.d64.image.read(pos + i + 28));
+                                        char _cx = c1551.d.d64.image.read(pos + i + 29);
+                                        //if (_cx==0)
+                                        //    _cx=' ';
+					c1551.buffer.write(c1551.size++, _cx);
+                                        //_s += (char)(c1551.d.d64.image.read(pos + i + 29));
+					for (j = 4; j > len; j--){
 						c1551.buffer.write(c1551.size++, ' ');
+                                                //_s += " ";
+                                        }
+                                        //System.out.println("CAD: "+_s+"#");
 					c1551.buffer.write(c1551.size++, '\"');
 					for (j = 0; j < 16; j++)
 						c1551.buffer.write(c1551.size++, c1551.d.d64.image.read(pos + i + 3 + j));
@@ -312,7 +329,7 @@ public class cbmdrive
 						break;
 					case 4:
 						c1551.buffer.write(c1551.size++, 'R');
-						c1551.buffer.write(c1551.size++,'E');
+						c1551.buffer.write(c1551.size++, 'E');
 						c1551.buffer.write(c1551.size++, 'L');
 						break;
 					}
@@ -500,7 +517,7 @@ public class cbmdrive
 	 */
 	public static void cbm_command (CBM_Drive drive)
 	{
-            System.out.println("cbm_command");
+            //System.out.println("cbm_command");
         
 		char[] name=new char[20];
                 char type = 'P';
@@ -551,6 +568,7 @@ public class cbmdrive
 			rc = 1;
 			if (drive.drive == D64_IMAGE)
 			{
+                            //System.out.println("cbm_command B");
 				if ((type == 'P') || (type == 'S'))
 					rc = c1551_d64_command (drive, new String(name));
 			}
@@ -600,6 +618,7 @@ public class cbmdrive
 				 /*TODO*///				  channel, head, track, sector))
                                                                   )
 		{
+                    //System.out.println("cbm_command C");
 			d64_read_sector (drive, track, sector);
 			drive.state = OPEN;
 		}
@@ -617,6 +636,7 @@ public class cbmdrive
 			drive.state = 0;
 		}
 		drive.cmdpos = 0;
+                //System.out.println("END cbm_command");
 	}
 /*TODO*///	
 /*TODO*///	 /*
@@ -1129,7 +1149,9 @@ public class cbmdrive
 			}
 			if (cbm_serial.data[0] != 0)
 			{
+                            
 				vc1541.i.serial.value = vc1541.buffer.read(vc1541.pos);
+                                //System.out.println((char)vc1541.i.serial.value);
 				vc1541.i.serial.clock = 0;
 				vc1541.i.serial.data = (vc1541.i.serial.value & 1) != 0 ? 1 : 0;
 				vc1541.i.serial.state++;

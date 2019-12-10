@@ -31,7 +31,8 @@ public class cbmdriveH {
     {
             public int device;
             public int data, clock, atn;
-            public int state, value;
+            public int state; 
+            public char value;
             public int forme;				   /* i am selected */
             public int last;				   /* last byte to be sent */
             public int broadcast;			   /* sent to all */
@@ -68,7 +69,7 @@ public class cbmdriveH {
         /* for visualization */
         public int image_type;
         public int image_id;
-        public char[] filename = new char[21];
+        public char[] filename = new char[25];
 
     }
             
