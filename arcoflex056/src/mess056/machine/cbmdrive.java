@@ -222,7 +222,7 @@ public class cbmdrive
                 System.out.println("d64_read_directory");
 		int pos, track, sector, i, j, blocksfree, addr = 0x0101/*0x1001*/;
                 
-                int _offset = c1551.d.d64.image.offset;
+                //int _offset = c1551.d.d64.image.offset;
 	
 		c1551.buffer = new UBytePtr(8 * 18 * 25);
 /*TODO*///		if (!c1551.buffer) {
@@ -274,11 +274,7 @@ public class cbmdrive
 					+ 256 * c1551.d.d64.image.read(pos + i + 29);
 					char[] dummy = new char[10];
 	
-					/*sprintf (new String(dummy), "%d", blocks);
-                                        System.out.println(new String(dummy));
-                                        //int x = Machine.uixmin + 1 * Machine.uifontwidth * 16 + 1;
-                                        //int y = Machine.uiymin + Machine.uiheight - 9;
-                                        ui_text(vic2.bitmap, new String(dummy), 0, 0);*/
+					sprintf (new String(dummy), "%d", blocks);
 					len = dummy.length;
 					addr += 29 - len;
 					c1551.buffer.write(c1551.size++, addr & 0xff);
@@ -339,7 +335,7 @@ public class cbmdrive
                 //c1551.d.d64.filename="$".toCharArray();
                 
                 //hack
-                c1551.d.d64.image.offset = _offset;
+                //c1551.d.d64.image.offset = _offset;
 	}
 	
 	public static int c1551_d64_command (CBM_Drive c1551, String name)
