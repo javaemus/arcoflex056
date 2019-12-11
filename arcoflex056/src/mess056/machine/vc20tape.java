@@ -33,6 +33,7 @@ import static mess056.includes.vc20tapeH.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
+import static mame056.usrintrf.ui_text;
 
 public class vc20tape
 {
@@ -1182,7 +1183,7 @@ public class vc20tape
 	
 		if ((cp = strrchr (device_filename(IO_CASSETTE,id), '.')) == null)
 			return INIT_FAIL;
-		if (stricmp (cp, ".wav") == 0)
+		if (device_filename(IO_CASSETTE, id).toLowerCase().endsWith(".wav"))
 		{
 			vc20_wav_open (IO_CASSETTE,id);
 		}
@@ -1344,7 +1345,7 @@ public class vc20tape
 		vc20_state ();
 	}
 	
-	void vc20_tape_status (String text, int size)
+	public static void vc20_tape_status (String text, int size)
 	{
 		text = "";
 		switch (tape.type)
@@ -1389,5 +1390,8 @@ public class vc20tape
 			}
 			break;
 		}
+                System.out.println(text);
+                int y = Machine.uiymin + Machine.uiheight - 9;
+                ui_text(Machine.scrbitmap, text, 0, y);
 	}
 }

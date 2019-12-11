@@ -175,6 +175,8 @@ public class cia6526
 				This.ifr |= 0x80;
 			}
 		}
+                
+                //cia[This.number] = This;
 	}
 	
 	public static void cia_clear_interrupt (CIA6526 This, int data)
@@ -186,6 +188,8 @@ public class cia6526
 			if (This.intf.irq_func != null)
 				This.intf.irq_func.handler(0);
 		}
+                
+                //cia[This.number] = This;
 	}
 	
 	/******************* Timer timeouts *************************/
@@ -237,7 +241,10 @@ public class cia6526
 			else
 				timer_reset (This.todtimer, 0.1);
 		}
+                
+                //cia[This.number] = This;
             }
+            
         };
 
         
@@ -307,10 +314,12 @@ public class cia6526
 			break;
 		}
 /*TODO*///		DBG_LOG (1, "timer1 state", ("%d\n", This.timer1_state));
+                //cia[This.number] = This;
 	}
 	
 	public static void cia_timer2_state (CIA6526 This)
 	{
+            //System.out.println("timer2: "+This.timer2_state);
 		switch (This.timer2_state)
 		{
 		case 0:						   /* timer stopped */
@@ -376,6 +385,8 @@ public class cia6526
 			}
 			break;
 		}
+                
+                //cia[This.number] = This;
 	}
 	
 	public static timer_callback cia_timer1_timeout = new timer_callback() {
@@ -709,6 +720,8 @@ public class cia6526
 			}
 			break;
 		}
+                
+                //cia[This.number] = This;
 	}
 	
 /*TODO*///	static void cia_set_input_a (CIA6526 *This, int data)
@@ -726,6 +739,8 @@ public class cia6526
 		if (This.flag!=0 && data==0)
 			cia_set_interrupt (This, 0x10);
 		This.flag = data;
+                
+                //cia[This.number] = This;
 	}
 	
 /*TODO*///	static void cia6526_set_input_sp (CIA6526 *This, int data)
