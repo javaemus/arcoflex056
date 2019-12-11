@@ -913,14 +913,14 @@ public class c64
 		new MachineCPU[] {
 			new MachineCPU(
 				CPU_M6510,
-                                VIC6569_CLOCK,
+                                VIC6567_CLOCK,
 				c64_readmem, c64_writemem,
 				null, null,
 				c64_frame_interrupt, 1,
 				vic2_raster_irq, VIC2_HRETRACERATE
                             )
 		},
-		VIC6569_VRETRACERATE, DEFAULT_REAL_60HZ_VBLANK_DURATION,	/* frames per second, vblank duration */
+		VIC6567_VRETRACERATE, DEFAULT_REAL_60HZ_VBLANK_DURATION,	/* frames per second, vblank duration */
 		0,
 		c64_init_machine,
 		c64_shutdown_machine,

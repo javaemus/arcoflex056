@@ -71,7 +71,7 @@ import static mame056.mame.*;
 import static mame056.timer.*;
 import static mame056.timerH.*;
 import static mess056.includes.c64H.*;
-import static mess056.includes.vic6567H.VIC2_LINES;
+import static mess056.includes.vic6567H.*;
 
 public class vic6567
 {
@@ -702,6 +702,8 @@ public class vic6567
 				return 1;
 			for (i = 1; i < 216; i++)
 				vic2.screen[i] = new UBytePtr(vic2.screen[i - 1], 336 / 8);
+                        /*for (i = 0; i < 216; i++)
+				vic2.screen[i] = new UBytePtr(216 * 656 / 8);*/
 		}
 	
 		for (i = 0; i < 256; i++)

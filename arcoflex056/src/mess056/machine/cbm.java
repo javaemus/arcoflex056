@@ -95,8 +95,8 @@ public class cbm
                                 char[] _b = new char[2];
 				osd_fread_lsbfirst (fp, _b, 2);
                                 //quick.addr = (_b[1]&0xff)<<8|_b[0];
-                                quick.addr = (_b[ 0] & 0xff) + (_b[ 1] & 0xff) * 256;;
-                                //quick.addr = 0x801;
+                                //quick.addr = (_b[ 0] & 0xff) + (_b[ 1] & 0xff) * 256;;
+                                quick.addr = 0x801;
                                 System.out.println("Address="+quick.addr); // other option: 0x801 and load"*",8,1
 				quick.length -= 2;
 			}

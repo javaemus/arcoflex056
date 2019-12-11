@@ -176,7 +176,7 @@ public class cia6526
 			}
 		}
                 
-                //cia[This.number] = This;
+                cia[This.number] = This;
 	}
 	
 	public static void cia_clear_interrupt (CIA6526 This, int data)
@@ -189,23 +189,28 @@ public class cia6526
 				This.intf.irq_func.handler(0);
 		}
                 
-                //cia[This.number] = This;
+                cia[This.number] = This;
 	}
 	
 	/******************* Timer timeouts *************************/
 	public static timer_callback cia_tod_timeout = new timer_callback() {
             public void handler(int which) {
+                //System.out.println("cia_tod_timeout");
 		CIA6526 This = cia[which];
 	
 		This.tod10ths++;
 		if (This.tod10ths > 9)
 		{
 			This.tod10ths = 0;
-			BCD_INC (This.todsec);
+                        int _c=This.todsec;
+			BCD_INC (_c);
+                        This.todsec=_c;
 			if (This.todsec > 0x59)
 			{
 				This.todsec = 0;
-				BCD_INC (This.todmin);
+                                _c=This.todmin;
+				BCD_INC (_c);
+                                This.todmin=_c;
 				if (This.todmin > 0x59)
 				{
 					This.todmin = 0;
@@ -242,7 +247,7 @@ public class cia6526
 				timer_reset (This.todtimer, 0.1);
 		}
                 
-                //cia[This.number] = This;
+                cia[This.number] = This;
             }
             
         };
@@ -314,7 +319,7 @@ public class cia6526
 			break;
 		}
 /*TODO*///		DBG_LOG (1, "timer1 state", ("%d\n", This.timer1_state));
-                //cia[This.number] = This;
+                cia[This.number] = This;
 	}
 	
 	public static void cia_timer2_state (CIA6526 This)
@@ -386,11 +391,12 @@ public class cia6526
 			break;
 		}
                 
-                //cia[This.number] = This;
+                cia[This.number] = This;
 	}
 	
 	public static timer_callback cia_timer1_timeout = new timer_callback() {
             public void handler(int which) {
+                //System.out.println("cia_timer1_timeout");
                 CIA6526 This = cia[which];
 	
 		This.t1c = This.t1l;
@@ -445,6 +451,7 @@ public class cia6526
 	
         public static timer_callback cia_timer2_timeout = new timer_callback() {
             public void handler(int which) {
+                //System.out.println("cia_timer2_timeout");
 		CIA6526 This = cia[which];
 	
 		This.t2c = This.t2l;
@@ -721,7 +728,7 @@ public class cia6526
 			break;
 		}
                 
-                //cia[This.number] = This;
+                cia[This.number] = This;
 	}
 	
 /*TODO*///	static void cia_set_input_a (CIA6526 *This, int data)
@@ -740,7 +747,7 @@ public class cia6526
 			cia_set_interrupt (This, 0x10);
 		This.flag = data;
                 
-                //cia[This.number] = This;
+                cia[This.number] = This;
 	}
 	
 /*TODO*///	static void cia6526_set_input_sp (CIA6526 *This, int data)

@@ -10,6 +10,7 @@
 package mess056.sndhrdw;
 
 import static arcadeflex056.fucPtr.*;
+import static mess056.sndhrdw.sidvoiceH.*;
 
 public class sidH
 {
@@ -53,8 +54,8 @@ public class sidH
 	
                 public _filter filter = new _filter();
 	
-/*TODO*///		sidOperator optr1, optr2, optr3;
-	    public int optr3_outputmask;
+		public sidOperator optr1=new sidOperator(), optr2=new sidOperator(), optr3=new sidOperator();
+                public int optr3_outputmask;
 	};
 	
 	public static _SID6581 SID6581 = new _SID6581();

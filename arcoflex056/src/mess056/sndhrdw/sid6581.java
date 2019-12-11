@@ -24,6 +24,7 @@ import static mame056.sound.streams.*;
 import static mess056.includes.sid6581H.*;
 import static mess056.sndhrdw.sid.*;
 import static mess056.sndhrdw.sidH.*;
+import static mess056.sndhrdw.sidvoice.*;
 
 public class sid6581
 {
@@ -40,13 +41,13 @@ public class sid6581
 	
 	public static void sid6581_set_type (int number, int type)
 	{
-	    /*TODO*///sid6581[number].type=type;
-	    /*TODO*///sidInitWaveformTables(type);
+	    _sid6581[number].type=type;
+	    sidInitWaveformTables(type);
 	}
 	
 	public static void sid6581_reset(int number)
 	{
-		/*TODO*///sidEmuReset(sid6581+number);
+		boolean b = sidEmuReset(_sid6581[number]);
 	}
 	
         public static ReadHandlerPtr sid6581_0_port_r = new ReadHandlerPtr() {

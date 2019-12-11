@@ -21,6 +21,9 @@ package mess056.sndhrdw;
 
 import static mame056.sound.streams.*;
 import static mess056.sndhrdw.sid6581.*;
+import static mess056.sndhrdw.sidH.*;
+import static mess056.sndhrdw.sidenvel.*;
+import static mess056.sndhrdw.sidvoice.*;
 
 public class sid
 {
@@ -126,40 +129,40 @@ public class sid
 /*TODO*///	    }
 /*TODO*///	}
 /*TODO*///	
-/*TODO*///	/* --------------------------------------------------------------------- Init */
-/*TODO*///	
-/*TODO*///	
-/*TODO*///	/* Reset. */
-/*TODO*///	
-/*TODO*///	bool sidEmuReset(SID6581 *This)
-/*TODO*///	{
-/*TODO*///		sidClearOperator( &This.optr1 );
-/*TODO*///		enveEmuResetOperator( &This.optr1 );
-/*TODO*///		sidClearOperator( &This.optr2 );
-/*TODO*///		enveEmuResetOperator( &This.optr2 );
-/*TODO*///		sidClearOperator( &This.optr3 );
-/*TODO*///		enveEmuResetOperator( &This.optr3 );
-/*TODO*///		This.optr3_outputmask = ~0;  /* on */
-/*TODO*///	
-/*TODO*///	//	sampleEmuReset();
-/*TODO*///	
-/*TODO*///		This.filter.Type = (This.filter.CurType = 0);
-/*TODO*///		This.filter.Value = 0;
-/*TODO*///		This.filter.Dy = (This.filter.ResDy = 0);
-/*TODO*///	
-/*TODO*///		sidEmuSet( &This.optr1 );
-/*TODO*///		sidEmuSet( &This.optr2 );
-/*TODO*///		sidEmuSet( &This.optr3 );
-/*TODO*///	
-/*TODO*///		sidEmuSet2( &This.optr1 );
-/*TODO*///		sidEmuSet2( &This.optr2 );
-/*TODO*///		sidEmuSet2( &This.optr3 );
-/*TODO*///	
-/*TODO*///	
-/*TODO*///		return true;
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	
+	/* --------------------------------------------------------------------- Init */
+	
+	
+	/* Reset. */
+	
+	public static boolean sidEmuReset(_SID6581 This)
+	{
+		sidClearOperator( This.optr1 );
+		enveEmuResetOperator( This.optr1 );
+		sidClearOperator( This.optr2 );
+		enveEmuResetOperator( This.optr2 );
+		sidClearOperator( This.optr3 );
+		enveEmuResetOperator( This.optr3 );
+		This.optr3_outputmask = ~0;  /* on */
+	
+	//	sampleEmuReset();
+	
+		This.filter.Type = (This.filter.CurType = 0);
+		This.filter.Value = 0;
+		This.filter.Dy = (This.filter.ResDy = 0);
+	
+		sidEmuSet( This.optr1 );
+		sidEmuSet( This.optr2 );
+		sidEmuSet( This.optr3 );
+	
+		sidEmuSet2( This.optr1 );
+		sidEmuSet2( This.optr2 );
+		sidEmuSet2( This.optr3 );
+	
+	
+		return true;
+	}
+	
+	
 /*TODO*///	void filterTableInit(void)
 /*TODO*///	{
 /*TODO*///		uword uk;
@@ -273,19 +276,19 @@ public class sid
 		_sid6581[This].masterVolumeAmplIndex = _sid6581[This].masterVolume << 8;	    
 	
 		if ((_sid6581[This].reg[0x18]&0x80)!=0
-/*TODO*///                        && ((This.reg[0x17]&This.optr3.filtVoiceMask)==0)
+                        && ((_sid6581[This].reg[0x17]&_sid6581[This].optr3.filtVoiceMask)==0)
                         ){
-/*TODO*///		    This.optr3_outputmask = 0;     /* off */
+		    _sid6581[This].optr3_outputmask = 0;     /* off */
 		} else {
-/*TODO*///		    This.optr3_outputmask = ~0;  /* on */
+		    _sid6581[This].optr3_outputmask = ~0;  /* on */
 		}
 		_sid6581[This].filter.Type = _sid6581[This].reg[0x18] & 0x70;
 		if (_sid6581[This].filter.Type != _sid6581[This].filter.CurType)
 		{
 		    _sid6581[This].filter.CurType = _sid6581[This].filter.Type;
-/*TODO*///		    This.optr1.filtLow = (This.optr1.filtRef = 0);
-/*TODO*///		    This.optr2.filtLow = (This.optr2.filtRef = 0);
-/*TODO*///		    This.optr3.filtLow = (This.optr3.filtRef = 0);
+		    _sid6581[This].optr1.filtLow = (_sid6581[This].optr1.filtRef = 0);
+		    _sid6581[This].optr2.filtLow = (_sid6581[This].optr2.filtRef = 0);
+		    _sid6581[This].optr3.filtLow = (_sid6581[This].optr3.filtRef = 0);
 		}
 		if ( _sid6581[This].filter.Enabled )
 		{
@@ -300,36 +303,36 @@ public class sid
 			_sid6581[This].filter.ResDy = (float) 1.0;
 		}
 	
-/*TODO*///		sidEmuSet( &This.optr1 );
-/*TODO*///		sidEmuSet( &This.optr3 );	
-/*TODO*///		sidEmuSet( &This.optr2 );
+		sidEmuSet( _sid6581[This].optr1 );
+		sidEmuSet( _sid6581[This].optr3 );	
+		sidEmuSet( _sid6581[This].optr2 );
 	
 		// relies on sidEmuSet also for other channels!
-/*TODO*///		sidEmuSet2( &This.optr1 );
-/*TODO*///		sidEmuSet2( &This.optr2 );
-/*TODO*///		sidEmuSet2( &This.optr3 );
+		sidEmuSet2( _sid6581[This].optr1 );
+		sidEmuSet2( _sid6581[This].optr2 );
+		sidEmuSet2( _sid6581[This].optr3 );
 	
 		break;
 	    default:
 		stream_update(_sid6581[This].mixer_channel,0);
 		_sid6581[This].reg[offset] = data;
 		
-/*TODO*///		if (offset<7) {
-/*TODO*///		    This.optr1.reg[offset] = data;
-/*TODO*///		} else if (offset<14) {
-/*TODO*///		    This.optr2.reg[offset-7] = data;
-/*TODO*///		} else if (offset<21) {
-/*TODO*///		    This.optr3.reg[offset-14] = data;
-/*TODO*///		}
+		if (offset<7) {
+		    _sid6581[This].optr1.reg[offset] = data;
+		} else if (offset<14) {
+		    _sid6581[This].optr2.reg[offset-7] = data;
+		} else if (offset<21) {
+		    _sid6581[This].optr3.reg[offset-14] = data;
+		}
 	
-/*TODO*///		sidEmuSet( &This.optr1 );
-/*TODO*///		sidEmuSet( &This.optr3 );	
-/*TODO*///		sidEmuSet( &This.optr2 );
+		sidEmuSet( _sid6581[This].optr1 );
+		sidEmuSet( _sid6581[This].optr3 );	
+		sidEmuSet( _sid6581[This].optr2 );
 	
 		// relies on sidEmuSet also for other channels!
-/*TODO*///		sidEmuSet2( &This.optr1 );
-/*TODO*///		sidEmuSet2( &This.optr2 );
-/*TODO*///		sidEmuSet2( &This.optr3 );
+		sidEmuSet2( _sid6581[This].optr1 );
+		sidEmuSet2( _sid6581[This].optr2 );
+		sidEmuSet2( _sid6581[This].optr3 );
 	    }
 	}
 	
@@ -359,11 +362,11 @@ public class sid
 		break;
 	    case 0x1b:
 		stream_update(_sid6581[This].mixer_channel,0);
-/*TODO*///		data = This.optr3.output;
+		data = _sid6581[This].optr3.output;
 		break;
 	    case 0x1c:
 		stream_update(_sid6581[This].mixer_channel,0);
-/*TODO*///		data = This.optr3.enveVol;
+		data = _sid6581[This].optr3.enveVol;
 		break;
 	    default:
 		data=_sid6581[This].reg[offset];

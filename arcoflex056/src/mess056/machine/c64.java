@@ -80,7 +80,7 @@ public class c64
 	public static int c64_port6510, c64_ddr6510;
 	public static int c128_va1617;
 	public static UBytePtr c64_vicaddr, c128_vicaddr;
-	public static UBytePtr c64_memory = new UBytePtr(64 * 1024);
+	public static UBytePtr c64_memory = new UBytePtr(0xfd00);
         public static UBytePtr c64_colorram;
         public static UBytePtr c64_basic;
         public static UBytePtr c64_kernal;
@@ -107,18 +107,18 @@ public class c64
         
 	public static void c64_nmi()
 	{
-	    if (nmilevel != KEY_RESTORE()||cia1irq!=0)
+	    if (nmilevel != KEY_T()||cia1irq!=0)
 	    {
 		if (c128 != 0) {
 		    if (cpu_getactivecpu()==0) { /* z80 */
-			cpu_set_nmi_line (0, KEY_RESTORE()!=0||cia1irq!=0?1:0);
+			cpu_set_nmi_line (0, KEY_T()!=0||cia1irq!=0?1:0);
 		    } else {
-			cpu_set_nmi_line (1, KEY_RESTORE()!=0||cia1irq!=0?1:0);
+			cpu_set_nmi_line (1, KEY_T()!=0||cia1irq!=0?1:0);
 		    }
 		} else {
-		    cpu_set_nmi_line (0, KEY_RESTORE()!=0||cia1irq!=0?1:0);
+		    cpu_set_nmi_line (0, KEY_T()!=0||cia1irq!=0?1:0);
 		}
-		nmilevel = KEY_RESTORE()!=0||cia1irq!=0?1:0;
+		nmilevel = KEY_T()!=0||cia1irq!=0?1:0;
 	    }
 	}
 	
@@ -502,7 +502,7 @@ public class c64
 		if (offset < 0x400) {
 			vic2_port_w.handler(offset & 0x3ff, data);
 		} else if (offset < 0x800) {
-			sid6581_0_port_w.handler(offset & 0x3ff, data);
+/*TODO*///			sid6581_0_port_w.handler(offset & 0x3ff, data);
 		} else if (offset < 0xc00)
 			c64_colorram.write(offset & 0x3ff, data | 0xf0);
 		else if (offset < 0xd00)
@@ -540,9 +540,10 @@ public class c64
 	{
 		if (offset < 0x400)
 			return vic2_port_r.handler(offset & 0x3ff);
-		else if (offset < 0x800)
-			return sid6581_0_port_r.handler(offset & 0x3ff);
-		else if (offset < 0xc00)
+		else if (offset < 0x800){
+/*TODO*///			return sid6581_0_port_r.handler(offset & 0x3ff);
+                        return 0xff;
+                } else if (offset < 0xc00)
 			return c64_colorram.read(offset & 0x3ff);
 		else if (offset < 0xd00)
 			return cia6526_0_port_r.handler(offset & 0xff);
@@ -848,6 +849,8 @@ public class c64
 	public static void c64_common_driver_init ()
 	{
 		/*    memset(c64_memory, 0, 0xfd00); */
+                //System.out.println("c64_common_driver_init");
+                
 		if (ultimax == 0) {
 			c64_basic=new UBytePtr(memory_region(REGION_CPU1), 0x10000);
 			c64_kernal=new UBytePtr(memory_region(REGION_CPU1), 0x12000);
@@ -952,11 +955,13 @@ public class c64
 	
 	public static void c64_common_init_machine ()
 	{
+            //System.out.println("c64_common_init_machine!!!!");
+            //c64_driver_init.handler();
 /*TODO*///	#ifdef VC1541
 		vc1541_reset ();
 /*TODO*///	#endif
 		sid6581_reset(0);
-/*TODO*///		sid6581_set_type(0, SID8580);
+		sid6581_set_type(0, SID8580());
 		if (c64_cia1_on != 0)
 		{
 			cbm_serial_reset_write (0);
@@ -965,7 +970,7 @@ public class c64
 			serial_clock = serial_data = serial_atn = 1;
 		}
 		cia6526_reset ();
-		c64_vicaddr = c64_memory;
+		c64_vicaddr = new UBytePtr(c64_memory);
 		vicirq = cia0irq = 0;
 		c64_port6510 = 0xff;
 		c64_ddr6510 = 0;
@@ -1178,17 +1183,19 @@ public class c64
             
 		int value, value2;
 	
-		sid6581_update();
+/*TODO*///		sid6581_update();
 	
 		c64_nmi();
 	
-		if (quickload==0 && QUICKLOAD()!=0) {
-/*TODO*///			if (c65) {
+		//if (quickload==0 && QUICKLOAD()!=0) {
+                if (quickload!=0){
+			if (c65!=0) {
 /*TODO*///				cbm_c65_quick_open (0, 0, c64_memory);
-/*TODO*///			} else
+			} else
 				cbm_quick_open.handler(0, 0, c64_memory);
 		}
-		quickload = QUICKLOAD();
+		//quickload = QUICKLOAD();
+                quickload=0;
 	
 		if (c128 != 0) {
 /*TODO*///			if (MONITOR_TV!=monitor) {
