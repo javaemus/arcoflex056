@@ -822,14 +822,14 @@ public class c64
             public int handler(int offset) {
             
 		if (c64_game==0 && c64_exrom!=0)
-		{
-			if (offset < 0x3000)
-				return c64_memory.read(offset);
-			return c64_romh.read(offset & 0x1fff);
-		}
-		if (((c64_vicaddr.offset - c64_memory.offset + offset) & 0x7000) == 0x1000)
-			return c64_chargen.read(offset & 0xfff);
-		return c64_vicaddr.read(offset);
+                {
+                        if (offset < 0x3000)
+                                return c64_memory.read(offset);
+                        return c64_romh.read(offset & 0x1fff);
+                }
+                if (((c64_vicaddr.read() - c64_memory.read() + offset) & 0x7000) == 0x1000)
+                        return c64_chargen.read(offset & 0xfff);
+                return c64_vicaddr.read(offset);
             }
         };
 	

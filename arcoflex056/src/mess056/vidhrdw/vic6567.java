@@ -75,9 +75,6 @@ import static mess056.includes.vic6567H.*;
 
 public class vic6567
 {
-/*TODO*///	
-/*TODO*///	
-/*TODO*///	
 /*TODO*///	#define VERBOSE_DBG 1
 /*TODO*///	
 /*TODO*///	/* lightpen values */
@@ -87,31 +84,31 @@ public class vic6567
 /*TODO*///	
 /*TODO*///	#define VREFRESHINLINES 28
 /*TODO*///	
-    public static int VIC2_YPOS = 50;
-/*TODO*///	#define RASTERLINE_2_C64(a) (a)
-    public static int C64_2_RASTERLINE(int a){ return (a); }
-    public static int XPOS = 8;
-    public static int YPOS = 8;
+	public static int VIC2_YPOS = 50;
+	public static int RASTERLINE_2_C64(int a){ return (a); }
+	public static int C64_2_RASTERLINE(int a){ return (a); }
+	public static int XPOS = 8;
+	public static int YPOS = 8;
 
 	/* lightpen delivers values from internal counters
 	 * they do not start with the visual area or frame area */
-    public static int VIC2_MAME_XPOS = 0;
-    public static int VIC2_MAME_YPOS = 0;
-    public static int VIC6567_X_BEGIN = 38;
-    public static int VIC6567_Y_BEGIN = -6;			   /* first 6 lines after retrace not for lightpen! */
-    public static int VIC6569_X_BEGIN = 38;
-    public static int VIC6569_Y_BEGIN = -6;
-    public static int VIC2_X_BEGIN(){ return (vic2.pal?VIC6569_X_BEGIN:VIC6567_X_BEGIN);}
-    public static int VIC2_Y_BEGIN(){ return (vic2.pal?VIC6569_Y_BEGIN:VIC6567_Y_BEGIN);}
-    public static int VIC2_X_VALUE(){ return ((LIGHTPEN_X_VALUE()+VIC2_X_BEGIN()+VIC2_MAME_XPOS)/2); }
-    public static int VIC2_Y_VALUE(){ return ((LIGHTPEN_Y_VALUE()+VIC2_Y_BEGIN()+VIC2_MAME_YPOS)); }
-/*TODO*///	
+	public static int VIC2_MAME_XPOS = 0;
+	public static int VIC2_MAME_YPOS = 0;
+	public static int VIC6567_X_BEGIN = 38;
+	public static int VIC6567_Y_BEGIN = -6;			   /* first 6 lines after retrace not for lightpen! */
+	public static int VIC6569_X_BEGIN = 38;
+	public static int VIC6569_Y_BEGIN = -6;
+	public static int VIC2_X_BEGIN(){ return (vic2.pal?VIC6569_X_BEGIN:VIC6567_X_BEGIN); }
+	public static int VIC2_Y_BEGIN(){ return (vic2.pal?VIC6569_Y_BEGIN:VIC6567_Y_BEGIN); }
+	public static int VIC2_X_VALUE(){ return ((LIGHTPEN_X_VALUE()+VIC2_X_BEGIN()+VIC2_MAME_XPOS)/2); }
+	public static int VIC2_Y_VALUE(){ return LIGHTPEN_Y_VALUE()+VIC2_Y_BEGIN()+VIC2_MAME_YPOS; }
+	
 /*TODO*///	#define VIC2E_K0_LEVEL (vic2.reg[0x2f]&1)
 /*TODO*///	#define VIC2E_K1_LEVEL (vic2.reg[0x2f]&2)
 /*TODO*///	#define VIC2E_K2_LEVEL (vic2.reg[0x2f]&4)
 /*TODO*///	
 /*TODO*///	/*#define VIC3_P5_LEVEL (vic2.reg[0x30]&0x20) */
-    public static int VIC3_BITPLANES(){ return (vic2.reg[0x31]&0x10); }
+	public static int VIC3_BITPLANES(){ return (vic2.reg[0x31]&0x10); }
 /*TODO*///	#define VIC3_80COLUMNS (vic2.reg[0x31]&0x80)
 /*TODO*///	#define VIC3_LINES	   ((vic2.reg[0x31]&0x19)==0x19?400:200)
 /*TODO*///	#define VIC3_BITPLANES_WIDTH (vic2.reg[0x31]&0x80?640:320)
@@ -120,50 +117,54 @@ public class vic6567
 /*TODO*///	#define DOUBLE_CLOCK (vic2.reg[0x30]&1)
 /*TODO*///	
 /*TODO*///	/* sprites 0 .. 7 */
-    public static int SPRITE_BASE_X_SIZE = 24;
+	public static int SPRITE_BASE_X_SIZE = 24;
 /*TODO*///	#define SPRITE_BASE_Y_SIZE 21
-    public static int SPRITEON(int nr){ return (vic2.reg[0x15]&(1<<nr)); }
-    public static int SPRITE_Y_EXPAND(int nr){ return (vic2.reg[0x17]&(1<<nr)); }
+	public static int SPRITEON(int nr){ return (vic2.reg[0x15]&(1<<nr)); }
+	public static int SPRITE_Y_EXPAND(int nr){ return (vic2.reg[0x17]&(1<<nr)); }
 /*TODO*///	#define SPRITE_Y_SIZE(nr) (SPRITE_Y_EXPAND(nr)?2*21:21)
-    public static int SPRITE_X_EXPAND(int nr){ return (vic2.reg[0x1d]&(1<<nr)); }
-    public static int SPRITE_X_SIZE(int nr){ return (SPRITE_X_EXPAND(nr)!=0?2*24:24); }
-    public static int SPRITE_X_POS(int nr){ return ( (vic2.reg[(nr)*2] | ((vic2.reg[0x10] & (1<<nr))!=0?0x100:0))-24+XPOS ); }
-    public static int SPRITE_Y_POS(int nr){ return (vic2.reg[1+2*(nr)]-50+YPOS); }
-    public static int SPRITE_MULTICOLOR(int nr){ return (vic2.reg[0x1c]&(1<<nr)); }
-    public static int SPRITE_PRIORITY(int nr){ return (vic2.reg[0x1b]&(1<<nr)); }
-    public static int SPRITE_MULTICOLOR1(){ return (vic2.reg[0x25]&0xf); }
-    public static int SPRITE_MULTICOLOR2(){ return (vic2.reg[0x26]&0xf); }
-    public static int SPRITE_COLOR(int nr){ return (vic2.reg[0x27+nr]&0xf); }
-    public static int SPRITE_ADDR(int nr){ return (vic2.videoaddr+0x3f8+nr); }
-    public static int SPRITE_BG_COLLISION(int nr){ return (vic2.reg[0x1f]&(1<<nr)); }
-    public static int SPRITE_COLLISION(int nr){ return (vic2.reg[0x1e]&(1<<nr)); }
-    public static void SPRITE_SET_BG_COLLISION(int nr){ vic2.reg[0x1f]|=(1<<nr); }
-    public static void SPRITE_SET_COLLISION(int nr){ vic2.reg[0x1e]|=(1<<nr); }
+	public static int SPRITE_X_EXPAND(int nr){ return (vic2.reg[0x1d]&(1<<nr)); }
+	public static int SPRITE_X_SIZE(int nr){ return (SPRITE_X_EXPAND(nr)!=0?2*24:24); }
+	public static int SPRITE_X_POS(int nr){ 
+            int par1=vic2.reg[(nr)*2];
+            int par2=((vic2.reg[0x10]&(1<<nr))!=0?0x100:0);
+            return ( (par1|par2)-24+XPOS ); 
+        }
+	public static int SPRITE_Y_POS(int nr){ return (vic2.reg[1+2*(nr)]-50+YPOS); }
+	public static int SPRITE_MULTICOLOR(int nr){ return (vic2.reg[0x1c]&(1<<nr)); }
+	public static int SPRITE_PRIORITY(int nr){ return (vic2.reg[0x1b]&(1<<nr)); }
+	public static int SPRITE_MULTICOLOR1(){ return (vic2.reg[0x25]&0xf); }
+	public static int SPRITE_MULTICOLOR2(){ return (vic2.reg[0x26]&0xf); }
+	public static int SPRITE_COLOR(int nr){ return (vic2.reg[0x27+nr]&0xf); }
+	public static int SPRITE_ADDR(int nr){ return (vic2.videoaddr+0x3f8+nr); }
+	public static int SPRITE_BG_COLLISION(int nr){ return (vic2.reg[0x1f]&(1<<nr)); }
+	public static int SPRITE_COLLISION(int nr){ return (vic2.reg[0x1e]&(1<<nr)); }
+	public static void SPRITE_SET_BG_COLLISION(int nr){ vic2.reg[0x1f]|=(1<<nr); }
+	public static void SPRITE_SET_COLLISION(int nr){ vic2.reg[0x1e]|=(1<<nr); }
 
-    public static int SCREENON(){ return (vic2.reg[0x11]&0x10); }
-    public static int VERTICALPOS(){ return (vic2.reg[0x11]&7); }
-    public static int HORICONTALPOS(){ return (vic2.reg[0x16]&7); }
-    public static int ECMON(){ return (vic2.reg[0x11]&0x40); }
-    public static int HIRESON(){ return (vic2.reg[0x11]&0x20); }
-    public static int MULTICOLORON(){ return (vic2.reg[0x16]&0x10); }
-    public static int LINES25(){ return (vic2.reg[0x11]&8); }		   /* else 24 Lines */
-/*TODO*///	#define LINES (LINES25?25:24)
+	public static int SCREENON(){ return (vic2.reg[0x11]&0x10); }
+	public static int VERTICALPOS(){ return (vic2.reg[0x11]&7); }
+	public static int HORICONTALPOS(){ return (vic2.reg[0x16]&7); }
+	public static int ECMON(){ return (vic2.reg[0x11]&0x40); }
+	public static int HIRESON(){ return (vic2.reg[0x11]&0x20); }
+	public static int MULTICOLORON(){ return (vic2.reg[0x16]&0x10); }
+	public static int LINES25(){ return (vic2.reg[0x11]&8); }		   /* else 24 Lines */
+/*TODO*///	public static int LINES(){ return (LINES25()!=0?25:24); }
 /*TODO*///	#define YSIZE (LINES*8)
-    public static int COLUMNS40(){ return (vic2.reg[0x16]&8); }	   /* else 38 Columns */
+	public static int COLUMNS40(){ return (vic2.reg[0x16]&8); }	   /* else 38 Columns */
 /*TODO*///	#define COLUMNS (COLUMNS40?40:38)
 /*TODO*///	#define XSIZE (COLUMNS*8)
 
-    public static int VIDEOADDR(){ return ( (vic2.reg[0x18]&0xf0)<<(10-4) ); }
-    public static int CHARGENADDR(){ return ((vic2.reg[0x18]&0xe)<<10); }
+	public static int VIDEOADDR(){ return ( (vic2.reg[0x18]&0xf0)<<(10-4) ); }
+	public static int CHARGENADDR(){ return ((vic2.reg[0x18]&0xe)<<10); }
 
-    public static int RASTERLINE(){ return ( ((vic2.reg[0x11]&0x80)<<1)|vic2.reg[0x12]); }
+	public static int RASTERLINE(){ return ( ((vic2.reg[0x11]&0x80)<<1)|vic2.reg[0x12]); }
 
-    public static int BACKGROUNDCOLOR(){ return (vic2.reg[0x21]&0xf); }
-    public static int MULTICOLOR1(){ return (vic2.reg[0x22]&0xf); }
-    public static int MULTICOLOR2(){ return (vic2.reg[0x23]&0xf); }
-    public static int FOREGROUNDCOLOR(){ return (vic2.reg[0x24]&0xf); 
-    }
-    public static int FRAMECOLOR(){ return (vic2.reg[0x20]&0xf); }
+	public static int BACKGROUNDCOLOR(){ return (vic2.reg[0x21]&0xf); }
+	public static int MULTICOLOR1(){ return (vic2.reg[0x22]&0xf); }
+	public static int MULTICOLOR2(){ return (vic2.reg[0x23]&0xf); }
+	public static int FOREGROUNDCOLOR(){ return (vic2.reg[0x24]&0xf); }
+	public static int FRAMECOLOR(){ return (vic2.reg[0x20]&0xf); }
+
 	
 	public static char vic2_palette[] =
 	{
@@ -366,227 +367,227 @@ public class vic6567
             
 /*TODO*///		DBG_LOG (2, "vic write", ("%.2x:%.2x\n", offset, data));
 		offset &= 0x3f;
-		switch (offset)
-		{
-		case 1:
-		case 3:
-		case 5:
-		case 7:
-		case 9:
-		case 0xb:
-		case 0xd:
-		case 0xf:
-			/* sprite y positions */
-			if (vic2.reg[offset] != data) {
-				if (vic2.on)
-					vic2_drawlines (vic2.lastline, vic2.rasterline);
-				vic2.reg[offset] = data;
-				vic2.sprites[offset/2].y=SPRITE_Y_POS(offset/2);
-			}
-			break;
-		case 0:
-		case 2:
-		case 4:
-		case 6:
-		case 8:
-		case 0xa:
-		case 0xc:
-		case 0xe:
-			/* sprite x positions */
-			if (vic2.reg[offset] != data) {
-				if (vic2.on)
-					vic2_drawlines (vic2.lastline, vic2.rasterline);
-				vic2.reg[offset] = data;
-				vic2.sprites[offset/2].x=SPRITE_X_POS(offset/2);
-			}
-			break;
-		case 0x10:
-			/* sprite x positions */
-			if (vic2.reg[offset] != data) {
-				if (vic2.on)
-					vic2_drawlines (vic2.lastline, vic2.rasterline);
-				vic2.reg[offset] = data;
-				vic2.sprites[0].x=SPRITE_X_POS(0);
-				vic2.sprites[1].x=SPRITE_X_POS(1);
-				vic2.sprites[2].x=SPRITE_X_POS(2);
-				vic2.sprites[3].x=SPRITE_X_POS(3);
-				vic2.sprites[4].x=SPRITE_X_POS(4);
-				vic2.sprites[5].x=SPRITE_X_POS(5);
-				vic2.sprites[6].x=SPRITE_X_POS(6);
-				vic2.sprites[7].x=SPRITE_X_POS(7);
-			}
-			break;
-		case 0x17:						   /* sprite y size */
-		case 0x1d:						   /* sprite x size */
-		case 0x1b:						   /* sprite background priority */
-		case 0x1c:						   /* sprite multicolor mode select */
-		case 0x27:
-		case 0x28:						   /* sprite colors */
-		case 0x29:
-		case 0x2a:
-		case 0x2b:
-		case 0x2c:
-		case 0x2d:
-		case 0x2e:
-			if (vic2.reg[offset] != data)
-			{
-				vic2.reg[offset] = data;
-				if (vic2.on)
-					vic2_drawlines (vic2.lastline, vic2.rasterline);
-			}
-			break;
-		case 0x25:
-			if (vic2.reg[offset] != data)
-			{
-				vic2.reg[offset] = data;
-				vic2.spritemulti[1] = Machine.pens[SPRITE_MULTICOLOR1()];
-				if (vic2.on)
-					vic2_drawlines (vic2.lastline, vic2.rasterline);
-			}
-			break;
-		case 0x26:
-			if (vic2.reg[offset] != data)
-			{
-				vic2.reg[offset] = data;
-				vic2.spritemulti[3] = Machine.pens[SPRITE_MULTICOLOR2()];
-				if (vic2.on) vic2_drawlines (vic2.lastline, vic2.rasterline);
-			}
-			break;
-		case 0x19:
-			vic2_clear_interrupt (data & 0xf);
-			break;
-		case 0x1a:						   /* irq mask */
-			vic2.reg[offset] = data;
-			vic2_set_interrupt(0); //beamrider needs this
-			break;
-		case 0x11:
-			if (vic2.reg[offset] != data)
-			{
-				if (vic2.on)
-					vic2_drawlines (vic2.lastline, vic2.rasterline);
-				vic2.reg[offset] = data;
-				if (LINES25() != 0)
-				{
-					vic2.y_begin = 0;
-					vic2.y_end = vic2.y_begin + 200;
-				}
-				else
-				{
-					vic2.y_begin = 4;
-					vic2.y_end = vic2.y_begin + 192;
-				}
-			}
-			break;
-		case 0x12:
-			if (data != vic2.reg[offset])
-			{
-				vic2.reg[offset] = data;
-			}
-			break;
-		case 0x16:
-			if (vic2.reg[offset] != data)
-			{
-				if (vic2.on)
-					vic2_drawlines (vic2.lastline, vic2.rasterline);
-				vic2.reg[offset] = data;
-				if (COLUMNS40() != 0)
-				{
-					vic2.x_begin = 0;
-					vic2.x_end = vic2.x_begin + 320;
-				}
-				else
-				{
-					vic2.x_begin = HORICONTALPOS();
-					vic2.x_end = vic2.x_begin + 320;
-				}
-			}
-			break;
-		case 0x18:
-			if (vic2.reg[offset] != data)
-			{
-				if (vic2.on) vic2_drawlines (vic2.lastline, vic2.rasterline);
-				vic2.reg[offset] = data;
-				vic2.videoaddr = VIDEOADDR();
-				vic2.chargenaddr = CHARGENADDR();
-			}
-			break;
-		case 0x21:						   /* backgroundcolor */
-			if (vic2.reg[offset] != data)
-			{
-				if (vic2.on) vic2_drawlines (vic2.lastline, vic2.rasterline);
-				vic2.reg[offset] = data;
-				vic2.mono[0] = vic2.bitmapmulti[0] = vic2.multi[0] =
-					vic2.colors[0] = Machine.pens[BACKGROUNDCOLOR()];
-			}
-			break;
-		case 0x22:						   /* background color 1 */
-			if (vic2.reg[offset] != data)
-			{
-				if (vic2.on) vic2_drawlines (vic2.lastline, vic2.rasterline);
-				vic2.reg[offset] = data;
-				vic2.multi[1] = vic2.colors[1] = Machine.pens[MULTICOLOR1()];
-			}
-			break;
-		case 0x23:						   /* background color 2 */
-			if (vic2.reg[offset] != data)
-			{
-				if (vic2.on)
-					vic2_drawlines (vic2.lastline, vic2.rasterline);
-				vic2.reg[offset] = data;
-				vic2.multi[2] = vic2.colors[2] = Machine.pens[MULTICOLOR2()];
-			}
-			break;
-		case 0x24:						   /* background color 3 */
-			if (vic2.reg[offset] != data)
-			{
-				if (vic2.on) vic2_drawlines (vic2.lastline, vic2.rasterline);
-				vic2.reg[offset] = data;
-				vic2.colors[3] = Machine.pens[FOREGROUNDCOLOR()];
-			}
-			break;
-		case 0x20:						   /* framecolor */
-			if (vic2.reg[offset] != data)
-			{
-				if (vic2.on)
-					vic2_drawlines (vic2.lastline, vic2.rasterline);
-				vic2.reg[offset] = data;
-			}
-			break;
-		case 0x2f:
-			if (vic2.vic2e)
-			{
-/*TODO*///				DBG_LOG (2, "vic write", ("%.2x:%.2x\n", offset, data));
-				vic2.reg[offset] = data;
-			}
-			break;
-		case 0x30:
-			if (vic2.vic2e)
-			{
-				vic2.reg[offset] = data;
-			}
-			break;
-		case 0x31:
-		case 0x32:
-		case 0x33:
-		case 0x34:
-		case 0x35:
-		case 0x36:
-		case 0x37:
-		case 0x38:
-		case 0x39:
-		case 0x3a:
-		case 0x3b:
-		case 0x3c:
-		case 0x3d:
-		case 0x3e:
-		case 0x3f:
-			vic2.reg[offset] = data;
-/*TODO*///			DBG_LOG (2, "vic write", ("%.2x:%.2x\n", offset, data));
-			break;
-		default:
-			vic2.reg[offset] = data;
-			break;
-		}
+                switch (offset)
+                {
+                case 1:
+                case 3:
+                case 5:
+                case 7:
+                case 9:
+                case 0xb:
+                case 0xd:
+                case 0xf:
+                        /* sprite y positions */
+                        if (vic2.reg[offset] != data) {
+                                if (vic2.on)
+                                        vic2_drawlines (vic2.lastline, vic2.rasterline);
+                                vic2.reg[offset] = data;
+                                vic2.sprites[offset/2].y=SPRITE_Y_POS(offset/2);
+                        }
+                        break;
+                case 0:
+                case 2:
+                case 4:
+                case 6:
+                case 8:
+                case 0xa:
+                case 0xc:
+                case 0xe:
+                        /* sprite x positions */
+                        if (vic2.reg[offset] != data) {
+                                if (vic2.on)
+                                        vic2_drawlines (vic2.lastline, vic2.rasterline);
+                                vic2.reg[offset] = data;
+                                vic2.sprites[offset/2].x=SPRITE_X_POS(offset/2);
+                        }
+                        break;
+                case 0x10:
+                        /* sprite x positions */
+                        if (vic2.reg[offset] != data) {
+                                if (vic2.on)
+                                        vic2_drawlines (vic2.lastline, vic2.rasterline);
+                                vic2.reg[offset] = data;
+                                vic2.sprites[0].x=SPRITE_X_POS(0);
+                                vic2.sprites[1].x=SPRITE_X_POS(1);
+                                vic2.sprites[2].x=SPRITE_X_POS(2);
+                                vic2.sprites[3].x=SPRITE_X_POS(3);
+                                vic2.sprites[4].x=SPRITE_X_POS(4);
+                                vic2.sprites[5].x=SPRITE_X_POS(5);
+                                vic2.sprites[6].x=SPRITE_X_POS(6);
+                                vic2.sprites[7].x=SPRITE_X_POS(7);
+                        }
+                        break;
+                case 0x17:						   /* sprite y size */
+                case 0x1d:						   /* sprite x size */
+                case 0x1b:						   /* sprite background priority */
+                case 0x1c:						   /* sprite multicolor mode select */
+                case 0x27:
+                case 0x28:						   /* sprite colors */
+                case 0x29:
+                case 0x2a:
+                case 0x2b:
+                case 0x2c:
+                case 0x2d:
+                case 0x2e:
+                        if (vic2.reg[offset] != data)
+                        {
+                                vic2.reg[offset] = data;
+                                if (vic2.on)
+                                        vic2_drawlines (vic2.lastline, vic2.rasterline);
+                        }
+                        break;
+                case 0x25:
+                        if (vic2.reg[offset] != data)
+                        {
+                                vic2.reg[offset] = data;
+                                vic2.spritemulti[1] = Machine.pens[SPRITE_MULTICOLOR1()];
+                                if (vic2.on)
+                                        vic2_drawlines (vic2.lastline, vic2.rasterline);
+                        }
+                        break;
+                case 0x26:
+                        if (vic2.reg[offset] != data)
+                        {
+                                vic2.reg[offset] = data;
+                                vic2.spritemulti[3] = Machine.pens[SPRITE_MULTICOLOR2()];
+                                if (vic2.on) vic2_drawlines (vic2.lastline, vic2.rasterline);
+                        }
+                        break;
+                case 0x19:
+                        vic2_clear_interrupt (data & 0xf);
+                        break;
+                case 0x1a:						   /* irq mask */
+                        vic2.reg[offset] = data;
+                        vic2_set_interrupt(0); //beamrider needs this
+                        break;
+                case 0x11:
+                        if (vic2.reg[offset] != data)
+                        {
+                                if (vic2.on)
+                                        vic2_drawlines (vic2.lastline, vic2.rasterline);
+                                vic2.reg[offset] = data;
+                                if (LINES25()!=0)
+                                {
+                                        vic2.y_begin = 0;
+                                        vic2.y_end = vic2.y_begin + 200;
+                                }
+                                else
+                                {
+                                        vic2.y_begin = 4;
+                                        vic2.y_end = vic2.y_begin + 192;
+                                }
+                        }
+                        break;
+                case 0x12:
+                        if (data != vic2.reg[offset])
+                        {
+                                vic2.reg[offset] = data;
+                        }
+                        break;
+                case 0x16:
+                        if (vic2.reg[offset] != data)
+                        {
+                                if (vic2.on)
+                                        vic2_drawlines (vic2.lastline, vic2.rasterline);
+                                vic2.reg[offset] = data;
+                                if (COLUMNS40()!=0)
+                                {
+                                        vic2.x_begin = 0;
+                                        vic2.x_end = vic2.x_begin + 320;
+                                }
+                                else
+                                {
+                                        vic2.x_begin = HORICONTALPOS();
+                                        vic2.x_end = vic2.x_begin + 320;
+                                }
+                        }
+                        break;
+                case 0x18:
+                        if (vic2.reg[offset] != data)
+                        {
+                                if (vic2.on) vic2_drawlines (vic2.lastline, vic2.rasterline);
+                                vic2.reg[offset] = data;
+                                vic2.videoaddr = VIDEOADDR();
+                                vic2.chargenaddr = CHARGENADDR();
+                        }
+                        break;
+                case 0x21:						   /* backgroundcolor */
+                        if (vic2.reg[offset] != data)
+                        {
+                                if (vic2.on) vic2_drawlines (vic2.lastline, vic2.rasterline);
+                                vic2.reg[offset] = data;
+                                vic2.mono[0] = vic2.bitmapmulti[0] = vic2.multi[0] =
+                                        vic2.colors[0] = Machine.pens[BACKGROUNDCOLOR()];
+                        }
+                        break;
+                case 0x22:						   /* background color 1 */
+                        if (vic2.reg[offset] != data)
+                        {
+                                if (vic2.on) vic2_drawlines (vic2.lastline, vic2.rasterline);
+                                vic2.reg[offset] = data;
+                                vic2.multi[1] = vic2.colors[1] = Machine.pens[MULTICOLOR1()];
+                        }
+                        break;
+                case 0x23:						   /* background color 2 */
+                        if (vic2.reg[offset] != data)
+                        {
+                                if (vic2.on)
+                                        vic2_drawlines (vic2.lastline, vic2.rasterline);
+                                vic2.reg[offset] = data;
+                                vic2.multi[2] = vic2.colors[2] = Machine.pens[MULTICOLOR2()];
+                        }
+                        break;
+                case 0x24:						   /* background color 3 */
+                        if (vic2.reg[offset] != data)
+                        {
+                                if (vic2.on) vic2_drawlines (vic2.lastline, vic2.rasterline);
+                                vic2.reg[offset] = data;
+                                vic2.colors[3] = Machine.pens[FOREGROUNDCOLOR()];
+                        }
+                        break;
+                case 0x20:						   /* framecolor */
+                        if (vic2.reg[offset] != data)
+                        {
+                                if (vic2.on)
+                                        vic2_drawlines (vic2.lastline, vic2.rasterline);
+                                vic2.reg[offset] = data;
+                        }
+                        break;
+                case 0x2f:
+                        if (vic2.vic2e)
+                        {
+/*TODO*///                                DBG_LOG (2, "vic write", ("%.2x:%.2x\n", offset, data));
+                                vic2.reg[offset] = data;
+                        }
+                        break;
+                case 0x30:
+                        if (vic2.vic2e)
+                        {
+                                vic2.reg[offset] = data;
+                        }
+                        break;
+                case 0x31:
+                case 0x32:
+                case 0x33:
+                case 0x34:
+                case 0x35:
+                case 0x36:
+                case 0x37:
+                case 0x38:
+                case 0x39:
+                case 0x3a:
+                case 0x3b:
+                case 0x3c:
+                case 0x3d:
+                case 0x3e:
+                case 0x3f:
+                        vic2.reg[offset] = data;
+/*TODO*///                        DBG_LOG (2, "vic write", ("%.2x:%.2x\n", offset, data));
+                        break;
+                default:
+                        vic2.reg[offset] = data;
+                        break;
+                }
             }
         };
 	
@@ -594,89 +595,90 @@ public class vic6567
             public int handler(int offset) {
 
 		int val = 0;
-		offset &= 0x3f;
-		switch (offset)
-		{
-		case 0x11:
-			val = (vic2.reg[offset] & ~0x80) | ((vic2.rasterline & 0x100) >> 1);
-			if (vic2.on) vic2_drawlines (vic2.lastline, vic2.rasterline);
-			break;
-		case 0x12:
-			val = vic2.rasterline & 0xff;
-			if (vic2.on) vic2_drawlines (vic2.lastline, vic2.rasterline);
-			break;
-		case 0x16:
-			val = vic2.reg[offset] | 0xc0;
-			break;
-		case 0x18:
-			val = vic2.reg[offset] | 1;
-			break;
-		case 0x19:						   /* interrupt flag register */
-			/*    vic2_clear_interrupt(0xf); */
-			val = vic2.reg[offset] | 0x70;
-			break;
-		case 0x1a:
-			val = vic2.reg[offset] | 0xf0;
-			break;
-		case 0x1e:						   /* sprite to sprite collision detect */
-			val = vic2.reg[offset];
-			vic2.reg[offset] = 0;
-			vic2_clear_interrupt (4);
-			break;
-		case 0x1f:						   /* sprite to background collision detect */
-			val = vic2.reg[offset];
-			vic2.reg[offset] = 0;
-			vic2_clear_interrupt (2);
-			break;
-		case 0x20:
-		case 0x21:
-		case 0x22:
-		case 0x23:
-		case 0x24:
-		case 0x25:
-		case 0x26:
-		case 0x27:
-		case 0x28:
-		case 0x29:
-		case 0x2a:
-		case 0x2b:
-		case 0x2c:
-		case 0x2d:
-		case 0x2e:
-			val = vic2.reg[offset];
-			break;
-		case 0x2f:
-		case 0x30:
-			if (vic2.vic2e) {
-				val = vic2.reg[offset];
-/*TODO*///				DBG_LOG (2, "vic read", ("%.2x:%.2x\n", offset, val));
-			} else
-				val = 0xff;
-			break;
-		case 0x31:
-		case 0x32:
-		case 0x33:
-		case 0x34:
-		case 0x35:
-		case 0x36:
-		case 0x37:
-		case 0x38:
-		case 0x39:
-		case 0x3a:
-		case 0x3b:
-		case 0x3c:
-		case 0x3d:
-		case 0x3e:
-		case 0x3f:						   /* not used */
-			val = vic2.reg[offset];
-/*TODO*///			DBG_LOG (2, "vic read", ("%.2x:%.2x\n", offset, val));
-			break;
-		default:
-			val = vic2.reg[offset];
-		}
-/*TODO*///		if ((offset != 0x11) && (offset != 0x12))
-/*TODO*///			DBG_LOG (2, "vic read", ("%.2x:%.2x\n", offset, val));
-		return val;
+                offset &= 0x3f;
+                switch (offset)
+                {
+                case 0x11:
+                        val = (vic2.reg[offset] & ~0x80) | ((vic2.rasterline & 0x100) >> 1);
+                        if (vic2.on) vic2_drawlines (vic2.lastline, vic2.rasterline);
+                        break;
+                case 0x12:
+                        val = vic2.rasterline & 0xff;
+                        if (vic2.on) vic2_drawlines (vic2.lastline, vic2.rasterline);
+                        break;
+                case 0x16:
+                        val = vic2.reg[offset] | 0xc0;
+                        break;
+                case 0x18:
+                        val = vic2.reg[offset] | 1;
+                        break;
+                case 0x19:						   /* interrupt flag register */
+                        /*    vic2_clear_interrupt(0xf); */
+                        val = vic2.reg[offset] | 0x70;
+                        break;
+                case 0x1a:
+                        val = vic2.reg[offset] | 0xf0;
+                        break;
+                case 0x1e:						   /* sprite to sprite collision detect */
+                        val = vic2.reg[offset];
+                        vic2.reg[offset] = 0;
+                        vic2_clear_interrupt (4);
+                        break;
+                case 0x1f:						   /* sprite to background collision detect */
+                        val = vic2.reg[offset];
+                        vic2.reg[offset] = 0;
+                        vic2_clear_interrupt (2);
+                        break;
+                case 0x20:
+                case 0x21:
+                case 0x22:
+                case 0x23:
+                case 0x24:
+                case 0x25:
+                case 0x26:
+                case 0x27:
+                case 0x28:
+                case 0x29:
+                case 0x2a:
+                case 0x2b:
+                case 0x2c:
+                case 0x2d:
+                case 0x2e:
+                        val = vic2.reg[offset];
+                        break;
+                case 0x2f:
+                case 0x30:
+                        if (vic2.vic2e) {
+                                val = vic2.reg[offset];
+/*TODO*///                                DBG_LOG (2, "vic read", ("%.2x:%.2x\n", offset, val));
+                        } else {
+                                val = 0xff;
+                        }
+                        break;
+                case 0x31:
+                case 0x32:
+                case 0x33:
+                case 0x34:
+                case 0x35:
+                case 0x36:
+                case 0x37:
+                case 0x38:
+                case 0x39:
+                case 0x3a:
+                case 0x3b:
+                case 0x3c:
+                case 0x3d:
+                case 0x3e:
+                case 0x3f:						   /* not used */
+                        val = vic2.reg[offset];
+/*TODO*///                        DBG_LOG (2, "vic read", ("%.2x:%.2x\n", offset, val));
+                        break;
+                default:
+                        val = vic2.reg[offset];
+                }
+/*TODO*///                if ((offset != 0x11) && (offset != 0x12))
+/*TODO*///                        DBG_LOG (2, "vic read", ("%.2x:%.2x\n", offset, val));
+                return val;
             }
                         
         };
@@ -805,7 +807,7 @@ public class vic6567
 			for (y = ybegin; y <= yend; y++)
 			{
 				code = vic2.dma_read.handler(vic2.chargenaddr + ch * 8 + y);
-				vic2.screen[y + yoff].write(xoff >> 3, code);
+				new UShortPtr(vic2.screen[y + yoff]).write(xoff >> 3, (char) code);
 				new UShortPtr(vic2.bitmap.line[y + yoff]).write(xoff, (char) color[code >> 7]);
 				new UShortPtr(vic2.bitmap.line[y + yoff]).write(1 + xoff, (char) color[(code >> 6) & 1]);
 				new UShortPtr(vic2.bitmap.line[y + yoff]).write(2 + xoff, (char) color[(code >> 5) & 1]);
@@ -843,7 +845,7 @@ public class vic6567
 			for (y = ybegin; y <= yend; y++)
 			{
 				code = vic2.dma_read.handler(vic2.chargenaddr + ch * 8 + y);
-				vic2.screen[y + yoff].write(xoff >> 3, vic2.foreground[code]);
+				new UShortPtr(vic2.screen[y + yoff]).write(xoff >> 3, (char) vic2.foreground[code]);
 				new UShortPtr( vic2.bitmap.line[y + yoff]).write(xoff, (char) vic2.multi[code >> 6]); 
 				new UShortPtr( vic2.bitmap.line[y + yoff]).write(xoff + 1, (char) vic2.multi[code >> 6]);
 				new UShortPtr( vic2.bitmap.line[y + yoff]).write(xoff + 2, (char) vic2.multi[(code >> 4) & 3]); 
@@ -859,6 +861,7 @@ public class vic6567
 	public static void vic2_draw_bitmap (int ybegin, int yend, int ch, int yoff, int xoff)
 	{
 		int y, code;
+                //System.out.println("vic2_draw_bitmap");
 	
 	/*	if (Machine.color_depth == 8)
 		{
@@ -881,7 +884,7 @@ public class vic6567
 			for (y = ybegin; y <= yend; y++)
 			{
 				code = vic2.dma_read.handler((vic2.chargenaddr&0x2000) + ch * 8 + y);
-				vic2.screen[y + yoff].write(xoff >> 3, code);
+				new UShortPtr(vic2.screen[y + yoff]).write(xoff >> 3, (char) code);
 				new UShortPtr( vic2.bitmap.line[y + yoff]).write(xoff, (char) vic2.c64_bitmap[code >> 7]);
 				new UShortPtr( vic2.bitmap.line[y + yoff]).write(1 + xoff, (char) vic2.c64_bitmap[(code >> 6) & 1]);
 				new UShortPtr( vic2.bitmap.line[y + yoff]).write(2 + xoff, (char) vic2.c64_bitmap[(code >> 5) & 1]);
@@ -897,6 +900,7 @@ public class vic6567
 	public static void vic2_draw_bitmap_multi (int ybegin, int yend, int ch, int yoff, int xoff)
 	{
 		int y, code;
+                //System.out.println("vic2_draw_bitmap_multi "+vic2.chargenaddr);
 	
 	/*	if (Machine.color_depth == 8)
 		{
@@ -919,7 +923,8 @@ public class vic6567
 			for (y = ybegin; y <= yend; y++)
 			{
 				code = vic2.dma_read.handler((vic2.chargenaddr&0x2000) + ch * 8 + y);
-				vic2.screen[y + yoff].write(xoff >> 3, vic2.foreground[code]);
+                            //code = vic2.dma_read.handler((8192&0x2000) + ch * 8 + y);
+				new UShortPtr(vic2.screen[y + yoff]).write(xoff >> 3, (char) vic2.foreground[code]);
 				new UShortPtr( vic2.bitmap.line[y + yoff]).write(xoff, (char) vic2.bitmapmulti[code >> 6]);
 				new UShortPtr( vic2.bitmap.line[y + yoff]).write(xoff + 1, (char) vic2.bitmapmulti[code >> 6]);
 				new UShortPtr( vic2.bitmap.line[y + yoff]).write(xoff + 2, (char) vic2.bitmapmulti[(code >> 4) & 3]); 
