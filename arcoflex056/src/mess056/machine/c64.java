@@ -503,12 +503,11 @@ public class c64
 			vic2_port_w.handler(offset & 0x3ff, data);
 		} else if (offset < 0x800) {
 /*TODO*///			sid6581_0_port_w.handler(offset & 0x3ff, data);
-		} else if (offset < 0xc00)
+		} else if (offset < 0xc00) {
 			c64_colorram.write(offset & 0x3ff, data | 0xf0);
-		else if (offset < 0xd00)
+                } else if (offset < 0xd00){
 			cia6526_0_port_w.handler(offset & 0xff, data);
-		else if (offset < 0xe00)
-		{
+                } else if (offset < 0xe00){
 			if (c64_cia1_on != 0)
 				cia6526_1_port_w.handler(offset & 0xff, data);
 /*TODO*///			else
@@ -538,17 +537,18 @@ public class c64
 	
 	public static ReadHandlerPtr c64_read_io  = new ReadHandlerPtr() { public int handler(int offset)
 	{
-		if (offset < 0x400)
+		if (offset < 0x400){
 			return vic2_port_r.handler(offset & 0x3ff);
-		else if (offset < 0x800){
+                } else if (offset < 0x800){
 /*TODO*///			return sid6581_0_port_r.handler(offset & 0x3ff);
                         return 0xff;
-                } else if (offset < 0xc00)
+                } else if (offset < 0xc00) {
 			return c64_colorram.read(offset & 0x3ff);
-		else if (offset < 0xd00)
+                } else if (offset < 0xd00) {
 			return cia6526_0_port_r.handler(offset & 0xff);
-		else if (c64_cia1_on!=0 && (offset < 0xe00))
+                } else if (c64_cia1_on!=0 && (offset < 0xe00)) {
 			return cia6526_1_port_r.handler(offset & 0xff);
+                }
 /*TODO*///		DBG_LOG (1, "io read", ("%.3x\n", offset));
 		return 0xff;
 	} };
@@ -808,11 +808,11 @@ public class c64
 /*TODO*///		return c64_colorram[offset & 0x3ff];
 /*TODO*///	}
 /*TODO*///	
-/*TODO*///	public static WriteHandlerPtr c64_colorram_write = new WriteHandlerPtr() {public void handler(int offset, int data)
-/*TODO*///	{
-/*TODO*///		c64_colorram[offset & 0x3ff] = data | 0xf0;
-/*TODO*///	} };
-/*TODO*///	
+	public static WriteHandlerPtr c64_colorram_write = new WriteHandlerPtr() {public void handler(int offset, int data)
+	{
+		c64_colorram.write(offset & 0x3ff, data | 0xf0);
+	} };
+	
 	/*
 	 * only 14 address lines
 	 * a15 and a14 portlines

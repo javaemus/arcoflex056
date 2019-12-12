@@ -333,13 +333,13 @@ public class system {
 	/*TODO*///	TESTDRIVER( vc20v ) 	/* Commodore Vic-20 PAL, VC1541					  */
 	/*TODO*///		DRIVER( vic20i )	/* Commodore Vic-20 IEEE488 Interface			  */
 	/*TODO*///	
-	/*TODO*///		DRIVER( max )		/* Max (Japan)/Ultimax (US)/VC10 (German)		  */
+	driver_max,		/* Max (Japan)/Ultimax (US)/VC10 (German)		  */
 	driver_k64,
         driver_c64,		/* Commodore 64 - NTSC							  */
 	/*TODO*///	/*	DRIVER( j64 )*/		/* Commodore 64 - NTSC (Japan)					  */
 	driver_c64pal,	/* Commodore 64 - PAL							  */
 	/*TODO*///		DRIVER( vic64s )	/* Commodore VIC64S (Swedish)					  */
-	/*TODO*///		DRIVER( cbm4064 )	/* Commodore CBM4064							  */
+	driver_cbm4064,	/* Commodore CBM4064							  */
 	/*TODO*///	TESTDRIVER( sx64 )		/* Commodore SX 64 - PAL						  */
 	/*TODO*///	TESTDRIVER( vip64 )		/* Commodore VIP64 (SX64, PAL, Swedish)			  */
 	/*TODO*///	TESTDRIVER( dx64 )		/* Commodore DX 64 - PROTOTPYE, PAL						  */
