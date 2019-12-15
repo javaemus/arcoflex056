@@ -325,11 +325,17 @@ public class c64
 	
 	public static ReadHandlerPtr c64_cia0_interrupt = new ReadHandlerPtr() {
             public int handler(int level) {
+                //System.out.println("c64_cia0_interrupt");
 		if (level != cia0irq)
 		{
 			c64_irq ((level!=0 || vicirq!=0) ? 1:0);
 			cia0irq = level;
 		}
+                /*try {
+                    throw new Exception("CASCA!");
+                } catch (Exception e){
+                    e.printStackTrace(System.out);
+                }*/
                 
                 return 0xff;
             }
@@ -400,8 +406,10 @@ public class c64
 	
 	static ReadHandlerPtr c64_cia1_interrupt = new ReadHandlerPtr() {
             public int handler(int level) {
+                System.out.println("c64_cia1_interrupt");
 		cia1irq=level;
 		c64_nmi();
+                
 /*TODO*///	#if 0
 /*TODO*///		static int old_level = 0;
 /*TODO*///	
@@ -827,7 +835,7 @@ public class c64
                                 return c64_memory.read(offset);
                         return c64_romh.read(offset & 0x1fff);
                 }
-                if (((c64_vicaddr.read() - c64_memory.read() + offset) & 0x7000) == 0x1000)
+                if (((c64_vicaddr.offset - c64_memory.offset + offset) & 0x7000) == 0x1000)
                         return c64_chargen.read(offset & 0xfff);
                 return c64_vicaddr.read(offset);
             }
@@ -960,8 +968,8 @@ public class c64
 /*TODO*///	#ifdef VC1541
 		vc1541_reset ();
 /*TODO*///	#endif
-		sid6581_reset(0);
-		sid6581_set_type(0, SID8580());
+/*TODO*///		sid6581_reset(0);
+/*TODO*///		sid6581_set_type(0, SID8580());
 		if (c64_cia1_on != 0)
 		{
 			cbm_serial_reset_write (0);

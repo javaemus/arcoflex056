@@ -1266,6 +1266,11 @@ public class vic6567
 	
 	public static void vic2_drawlines (int first, int last)
 	{
+            /*System.out.println("ECMON():"+ECMON());
+            System.out.println("HIRESON():"+HIRESON());
+            System.out.println("MULTICOLORON():"+MULTICOLORON());
+            System.out.println("LINES25():"+LINES25());
+            System.out.println("COLUMNS40():"+COLUMNS40());*/
 		int line, vline, end;
 		int attr, ch, ecm;
 		int syend;
@@ -1481,33 +1486,33 @@ public class vic6567
             public int handler() {
 
 		int i;
-	
-		vic2.rasterline++;
-		if (vic2.rasterline >= vic2.lines)
-		{
-			vic2.rasterline = 0;
-			if (vic2.on) vic2_drawlines (vic2.lastline, vic2.lines);
-	
-			for (i = 0; i < 8; i++)
-				vic2.sprites[i].repeat = vic2.sprites[i].line = 0;
-			vic2.lastline = 0;
-			if (LIGHTPEN_BUTTON() != 0)
-			{
-				double tme = 0.0;
-	
-				/* lightpen timer starten */
-				vic2.lightpentimer = timer_set (tme, 1, vic2_timer_timeout);
-			}
-			//state_display(vic2.bitmap);
-		}
-		if (vic2.rasterline == C64_2_RASTERLINE (RASTERLINE()))
-		{
-			if (vic2.on)
-				vic2_drawlines (vic2.lastline, vic2.rasterline);
-			vic2_set_interrupt (1);
-		}
-		return ignore_interrupt.handler();
-	}
+
+                vic2.rasterline++;
+                if (vic2.rasterline >= vic2.lines)
+                {
+                        vic2.rasterline = 0;
+                        if (vic2.on) vic2_drawlines (vic2.lastline, vic2.lines);
+
+                        for (i = 0; i < 8; i++)
+                                vic2.sprites[i].repeat = vic2.sprites[i].line = 0;
+                        vic2.lastline = 0;
+                        if (LIGHTPEN_BUTTON()!=0)
+                        {
+                                double tme = 0.0;
+
+                                /* lightpen timer starten */
+                                vic2.lightpentimer = timer_set (tme, 1, vic2_timer_timeout);
+                        }
+                        //state_display(vic2.bitmap);
+                }
+                if (vic2.rasterline == C64_2_RASTERLINE (RASTERLINE()))
+                {
+                        if (vic2.on)
+                                vic2_drawlines (vic2.lastline, vic2.rasterline);
+                        vic2_set_interrupt (1);
+                }
+                return ignore_interrupt.handler();
+            }
         };
 	
 	public static VhUpdatePtr vic2_vh_screenrefresh = new VhUpdatePtr() {

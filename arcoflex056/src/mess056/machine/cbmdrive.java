@@ -224,19 +224,19 @@ public class cbmdrive
 	{
                 System.out.println("d64_read_directory");
 		int pos, track, sector, i, j, blocksfree, addr = 0x0101/*0x1001*/;
-
+                
                 //c1551.buffer = new UBytePtr (c1551.buffer, 8 * 18 * 25); // REALLOC
-                if (c1551.buffer==null)
+                //if (c1551.buffer==null)
                     c1551.buffer = new UBytePtr(8 * 18 * 25);
                 
-                char[] _tempMEM = c1551.buffer.memory;
+                /*char[] _tempMEM = c1551.buffer.memory;
 	        c1551.buffer = new UBytePtr(8 * 18 * 25);
                 
-                int _longo = _tempMEM.length;
+                int _longo = (_tempMEM.length<=c1551.buffer.memory.length)?_tempMEM.length : c1551.buffer.memory.length;
                 
                 for (int _i=0 ; _i<_longo; _i++)
                     c1551.buffer.memory[_i] = _tempMEM[_i];
-	        
+	        */
                 
                 if (c1551.buffer==null) {
 /*TODO*///                        logerror("out of memory %s %d\n",
@@ -345,6 +345,11 @@ public class cbmdrive
                 c1551.buffer.write(c1551.size++, 0);
 
                 strcpy (c1551.d.d64.filename, "$");
+                
+                // fill until end buffer
+                /*int _endBuf = (8 * 18 * 25);
+                for (int _k=c1551.size ; _k<_endBuf ; _k++)
+                    c1551.buffer.write(_k, 0);*/
 	}
 	
 	public static int c1551_d64_command (CBM_Drive c1551, String name)

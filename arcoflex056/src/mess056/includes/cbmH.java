@@ -133,7 +133,7 @@ public class cbmH
             new IODevice(
             IO_QUICKLOAD,          /* type */
             1,                                      /* count */
-            "t64\0p00\0prg\0",            /*file extensions */
+            "t64\0p00\0prg\0vsf\0",            /*file extensions */
             IO_RESET_NONE,	   /* reset if file changed */
             null,               /* id */
             cbm_quick_init,     /* init */

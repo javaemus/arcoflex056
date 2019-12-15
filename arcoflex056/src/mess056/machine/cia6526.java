@@ -46,7 +46,7 @@ public class cia6526
 	public static int TIMER2_ONESHOT(CIA6526 This){ return (This.crb&8); } /* else continuous */
 	public static int TIMER2_STOP(CIA6526 This){ return (This.crb&1)!=0?0:1; }
 	public static int TIMER2_RELOAD(CIA6526 This){ return (This.crb&0x10); }
-	public static int TIMER2_COUNT_CLOCK(CIA6526 This){ return ((This.crb&0x60)==0)?1:0; }
+	public static int TIMER2_COUNT_CLOCK(CIA6526 This){ return ((This.crb&0x60)!=0)?0:1; }
 /*TODO*///	#define TIMER2_COUNT_CNT ((This.crb&0x60)==0x20)
 	public static int TIMER2_COUNT_TIMER1(CIA6526 This){ return ((This.crb&0x60)==0x40) ? 1 : 0; }
 	public static int TIMER2_COUNT_TIMER1_CNT(CIA6526 This){ return ((This.crb&0x60)==0x60) ? 1 : 0; }
@@ -324,72 +324,72 @@ public class cia6526
 	
 	public static void cia_timer2_state (CIA6526 This)
 	{
-            //System.out.println("timer2: "+This.timer2_state);
-		switch (This.timer2_state)
-		{
-		case 0:						   /* timer stopped */
-			if (TIMER2_RELOAD(This)!=0)
-			{
-				This.crb &= ~0x10;
-				This.t2c = This.t2l;
-			}
-			if (TIMER2_STOP(This) == 0)
-			{
-				if (TIMER2_COUNT_CLOCK(This)!=0)
-				{
-					This.timer2_state = 1;
-					This.timer2 = timer_set (TIME_IN_CYCLES (This.t2c, 0),
-											  This.number, cia_timer2_timeout);
-				}
-				else
-				{
-					This.timer2_state = 2;
-				}
-			}
-			break;
-		case 1:						   /* counting clock input */
-			if (TIMER2_RELOAD(This)!=0)
-			{
-				This.crb &= ~0x10;
-				This.t2c = This.t2l;
-				timer_reset (This.timer2, TIME_IN_CYCLES (This.t2c, 0));
-			}
-			if (TIMER2_STOP(This)!=0)
-			{
-				This.timer2_state = 0;
-				timer_remove (This.timer2);
-				This.timer2 = null;
-			}
-			else if (TIMER2_COUNT_CLOCK(This) == 0)
-			{
-				This.timer2_state = 2;
-				timer_remove (This.timer2);
-				This.timer2 = null;
-			}
-			break;
-		case 2:						   /* counting cnt, timer1  input */
-			if (This.t2c == 0)
-			{
-				cia_set_interrupt (This, 2);
-				This.crb |= 0x10;
-			}
-			if (TIMER2_RELOAD(This)!=0)
-			{
-				This.crb &= ~0x10;
-				This.t2c = This.t2l;
-			}
-			if (TIMER2_STOP(This)!=0)
-			{
-				This.timer2_state = 0;
-			}
-			else if (TIMER2_COUNT_CLOCK(This)!=0)
-			{
-				This.timer2 = timer_set (TIME_IN_CYCLES (This.t2c, 0),
-										  This.number, cia_timer2_timeout);
-				This.timer2_state = 1;
-			}
-			break;
-		}
+            System.out.println("timer2: "+This.timer2_state);
+            switch (This.timer2_state)
+            {
+            case 0:						   /* timer stopped */
+                    if (TIMER2_RELOAD(This)!=0)
+                    {
+                            This.crb &= ~0x10;
+                            This.t2c = This.t2l;
+                    }
+                    if (TIMER2_STOP(This)==0)
+                    {
+                            if (TIMER2_COUNT_CLOCK(This)!=0)
+                            {
+                                    This.timer2_state = 1;
+                                    This.timer2 = timer_set (TIME_IN_CYCLES (This.t2c, 0),
+                                                                                      This.number, cia_timer2_timeout);
+                            }
+                            else
+                            {
+                                    This.timer2_state = 2;
+                            }
+                    }
+                    break;
+            case 1:						   /* counting clock input */
+                    if (TIMER2_RELOAD(This)!=0)
+                    {
+                            This.crb &= ~0x10;
+                            This.t2c = This.t2l;
+                            timer_reset (This.timer2, TIME_IN_CYCLES (This.t2c, 0));
+                    }
+                    if (TIMER2_STOP(This) != 0 )
+                    {
+                            This.timer2_state = 0;
+                            timer_remove (This.timer2);
+                            This.timer2 = null;
+                    }
+                    else if (TIMER2_COUNT_CLOCK(This)==0)
+                    {
+                            This.timer2_state = 2;
+                            timer_remove (This.timer2);
+                            This.timer2 = null;
+                    }
+                    break;
+            case 2:						   /* counting cnt, timer1  input */
+                    if (This.t2c == 0)
+                    {
+                            cia_set_interrupt (This, 2);
+                            This.crb |= 0x10;
+                    }
+                    if (TIMER2_RELOAD(This)!=0)
+                    {
+                            This.crb &= ~0x10;
+                            This.t2c = This.t2l;
+                    }
+                    if (TIMER2_STOP(This)!=0)
+                    {
+                            This.timer2_state = 0;
+                    }
+                    else if (TIMER2_COUNT_CLOCK(This)!=0)
+                    {
+                            This.timer2 = timer_set (TIME_IN_CYCLES (This.t2c, 0),
+                                                                              This.number, cia_timer2_timeout);
+                            This.timer2_state = 1;
+                    }
+                    break;
+            }
                 
                 cia[This.number] = This;
 	}
@@ -398,54 +398,56 @@ public class cia6526
             public void handler(int which) {
                 //System.out.println("cia_timer1_timeout");
                 CIA6526 This = cia[which];
-	
-		This.t1c = This.t1l;
-	
-		if (TIMER1_ONESHOT(This) != 0)
-		{
-			This.cra &= ~1;
-			This.timer1_state = 0;
-		}
-		else
-		{
-			timer_reset (This.timer1, TIME_IN_CYCLES (This.t1c, 0));
-		}
-		cia_set_interrupt (This, 1);
-		if (SERIAL_MODE_OUT(This) != 0)
-		{
-			if (This.shift!=0 || This.loaded!=0)
-			{
-				if (This.cnt!=0)
-				{
-					if (This.shift == 0)
-					{
-						This.loaded = 0;
-						This.serial = This.sdr;
-					}
-					This.sp = (This.serial & 0x80)!=0 ? 1 : 0;
-					This.shift++;
-					This.serial <<= 1;
-					This.cnt = 0;
-				}
-				else
-				{
-					This.cnt = 1;
-					if (This.shift == 8)
-					{
-						cia_set_interrupt (This, 8);
-						This.shift = 0;
-					}
-				}
-			}
-		}
-	
-		/*  cia_timer1_state(This); */
-	
-		if (TIMER2_COUNT_TIMER1(This) != 0 || ((TIMER2_COUNT_TIMER1_CNT(This) != 0 ) && (This.cnt!=0)))
-		{
-			This.t2c--;
-			cia_timer2_state (This);
-		}
+
+                This.t1c = This.t1l;
+
+                if (TIMER1_ONESHOT(This)!=0)
+                {
+                        This.cra &= ~1;
+                        This.timer1_state = 0;
+                }
+                else
+                {
+                        timer_reset (This.timer1, TIME_IN_CYCLES (This.t1c, 0));
+                }
+                cia_set_interrupt (This, 1);
+                if (SERIAL_MODE_OUT(This)!=0)
+                {
+                        if (This.shift!=0 || This.loaded!=0)
+                        {
+                                if (This.cnt!=0)
+                                {
+                                        if (This.shift == 0)
+                                        {
+                                                This.loaded = 0;
+                                                This.serial = This.sdr;
+                                        }
+                                        This.sp = (This.serial & 0x80) !=0 ? 1 : 0;
+                                        This.shift++;
+                                        This.serial <<= 1;
+                                        This.cnt = 0;
+                                }
+                                else
+                                {
+                                        This.cnt = 1;
+                                        if (This.shift == 8)
+                                        {
+                                                cia_set_interrupt (This, 8);
+                                                This.shift = 0;
+                                        }
+                                }
+                        }
+                }
+
+                /*  cia_timer1_state(This); */
+
+                if (TIMER2_COUNT_TIMER1(This)!=0 || ((TIMER2_COUNT_TIMER1_CNT(This)!=0 ) && (This.cnt!=0)))
+                {
+                        This.t2c--;
+                        cia_timer2_state (This);
+                }
+                
+                cia[which] = This;
             }
         };
 	
@@ -468,6 +470,8 @@ public class cia6526
 	
 		cia_set_interrupt (This, 2);
 		/*  cia_timer2_state(This); */
+                
+                cia[which] = This;
             }
         };
 	
@@ -568,6 +572,9 @@ public class cia6526
 			break;
 		}
 /*TODO*///		DBG_LOG (1, "cia read", ("%d %.2x:%.2x\n", This.number, offset, val));
+                
+                cia[This.number] = This;
+                
 		return val;
 	}
 	
