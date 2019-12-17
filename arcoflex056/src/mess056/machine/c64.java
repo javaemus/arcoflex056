@@ -391,13 +391,28 @@ public class c64
         
         static int helper[] =
 		{0xc000, 0x8000, 0x4000, 0x0000};
+        
+        //public static int kk = helper[3];
 	
 	public static WriteHandlerPtr c64_cia1_port_a_w = new WriteHandlerPtr() {
             public void handler(int offset, int data) {
-                cbm_serial_clock_write (serial_clock = (data & 0x10)!=0?0:1);
-		cbm_serial_data_write (serial_data = (data & 0x20)!=0?0:1);
-		cbm_serial_atn_write (serial_atn = (data & 8)!=0?0:1);
-		c64_vicaddr = new UBytePtr(c64_memory, helper[data & 3]);
+                //System.out.println("c64_cia1_port_a_w "+data);
+                cbm_serial_clock_write (serial_clock = (data & 0x10)==0?1:0);
+		cbm_serial_data_write (serial_data = (data & 0x20)==0?1:0);
+		cbm_serial_atn_write (serial_atn = (data & 8)==0?1:0);
+                
+                if ((data & 3) != 3){
+                    
+                    System.out.println("data: "+data+" Helper: "+(data & 3)+" offset="+offset);
+                    System.out.println("Timer1 "+cia[1].timer1);
+                    System.out.println("serial_clock "+serial_clock);
+                    System.out.println("serial_data "+serial_data);
+                    System.out.println("serial_atn "+serial_atn);
+                    c64_vicaddr = new UBytePtr(c64_memory, helper[data & 3]);
+                }
+		/*TODO*///c64_vicaddr = new UBytePtr(c64_memory, helper[data & 3]);
+                //if (data!=199)
+                    
 		if (c128 != 0) {
 			c128_vicaddr = new UBytePtr(c64_memory, helper[data & 3] + c128_va1617);
 		}
@@ -885,6 +900,8 @@ public class c64
 			cbm_drive_attach_fs (0);
 			cbm_drive_attach_fs (1);
 		}
+                
+                cia6526_init();
 	
 		c64_cia0.todin50hz = c64_pal;
 		cia6526_config (0, c64_cia0);
@@ -978,7 +995,7 @@ public class c64
 			serial_clock = serial_data = serial_atn = 1;
 		}
 		cia6526_reset ();
-		c64_vicaddr = new UBytePtr(c64_memory);
+		c64_vicaddr = new UBytePtr(c64_memory, 0);
 		vicirq = cia0irq = 0;
 		c64_port6510 = 0xff;
 		c64_ddr6510 = 0;
