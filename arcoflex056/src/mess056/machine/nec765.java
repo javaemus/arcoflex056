@@ -680,7 +680,7 @@ public class nec765
 	public static void nec765_init(nec765_interface iface, int version)
 	{
 		fdc.version = version;
-		fdc.timer = null;	//timer_set(TIME_NEVER, 0, nec765_timer_callback);
+		fdc.timer = timer_set(TIME_NEVER, 0, nec765_timer_callback);
 		fdc.seek_timer = null;
 		//memset(&nec765_iface, 0, sizeof(nec765_interface));
 	

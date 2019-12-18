@@ -129,9 +129,9 @@ public class cia6526
                 cia[which].active = 1;
                 cia[which].number = which;
                 cia[which].intf = intf;
-                /*TODO*///cia[which].timer1 = new timer_entry();cia[which].timer1.callback=cia_timer1_timeout;
-                /*TODO*///cia[which].timer2 = new timer_entry();cia[which].timer1.callback=cia_timer2_timeout;
-                /*TODO*///cia[which].todtimer = new timer_entry();cia[which].timer1.callback=cia_tod_timeout;
+                cia[which].timer1 = new timer_entry();cia[which].timer1.callback=cia_timer1_timeout;
+                cia[which].timer2 = new timer_entry();cia[which].timer1.callback=cia_timer2_timeout;
+                cia[which].todtimer = new timer_entry();cia[which].timer1.callback=cia_tod_timeout;
         }
 
 
@@ -169,12 +169,12 @@ public class cia6526
                                 //timer_reset(cia[i].timer1, TIME_NEVER);
                                 //timer_reset(cia[i].timer2, TIME_NEVER);
                                 
-                                if (cia[i].intf != null){
+                                //if (cia[i].intf != null){
                                         /*TODO*///timer_adjust(cia[i].todtimer, 0.1, /*i,*/ 0);
                                         cia[i].todtimer=timer_set(0.1,i,cia_tod_timeout);
-                                } else {
+                                /*} else {
                                         timer_reset(cia[i].todtimer, TIME_NEVER);
-                                }
+                                }*/
                         }
                 }
         }

@@ -36,54 +36,57 @@
  */
 package mess056.sndhrdw;
 
-import mess056.sndhrdw.sidvoiceH.sidOperator;
+import static java.lang.Math.exp;
+import static mess056.sndhrdw.side6581H.*;
+import static mess056.sndhrdw.sidenvelH.*;
+import static mess056.sndhrdw.sidvoiceH.*;
 
 /**
  *
  * @author chusogar
  */
 public class sidenvel {
-/*TODO*///	
+
 /*TODO*///	#define VERBOSE_DBG 0
-/*TODO*///	
-/*TODO*///	
-/*TODO*///	
-/*TODO*///	const ubyte masterVolumeLevels[16] =
-/*TODO*///	{
-/*TODO*///	    0,  17,  34,  51,  68,  85, 102, 119,
-/*TODO*///	  136, 153, 170, 187, 204, 221, 238, 255
-/*TODO*///	};
-/*TODO*///	
-/*TODO*///	static uword masterAmplModTable[16*256];
-/*TODO*///	
-/*TODO*///	static float attackTimes[16] =
-/*TODO*///	{
-/*TODO*///	  /* milliseconds */
+	
+	
+	
+	public static byte masterVolumeLevels[] =
+	{
+	  (byte)0,  (byte)17,  (byte)34,  (byte)51,  (byte)68,  (byte)85, (byte)102, (byte)119,
+	  (byte)136, (byte)153, (byte)170, (byte)187, (byte)204, (byte)221, (byte)238, (byte)255
+	};
+	
+	static int[] masterAmplModTable = new int[16*256];
+
+	static float attackTimes[] =
+	{
+	  /* milliseconds */
 /*TODO*///	#if defined(SID_REFTIMES)
 /*TODO*///	  2,8,16,24,38,56,68,80,
 /*TODO*///	  100,250,500,800,1000,3000,5000,8000
 /*TODO*///	#else
-/*TODO*///	  2.2528606, 8.0099577, 15.7696042, 23.7795619, 37.2963655, 55.0684591,
-/*TODO*///	  66.8330845, 78.3473987,
-/*TODO*///	  98.1219818, 244.554021, 489.108042, 782.472742, 977.715461, 2933.64701,
-/*TODO*///	  4889.07793, 7822.72493
+	  2.2528606f, 8.0099577f, 15.7696042f, 23.7795619f, 37.2963655f, 55.0684591f,
+	  66.8330845f, 78.3473987f,
+	  98.1219818f, 244.554021f, 489.108042f, 782.472742f, 977.715461f, 2933.64701f,
+	  4889.07793f, 7822.72493f
 /*TODO*///	#endif
-/*TODO*///	};
-/*TODO*///	
-/*TODO*///	static float decayReleaseTimes[16] =
-/*TODO*///	{
-/*TODO*///	  /* milliseconds */
+	};
+	
+	static float decayReleaseTimes[] =
+	{
+	  /* milliseconds */
 /*TODO*///	#if defined(SID_REFTIMES)
 /*TODO*///	  8,24,48,72,114,168,204,240,
 /*TODO*///	  300,750,1500,2400,3000,9000,15000,24000
 /*TODO*///	#else
-/*TODO*///	  8.91777693, 24.594051, 48.4185907, 73.0116639, 114.512475, 169.078356,
-/*TODO*///	  205.199432, 240.551975,
-/*TODO*///	  301.266125, 750.858245, 1501.71551, 2402.43682, 3001.89298, 9007.21405,
-/*TODO*///	  15010.998, 24018.2111
+	  8.91777693f, 24.594051f, 48.4185907f, 73.0116639f, 114.512475f, 169.078356f,
+	  205.199432f, 240.551975f,
+	  301.266125f, 750.858245f, 1501.71551f, 2402.43682f, 3001.89298f, 9007.21405f,
+	  15010.998f, 24018.2111f
 /*TODO*///	#endif
-/*TODO*///	};
-/*TODO*///	
+	};
+	
 /*TODO*///	#ifdef SID_FPUENVE
 /*TODO*///	  static float attackRates[16];
 /*TODO*///	  static float decayReleaseRates[16];
@@ -91,60 +94,60 @@ public class sidenvel {
 /*TODO*///	  static udword attackRates[16];
 /*TODO*///	  static udword decayReleaseRates[16];
 /*TODO*///	#else
-/*TODO*///	  static udword attackRates[16];
-/*TODO*///	  static udword attackRatesP[16];
-/*TODO*///	  static udword decayReleaseRates[16];
-/*TODO*///	  static udword decayReleaseRatesP[16];
+	  static int[] attackRates = new int[16];
+          static int[] attackRatesP = new int[16];
+	  static int[] decayReleaseRates = new int[16];
+          static int[] decayReleaseRatesP = new int[16];
 /*TODO*///	#endif
-/*TODO*///	
-/*TODO*///	const udword attackTabLen = 255;
-/*TODO*///	static udword releaseTabLen;
-/*TODO*///	static udword releasePos[256];
-/*TODO*///	
-/*TODO*///	
-/*TODO*///	void enveEmuInit( udword updateFreq, bool measuredValues )
-/*TODO*///	{
-/*TODO*///		udword i, j, k;
-/*TODO*///	
-/*TODO*///		releaseTabLen = sizeof(releaseTab);
-/*TODO*///		for ( i = 0; i < 256; i++ )
-/*TODO*///		{
-/*TODO*///			j = 0;
-/*TODO*///			while (( j < releaseTabLen ) && (releaseTab[j] > i) )
-/*TODO*///			{
-/*TODO*///				j++;
-/*TODO*///			}
-/*TODO*///			if ( j < releaseTabLen )
-/*TODO*///			{
-/*TODO*///				releasePos[i] = j;
-/*TODO*///			}
-/*TODO*///			else
-/*TODO*///			{
-/*TODO*///				releasePos[i] = releaseTabLen -1;
-/*TODO*///			}
-/*TODO*///		}
-/*TODO*///	
-/*TODO*///		k = 0;
-/*TODO*///		for ( i = 0; i < 16; i++ )
-/*TODO*///		{
-/*TODO*///			for ( j = 0; j < 256; j++ )
-/*TODO*///			{
-/*TODO*///				uword tmpVol = j;
-/*TODO*///				if (measuredValues)
-/*TODO*///				{
-/*TODO*///					tmpVol = (uword) ((293.0*(1-exp(j/-130.0)))+4.0);
-/*TODO*///					if (j == 0)
-/*TODO*///						tmpVol = 0;
-/*TODO*///					if (tmpVol > 255)
-/*TODO*///						tmpVol = 255;
-/*TODO*///				}
-/*TODO*///				/* Want the modulated volume value in the high byte. */
-/*TODO*///				masterAmplModTable[k++] = ((tmpVol * masterVolumeLevels[i]) / 255) << 8;
-/*TODO*///			}
-/*TODO*///		}
-/*TODO*///	
-/*TODO*///		for ( i = 0; i < 16; i++ )
-/*TODO*///		{
+
+          static int attackTabLen = 255;
+          static int releaseTabLen;
+          static int[] releasePos = new int[256];
+	
+	
+	public static void enveEmuInit( int updateFreq, boolean measuredValues )
+	{
+		int i, j, k;
+	
+		releaseTabLen = releaseTab.length;
+		for ( i = 0; i < 256; i++ )
+		{
+			j = 0;
+			while (( j < releaseTabLen ) && (releaseTab[j] > i) )
+			{
+				j++;
+			}
+			if ( j < releaseTabLen )
+			{
+				releasePos[i] = j;
+			}
+			else
+			{
+				releasePos[i] = releaseTabLen -1;
+			}
+		}
+	
+		k = 0;
+		for ( i = 0; i < 16; i++ )
+		{
+			for ( j = 0; j < 256; j++ )
+			{
+				int tmpVol = j;
+				if (measuredValues)
+				{
+					tmpVol = (int) ((293.0*(1-exp(j/-130.0)))+4.0);
+					if (j == 0)
+						tmpVol = 0;
+					if (tmpVol > 255)
+						tmpVol = 255;
+				}
+				/* Want the modulated volume value in the high byte. */
+				masterAmplModTable[k++] = ((tmpVol * masterVolumeLevels[i]) / 255) << 8;
+			}
+		}
+	
+		for ( i = 0; i < 16; i++ )
+		{
 /*TODO*///	#ifdef SID_FPUENVE
 /*TODO*///			double scaledenvelen = floor(( attackTimes[i] * updateFreq ) / 1000UL );
 /*TODO*///			if (scaledenvelen == 0)
@@ -166,43 +169,47 @@ public class sidenvel {
 /*TODO*///				scaledenvelen = 1;
 /*TODO*///			decayReleaseRates[i] = (releaseTabLen << 16) / scaledenvelen;
 /*TODO*///	#else
-/*TODO*///			udword scaledenvelen = (udword)(/*floor*/(( attackTimes[i] * updateFreq ) / 1000UL ));
-/*TODO*///	
-/*TODO*///			if (scaledenvelen == 0)
-/*TODO*///				scaledenvelen = 1;
-/*TODO*///			attackRates[i] = attackTabLen / scaledenvelen;
-/*TODO*///			attackRatesP[i] = (( attackTabLen % scaledenvelen ) * 65536UL ) / scaledenvelen;
-/*TODO*///	
-/*TODO*///			scaledenvelen = (udword)(/*floor*/(( decayReleaseTimes[i] * updateFreq ) / 1000UL ));
-/*TODO*///			if (scaledenvelen == 0)
-/*TODO*///				scaledenvelen = 1;
-/*TODO*///			decayReleaseRates[i] = releaseTabLen / scaledenvelen;
-/*TODO*///			decayReleaseRatesP[i] = (( releaseTabLen % scaledenvelen ) * 65536UL ) / scaledenvelen;
+			//int scaledenvelen = (int)(/*floor*/(( attackTimes[i] * updateFreq ) / 1000UL ));
+                    int scaledenvelen = (int)(/*floor*/(( attackTimes[i] * updateFreq ) / 1000 ));
+	
+			if (scaledenvelen == 0)
+				scaledenvelen = 1;
+			attackRates[i] = attackTabLen / scaledenvelen;
+			//attackRatesP[i] = (( attackTabLen % scaledenvelen ) * 65536UL ) / scaledenvelen;
+                        attackRatesP[i] = (( attackTabLen % scaledenvelen ) * 65536 ) / scaledenvelen;
+	
+			//scaledenvelen = (udword)(/*floor*/(( decayReleaseTimes[i] * updateFreq ) / 1000UL ));
+                        scaledenvelen = (int) (/*floor*/(( decayReleaseTimes[i] * updateFreq ) / 1000 ));
+			if (scaledenvelen == 0)
+				scaledenvelen = 1;
+			decayReleaseRates[i] = releaseTabLen / scaledenvelen;
+			//decayReleaseRatesP[i] = (( releaseTabLen % scaledenvelen ) * 65536UL ) / scaledenvelen;
+                        decayReleaseRatesP[i] = (( releaseTabLen % scaledenvelen ) * 65536 ) / scaledenvelen;
 /*TODO*///	#endif
-/*TODO*///	  }
-/*TODO*///	}
+	  }
+	}
 	
 	/* Reset op. */
 	
 	public static void enveEmuResetOperator(sidOperator pVoice)
 	{
-            System.out.println("enveEmuResetOperator NOT IMPLEMENTED!!!!");
-/*TODO*///		/* mute, end of R-phase */
-/*TODO*///		pVoice.ADSRctrl = ENVE_MUTE;
-/*TODO*///	//	pVoice.gateOnCtrl = (pVoice.gateOffCtrl = false);
-/*TODO*///	
+            //System.out.println("enveEmuResetOperator NOT IMPLEMENTED!!!!");
+		/* mute, end of R-phase */
+		pVoice.ADSRctrl = ENVE_MUTE;
+	//	pVoice.gateOnCtrl = (pVoice.gateOffCtrl = false);
+	
 /*TODO*///	#ifdef SID_FPUENVE
 /*TODO*///		pVoice.fenveStep = (pVoice.fenveStepAdd = 0);
 /*TODO*///		pVoice.enveStep = 0;
 /*TODO*///	#elif defined(DIRECT_FIXPOINT)
 /*TODO*///		pVoice.enveStep.l = (pVoice.enveStepAdd.l = 0);
 /*TODO*///	#else
-/*TODO*///		pVoice.enveStep = (pVoice.enveStepPnt = 0);
-/*TODO*///		pVoice.enveStepAdd = (pVoice.enveStepAddPnt = 0);
+		pVoice.enveStep = (pVoice.enveStepPnt = 0);
+		pVoice.enveStepAdd = (pVoice.enveStepAddPnt = 0);
 /*TODO*///	#endif
-/*TODO*///		pVoice.enveSusVol = 0;
-/*TODO*///		pVoice.enveVol = 0;
-/*TODO*///		pVoice.enveShortAttackCount = 0;
+		pVoice.enveSusVol = 0;
+		pVoice.enveVol = 0;
+		pVoice.enveShortAttackCount = 0;
 	}
 
 /*TODO*///	INLINE uword enveEmuStartAttack(sidOperator*);
@@ -223,89 +230,75 @@ public class sidenvel {
 /*TODO*///	INLINE uword enveEmuStartShortAttack(sidOperator*);
 /*TODO*///	INLINE uword enveEmuAlterShortAttack(sidOperator*);
 /*TODO*///	INLINE uword enveEmuShortAttack(sidOperator*);
-/*TODO*///	
-/*TODO*///	
-/*TODO*///	ptr2sidUwordFunc enveModeTable[] =
-/*TODO*///	{
-/*TODO*///		/* 0 */
-/*TODO*///		&enveEmuStartAttack, &enveEmuStartRelease,
-/*TODO*///		&enveEmuAttack, &enveEmuDecay, &enveEmuSustain, &enveEmuRelease,
-/*TODO*///		&enveEmuSustainDecay, &enveEmuMute,
-/*TODO*///		/* 16 */
-/*TODO*///		&enveEmuStartShortAttack,
-/*TODO*///		&enveEmuMute, &enveEmuMute, &enveEmuMute,
-/*TODO*///		&enveEmuMute, &enveEmuMute, &enveEmuMute, &enveEmuMute,
-/*TODO*///	    /* 32		 */
-/*TODO*///		&enveEmuStartAttack, &enveEmuStartRelease,
-/*TODO*///		&enveEmuAlterAttack, &enveEmuAlterDecay, &enveEmuAlterSustain, &enveEmuAlterRelease,
-/*TODO*///		&enveEmuAlterSustainDecay, &enveEmuMute,
-/*TODO*///	    /* 48		 */
-/*TODO*///		&enveEmuStartShortAttack,
-/*TODO*///		&enveEmuMute, &enveEmuMute, &enveEmuMute,
-/*TODO*///		&enveEmuMute, &enveEmuMute, &enveEmuMute, &enveEmuMute
-/*TODO*///	};
-/*TODO*///	
-/*TODO*///	/* Real-time functions. */
-/*TODO*///	/* Order is important because of inline optimizations. */
-/*TODO*///	/* */
-/*TODO*///	/* ADSRctrl is (index*2) to enveModeTable[], because of KEY-bit. */
-/*TODO*///	
-/*TODO*///	INLINE void enveEmuEnveAdvance(sidOperator* pVoice)
-/*TODO*///	{
+	
+	
+	/* Real-time functions. */
+	/* Order is important because of inline optimizations. */
+	/* */
+	/* ADSRctrl is (index*2) to enveModeTable[], because of KEY-bit. */
+	
+        public static ptr2sidUwordFunc enveEmuEnveAdvance = new ptr2sidUwordFunc() {
+            public int handler(sidOperator pVoice) {
 /*TODO*///	#ifdef SID_FPUENVE
 /*TODO*///		pVoice.fenveStep += pVoice.fenveStepAdd;
 /*TODO*///	#elif defined(DIRECT_FIXPOINT)
 /*TODO*///		pVoice.enveStep.l += pVoice.enveStepAdd.l;
 /*TODO*///	#else
-/*TODO*///		pVoice.enveStepPnt += pVoice.enveStepAddPnt;
-/*TODO*///		pVoice.enveStep += pVoice.enveStepAdd + ( pVoice.enveStepPnt > 65535 );
-/*TODO*///		pVoice.enveStepPnt &= 0xFFFF;
+		pVoice.enveStepPnt += pVoice.enveStepAddPnt;
+		pVoice.enveStep += pVoice.enveStepAdd + (( pVoice.enveStepPnt > 65535 )?1:0);
+		pVoice.enveStepPnt &= 0xFFFF;
 /*TODO*///	#endif
-/*TODO*///	}
+
+                return 0xff;
+            }
+        };
 /*TODO*///	
 /*TODO*///	/* */
 /*TODO*///	/* Mute/Idle. */
 /*TODO*///	/* */
 /*TODO*///	
 /*TODO*///	/* Only used in the beginning. */
-/*TODO*///	INLINE uword enveEmuMute(sidOperator* pVoice)
-/*TODO*///	{
-/*TODO*///		return 0;
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	/* */
-/*TODO*///	/* Release */
-/*TODO*///	/* */
-/*TODO*///	
-/*TODO*///	INLINE uword enveEmuRelease(sidOperator* pVoice)
-/*TODO*///	{
+        public static ptr2sidUwordFunc enveEmuMute = new ptr2sidUwordFunc() {
+            public int handler(sidOperator pVoice) {
+		return 0;
+            }
+        };
+	
+	/* */
+	/* Release */
+	/* */
+	
+        public static ptr2sidUwordFunc enveEmuRelease = new ptr2sidUwordFunc() {
+            public int handler(sidOperator pVoice) {
 /*TODO*///	#ifdef SID_FPUENVE
 /*TODO*///		pVoice.enveStep = (uword)pVoice.fenveStep;
 /*TODO*///	#endif
 /*TODO*///	#if defined(DIRECT_FIXPOINT) && !defined(SID_FPUENVE)
 /*TODO*///		if ( pVoice.enveStep.w[HI] >= releaseTabLen )
 /*TODO*///	#else
-/*TODO*///		if ( pVoice.enveStep >= releaseTabLen )
+		if ( pVoice.enveStep >= releaseTabLen )
 /*TODO*///	#endif
-/*TODO*///		{
-/*TODO*///			pVoice.enveVol = releaseTab[releaseTabLen -1];
-/*TODO*///			return masterAmplModTable[ pVoice.sid.masterVolumeAmplIndex + pVoice.enveVol ];
-/*TODO*///		}
-/*TODO*///		else
-/*TODO*///		{
+		{
+			pVoice.enveVol = releaseTab[releaseTabLen -1];
+			return masterAmplModTable[ pVoice.sid.masterVolumeAmplIndex + pVoice.enveVol ];
+		}
+		else
+		{
 /*TODO*///	#if defined(DIRECT_FIXPOINT) && !defined(SID_FPUENVE)
 /*TODO*///			pVoice.enveVol = releaseTab[pVoice.enveStep.w[HI]];
 /*TODO*///	#else
-/*TODO*///			pVoice.enveVol = releaseTab[pVoice.enveStep];
+			pVoice.enveVol = releaseTab[pVoice.enveStep];
 /*TODO*///	#endif
-/*TODO*///			enveEmuEnveAdvance(pVoice);
-/*TODO*///			return masterAmplModTable[ pVoice.sid.masterVolumeAmplIndex + pVoice.enveVol ];
-/*TODO*///		}
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	INLINE uword enveEmuAlterRelease(sidOperator* pVoice)
-/*TODO*///	{
-/*TODO*///		ubyte release = pVoice.SIDSR & 0x0F;
+			enveEmuEnveAdvance.handler(pVoice);
+			return masterAmplModTable[ pVoice.sid.masterVolumeAmplIndex + pVoice.enveVol ];
+		}
+            }
+        };
+            
+	
+        public static ptr2sidUwordFunc enveEmuAlterRelease = new ptr2sidUwordFunc() {
+            public int handler(sidOperator pVoice) {
+		int release = pVoice.SIDSR & 0x0F;
 /*TODO*///	#ifdef SID_FPUENVE
 /*TODO*///		pVoice.fenveStepAdd = decayReleaseRates[release];
 /*TODO*///	#elif defined(DIRECT_FIXPOINT)
@@ -314,233 +307,245 @@ public class sidenvel {
 /*TODO*///		pVoice.enveStepAdd = decayReleaseRates[release];
 /*TODO*///		pVoice.enveStepAddPnt = decayReleaseRatesP[release];
 /*TODO*///	#endif
-/*TODO*///		pVoice.ADSRproc = &enveEmuRelease;
-/*TODO*///		return enveEmuRelease(pVoice);
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	INLINE uword enveEmuStartRelease(sidOperator* pVoice)
-/*TODO*///	{
-/*TODO*///		pVoice.ADSRctrl = ENVE_RELEASE;
+		pVoice.ADSRproc = enveEmuRelease;
+		return enveEmuRelease.handler(pVoice);
+            }
+        };
+	
+        public static ptr2sidUwordFunc enveEmuStartRelease = new ptr2sidUwordFunc() {
+            public int handler(sidOperator pVoice) {
+		pVoice.ADSRctrl = ENVE_RELEASE;
 /*TODO*///	#ifdef SID_FPUENVE
 /*TODO*///		pVoice.fenveStep = releasePos[pVoice.enveVol];
 /*TODO*///	#elif defined(DIRECT_FIXPOINT)
 /*TODO*///		pVoice.enveStep.w[HI] = releasePos[pVoice.enveVol];
 /*TODO*///		pVoice.enveStep.w[LO] = 0;
 /*TODO*///	#else
-/*TODO*///		pVoice.enveStep = releasePos[pVoice.enveVol];
-/*TODO*///		pVoice.enveStepPnt = 0;
+		pVoice.enveStep = releasePos[pVoice.enveVol];
+		pVoice.enveStepPnt = 0;
 /*TODO*///	#endif
-/*TODO*///		return enveEmuAlterRelease(pVoice);
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	/* */
-/*TODO*///	/* Sustain */
-/*TODO*///	/* */
-/*TODO*///	
-/*TODO*///	INLINE uword enveEmuSustain(sidOperator* pVoice)
-/*TODO*///	{
-/*TODO*///		return masterAmplModTable[pVoice.sid.masterVolumeAmplIndex+pVoice.enveVol];
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	INLINE uword enveEmuSustainDecay(sidOperator* pVoice)
-/*TODO*///	{
+		return enveEmuAlterRelease.handler(pVoice);
+            }
+        };
+	
+	/* */
+	/* Sustain */
+	/* */
+	
+        public static ptr2sidUwordFunc enveEmuSustain = new ptr2sidUwordFunc() {
+            public int handler(sidOperator pVoice) {
+		return masterAmplModTable[pVoice.sid.masterVolumeAmplIndex+pVoice.enveVol];
+            }
+        };
+	
+        public static ptr2sidUwordFunc enveEmuSustainDecay = new ptr2sidUwordFunc() {
+            public int handler(sidOperator pVoice) {
 /*TODO*///	#ifdef SID_FPUENVE
 /*TODO*///		pVoice.enveStep = (uword)pVoice.fenveStep;
 /*TODO*///	#endif
 /*TODO*///	#if defined(DIRECT_FIXPOINT) && !defined(SID_FPUENVE)
 /*TODO*///		if ( pVoice.enveStep.w[HI] >= releaseTabLen )
 /*TODO*///	#else
-/*TODO*///		if ( pVoice.enveStep >= releaseTabLen )
+		if ( pVoice.enveStep >= releaseTabLen )
 /*TODO*///	#endif
-/*TODO*///		{
-/*TODO*///			pVoice.enveVol = releaseTab[releaseTabLen-1];
-/*TODO*///			return enveEmuAlterSustain(pVoice);
-/*TODO*///		}
-/*TODO*///		else
-/*TODO*///		{
+		{
+			pVoice.enveVol = releaseTab[releaseTabLen-1];
+			return enveEmuAlterSustain.handler(pVoice);
+		}
+		else
+		{
 /*TODO*///	#if defined(DIRECT_FIXPOINT) && !defined(SID_FPUENVE)
 /*TODO*///			pVoice.enveVol = releaseTab[pVoice.enveStep.w[HI]];
 /*TODO*///	#else
-/*TODO*///			pVoice.enveVol = releaseTab[pVoice.enveStep];
+			pVoice.enveVol = releaseTab[pVoice.enveStep];
 /*TODO*///	#endif
-/*TODO*///			/* Will be controlled from sidEmuSet2(). */
-/*TODO*///			if ( pVoice.enveVol <= pVoice.enveSusVol )
-/*TODO*///			{
-/*TODO*///				pVoice.enveVol = pVoice.enveSusVol;
-/*TODO*///				return enveEmuAlterSustain(pVoice);
-/*TODO*///			}
-/*TODO*///			else
-/*TODO*///			{
-/*TODO*///				enveEmuEnveAdvance(pVoice);
-/*TODO*///				return masterAmplModTable[ pVoice.sid.masterVolumeAmplIndex + pVoice.enveVol ];
-/*TODO*///			}
-/*TODO*///		}
-/*TODO*///	}
-/*TODO*///	
+			/* Will be controlled from sidEmuSet2(). */
+			if ( pVoice.enveVol <= pVoice.enveSusVol )
+			{
+				pVoice.enveVol = pVoice.enveSusVol;
+				return enveEmuAlterSustain.handler(pVoice);
+			}
+			else
+			{
+				enveEmuEnveAdvance.handler(pVoice);
+				return masterAmplModTable[ pVoice.sid.masterVolumeAmplIndex + pVoice.enveVol ];
+			}
+		}
+            }
+        };
+	
 /*TODO*///	/* This is the same as enveEmuStartSustainDecay(). */
-/*TODO*///	INLINE uword enveEmuAlterSustainDecay(sidOperator* pVoice)
-/*TODO*///	{
-/*TODO*///		ubyte decay = pVoice.SIDAD & 0x0F ;
+        public static ptr2sidUwordFunc enveEmuAlterSustainDecay = new ptr2sidUwordFunc() {
+            public int handler(sidOperator pVoice) {
+		int decay = pVoice.SIDAD & 0x0F ;
 /*TODO*///	#ifdef SID_FPUENVE
 /*TODO*///		pVoice.fenveStepAdd = decayReleaseRates[decay];
 /*TODO*///	#elif defined(DIRECT_FIXPOINT)
 /*TODO*///		pVoice.enveStepAdd.l = decayReleaseRates[decay];
 /*TODO*///	#else
-/*TODO*///		pVoice.enveStepAdd = decayReleaseRates[decay];
-/*TODO*///		pVoice.enveStepAddPnt = decayReleaseRatesP[decay];
+		pVoice.enveStepAdd = decayReleaseRates[decay];
+		pVoice.enveStepAddPnt = decayReleaseRatesP[decay];
 /*TODO*///	#endif
-/*TODO*///		pVoice.ADSRproc = &enveEmuSustainDecay;
-/*TODO*///		return enveEmuSustainDecay(pVoice);
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	/* This is the same as enveEmuStartSustain(). */
-/*TODO*///	INLINE uword enveEmuAlterSustain(sidOperator* pVoice)
-/*TODO*///	{
-/*TODO*///		if ( pVoice.enveVol > pVoice.enveSusVol )
-/*TODO*///		{
-/*TODO*///			pVoice.ADSRctrl = ENVE_SUSTAINDECAY;
-/*TODO*///			pVoice.ADSRproc = &enveEmuSustainDecay;
-/*TODO*///			return enveEmuAlterSustainDecay(pVoice);
-/*TODO*///		}
-/*TODO*///		else
-/*TODO*///		{
-/*TODO*///			pVoice.ADSRctrl = ENVE_SUSTAIN;
-/*TODO*///			pVoice.ADSRproc = &enveEmuSustain;
-/*TODO*///			return enveEmuSustain(pVoice);
-/*TODO*///		}
-/*TODO*///	}
-/*TODO*///	
+		pVoice.ADSRproc = enveEmuSustainDecay;
+		return enveEmuSustainDecay.handler(pVoice);
+            }
+        };
+	
+	/* This is the same as enveEmuStartSustain(). */
+        public static ptr2sidUwordFunc enveEmuAlterSustain = new ptr2sidUwordFunc() {
+            public int handler(sidOperator pVoice) {
+		if ( pVoice.enveVol > pVoice.enveSusVol )
+		{
+			pVoice.ADSRctrl = ENVE_SUSTAINDECAY;
+			pVoice.ADSRproc = enveEmuSustainDecay;
+			return enveEmuAlterSustainDecay.handler(pVoice);
+		}
+		else
+		{
+			pVoice.ADSRctrl = ENVE_SUSTAIN;
+			pVoice.ADSRproc = enveEmuSustain;
+			return enveEmuSustain.handler(pVoice);
+		}
+            }
+        };
+	
 /*TODO*///	/* */
 /*TODO*///	/* Decay */
 /*TODO*///	/* */
 /*TODO*///	
-/*TODO*///	INLINE uword enveEmuDecay(sidOperator* pVoice)
-/*TODO*///	{
+        public static ptr2sidUwordFunc enveEmuDecay = new ptr2sidUwordFunc() {
+            public int handler(sidOperator pVoice) {
 /*TODO*///	#ifdef SID_FPUENVE
 /*TODO*///		pVoice.enveStep = (uword)pVoice.fenveStep;
 /*TODO*///	#endif
 /*TODO*///	#if defined(DIRECT_FIXPOINT) && !defined(SID_FPUENVE)
 /*TODO*///		if ( pVoice.enveStep.w[HI] >= releaseTabLen )
 /*TODO*///	#else
-/*TODO*///		if ( pVoice.enveStep >= releaseTabLen )
+		if ( pVoice.enveStep >= releaseTabLen )
 /*TODO*///	#endif
-/*TODO*///		{
-/*TODO*///			pVoice.enveVol = pVoice.enveSusVol;
-/*TODO*///			return enveEmuAlterSustain(pVoice);  /* start sustain */
-/*TODO*///		}
-/*TODO*///		else
-/*TODO*///		{
+		{
+			pVoice.enveVol = pVoice.enveSusVol;
+			return enveEmuAlterSustain.handler(pVoice);  /* start sustain */
+		}
+		else
+		{
 /*TODO*///	#if defined(DIRECT_FIXPOINT) && !defined(SID_FPUENVE)
 /*TODO*///			pVoice.enveVol = releaseTab[pVoice.enveStep.w[HI]];
 /*TODO*///	#else
-/*TODO*///			pVoice.enveVol = releaseTab[pVoice.enveStep];
+			pVoice.enveVol = releaseTab[pVoice.enveStep];
 /*TODO*///	#endif
-/*TODO*///			/* Will be controlled from sidEmuSet2(). */
-/*TODO*///			if ( pVoice.enveVol <= pVoice.enveSusVol )
-/*TODO*///			{
-/*TODO*///				pVoice.enveVol = pVoice.enveSusVol;
-/*TODO*///				return enveEmuAlterSustain(pVoice);  /* start sustain */
-/*TODO*///			}
-/*TODO*///			else
-/*TODO*///			{
-/*TODO*///				enveEmuEnveAdvance(pVoice);
-/*TODO*///				return masterAmplModTable[ pVoice.sid.masterVolumeAmplIndex + pVoice.enveVol ];
-/*TODO*///			}
-/*TODO*///		}
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	INLINE uword enveEmuAlterDecay(sidOperator* pVoice)
-/*TODO*///	{
-/*TODO*///		ubyte decay = pVoice.SIDAD & 0x0F ;
+			/* Will be controlled from sidEmuSet2(). */
+			if ( pVoice.enveVol <= pVoice.enveSusVol )
+			{
+				pVoice.enveVol = pVoice.enveSusVol;
+				return enveEmuAlterSustain.handler(pVoice);  /* start sustain */
+			}
+			else
+			{
+				enveEmuEnveAdvance.handler(pVoice);
+				return masterAmplModTable[ pVoice.sid.masterVolumeAmplIndex + pVoice.enveVol ];
+			}
+		}
+            }
+        };
+	
+        public static ptr2sidUwordFunc enveEmuAlterDecay = new ptr2sidUwordFunc() {
+            public int handler(sidOperator pVoice) {
+		int decay = pVoice.SIDAD & 0x0F ;
 /*TODO*///	#ifdef SID_FPUENVE
 /*TODO*///		pVoice.fenveStepAdd = decayReleaseRates[decay];
 /*TODO*///	#elif defined(DIRECT_FIXPOINT)
 /*TODO*///		pVoice.enveStepAdd.l = decayReleaseRates[decay];
 /*TODO*///	#else
-/*TODO*///		pVoice.enveStepAdd = decayReleaseRates[decay];
-/*TODO*///		pVoice.enveStepAddPnt = decayReleaseRatesP[decay];
+		pVoice.enveStepAdd = decayReleaseRates[decay];
+		pVoice.enveStepAddPnt = decayReleaseRatesP[decay];
 /*TODO*///	#endif
-/*TODO*///		pVoice.ADSRproc = &enveEmuDecay;
-/*TODO*///		return enveEmuDecay(pVoice);
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	INLINE uword enveEmuStartDecay(sidOperator* pVoice)
-/*TODO*///	{
-/*TODO*///		pVoice.ADSRctrl = ENVE_DECAY;
+		pVoice.ADSRproc = enveEmuDecay;
+		return enveEmuDecay.handler(pVoice);
+            }
+        };
+	
+        public static ptr2sidUwordFunc enveEmuStartDecay = new ptr2sidUwordFunc() {
+            public int handler(sidOperator pVoice) {
+		pVoice.ADSRctrl = ENVE_DECAY;
 /*TODO*///	#ifdef SID_FPUENVE
 /*TODO*///		pVoice.fenveStep = 0;
 /*TODO*///	#elif defined(DIRECT_FIXPOINT)
 /*TODO*///		pVoice.enveStep.l = 0;
 /*TODO*///	#else
-/*TODO*///		pVoice.enveStep = (pVoice.enveStepPnt = 0);
+		pVoice.enveStep = (pVoice.enveStepPnt = 0);
 /*TODO*///	#endif
-/*TODO*///		return enveEmuAlterDecay(pVoice);
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	/* */
-/*TODO*///	/* Attack */
-/*TODO*///	/* */
-/*TODO*///	
-/*TODO*///	INLINE uword enveEmuAttack(sidOperator* pVoice)
-/*TODO*///	{
+		return enveEmuAlterDecay.handler(pVoice);
+            }
+        };
+	
+	/* */
+	/* Attack */
+	/* */
+	
+        public static ptr2sidUwordFunc enveEmuAttack = new ptr2sidUwordFunc() {
+            public int handler(sidOperator pVoice) {
 /*TODO*///	#ifdef SID_FPUENVE
 /*TODO*///		pVoice.enveStep = (uword)pVoice.fenveStep;
 /*TODO*///	#endif
 /*TODO*///	#if defined(DIRECT_FIXPOINT) && !defined(SID_FPUENVE)
 /*TODO*///		if ( pVoice.enveStep.w[HI] > attackTabLen )
 /*TODO*///	#else
-/*TODO*///		if ( pVoice.enveStep >= attackTabLen )
+		if ( pVoice.enveStep >= attackTabLen )
 /*TODO*///	#endif
-/*TODO*///			return enveEmuStartDecay(pVoice);
-/*TODO*///		else
-/*TODO*///		{
+			return enveEmuStartDecay.handler(pVoice);
+		else
+		{
 /*TODO*///	#if defined(DIRECT_FIXPOINT) && !defined(SID_FPUENVE)
 /*TODO*///			pVoice.enveVol = pVoice.enveStep.w[HI];
 /*TODO*///	#else
-/*TODO*///			pVoice.enveVol = pVoice.enveStep;
+			pVoice.enveVol = pVoice.enveStep;
 /*TODO*///	#endif
-/*TODO*///			enveEmuEnveAdvance(pVoice);
-/*TODO*///			return masterAmplModTable[ pVoice.sid.masterVolumeAmplIndex + pVoice.enveVol ];
-/*TODO*///		}
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	INLINE uword enveEmuAlterAttack(sidOperator* pVoice)
-/*TODO*///	{
-/*TODO*///		ubyte attack = pVoice.SIDAD >> 4;
+			enveEmuEnveAdvance.handler(pVoice);
+			return masterAmplModTable[ pVoice.sid.masterVolumeAmplIndex + pVoice.enveVol ];
+		}
+            }
+        };
+	
+        public static ptr2sidUwordFunc enveEmuAlterAttack = new ptr2sidUwordFunc() {
+            public int handler(sidOperator pVoice) {
+		int attack = pVoice.SIDAD >> 4;
 /*TODO*///	#ifdef SID_FPUENVE
 /*TODO*///		pVoice.fenveStepAdd = attackRates[attack];
 /*TODO*///	#elif defined(DIRECT_FIXPOINT)
 /*TODO*///		pVoice.enveStepAdd.l = attackRates[attack];
 /*TODO*///	#else
-/*TODO*///		pVoice.enveStepAdd = attackRates[attack];
-/*TODO*///		pVoice.enveStepAddPnt = attackRatesP[attack];
+		pVoice.enveStepAdd = attackRates[attack];
+		pVoice.enveStepAddPnt = attackRatesP[attack];
 /*TODO*///	#endif
-/*TODO*///		pVoice.ADSRproc = &enveEmuAttack;
-/*TODO*///		return enveEmuAttack(pVoice);
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	INLINE uword enveEmuStartAttack(sidOperator* pVoice)
-/*TODO*///	{
-/*TODO*///		pVoice.ADSRctrl = ENVE_ATTACK;
+		pVoice.ADSRproc = enveEmuAttack;
+		return enveEmuAttack.handler(pVoice);
+            }
+        };
+
+        public static ptr2sidUwordFunc enveEmuStartAttack = new ptr2sidUwordFunc() {
+            public int handler(sidOperator pVoice) {
+		pVoice.ADSRctrl = ENVE_ATTACK;
 /*TODO*///	#ifdef SID_FPUENVE
 /*TODO*///		pVoice.fenveStep = (float)pVoice.enveVol;
 /*TODO*///	#elif defined(DIRECT_FIXPOINT)
 /*TODO*///		pVoice.enveStep.w[HI] = pVoice.enveVol;
 /*TODO*///		pVoice.enveStep.w[LO] = 0;
 /*TODO*///	#else
-/*TODO*///		pVoice.enveStep = pVoice.enveVol;
-/*TODO*///		pVoice.enveStepPnt = 0;
+		pVoice.enveStep = pVoice.enveVol;
+		pVoice.enveStepPnt = 0;
 /*TODO*///	#endif
-/*TODO*///		return enveEmuAlterAttack(pVoice);
-/*TODO*///	}
-/*TODO*///	
+		return enveEmuAlterAttack.handler(pVoice);
+            }
+        };
+
 /*TODO*///	/* */
 /*TODO*///	/* Experimental. */
 /*TODO*///	/* */
 /*TODO*///	
 /*TODO*///	/*/*
-/*TODO*///	INLINE uword enveEmuShortAttack(sidOperator* pVoice)
-/*TODO*///	{
+        public static ptr2sidUwordFunc enveEmuShortAttack = new ptr2sidUwordFunc() {
+            public int handler(sidOperator pVoice) {
 /*TODO*///	#ifdef SID_FPUENVE
 /*TODO*///		pVoice.enveStep = (uword)pVoice.fenveStep;
 /*TODO*///	#endif
@@ -548,53 +553,77 @@ public class sidenvel {
 /*TODO*///		if ((pVoice.enveStep.w[HI] > attackTabLen) ||
 /*TODO*///			(pVoice.enveShortAttackCount == 0))
 /*TODO*///	#else
-/*TODO*///		if ((pVoice.enveStep >= attackTabLen) ||
-/*TODO*///			(pVoice.enveShortAttackCount == 0))
+		if ((pVoice.enveStep >= attackTabLen) ||
+			(pVoice.enveShortAttackCount == 0))
 /*TODO*///	#endif
-/*TODO*///	/*		return enveEmuStartRelease(pVoice); */
-/*TODO*///			return enveEmuStartDecay(pVoice);
-/*TODO*///		else
-/*TODO*///		{
+	/*		return enveEmuStartRelease(pVoice); */
+			return enveEmuStartDecay.handler(pVoice);
+		else
+		{
 /*TODO*///	#if defined(DIRECT_FIXPOINT) && !defined(SID_FPUENVE)
 /*TODO*///			pVoice.enveVol = pVoice.enveStep.w[HI];
 /*TODO*///	#else
-/*TODO*///			pVoice.enveVol = pVoice.enveStep;
+			pVoice.enveVol = pVoice.enveStep;
 /*TODO*///	#endif
-/*TODO*///		    pVoice.enveShortAttackCount--;
-/*TODO*///	/*		cout << hex << pVoice.enveShortAttackCount << " / " << pVoice.enveVol << endl; */
-/*TODO*///			enveEmuEnveAdvance(pVoice);
-/*TODO*///			return masterAmplModTable[ pVoice.sid.masterVolumeAmplIndex + pVoice.enveVol ];
-/*TODO*///		}
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	INLINE uword enveEmuAlterShortAttack(sidOperator* pVoice)
-/*TODO*///	{
-/*TODO*///		ubyte attack = pVoice.SIDAD >> 4;
+		    pVoice.enveShortAttackCount--;
+	/*		cout << hex << pVoice.enveShortAttackCount << " / " << pVoice.enveVol << endl; */
+			enveEmuEnveAdvance.handler(pVoice);
+			return masterAmplModTable[ pVoice.sid.masterVolumeAmplIndex + pVoice.enveVol ];
+		}
+            }
+        };
+	
+        public static ptr2sidUwordFunc enveEmuAlterShortAttack = new ptr2sidUwordFunc() {
+            public int handler(sidOperator pVoice) {
+		int attack = pVoice.SIDAD >> 4;
 /*TODO*///	#ifdef SID_FPUENVE
 /*TODO*///		pVoice.fenveStepAdd = attackRates[attack];
 /*TODO*///	#elif defined(DIRECT_FIXPOINT)
 /*TODO*///		pVoice.enveStepAdd.l = attackRates[attack];
 /*TODO*///	#else
-/*TODO*///		pVoice.enveStepAdd = attackRates[attack];
-/*TODO*///		pVoice.enveStepAddPnt = attackRatesP[attack];
+		pVoice.enveStepAdd = attackRates[attack];
+		pVoice.enveStepAddPnt = attackRatesP[attack];
 /*TODO*///	#endif
-/*TODO*///		pVoice.ADSRproc = &enveEmuShortAttack;
-/*TODO*///		return enveEmuShortAttack(pVoice);
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	INLINE uword enveEmuStartShortAttack(sidOperator* pVoice)
-/*TODO*///	{
-/*TODO*///		pVoice.ADSRctrl = ENVE_SHORTATTACK;
+		pVoice.ADSRproc = enveEmuShortAttack;
+		return enveEmuShortAttack.handler(pVoice);
+            }
+        };
+	
+        public static ptr2sidUwordFunc enveEmuStartShortAttack = new ptr2sidUwordFunc() {
+            public int handler(sidOperator pVoice) {
+		pVoice.ADSRctrl = ENVE_SHORTATTACK;
 /*TODO*///	#ifdef SID_FPUENVE
 /*TODO*///		pVoice.fenveStep = (float)pVoice.enveVol;
 /*TODO*///	#elif defined(DIRECT_FIXPOINT)
 /*TODO*///		pVoice.enveStep.w[HI] = pVoice.enveVol;
 /*TODO*///		pVoice.enveStep.w[LO] = 0;
 /*TODO*///	#else
-/*TODO*///		pVoice.enveStep = pVoice.enveVol;
-/*TODO*///		pVoice.enveStepPnt = 0;
+		pVoice.enveStep = pVoice.enveVol;
+		pVoice.enveStepPnt = 0;
 /*TODO*///	#endif
-/*TODO*///		pVoice.enveShortAttackCount = 65535;  /* unused */
-/*TODO*///		return enveEmuAlterShortAttack(pVoice);
-/*TODO*///	}    
+		pVoice.enveShortAttackCount = 65535;  /* unused */
+		return enveEmuAlterShortAttack.handler(pVoice);
+            }    
+        };
+        
+        public static ptr2sidUwordFunc enveModeTable[] =
+	{
+		/* 0 */
+		enveEmuStartAttack, enveEmuStartRelease,
+		enveEmuAttack, enveEmuDecay, enveEmuSustain, enveEmuRelease,
+		enveEmuSustainDecay, enveEmuMute,
+		/* 16 */
+		enveEmuStartShortAttack,
+		enveEmuMute, enveEmuMute, enveEmuMute,
+		enveEmuMute, enveEmuMute, enveEmuMute, enveEmuMute,
+	    /* 32		 */
+		enveEmuStartAttack, enveEmuStartRelease,
+		enveEmuAlterAttack, enveEmuAlterDecay, enveEmuAlterSustain, enveEmuAlterRelease,
+		enveEmuAlterSustainDecay, enveEmuMute,
+	    /* 48		 */
+		enveEmuStartShortAttack,
+		enveEmuMute, enveEmuMute, enveEmuMute,
+		enveEmuMute, enveEmuMute, enveEmuMute, enveEmuMute
+	};
+
 }

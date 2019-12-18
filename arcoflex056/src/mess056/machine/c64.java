@@ -401,15 +401,15 @@ public class c64
 		cbm_serial_data_write (serial_data = (data & 0x20)==0?1:0);
 		cbm_serial_atn_write (serial_atn = (data & 8)==0?1:0);
                 
-                if ((data & 3) != 3){
+                /*if ((data & 3) != 3){
                     
                     System.out.println("data: "+data+" Helper: "+(data & 3)+" offset="+offset);
                     System.out.println("Timer1 "+cia[1].timer1);
                     System.out.println("serial_clock "+serial_clock);
                     System.out.println("serial_data "+serial_data);
-                    System.out.println("serial_atn "+serial_atn);
+                    System.out.println("serial_atn "+serial_atn);*/
                     c64_vicaddr = new UBytePtr(c64_memory, helper[data & 3]);
-                }
+                //}
 		/*TODO*///c64_vicaddr = new UBytePtr(c64_memory, helper[data & 3]);
                 //if (data!=199)
                     
@@ -525,7 +525,7 @@ public class c64
 		if (offset < 0x400) {
 			vic2_port_w.handler(offset & 0x3ff, data);
 		} else if (offset < 0x800) {
-/*TODO*///			sid6581_0_port_w.handler(offset & 0x3ff, data);
+			sid6581_0_port_w.handler(offset & 0x3ff, data);
 		} else if (offset < 0xc00) {
 			c64_colorram.write(offset & 0x3ff, data | 0xf0);
                 } else if (offset < 0xd00){
@@ -563,8 +563,8 @@ public class c64
 		if (offset < 0x400){
 			return vic2_port_r.handler(offset & 0x3ff);
                 } else if (offset < 0x800){
-/*TODO*///			return sid6581_0_port_r.handler(offset & 0x3ff);
-                        return 0xff;
+			return sid6581_0_port_r.handler(offset & 0x3ff);
+                        //return 0xff;
                 } else if (offset < 0xc00) {
 			return c64_colorram.read(offset & 0x3ff);
                 } else if (offset < 0xd00) {
@@ -785,47 +785,48 @@ public class c64
             }
         };
 	
-/*TODO*///	int c64_paddle_read (int which)
-/*TODO*///	{
-/*TODO*///		int pot1=0xff, pot2=0xff, pot3=0xff, pot4=0xff, temp;
-/*TODO*///		if (PADDLES34) {
-/*TODO*///			if (which) pot4=PADDLE4_VALUE;
-/*TODO*///			else pot3=PADDLE3_VALUE;
-/*TODO*///		}
-/*TODO*///		if (JOYSTICK2_2BUTTON&&which) {
-/*TODO*///			if (JOYSTICK_2_BUTTON2) pot4=0x00;
-/*TODO*///		}
-/*TODO*///		if (MOUSE2) {
-/*TODO*///			if (which) pot4=MOUSE2_Y;
-/*TODO*///			else pot3=MOUSE2_X;
-/*TODO*///		}
-/*TODO*///		if (PADDLES12) {
-/*TODO*///			if (which) pot2=PADDLE2_VALUE;
-/*TODO*///			else pot1=PADDLE1_VALUE;
-/*TODO*///		}
-/*TODO*///		if (JOYSTICK1_2BUTTON&&which) {
-/*TODO*///			if (JOYSTICK_1_BUTTON2) pot1=0x00;
-/*TODO*///		}
-/*TODO*///		if (MOUSE1) {
-/*TODO*///			if (which) pot2=MOUSE1_Y;
-/*TODO*///			else pot1=MOUSE1_X;
-/*TODO*///		}
-/*TODO*///		if (JOYSTICK_SWAP) {
-/*TODO*///			temp=pot1;pot1=pot2;pot2=pot1;
-/*TODO*///			temp=pot3;pot3=pot4;pot4=pot3;
-/*TODO*///		}
-/*TODO*///		switch (cia0porta & 0xc0) {
-/*TODO*///		case 0x40:
-/*TODO*///			if (which) return pot2;
-/*TODO*///			return pot1;
-/*TODO*///		case 0x80:
-/*TODO*///			if (which) return pot4;
-/*TODO*///				return pot3;
-/*TODO*///		default:
-/*TODO*///			return 0;
-/*TODO*///		}
-/*TODO*///	}
-/*TODO*///	
+        public static ReadHandlerPtr c64_paddle_read = new ReadHandlerPtr() {
+            public int handler(int which) {
+		int pot1=0xff, pot2=0xff, pot3=0xff, pot4=0xff, temp;
+		if (PADDLES34()!=0) {
+			if (which!=0) pot4=PADDLE4_VALUE();
+			else pot3=PADDLE3_VALUE();
+		}
+		if (JOYSTICK2_2BUTTON()!=0&&which!=0) {
+			if (JOYSTICK_2_BUTTON2()!=0) pot4=0x00;
+		}
+		if (MOUSE2()!=0) {
+			if (which!=0) pot4=MOUSE2_Y();
+			else pot3=MOUSE2_X();
+		}
+		if (PADDLES12()!=0) {
+			if (which!=0) pot2=PADDLE2_VALUE();
+			else pot1=PADDLE1_VALUE();
+		}
+		if (JOYSTICK1_2BUTTON()!=0&&which!=0) {
+			if (JOYSTICK_1_BUTTON2()!=0) pot1=0x00;
+		}
+		if (MOUSE1()!=0) {
+			if (which!=0) pot2=MOUSE1_Y();
+			else pot1=MOUSE1_X();
+		}
+		if (JOYSTICK_SWAP()!=0) {
+			temp=pot1;pot1=pot2;pot2=pot1;
+			temp=pot3;pot3=pot4;pot4=pot3;
+		}
+		switch (cia0porta & 0xc0) {
+		case 0x40:
+			if (which!=0) return pot2;
+			return pot1;
+		case 0x80:
+			if (which!=0) return pot4;
+				return pot3;
+		default:
+			return 0;
+		}
+            }
+        };
+
 /*TODO*///	READ_HANDLER(c64_colorram_read)
 /*TODO*///	{
 /*TODO*///		return c64_colorram[offset & 0x3ff];
@@ -985,8 +986,8 @@ public class c64
 /*TODO*///	#ifdef VC1541
 		vc1541_reset ();
 /*TODO*///	#endif
-/*TODO*///		sid6581_reset(0);
-/*TODO*///		sid6581_set_type(0, SID8580());
+		sid6581_reset(0);
+		sid6581_set_type(0, SID8580());
 		if (c64_cia1_on != 0)
 		{
 			cbm_serial_reset_write (0);

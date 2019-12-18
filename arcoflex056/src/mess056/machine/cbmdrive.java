@@ -4,15 +4,17 @@
  */ 
 package mess056.machine;
 
-import static arcadeflex036.libc_old.strcpy;
+import static arcadeflex036.libc_old.*;
 import static mess056.includes.cbmdriveH.*;
 import static mess056.machine.cbmserb.*;
 import static mame056.timer.*;
 import static arcadeflex056.osdepend.logerror;
+import static arcadeflex056.fileio.*;
 import static common.libc.cstdio.*;
 import static common.libc.cstring.*;
 import static common.ptr.*;
 import static mame056.mame.Machine;
+import static mame056.osdependH.*;
 import static mame056.usrintrf.ui_text;
 import static mess056.machine.c64.c64_state;
 import static mess056.vidhrdw.vic6567.vic2;
@@ -192,6 +194,7 @@ public class cbmdrive
 				memcpy (new UBytePtr(c1551.buffer, i), new UBytePtr(c1551.d.d64.image, pos + 2), c1551.size - i);
 			}
 		}
+
 	}
 	
 	/* reads sector into buffer */
@@ -376,87 +379,87 @@ public class cbmdrive
 	
 	public static int c1551_fs_command (CBM_Drive c1551, String name)
 	{
-            System.out.println("c1551_fs_command TO BE IMPLEMENTED!!!!");
-/*TODO*///		FILE *fp;
-/*TODO*///		int type=0;
-/*TODO*///		int read;
-/*TODO*///		int i;
-/*TODO*///		char n[32];
-/*TODO*///	
-/*TODO*///		strcpy(n,(char*)name);
-/*TODO*///		fp = (FILE*)osd_fopen (Machine.gamedrv.name, n, OSD_FILETYPE_IMAGE, 0);
-/*TODO*///	
-/*TODO*///		if (fp == 0)
-/*TODO*///		{
-/*TODO*///			for (i = 0; n[i] != 0; i++)
-/*TODO*///				n[i] = tolower (n[i]);
-/*TODO*///			fp = (FILE*)osd_fopen (Machine.gamedrv.name, n, OSD_FILETYPE_IMAGE, 0);
-/*TODO*///		}
-/*TODO*///		if (fp == 0)
-/*TODO*///		{
-/*TODO*///			strcpy(n, (char*)name);
-/*TODO*///			strcat ((char *) n, ".prg");
-/*TODO*///	
-/*TODO*///			fp = (FILE*)osd_fopen (Machine.gamedrv.name, n, OSD_FILETYPE_IMAGE, 0);
-/*TODO*///		}
-/*TODO*///		if (fp == 0)
-/*TODO*///		{
-/*TODO*///			for (i = 0; n[i] != 0; i++)
-/*TODO*///				n[i] = tolower (n[i]);
-/*TODO*///			fp = (FILE*)osd_fopen (Machine.gamedrv.name, n, OSD_FILETYPE_IMAGE, 0);
-/*TODO*///		}
-/*TODO*///		if (fp == 0)
-/*TODO*///		{
-/*TODO*///			type=1;
-/*TODO*///			strcpy(n,(char*)name);
-/*TODO*///			strcat(n,".p00");
-/*TODO*///			fp = (FILE*)osd_fopen (Machine.gamedrv.name, n, OSD_FILETYPE_IMAGE, 0);
-/*TODO*///		}
-/*TODO*///		if (fp == 0)
-/*TODO*///		{
-/*TODO*///			for (i = 0; n[i] != 0; i++)
-/*TODO*///				n[i] = tolower (n[i]);
-/*TODO*///			fp = (FILE*)osd_fopen (Machine.gamedrv.name, n, OSD_FILETYPE_IMAGE, 0);
-/*TODO*///		}
-/*TODO*///		if (fp)
-/*TODO*///		{
-/*TODO*///			if (type==1)
-/*TODO*///			{
-/*TODO*///				c1551.size = osd_fsize (fp);
-/*TODO*///				c1551.buffer = (UINT8*)realloc (c1551.buffer, c1551.size);
-/*TODO*///				if (!c1551.buffer) {
+            //System.out.println("c1551_fs_command TO BE IMPLEMENTED!!!!");
+		Object fp;
+		int type=0;
+		int read;
+		int i;
+		String n="";
+	
+		n = name;
+		fp = osd_fopen (Machine.gamedrv.name, n, OSD_FILETYPE_IMAGE_R, 0);
+	
+		if (fp == null)
+		{
+			n = n.toLowerCase();
+			fp = osd_fopen (Machine.gamedrv.name, n, OSD_FILETYPE_IMAGE_R, 0);
+		}
+		if (fp == null)
+		{
+			n = name;
+			n += ".prg";
+	
+			fp = osd_fopen (Machine.gamedrv.name, n, OSD_FILETYPE_IMAGE_R, 0);
+		}
+		if (fp == null)
+		{
+			n = n.toLowerCase();
+			fp = osd_fopen (Machine.gamedrv.name, n, OSD_FILETYPE_IMAGE_R, 0);
+		}
+		if (fp == null)
+		{
+			type=1;
+			n = name;
+			n += ".p00";
+			fp = osd_fopen (Machine.gamedrv.name, n, OSD_FILETYPE_IMAGE_R, 0);
+		}
+		if (fp == null)
+		{
+			n = n.toLowerCase();
+			fp = osd_fopen (Machine.gamedrv.name, n, OSD_FILETYPE_IMAGE_R, 0);
+		}
+		if (fp != null)
+		{
+			if (type==1)
+			{
+				c1551.size = osd_fsize (fp);
+				//c1551.buffer = (UINT8*)realloc (c1551.buffer, c1551.size);
+                                c1551.buffer = new UBytePtr (c1551.buffer, c1551.size);
+				if (c1551.buffer==null) {
 /*TODO*///					logerror("out of memory %s %d\n",__FILE__, __LINE__);
 /*TODO*///					osd_exit();
 /*TODO*///					exit(1);
-/*TODO*///				}
-/*TODO*///	
-/*TODO*///				read = osd_fread (fp, c1551.buffer, 26);
-/*TODO*///				strncpy (c1551.d.fs.filename, (char *) c1551.buffer + 8, 16);
-/*TODO*///				c1551.size -= 26;
-/*TODO*///				read = osd_fread (fp, c1551.buffer, c1551.size);
-/*TODO*///			}
-/*TODO*///			else
-/*TODO*///			{
-/*TODO*///				c1551.size = osd_fsize (fp);
-/*TODO*///				c1551.buffer = (UINT8*)realloc (c1551.buffer,c1551.size);
-/*TODO*///				if (!c1551.buffer) {
+				}
+	
+				read = osd_fread (fp, c1551.buffer, 26);
+				strncpy (c1551.d.fs.filename, new String((new UBytePtr(c1551.buffer, 8)).memory), 16);
+				c1551.size -= 26;
+				read = osd_fread (fp, c1551.buffer, c1551.size);
+			}
+			else
+			{
+				c1551.size = osd_fsize (fp);
+				//c1551.buffer = (UINT8*)realloc (c1551.buffer,c1551.size);
+                                c1551.buffer = new UBytePtr(c1551.buffer,c1551.size);
+				if (c1551.buffer==null) {
 /*TODO*///					logerror("out of memory %s %d\n",__FILE__, __LINE__);
 /*TODO*///					osd_exit();
 /*TODO*///					exit(1);
-/*TODO*///				}
-/*TODO*///	
-/*TODO*///				read = osd_fread (fp, c1551.buffer, c1551.size);
-/*TODO*///				osd_fclose (fp);
-/*TODO*///				logerror("loading file %s\n", name);
-/*TODO*///				strcpy (c1551.d.fs.filename, (char *) name);
-/*TODO*///			}
-/*TODO*///		}
-/*TODO*///		else
-/*TODO*///		{
-/*TODO*///			logerror("file %s not found\n", name);
-/*TODO*///			return 1;
-/*TODO*///		}
-		return 0;
+				}
+	
+				read = osd_fread (fp, c1551.buffer, c1551.size);
+				osd_fclose (fp);
+				logerror("loading file %s\n", name);
+				c1551.d.fs.filename = name;
+			}
+		}
+		else
+		{
+			logerror("file %s not found\n", name);
+			return 1;
+		}
+		
+                return 0;
 	}
 	
 	/**

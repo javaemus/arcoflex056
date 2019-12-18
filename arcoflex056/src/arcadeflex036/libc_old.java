@@ -107,6 +107,17 @@ public class libc_old {
             }
         }
     }
+    
+    public static void strncpy(String dst2, String src, int size) {
+        char[] dst=new char[dst2.length()];
+        if (src.length() > 0) {
+            for (int i = 0; i < size; i++) {
+                dst[i] = src.charAt(i);
+            }
+        }
+        
+        dst2 = new String(dst);
+    }
     /*
      *   copy String to array
      */

@@ -20,6 +20,9 @@ package mess056.sndhrdw;
 
 import static arcadeflex056.fucPtr.*;
 import static common.subArrays.*;
+import static mame056.mame.options;
+import mame056.sndintrfH;
+import mame056.sndintrfH.MachineSound;
 import static mame056.sound.streams.*;
 import static mess056.includes.sid6581H.*;
 import static mess056.sndhrdw.sid.*;
@@ -85,33 +88,42 @@ public class sid6581
 	
 	public static void sid6581_sh_update(int param, IntArray buffer, int length)
 	{
-/*TODO*///		sidEmuFillBuffer(param,buffer, length);
+		sidEmuFillBuffer(_sid6581[param], buffer, length);
 	}
 	
-/*TODO*///	public static int sid6581_custom_start (const struct MachineSound *driver)
-/*TODO*///	{
-/*TODO*///		const SID6581_interface *iface=(const SID6581_interface*)
-/*TODO*///			driver.sound_interface;
-/*TODO*///		int i;
-/*TODO*///	
-/*TODO*///		for (i=0; i< iface.count; i++) {
+	public static ShStartPtr sid6581_custom_start = new ShStartPtr() {
+            public int handler(MachineSound driver) {
+		SID6581_interface iface=(SID6581_interface) driver.sound_interface;
+		int i;
+	
+		for (i=0; i< iface.count; i++) {
 /*TODO*///			char name[10];
 /*TODO*///			if (iface.count!=1) sprintf(name,"SID%d",i);
 /*TODO*///			else sprintf(name,"SID");
-/*TODO*///			sid6581[i].mixer_channel = stream_init (name, iface.chips[i].default_mixer_level, options.samplerate, i, sid6581_sh_update);
-/*TODO*///	
-/*TODO*///			sid6581[i].PCMfreq = options.samplerate;	
-/*TODO*///			sid6581[i].type=iface.chips[i].type;
-/*TODO*///			sid6581[i].clock=iface.chips[i].clock;
-/*TODO*///			sid6581[i].ad_read=iface.chips[i].ad_read;
-/*TODO*///			sid6581[i].on=1;
-/*TODO*///			sid6581_init(sid6581+i);
-/*TODO*///		}
-/*TODO*///	
-/*TODO*///		return 0;
-/*TODO*///	}
+/*TODO*///			_sid6581[i].mixer_channel = stream_init (name, iface.chips[i].default_mixer_level, options.samplerate, i, sid6581_sh_update);
 	
-	public static void sid6581_custom_stop() {}
-	public static void sid6581_custom_update() {}
+			_sid6581[i].PCMfreq = options.samplerate;	
+			_sid6581[i].type=iface.chips[i].type;
+			_sid6581[i].clock=iface.chips[i].clock;
+			_sid6581[i].ad_read=iface.chips[i].ad_read;
+			_sid6581[i].on=1;
+			sid6581_init(_sid6581[i]);
+		}
+	
+		return 0;
+            }
+        };
+
+	public static ShStopPtr sid6581_custom_stop = new ShStopPtr() {
+            public void handler() {
+            
+            }
+        };
+        
+	public static ShUpdatePtr sid6581_custom_update = new ShUpdatePtr() {
+            public void handler() {
+            
+            }
+        };
 	
 }

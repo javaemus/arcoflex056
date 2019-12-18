@@ -207,12 +207,14 @@ import static mame056.inptportH.*;
 import static mame056.inputH.*;
 import static mame056.memoryH.*;
 import static mame056.sndintrfH.*;
+import static mame056.sound.mixerH.*;
 import static mess056.deviceH.*;
 import static mess056.messH.*;
 import static mess056.includes.c64H.*;
 import static mess056.includes.cbmH.*;
 import static mess056.includes.vc20tapeH.*;
 import static mess056.includes.cbmserbH.*;
+import static mess056.includes.sid6581H.*;
 import static mess056.includes.vic6567H.*;
 import static mess056.machine.c64.*;
 import static mess056.machine.cia6526.*;
@@ -341,7 +343,7 @@ public class c64
 		DIPS_HELPER( 0x0020, "P", KEYCODE_P);
 		DIPS_HELPER( 0x0010, "At", KEYCODE_OPENBRACE);
 	    /*TODO*///DIPS_HELPER( 0x0008, "*", KEYCODE_ASTERISK);
-                DIPS_HELPER( 0x0008, "*", KEYCODE_T);
+                DIPS_HELPER( 0x0008, "*", KEYCODE_M);
 		DIPS_HELPER( 0x0004, "Arrow-Up Pi",KEYCODE_CLOSEBRACE);
 	    DIPS_HELPER( 0x0002, "RESTORE", KEYCODE_PRTSCR);
 		DIPS_HELPER( 0x0001, "STOP RUN", KEYCODE_TAB);
@@ -832,23 +834,23 @@ public class c64
 /*TODO*///		}
 /*TODO*///	};
 /*TODO*///	
-/*TODO*///	static SID6581_interface pal_sound_interface =
-/*TODO*///	{
-/*TODO*///		{
-/*TODO*///			sid6581_custom_start,
-/*TODO*///			sid6581_custom_stop,
-/*TODO*///			sid6581_custom_update
-/*TODO*///		},
-/*TODO*///		1,
-/*TODO*///		{
-/*TODO*///			{
-/*TODO*///				MIXER(50, MIXER_PAN_CENTER),
-/*TODO*///				MOS6581,
-/*TODO*///				VIC6569_CLOCK,
-/*TODO*///				c64_paddle_read
-/*TODO*///			}
-/*TODO*///		}
-/*TODO*///	};
+	static SID6581_interface pal_sound_interface = new SID6581_interface(
+                //new CustomSound_interface(
+			sid6581_custom_start,
+			sid6581_custom_stop,
+			sid6581_custom_update,
+		//),
+		1,
+                new _chips[]
+                {
+                    new _chips(MIXER(50, MIXER_PAN_CENTER),
+				MOS6581,
+				VIC6569_CLOCK,
+				c64_paddle_read
+                    )
+		}
+                
+	);
 /*TODO*///	
 /*TODO*///	static SID6581_interface ntsc_sound_interface =
 /*TODO*///	{
@@ -918,14 +920,14 @@ public class c64
 		new MachineCPU[] {
 			new MachineCPU(
 				CPU_M6510,
-                                VIC6567_CLOCK,
+                                VIC6569_CLOCK,
 				c64_readmem, c64_writemem,
 				null, null,
 				c64_frame_interrupt, 1,
 				vic2_raster_irq, VIC2_HRETRACERATE
                             )
 		},
-		VIC6567_VRETRACERATE, DEFAULT_REAL_60HZ_VBLANK_DURATION,	/* frames per second, vblank duration */
+		VIC6569_VRETRACERATE, DEFAULT_REAL_60HZ_VBLANK_DURATION,	/* frames per second, vblank duration */
 		0,
 		c64_init_machine,
 		c64_shutdown_machine,
@@ -946,11 +948,12 @@ public class c64
 	
 	  /* sound hardware */
 		0, 0, 0, 0,
-/*TODO*///		{
-/*TODO*///			{ SOUND_CUSTOM, &pal_sound_interface },
+                new MachineSound[]{
+                    new MachineSound(
+                        SOUND_CUSTOM, pal_sound_interface )
 /*TODO*///			{ 0 }
-/*TODO*///		}
-                null
+		}
+                
 	);
 	
 	static MachineDriver machine_driver_pet64 = new MachineDriver

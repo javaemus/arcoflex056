@@ -409,9 +409,9 @@ public class flopdrv
 	
 	    flags &= flag;
             
-            System.out.println("Retorno flags="+flags);
+            //System.out.println("Retorno flags="+flags);
 	
-		return flags;
+            return flags;
 	}
 	
 	

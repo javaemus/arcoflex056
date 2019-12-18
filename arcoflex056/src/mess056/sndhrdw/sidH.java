@@ -54,7 +54,7 @@ public class sidH
 	
                 public _filter filter = new _filter();
 	
-		public sidOperator optr1=new sidOperator(), optr2=new sidOperator(), optr3=new sidOperator();
+		public sidOperator optr1, optr2, optr3;
                 public int optr3_outputmask;
 	};
 	

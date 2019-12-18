@@ -19,116 +19,122 @@
  */ 
 package mess056.sndhrdw;
 
+import common.subArrays.IntArray;
+import static java.lang.Math.exp;
+import static java.lang.Math.log;
+import static mame056.mame.options;
 import static mame056.sound.streams.*;
 import static mess056.sndhrdw.sid6581.*;
 import static mess056.sndhrdw.sidH.*;
 import static mess056.sndhrdw.sidenvel.*;
 import static mess056.sndhrdw.sidvoice.*;
+import static mess056.sndhrdw.sidvoiceH.*;
 
 public class sid
 {
 	
 /*TODO*///	#define VERBOSE_DBG 0
-/*TODO*///	
-/*TODO*///	filterfloat filterTable[0x800];
-/*TODO*///	filterfloat bandPassParam[0x800];
+
+        public static float[] filterTable = new float[0x800];
+        public static float[] bandPassParam = new float[0x800];
 /*TODO*///	#define lowPassParam filterTable
-/*TODO*///	filterfloat filterResTable[16];
-/*TODO*///	
-/*TODO*///	#define maxLogicalVoices 4
-/*TODO*///	
-/*TODO*///	static const int mix16monoMiddleIndex = 256*maxLogicalVoices/2;
-/*TODO*///	static uword mix16mono[256*maxLogicalVoices];
-/*TODO*///	
-/*TODO*///	static uword zero16bit=0;  /* either signed or unsigned */
+	public static float[] filterResTable = new float[16];
+
+	public static int maxLogicalVoices = 4;
+
+	static int mix16monoMiddleIndex = 256*maxLogicalVoices/2;
+	static int[] mix16mono = new int[256*maxLogicalVoices];
+
+	static int zero16bit=0;  /* either signed or unsigned */
 /*TODO*///	udword splitBufferLen;
-/*TODO*///	
-/*TODO*///	void MixerInit(bool threeVoiceAmplify)
-/*TODO*///	{
-/*TODO*///		long si;
-/*TODO*///		uword ui;
-/*TODO*///		long ampDiv = maxLogicalVoices;
-/*TODO*///	
-/*TODO*///		if (threeVoiceAmplify)
-/*TODO*///		{
-/*TODO*///			ampDiv = (maxLogicalVoices-1);
-/*TODO*///		}
-/*TODO*///	
-/*TODO*///		/* Mixing formulas are optimized by sample input value. */
-/*TODO*///	
-/*TODO*///		si = (-128*maxLogicalVoices) * 256;
-/*TODO*///		for (ui = 0; ui < sizeof(mix16mono)/sizeof(uword); ui++ )
-/*TODO*///		{
-/*TODO*///			mix16mono[ui] = (uword)(si/ampDiv) + zero16bit;
-/*TODO*///			si+=256;
-/*TODO*///		}
-/*TODO*///	
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	
-/*TODO*///	INLINE void syncEm(SID6581 *This)
-/*TODO*///	{
-/*TODO*///		bool sync1 = (This.optr1.modulator.cycleLenCount <= 0);
-/*TODO*///		bool sync2 = (This.optr2.modulator.cycleLenCount <= 0);
-/*TODO*///		bool sync3 = (This.optr3.modulator.cycleLenCount <= 0);
-/*TODO*///	
-/*TODO*///		This.optr1.cycleLenCount--;
-/*TODO*///		This.optr2.cycleLenCount--;
-/*TODO*///		This.optr3.cycleLenCount--;
-/*TODO*///	
-/*TODO*///		if (This.optr1.sync && sync1)
-/*TODO*///		{
-/*TODO*///			This.optr1.cycleLenCount = 0;
-/*TODO*///			This.optr1.outProc = &sidWaveCalcNormal;
+
+	public static void MixerInit(boolean threeVoiceAmplify)
+	{
+		long si;
+		int ui;
+		long ampDiv = maxLogicalVoices;
+	
+		if (threeVoiceAmplify)
+		{
+			ampDiv = (maxLogicalVoices-1);
+		}
+	
+		/* Mixing formulas are optimized by sample input value. */
+	
+		si = (-128*maxLogicalVoices) * 256;
+		for (ui = 0; ui < mix16mono.length; ui++ )
+		{
+			mix16mono[ui] = (int) ((si/ampDiv) + zero16bit);
+			si+=256;
+		}
+	
+	}
+	
+	
+	public static void syncEm(_SID6581 This)
+	{
+		boolean sync1 = (This.optr1.modulator.cycleLenCount <= 0);
+		boolean sync2 = (This.optr2.modulator.cycleLenCount <= 0);
+		boolean sync3 = (This.optr3.modulator.cycleLenCount <= 0);
+	
+		This.optr1.cycleLenCount--;
+		This.optr2.cycleLenCount--;
+		This.optr3.cycleLenCount--;
+	
+		if (This.optr1.sync && sync1)
+		{
+			This.optr1.cycleLenCount = 0;
+			This.optr1.outProc = sidWaveCalcNormal;
 /*TODO*///	#if defined(DIRECT_FIXPOINT)
 /*TODO*///			optr1.waveStep.l = 0;
 /*TODO*///	#else
-/*TODO*///			This.optr1.waveStep = (This.optr1.waveStepPnt = 0);
+			This.optr1.waveStep = (This.optr1.waveStepPnt = 0);
 /*TODO*///	#endif
-/*TODO*///		}
-/*TODO*///		if (This.optr2.sync && sync2)
-/*TODO*///		{
-/*TODO*///			This.optr2.cycleLenCount = 0;
-/*TODO*///			This.optr2.outProc = &sidWaveCalcNormal;
+		}
+		if (This.optr2.sync && sync2)
+		{
+			This.optr2.cycleLenCount = 0;
+			This.optr2.outProc = sidWaveCalcNormal;
 /*TODO*///	#if defined(DIRECT_FIXPOINT)
 /*TODO*///			This.optr2.waveStep.l = 0;
 /*TODO*///	#else
-/*TODO*///			This.optr2.waveStep = (This.optr2.waveStepPnt = 0);
+			This.optr2.waveStep = (This.optr2.waveStepPnt = 0);
 /*TODO*///	#endif
-/*TODO*///		}
-/*TODO*///		if (This.optr3.sync && sync3)
-/*TODO*///		{
-/*TODO*///			This.optr3.cycleLenCount = 0;
-/*TODO*///			This.optr3.outProc = &sidWaveCalcNormal;
+		}
+		if (This.optr3.sync && sync3)
+		{
+			This.optr3.cycleLenCount = 0;
+			This.optr3.outProc = sidWaveCalcNormal;
 /*TODO*///	#if defined(DIRECT_FIXPOINT)
 /*TODO*///			optr3.waveStep.l = 0;
 /*TODO*///	#else
-/*TODO*///			This.optr3.waveStep = (This.optr3.waveStepPnt = 0);
+			This.optr3.waveStep = (This.optr3.waveStepPnt = 0);
 /*TODO*///	#endif
-/*TODO*///		}
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	
-/*TODO*///	void sidEmuFillBuffer(SID6581 *This, void* buffer, udword bufferLen )
-/*TODO*///	{
-/*TODO*///	//void* fill16bitMono( SID6581 *This, void* buffer, udword numberOfSamples )
-/*TODO*///	    sword* buffer16bit = (sword*)buffer;
-/*TODO*///	    for ( ; bufferLen > 0; bufferLen-- )
-/*TODO*///	    {
-/*TODO*///		*buffer16bit++ = mix16mono[(unsigned)(mix16monoMiddleIndex
-/*TODO*///						      +(*This.optr1.outProc)(&This.optr1)
-/*TODO*///						      +(*This.optr2.outProc)(&This.optr2)
-/*TODO*///						      +(This.optr3.outProc(&This.optr3)&This.optr3_outputmask)
-/*TODO*///	/* hack for digi sounds
-/*TODO*///	   does n't seam to come from a tone operator
-/*TODO*///	   ghostbusters and goldrunner everything except volume zeroed */
-/*TODO*///						      +(This.masterVolume<<2)
-/*TODO*///	//						  +(*sampleEmuRout)()
-/*TODO*///		    )];
-/*TODO*///		syncEm(This);
-/*TODO*///	    }
-/*TODO*///	}
-/*TODO*///	
+		}
+	}
+	
+	
+	public static void sidEmuFillBuffer(_SID6581 This, IntArray buffer, int bufferLen )
+	{
+	//void* fill16bitMono( SID6581 *This, void* buffer, udword numberOfSamples )
+	    IntArray buffer16bit = new IntArray(buffer);
+	    for ( ; bufferLen > 0; bufferLen-- )
+	    {
+		buffer16bit.write( mix16mono[(mix16monoMiddleIndex
+						      +(This.optr1.outProc).handler(This.optr1)
+						      +(This.optr2.outProc).handler(This.optr2)
+						      +(This.optr3.outProc.handler(This.optr3)&This.optr3_outputmask)
+	/* hack for digi sounds
+	   does n't seam to come from a tone operator
+	   ghostbusters and goldrunner everything except volume zeroed */
+						      +(This.masterVolume<<2)
+	//						  +(*sampleEmuRout)()
+		    )]);
+                buffer16bit.offset++;
+		syncEm(This);
+	    }
+	}
+	
 	/* --------------------------------------------------------------------- Init */
 	
 	
@@ -136,6 +142,13 @@ public class sid
 	
 	public static boolean sidEmuReset(_SID6581 This)
 	{
+                if (This.optr1==null)
+                    This.optr1=new sidOperator();
+                if (This.optr2==null)
+                    This.optr2=new sidOperator();
+                if (This.optr3==null)
+                    This.optr3=new sidOperator();
+                
 		sidClearOperator( This.optr1 );
 		enveEmuResetOperator( This.optr1 );
 		sidClearOperator( This.optr2 );
@@ -163,98 +176,102 @@ public class sid
 	}
 	
 	
-/*TODO*///	void filterTableInit(void)
-/*TODO*///	{
-/*TODO*///		uword uk;
-/*TODO*///		/* Parameter calculation has not been moved to a separate function */
-/*TODO*///		/* by purpose. */
-/*TODO*///		const float filterRefFreq = 44100.0;
-/*TODO*///	
-/*TODO*///	/*	extern filterfloat filterTable[0x800]; */
-/*TODO*///		float yMax = 1.0;
-/*TODO*///		float yMin = 0.01;
-/*TODO*///		float yAdd;
-/*TODO*///		float yTmp, rk, rk2;
-/*TODO*///	
-/*TODO*///		float resDyMax;
-/*TODO*///		float resDyMin;
-/*TODO*///		float resDy;
-/*TODO*///	
-/*TODO*///		uk = 0;
-/*TODO*///		for ( rk = 0; rk < 0x800; rk++ )
-/*TODO*///		{
-/*TODO*///			filterTable[uk] = (((exp(rk/0x800*log(400.0))/60.0)+0.05)
-/*TODO*///				*filterRefFreq) / options.samplerate;
-/*TODO*///			if ( filterTable[uk] < yMin )
-/*TODO*///				filterTable[uk] = yMin;
-/*TODO*///			if ( filterTable[uk] > yMax )
-/*TODO*///				filterTable[uk] = yMax;
-/*TODO*///			uk++;
-/*TODO*///		}
-/*TODO*///	
-/*TODO*///		/*extern filterfloat bandPassParam[0x800]; */
-/*TODO*///		yMax = 0.22;
-/*TODO*///		yMin = 0.05;  /* less for some R1/R4 chips */
-/*TODO*///		yAdd = (yMax-yMin)/2048.0;
-/*TODO*///		yTmp = yMin;
-/*TODO*///		uk = 0;
-/*TODO*///		/* Some C++ compilers still have non-local scope! */
-/*TODO*///		for ( rk2 = 0; rk2 < 0x800; rk2++ )
-/*TODO*///		{
-/*TODO*///			bandPassParam[uk] = (yTmp*filterRefFreq) / options.samplerate;
-/*TODO*///			yTmp += yAdd;
-/*TODO*///			uk++;
-/*TODO*///		}
-/*TODO*///	
-/*TODO*///		/*extern filterfloat filterResTable[16]; */
-/*TODO*///		resDyMax = 1.0;
-/*TODO*///		resDyMin = 2.0;
-/*TODO*///		resDy = resDyMin;
-/*TODO*///		for ( uk = 0; uk < 16; uk++ )
-/*TODO*///		{
-/*TODO*///			filterResTable[uk] = resDy;
-/*TODO*///			resDy -= (( resDyMin - resDyMax ) / 15 );
-/*TODO*///		}
-/*TODO*///		filterResTable[0] = resDyMin;
-/*TODO*///		filterResTable[15] = resDyMax;
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	void sid6581_init (SID6581 *This)
-/*TODO*///	{
-/*TODO*///		This.optr1.sid=This;
-/*TODO*///		This.optr2.sid=This;
-/*TODO*///		This.optr3.sid=This;
-/*TODO*///	
-/*TODO*///		This.optr1.modulator = &This.optr3;
-/*TODO*///		This.optr3.carrier = &This.optr1;
-/*TODO*///		This.optr1.filtVoiceMask = 1;
-/*TODO*///	
-/*TODO*///		This.optr2.modulator = &This.optr1;
-/*TODO*///		This.optr1.carrier = &This.optr2;
-/*TODO*///		This.optr2.filtVoiceMask = 2;
-/*TODO*///	
-/*TODO*///		This.optr3.modulator = &This.optr2;
-/*TODO*///		This.optr2.carrier = &This.optr3;
-/*TODO*///		This.optr3.filtVoiceMask = 4;
-/*TODO*///	
-/*TODO*///	
-/*TODO*///	
-/*TODO*///		This.PCMsid = (udword)(This.PCMfreq * (16777216.0 / This.clock));
-/*TODO*///		This.PCMsidNoise = (udword)((This.clock*256.0)/This.PCMfreq);
-/*TODO*///	
-/*TODO*///		This.filter.Enabled = true;
-/*TODO*///	
-/*TODO*///		sidInitMixerEngine();
-/*TODO*///		filterTableInit();
-/*TODO*///	
-/*TODO*///		sidInitWaveformTables(This.type);
-/*TODO*///	
-/*TODO*///		enveEmuInit(This.PCMfreq, true);
-/*TODO*///	
-/*TODO*///		MixerInit(0);
-/*TODO*///	
-/*TODO*///		sidEmuReset(This);
-/*TODO*///	}
+	public static void filterTableInit()
+	{
+		int uk;
+		/* Parameter calculation has not been moved to a separate function */
+		/* by purpose. */
+		float filterRefFreq = 44100.0f;
+	
+	/*	extern filterfloat filterTable[0x800]; */
+		float yMax = 1.0f;
+		float yMin = 0.01f;
+		float yAdd;
+		float yTmp, rk, rk2;
+	
+		float resDyMax;
+		float resDyMin;
+		float resDy;
+	
+		uk = 0;
+		for ( rk = 0; rk < 0x800; rk++ )
+		{
+			filterTable[uk] = (float) ((((exp(rk/0x800*log(400.0))/60.0)+0.05)
+                                *filterRefFreq) / options.samplerate);
+			if ( filterTable[uk] < yMin )
+				filterTable[uk] = yMin;
+			if ( filterTable[uk] > yMax )
+				filterTable[uk] = yMax;
+			uk++;
+		}
+	
+		/*extern filterfloat bandPassParam[0x800]; */
+		yMax = 0.22f;
+		yMin = 0.05f;  /* less for some R1/R4 chips */
+		yAdd = (yMax-yMin)/2048.0f;
+		yTmp = yMin;
+		uk = 0;
+		/* Some C++ compilers still have non-local scope! */
+		for ( rk2 = 0; rk2 < 0x800; rk2++ )
+		{
+			bandPassParam[uk] = (yTmp*filterRefFreq) / options.samplerate;
+			yTmp += yAdd;
+			uk++;
+		}
+	
+		/*extern filterfloat filterResTable[16]; */
+		resDyMax = 1.0f;
+		resDyMin = 2.0f;
+		resDy = resDyMin;
+		for ( uk = 0; uk < 16; uk++ )
+		{
+			filterResTable[uk] = resDy;
+			resDy -= (( resDyMin - resDyMax ) / 15 );
+		}
+		filterResTable[0] = resDyMin;
+		filterResTable[15] = resDyMax;
+	}
+	
+	public static void sid6581_init (_SID6581 This)
+	{
+                This.optr1 = new sidOperator();
+                This.optr2 = new sidOperator();
+                This.optr3 = new sidOperator();
+                
+		This.optr1.sid=This;
+		This.optr2.sid=This;
+		This.optr3.sid=This;
+	
+		This.optr1.modulator = This.optr3;
+		This.optr3.carrier = This.optr1;
+		This.optr1.filtVoiceMask = 1;
+	
+		This.optr2.modulator = This.optr1;
+		This.optr1.carrier = This.optr2;
+		This.optr2.filtVoiceMask = 2;
+	
+		This.optr3.modulator = This.optr2;
+		This.optr2.carrier = This.optr3;
+		This.optr3.filtVoiceMask = 4;
+	
+	
+	
+		This.PCMsid = (int) (This.PCMfreq * (16777216.0 / This.clock));
+		This.PCMsidNoise = (int) ((This.clock*256.0)/This.PCMfreq);
+	
+		This.filter.Enabled = true;
+	
+		sidInitMixerEngine();
+		filterTableInit();
+	
+		sidInitWaveformTables(This.type);
+	
+		enveEmuInit(This.PCMfreq, true);
+	
+		MixerInit(false);
+	
+		sidEmuReset(This);
+	}
 	
 	public static void sid6581_port_w (int This, int offset, int data)
 	{

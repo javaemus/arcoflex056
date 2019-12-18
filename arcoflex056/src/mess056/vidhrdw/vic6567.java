@@ -360,6 +360,7 @@ public class vic6567
 	public static int vic2_frame_interrupt ()
 	{
 		return ignore_interrupt.handler();
+            //return 0;
 	}
 	
 	public static WriteHandlerPtr vic2_port_w = new WriteHandlerPtr() {
