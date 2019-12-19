@@ -401,15 +401,16 @@ public class c64
 		cbm_serial_data_write (serial_data = (data & 0x20)==0?1:0);
 		cbm_serial_atn_write (serial_atn = (data & 8)==0?1:0);
                 
-                /*if ((data & 3) != 3){
+                //if ((data & 3) != 3)
+                {
                     
-                    System.out.println("data: "+data+" Helper: "+(data & 3)+" offset="+offset);
+                    /*System.out.println("data: "+data+" Helper: "+(data & 3)+" offset="+offset);
                     System.out.println("Timer1 "+cia[1].timer1);
                     System.out.println("serial_clock "+serial_clock);
                     System.out.println("serial_data "+serial_data);
                     System.out.println("serial_atn "+serial_atn);*/
                     c64_vicaddr = new UBytePtr(c64_memory, helper[data & 3]);
-                //}
+                }
 		/*TODO*///c64_vicaddr = new UBytePtr(c64_memory, helper[data & 3]);
                 //if (data!=199)
                     
@@ -638,7 +639,7 @@ public class c64
         
 	public static void c64_bankswitch (int reset)
 	{
-		
+		//System.out.println("c64_bankswitch");
 		int data, loram, hiram, charen;
 	
 		data = ((c64_port6510 & c64_ddr6510) | (c64_ddr6510 ^ 0xff)) & 7;
@@ -751,7 +752,7 @@ public class c64
 		}
 		data = (c64_port6510 & c64_ddr6510) | (c64_ddr6510 ^ 0xff);
 		if (c64_tape_on != 0) {
-			vc20_tape_write ((data & 8)!=0?0:1);
+			vc20_tape_write ((data & 8)==0?1:0);
 			vc20_tape_motor (data & 0x20);
 		}
 		if (c128 != 0){
@@ -770,9 +771,9 @@ public class c64
 		if (offset != 0)
 		{
 			int data = (c64_ddr6510 & c64_port6510) | (c64_ddr6510 ^ 0xff);
-	
-			if (c64_tape_on!=0 && (c64_ddr6510 & 0x10)==0 && vc20_tape_switch ()==0)
-				data &= ~0x10;
+
+                        if (c64_tape_on!=0 && (c64_ddr6510 & 0x10)==0 && vc20_tape_switch ()==0)
+                                data &= ~0x10;
 /*TODO*///			if (c128 && !c128_capslock_r ())
 /*TODO*///				data &= ~0x40;
 /*TODO*///			if (c65 && C65_KEY_DIN) data &= ~0x40; /*? */
@@ -874,6 +875,8 @@ public class c64
 	{
 		/*    memset(c64_memory, 0, 0xfd00); */
                 //System.out.println("c64_common_driver_init");
+            
+                cia6526_init();
                 
 		if (ultimax == 0) {
 			c64_basic=new UBytePtr(memory_region(REGION_CPU1), 0x10000);
@@ -891,26 +894,24 @@ public class c64
 /*TODO*///		{0x17400, 0x193ff, MWA_ROM, &c64_romh},	/* kernal at 0xe000 */
 /*TODO*///	#endif
 		}
-		if (c64_tape_on != 0)
-			vc20_tape_open (c64_tape_read);
-	
-		if (c64_cia1_on != 0)
-		{
-			cbm_drive_open ();
-	
-			cbm_drive_attach_fs (0);
-			cbm_drive_attach_fs (1);
-		}
-                
-                cia6526_init();
-	
-		c64_cia0.todin50hz = c64_pal;
-		cia6526_config (0, c64_cia0);
-		if (c64_cia1_on != 0)
-		{
-			c64_cia1.todin50hz = c64_pal;
-			cia6526_config (1, c64_cia1);
-		}
+                if (c64_tape_on != 0)
+                        vc20_tape_open (c64_tape_read);
+
+                if (c64_cia1_on != 0)
+                {
+                        cbm_drive_open ();
+
+                        cbm_drive_attach_fs (0);
+                        cbm_drive_attach_fs (1);
+                }
+
+                c64_cia0.todin50hz = c64_pal;
+                cia6526_config (0, c64_cia0);
+                if (c64_cia1_on != 0)
+                {
+                        c64_cia1.todin50hz = c64_pal;
+                        cia6526_config (1, c64_cia1);
+                }
 	
 		if (ultimax != 0)
 		{
@@ -1209,7 +1210,7 @@ public class c64
             
 		int value, value2;
 	
-/*TODO*///		sid6581_update();
+		sid6581_update();
 	
 		c64_nmi();
 	
@@ -1559,11 +1560,11 @@ public class c64
 		}
 	
 		vic2_frame_interrupt ();
-	
-		if (c64_tape_on != 0) {
-			vc20_tape_config (DATASSETTE(), DATASSETTE_TONE());
-			vc20_tape_buttons (DATASSETTE_PLAY(), DATASSETTE_RECORD(), DATASSETTE_STOP());
-		}
+
+                if (c64_tape_on != 0) {
+                        vc20_tape_config (DATASSETTE(), DATASSETTE_TONE());
+                        vc20_tape_buttons (DATASSETTE_PLAY(), DATASSETTE_RECORD(), DATASSETTE_STOP());
+                }
 /*TODO*///		set_led_status (1 /*KB_CAPSLOCK_FLAG */ , KEY_SHIFTLOCK ? 1 : 0);
 /*TODO*///		set_led_status (0 /*KB_NUMLOCK_FLAG */ , JOYSTICK_SWAP ? 1 : 0);
 /*TODO*///	

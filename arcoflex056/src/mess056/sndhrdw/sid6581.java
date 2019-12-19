@@ -19,10 +19,11 @@
 package mess056.sndhrdw;
 
 import static arcadeflex056.fucPtr.*;
+import static common.libc.cstdio.*;
+import static common.ptr.*;
 import static common.subArrays.*;
 import static mame056.mame.options;
-import mame056.sndintrfH;
-import mame056.sndintrfH.MachineSound;
+import static mame056.sndintrfH.*;
 import static mame056.sound.streams.*;
 import static mess056.includes.sid6581H.*;
 import static mess056.sndhrdw.sid.*;
@@ -86,10 +87,11 @@ public class sid6581
 		}
 	}
 	
-	public static void sid6581_sh_update(int param, IntArray buffer, int length)
-	{
-		sidEmuFillBuffer(_sid6581[param], buffer, length);
-	}
+	public static StreamInitPtr sid6581_sh_update = new StreamInitPtr() {
+            public void handler(int param, ShortPtr buffer, int length) {
+                sidEmuFillBuffer(_sid6581[param], buffer, length);
+            }
+        };
 	
 	public static ShStartPtr sid6581_custom_start = new ShStartPtr() {
             public int handler(MachineSound driver) {
@@ -97,10 +99,10 @@ public class sid6581
 		int i;
 	
 		for (i=0; i< iface.count; i++) {
-/*TODO*///			char name[10];
-/*TODO*///			if (iface.count!=1) sprintf(name,"SID%d",i);
-/*TODO*///			else sprintf(name,"SID");
-/*TODO*///			_sid6581[i].mixer_channel = stream_init (name, iface.chips[i].default_mixer_level, options.samplerate, i, sid6581_sh_update);
+			String name="";
+			if (iface.count!=1) name=sprintf("SID%d",i);
+			else name=sprintf("SID");
+			_sid6581[i].mixer_channel = stream_init (name, iface.chips[i].default_mixer_level, options.samplerate, i, sid6581_sh_update);
 	
 			_sid6581[i].PCMfreq = options.samplerate;	
 			_sid6581[i].type=iface.chips[i].type;

@@ -15,6 +15,10 @@ import static mess056.sndhrdw.sidw6581_60H.waveform60_6581;
 import static mess056.sndhrdw.sidw6581_70H.waveform70_6581;
 
 import static mess056.sndhrdw.sidw8580H.*;
+import static mess056.sndhrdw.sidw8580H_30.waveform30_8580;
+import static mess056.sndhrdw.sidw8580H_50.waveform50_8580;
+import static mess056.sndhrdw.sidw8580H_60.waveform60_8580;
+import static mess056.sndhrdw.sidw8580H_70.waveform70_8580;
 
 /**
  *
@@ -502,7 +506,8 @@ public class sidvoice {
 			}
 		}
 		pVoice.waveProc.handler(pVoice);
-		pVoice.filtIO = ampMod1x8[pVoice.ADSRproc.handler(pVoice)|pVoice.output];
+                
+		pVoice.filtIO = ampMod1x8[(pVoice.ADSRproc.handler(pVoice)|pVoice.output)&0xffff];
 	//	pVoice.filtIO = pVoice.sid.masterVolume; // test for digi sound
 		waveCalcFilter(pVoice);
 		return pVoice.filtIO;//&pVoice.outputMask;
@@ -531,7 +536,7 @@ public class sidvoice {
 					pVoice.waveStep = 4095;
 /*TODO*///	#endif
 		}
-		pVoice.filtIO = ampMod1x8[pVoice.ADSRproc.handler(pVoice)|pVoice.output];
+		pVoice.filtIO = ampMod1x8[(pVoice.ADSRproc.handler(pVoice)|pVoice.output)&0xffff];
 		waveCalcFilter(pVoice);
 		return pVoice.filtIO;//&pVoice.outputMask;
             }
@@ -825,10 +830,19 @@ public class sidvoice {
 	
 		if ( type==MOS8580 )
 		{
-	        waveform30 = waveform30_8580;
-	        waveform50 = waveform50_8580;
-	        waveform60 = waveform60_8580;
-	        waveform70 = waveform70_8580;
+                    
+                    for (int _i=0 ; _i<4096 ; _i++)
+                        waveform30[_i] = waveform30_8580[_i];
+	        
+                    for (int _i=0 ; _i<(waveform50_8580.length) ; _i++)
+                        waveform50[_i] = waveform50_8580[_i];
+	        
+                    for (int _i=0 ; _i<(waveform60_8580.length) ; _i++)
+                        waveform60[_i] = waveform60_8580[_i];
+	        
+                    for (int _i=0 ; _i<(waveform70_8580.length) ; _i++)
+                        waveform70[_i] = waveform70_8580[_i];
+                    
 		}
 		else
 		{

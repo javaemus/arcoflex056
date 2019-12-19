@@ -129,9 +129,9 @@ public class cia6526
                 cia[which].active = 1;
                 cia[which].number = which;
                 cia[which].intf = intf;
-                cia[which].timer1 = new timer_entry();cia[which].timer1.callback=cia_timer1_timeout;
+                /*cia[which].timer1 = new timer_entry();cia[which].timer1.callback=cia_timer1_timeout;
                 cia[which].timer2 = new timer_entry();cia[which].timer1.callback=cia_timer2_timeout;
-                cia[which].todtimer = new timer_entry();cia[which].timer1.callback=cia_tod_timeout;
+                cia[which].todtimer = new timer_entry();cia[which].timer1.callback=cia_tod_timeout;*/
         }
 
 

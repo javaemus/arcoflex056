@@ -19,7 +19,8 @@
  */ 
 package mess056.sndhrdw;
 
-import common.subArrays.IntArray;
+import static common.ptr.*;
+import static common.subArrays.*;
 import static java.lang.Math.exp;
 import static java.lang.Math.log;
 import static mame056.mame.options;
@@ -114,10 +115,10 @@ public class sid
 	}
 	
 	
-	public static void sidEmuFillBuffer(_SID6581 This, IntArray buffer, int bufferLen )
+	public static void sidEmuFillBuffer(_SID6581 This, ShortPtr buffer, int bufferLen )
 	{
 	//void* fill16bitMono( SID6581 *This, void* buffer, udword numberOfSamples )
-	    IntArray buffer16bit = new IntArray(buffer);
+	    ShortPtr buffer16bit = new ShortPtr(buffer);
 	    for ( ; bufferLen > 0; bufferLen-- )
 	    {
 		buffer16bit.write( mix16mono[(mix16monoMiddleIndex
@@ -129,7 +130,7 @@ public class sid
 	   ghostbusters and goldrunner everything except volume zeroed */
 						      +(This.masterVolume<<2)
 	//						  +(*sampleEmuRout)()
-		    )]);
+		    )&0x3ff]);
                 buffer16bit.offset++;
 		syncEm(This);
 	    }

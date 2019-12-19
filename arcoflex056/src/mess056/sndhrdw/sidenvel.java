@@ -304,8 +304,8 @@ public class sidenvel {
 /*TODO*///	#elif defined(DIRECT_FIXPOINT)
 /*TODO*///		pVoice.enveStepAdd.l = decayReleaseRates[release];
 /*TODO*///	#else
-/*TODO*///		pVoice.enveStepAdd = decayReleaseRates[release];
-/*TODO*///		pVoice.enveStepAddPnt = decayReleaseRatesP[release];
+		pVoice.enveStepAdd = decayReleaseRates[release];
+		pVoice.enveStepAddPnt = decayReleaseRatesP[release];
 /*TODO*///	#endif
 		pVoice.ADSRproc = enveEmuRelease;
 		return enveEmuRelease.handler(pVoice);
@@ -321,7 +321,7 @@ public class sidenvel {
 /*TODO*///		pVoice.enveStep.w[HI] = releasePos[pVoice.enveVol];
 /*TODO*///		pVoice.enveStep.w[LO] = 0;
 /*TODO*///	#else
-		pVoice.enveStep = releasePos[pVoice.enveVol];
+		pVoice.enveStep = releasePos[(pVoice.enveVol)&0xff];
 		pVoice.enveStepPnt = 0;
 /*TODO*///	#endif
 		return enveEmuAlterRelease.handler(pVoice);
@@ -334,7 +334,7 @@ public class sidenvel {
 	
         public static ptr2sidUwordFunc enveEmuSustain = new ptr2sidUwordFunc() {
             public int handler(sidOperator pVoice) {
-		return masterAmplModTable[pVoice.sid.masterVolumeAmplIndex+pVoice.enveVol];
+		return masterAmplModTable[(pVoice.sid.masterVolumeAmplIndex+pVoice.enveVol)&0xfff];
             }
         };
 	
@@ -387,7 +387,7 @@ public class sidenvel {
 		pVoice.enveStepAddPnt = decayReleaseRatesP[decay];
 /*TODO*///	#endif
 		pVoice.ADSRproc = enveEmuSustainDecay;
-		return enveEmuSustainDecay.handler(pVoice);
+		return enveEmuSustain.handler(pVoice);
             }
         };
 	
@@ -515,8 +515,8 @@ public class sidenvel {
 /*TODO*///	#elif defined(DIRECT_FIXPOINT)
 /*TODO*///		pVoice.enveStepAdd.l = attackRates[attack];
 /*TODO*///	#else
-		pVoice.enveStepAdd = attackRates[attack];
-		pVoice.enveStepAddPnt = attackRatesP[attack];
+		pVoice.enveStepAdd = attackRates[attack&0xf];
+		pVoice.enveStepAddPnt = attackRatesP[attack&0xf];
 /*TODO*///	#endif
 		pVoice.ADSRproc = enveEmuAttack;
 		return enveEmuAttack.handler(pVoice);
