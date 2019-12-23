@@ -8,7 +8,7 @@ import static arcadeflex056.fucPtr.*;
 
 public class nes_mmcH {
 
-    public static class mmc
+    public static class _mmc
     {
             public int iNesMapper; /* iNES Mapper # */
             public String desc;     /* Mapper description */
@@ -19,7 +19,7 @@ public class nes_mmcH {
             public ReadHandlerPtr ppu_latch;
             public ReadHandlerPtr mmc_irq;
             
-            public mmc(int iNesMapper, String desc, WriteHandlerPtr mmc_write_low, ReadHandlerPtr mmc_read_low, WriteHandlerPtr mmc_write_mid, WriteHandlerPtr mmc_write, ReadHandlerPtr ppu_latch, ReadHandlerPtr mmc_irq){
+            public _mmc(int iNesMapper, String desc, WriteHandlerPtr mmc_write_low, ReadHandlerPtr mmc_read_low, WriteHandlerPtr mmc_write_mid, WriteHandlerPtr mmc_write, ReadHandlerPtr ppu_latch, ReadHandlerPtr mmc_irq){
                 this.iNesMapper = iNesMapper;
                 this.desc = desc;
                 this.mmc_write_low = mmc_write_low;
@@ -31,7 +31,7 @@ public class nes_mmcH {
             }
     };
     
-    //public static __mmc mmc = new __mmc();
+    public static _mmc mmc;
 
     public static int MMC5_VRAM;
 

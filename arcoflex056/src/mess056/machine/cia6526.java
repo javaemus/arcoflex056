@@ -585,6 +585,7 @@ public class cia6526
             return val;
     }
 
+    public static int ciaB=0;
 
         /******************* CPU interface for VIA write *******************/
 
@@ -597,9 +598,11 @@ public class cia6526
                 {
                 case 0:
                         This.out_a = data;
-                        if (This.intf.out_a_func != null)
+                        if (This.intf.out_a_func != null){
+                            //System.out.println("A: "+offset);
                                 This.intf.out_a_func.handler(This.number, (This.out_a & This.ddr_a)
                                                                          | (~This.ddr_a & This.intf.a_pullup));
+                        }
                         break;
                 case 1:
                         This.out_b = data;
@@ -609,9 +612,12 @@ public class cia6526
                         break;
                 case 2:
                         This.ddr_a = data;
-                        if (This.intf.out_a_func != null)
+                        if (This.intf.out_a_func != null){
+                            //System.out.println("B: "+offset);
+                            ciaB=2;
                                 This.intf.out_a_func.handler(This.number, (This.out_a & This.ddr_a)
                                                                          | (~This.ddr_a & This.intf.a_pullup));
+                        }
                         break;
                 case 3:
                         This.ddr_b = data;

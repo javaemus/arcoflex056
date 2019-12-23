@@ -852,23 +852,23 @@ public class c64
                 
 	);
 /*TODO*///	
-/*TODO*///	static SID6581_interface ntsc_sound_interface =
-/*TODO*///	{
-/*TODO*///		{
-/*TODO*///			sid6581_custom_start,
-/*TODO*///			sid6581_custom_stop,
-/*TODO*///			sid6581_custom_update
-/*TODO*///		},
-/*TODO*///		1,
-/*TODO*///		{
-/*TODO*///			{
-/*TODO*///				MIXER(50, MIXER_PAN_CENTER),
-/*TODO*///				MOS6581,
-/*TODO*///				VIC6567_CLOCK,
-/*TODO*///				c64_paddle_read
-/*TODO*///			}
-/*TODO*///		}
-/*TODO*///	};
+        static SID6581_interface ntsc_sound_interface = new SID6581_interface(
+                //new CustomSound_interface(
+			sid6581_custom_start,
+			sid6581_custom_stop,
+			sid6581_custom_update,
+		//),
+		1,
+                new _chips[]
+                {
+                    new _chips(MIXER(50, MIXER_PAN_CENTER),
+				MOS6581,
+				VIC6567_CLOCK,
+				c64_paddle_read
+                    )
+		}
+                
+	);
 	
 	static MachineDriver machine_driver_ultimax = new MachineDriver
 	(
@@ -949,9 +949,9 @@ public class c64
 	  /* sound hardware */
 		0, 0, 0, 0,
                 new MachineSound[]{
-                    new MachineSound(
-                        SOUND_CUSTOM, pal_sound_interface )
-/*TODO*///			{ 0 }
+                    //new MachineSound(SOUND_CUSTOM, pal_sound_interface )
+                    new MachineSound( SOUND_CUSTOM, ntsc_sound_interface ),
+/*TODO*///                    new MachineSound(SOUND_DAC, vc20tape_sound_interface)
 		}
                 
 	);

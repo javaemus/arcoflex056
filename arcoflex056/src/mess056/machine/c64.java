@@ -409,9 +409,28 @@ public class c64
                     System.out.println("serial_clock "+serial_clock);
                     System.out.println("serial_data "+serial_data);
                     System.out.println("serial_atn "+serial_atn);*/
-                    c64_vicaddr = new UBytePtr(c64_memory, helper[data & 3]);
+                    
+                    //c64_vicaddr = new UBytePtr(c64_memory, helper[data & 3]);
+                    int _videoAddr=VIDEOADDR();
+                    int _charAdd=CHARGENADDR();
+                    
+                    //if (_videoAddr!=1024)
+                    {
+                        /*System.out.println("VideoAddr: "+(VIDEOADDR()));
+                        System.out.println("CharAddr: "+(CHARGENADDR()));
+                        System.out.println("data: "+data);*/
+                    }
+                    
+                    /*if (_videoAddr == 3072){
+                        c64_vicaddr = new UBytePtr(c64_memory, helper[0]);
+                    } else if (_videoAddr==1024){
+                        if (_charAdd==4096)
+                            c64_vicaddr = new UBytePtr(c64_memory, helper[3]);
+                        else if (_charAdd==12288)
+                            c64_vicaddr = new UBytePtr(c64_memory, helper[0]);
+                    }*/
                 }
-		/*TODO*///c64_vicaddr = new UBytePtr(c64_memory, helper[data & 3]);
+		c64_vicaddr = new UBytePtr(c64_memory, helper[data & 3]);
                 //if (data!=199)
                     
 		if (c128 != 0) {
@@ -423,8 +442,17 @@ public class c64
 	static ReadHandlerPtr c64_cia1_interrupt = new ReadHandlerPtr() {
             public int handler(int level) {
                 System.out.println("c64_cia1_interrupt");
-		cia1irq=level;
-		c64_nmi();
+                
+                /*
+                    cia1irq=level;
+                    c64_nmi();
+                */
+                
+                if (level != cia1irq)
+		{
+			c64_irq ((level!=0 || vicirq!=0) ? 1:0);
+			cia1irq = level;
+		}
                 
 /*TODO*///	#if 0
 /*TODO*///		static int old_level = 0;
@@ -523,6 +551,7 @@ public class c64
 	
 	public static WriteHandlerPtr c64_write_io = new WriteHandlerPtr() {public void handler(int offset, int data)
 	{
+            //System.out.println("offs: "+offset);
 		if (offset < 0x400) {
 			vic2_port_w.handler(offset & 0x3ff, data);
 		} else if (offset < 0x800) {

@@ -662,10 +662,10 @@ public class nes
 
     public static WriteHandlerPtr nes_vh_sprite_dma_w = new WriteHandlerPtr() {
         public void handler(int offset, int data) {
-            throw new UnsupportedOperationException("Not supported yet.");
-            /*TODO*///		UBytePtr RAM = memory_region(REGION_CPU1);
-/*TODO*///	
-/*TODO*///		memcpy (spriteram, &RAM[data * 0x100], 0x100);
+            
+            UBytePtr RAM = new UBytePtr(memory_region(REGION_CPU1));
+	
+            memcpy (spriteram, new UBytePtr(RAM, data * 0x100), 0x100);
 /*TODO*///	#ifdef MAME_DEBUG
 /*TODO*///	#ifdef macintosh
 /*TODO*///		if (data >= 0x40) SysBeep (0);
