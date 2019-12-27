@@ -218,6 +218,7 @@ import static mess056.includes.sid6581H.*;
 import static mess056.includes.vic6567H.*;
 import static mess056.machine.c64.*;
 import static mess056.machine.cia6526.*;
+import static mess056.machine.vc20tape.*;
 import static mess056.sndhrdw.sid6581.*;
 import static mess056.vidhrdw.vic6567.*;
 
@@ -949,9 +950,8 @@ public class c64
 	  /* sound hardware */
 		0, 0, 0, 0,
                 new MachineSound[]{
-                    //new MachineSound(SOUND_CUSTOM, pal_sound_interface )
                     new MachineSound( SOUND_CUSTOM, ntsc_sound_interface ),
-/*TODO*///                    new MachineSound(SOUND_DAC, vc20tape_sound_interface)
+                    new MachineSound(SOUND_DAC, vc20tape_sound_interface)
 		}
                 
 	);

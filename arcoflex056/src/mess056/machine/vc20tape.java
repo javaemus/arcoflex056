@@ -41,7 +41,7 @@ public class vc20tape
 	
 	public static int VERBOSE_DBG = 0;
 	
-	static DACinterface vc20tape_sound_interface = new DACinterface
+	public static DACinterface vc20tape_sound_interface = new DACinterface
         (
 		1,
 		new int[]{25}
@@ -134,27 +134,28 @@ public class vc20tape
 	/*TODO*///#ifdef LSB_FIRST
 	/*TODO*///#define intelLong(x) (x)
 	/*TODO*///#else
-	public static long intelLong(long x){ return (((x << 24) | (((long) x) >> 24) | 
-	                       (( x & 0x0000ff00) << 8) | (( x & 0x00ff0000) >> 8)));
+	public static long intelLong(long x){ 
+            //return (((x << 24) | (((long) x) >> 24) | (( x & 0x0000ff00) << 8) | (( x & 0x00ff0000) >> 8)));
+            return x;
         }
 	/*TODO*///#endif
 	static GameSample vc20_read_wav_sample (Object f)
 	{
 		long offset = 0;
-		char[] length = new char[1];
-                char[] rate = new char[1]; 
-                char[] filesize = new char[1];
+		char[] length = new char[4];
+                char[] rate = new char[4]; 
+                char[] filesize = new char[4];
                 int temp32;
-		char[] bits = new char[1];
-                char[] temp16 = new char[1];
-		UBytePtr buf = new UBytePtr(32);
+		char[] bits = new char[2];
+                char[] temp16 = new char[2];
+		char[] buf = new char[32];
 		GameSample result;
 	
 		/* read the core header and make sure it's a WAVE file */
 		offset += osd_fread (f, buf, 4);
 		if (offset < 4)
 			return null;
-		if (memcmp (buf.memory, "RIFF".toCharArray(), 4) != 0)
+		if (memcmp (buf, "RIFF".toCharArray(), 4) != 0)
 			return null;
 	
 		/* get the total size */
@@ -167,7 +168,7 @@ public class vc20tape
 		offset += osd_fread (f, buf, 4);
 		if (offset < 12)
 			return null;
-		if (memcmp (buf.memory, "WAVE".toCharArray(), 4) != 0)
+		if (memcmp (buf, "WAVE".toCharArray(), 4) != 0)
 			return null;
 	
 		/* seek until we find a format tag */
@@ -176,7 +177,7 @@ public class vc20tape
 			offset += osd_fread (f, buf, 4);
 			offset += osd_fread (f, length, 4);
 			length[0] = (char) intelLong (length[0]);
-			if (memcmp (buf.memory, "fmt ".toCharArray(), 4) == 0)
+			if (memcmp (buf, "fmt ".toCharArray(), 4) == 0)
 				break;
 	
 			/* seek to the next block */
@@ -218,7 +219,7 @@ public class vc20tape
 			offset += osd_fread (f, buf, 4);
 			offset += osd_fread (f, length, 4);
 			length[0] = (char) intelLong (length[0]);
-			if (memcmp (buf.memory, "data".toCharArray(), 4) == 0)
+			if (memcmp (buf, "data".toCharArray(), 4) == 0)
 				break;
 	
 			/* seek to the next block */
@@ -1149,13 +1150,13 @@ public class vc20tape
 	{
 		tape.read_callback = read_callback;
 	/*TODO*///#ifndef NEW_GAMEDRIVER
-		tape.type = 0;
-		tape.on = 0;
-		tape.noise = 0;
-		tape.play = 0;
-		tape.record = 0;
-		tape.motor = 0;
-		tape.data = 0;
+	/*TODO*///	tape.type = 0;
+	/*TODO*///	tape.on = 0;
+	/*TODO*///	tape.noise = 0;
+	/*TODO*///	tape.play = 0;
+	/*TODO*///	tape.record = 0;
+	/*TODO*///	tape.motor = 0;
+	/*TODO*///	tape.data = 0;
 	/*TODO*///#endif
 		prg.c16 = 0;
 	}
@@ -1203,6 +1204,7 @@ public class vc20tape
 	
 	public static io_exitPtr vc20_tape_detach_image = new io_exitPtr() {
             public int handler(int id) {
+                System.out.println("vc20_tape_detach_image");
                 vc20_tape_close();
                 
                 return INIT_PASS;
@@ -1230,9 +1232,11 @@ public class vc20tape
 	
 	static void vc20_state ()
 	{
+            //System.out.println("vc20_state "+tape.type);
 		switch (tape.type)
 		{
 		case TAPE_WAV:
+                    //System.out.println("Tipo WAV");
 			vc20_wav_state ();
 			break;
 		case TAPE_PRG:
@@ -1309,7 +1313,7 @@ public class vc20tape
 		switch (tape.type)
 		{
 		case TAPE_WAV:
-			tape.on = (wav.state != 0) && on!=0 ? 1:0;
+			tape.on = ((wav.state != 0) && on!=0) ? 1:0;
 			break;
 		case TAPE_PRG:
 			tape.on = (prg.state != 0) && on!=0 ? 1:0;
@@ -1324,6 +1328,7 @@ public class vc20tape
 	
 	static void vc20_tape_buttons (int play, int record, int stop)
 	{
+            System.out.println("vc20_tape_buttons PLAY="+play);
 		if (stop != 0)
 		{
 			tape.play = 0; tape.record = 0;
@@ -1341,6 +1346,7 @@ public class vc20tape
 	
 	static void vc20_tape_motor (int data)
 	{
+            //System.out.println("vc20_tape_motor");
 		tape.motor = data!=0?0:1;
 		vc20_state ();
 	}

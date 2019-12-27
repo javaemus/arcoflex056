@@ -142,7 +142,8 @@ public class wd179x
 			timer_remove(busy_timer);
 		}
 		w.status |= STA_1_BUSY;
-		/*TODO*///busy_timer = timer_set(TIME_IN_MSEC(milliseconds), (int)w, wd179x_busy_callback);
+		//busy_timer = timer_set(TIME_IN_MSEC(milliseconds), (int)w, wd179x_busy_callback);
+                busy_timer = timer_set(TIME_IN_MSEC(milliseconds), drv, wd179x_busy_callback);
 	}
 	
 	

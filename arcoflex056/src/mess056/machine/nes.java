@@ -452,7 +452,7 @@ public class nes
             ret = M6502_IRQ_LINE;
 
             /* See if a mapper generated an irq */
- /*TODO*///	    if (*mmc_irq != null) ret = (*mmc_irq)(current_scanline);
+	    if (mmc_irq != null) ret = mmc_irq.handler(current_scanline);
             if (current_scanline <= BOTTOM_VISIBLE_SCANLINE) {
                 /* If background or sprites are enabled, copy the ppu address latch */
                 if ((PPU_Control1 & 0x18) != 0) {
@@ -573,7 +573,7 @@ public class nes
                 case 7:
                     retVal = PPU_data_latch & 0xFF;
 
-                    /*TODO*///	            if (*ppu_latch != null) (*ppu_latch)(PPU_address & 0x3fff);
+                    if (ppu_latch != null) ppu_latch.handler(u16_PPU_address & 0x3fff);
                     if ((u16_PPU_address >= 0x2000) && (u16_PPU_address <= 0x3fef)) {
                         PPU_data_latch = ppu_page[(u16_PPU_address & 0xc00) >> 10].read(u16_PPU_address & 0x3ff);
                     } else {
@@ -846,7 +846,7 @@ public class nes
     static void Write_PPU(int data) {
         int tempAddr = u16_PPU_address & 0x3fff;
 
-        /*TODO*///	    if (*ppu_latch != null) (*ppu_latch)(tempAddr);
+        if (ppu_latch != null) ppu_latch.handler(tempAddr);
         if (tempAddr < 0x2000) {
             /* This ROM writes to the character gen portion of VRAM */
             dirtychar[tempAddr >> 4] = 1;
@@ -973,7 +973,7 @@ public class nes
                 /* If the header has junk in the unused bytes, assume the extra mapper byte is also invalid */
  /* We only check the first 4 unused bytes for now */
                 for (i = 0; i < 4; i++) {
-                    logerror("%02x ", skank[i]);
+                    //logerror("%02x ", skank[i]);
                     if (skank[i] != 0x00) {
                         logerror("(skank: %d)", i);
                         //				m = 0;
@@ -1038,7 +1038,7 @@ public class nes
 
             logerror("**\n");
             logerror("Mapper: %d\n", _nes.mapper);
-            logerror("PRG chunks: %02x, size: %06x\n", _nes.prg_chunks[0], 0x4000 * _nes.prg_chunks[0]);
+            //logerror("PRG chunks: %02x, size: %06x\n", _nes.prg_chunks[0], 0x4000 * _nes.prg_chunks[0]);
 
             /* Read in any chr chunks */
             if (_nes.chr_chunks[0] > 0) {
@@ -1061,7 +1061,7 @@ public class nes
                 nes_charlayout.total = 512;
             }
 
-            logerror("CHR chunks: %02x, size: %06x\n", _nes.chr_chunks, 0x4000 * _nes.chr_chunks[0]);
+            //logerror("CHR chunks: %02x, size: %06x\n", _nes.chr_chunks, 0x4000 * _nes.chr_chunks[0]);
             logerror("**\n");
 
             /* Attempt to load a battery file for this ROM. If successful, we */

@@ -81,6 +81,7 @@ public class cbmdriveH {
     /* data for one drive */
     public static class CBM_Drive
     {
+            public int number;
             public int _interface;
             public char[] cmdbuffer = new char[32];
             public int cmdpos;
@@ -109,9 +110,11 @@ public class cbmdriveH {
             
             public CBM_Serial(){
                 
-            for (int _i=0 ; _i<2 ; _i++)
-                drives[_i] = new CBM_Drive();
-        
+                for (int _i=0 ; _i<2 ; _i++){
+                    drives[_i] = new CBM_Drive();
+                    drives[_i].number = _i;
+                }
+                
             }
     };
 

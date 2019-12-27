@@ -328,7 +328,7 @@ public class amstrad
 		amstrad_psg_operation = (data >> 6) & 0x03;
 		/* keyboard line */
 		amstrad_keyboard_line = (data & 0x0f);
-	
+                
 		update_psg();
             }
         };
@@ -2522,7 +2522,9 @@ public class amstrad
 	public static ReadHandlerPtr amstrad_psg_porta_read = new ReadHandlerPtr() {
             public int handler(int offset) {
                 /* read cpc keyboard */
-		return AmstradCPC_ReadKeyboard();
+                int kb = AmstradCPC_ReadKeyboard();
+                //System.out.println(kb);
+		return kb;
             }
         };
 	
@@ -2997,8 +2999,8 @@ public class amstrad
 			null						/* output_chunk */ 
 		);
 	
-/*TODO*///	static IODevice AMSTRAD_IO_CASSETTE =
-/*TODO*///		IO_CASSETTE_WAVE(1,"wav\0",null,amstrad_cassette_init,amstrad_cassette_exit);
+        static IODevice AMSTRAD_IO_CASSETTE = 
+		IO_CASSETTE_WAVE(1,"wav\0",null,amstrad_cassette_init,amstrad_cassette_exit);
 	
 /*TODO*///	static IODevice AMSTRAD_IO_PRINTER =
 /*TODO*///		IO_PRINTER_PORT(1,"prn\0");
@@ -3007,7 +3009,7 @@ public class amstrad
 	{
 		AMSTRAD_IO_SNAPSHOT,
 		AMSTRAD_IO_DISK,
-/*TODO*///		AMSTRAD_IO_CASSETTE,
+		AMSTRAD_IO_CASSETTE,
 /*TODO*///		AMSTRAD_IO_PRINTER,
 		new IODevice(IO_END)
 	};
@@ -3020,7 +3022,7 @@ public class amstrad
 	{
 		AMSTRAD_IO_SNAPSHOT,
 		AMSTRAD_IO_DISK,
-/*TODO*///		AMSTRAD_IO_CASSETTE,
+		AMSTRAD_IO_CASSETTE,
 /*TODO*///		AMSTRAD_IO_PRINTER,
 		new IODevice(
 			IO_CARTSLOT,				/* type */

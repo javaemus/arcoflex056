@@ -319,6 +319,7 @@ public class c64
 	
 	public static WriteHandlerPtr c64_tape_read = new WriteHandlerPtr() {
             public void handler(int offset, int data) {
+                System.out.println("c64_tape_read");
                 cia6526_0_set_input_flag (data);
             }
         };
@@ -1624,7 +1625,7 @@ public class c64
     /*TODO*///	praster_draw_text (this, text, &y);
     /*TODO*///#endif
     /*TODO*///
-    /*TODO*///	vc20_tape_status (text, sizeof (text));
+	vc20_tape_status (new String(text), text.length);
     /*TODO*///	praster_draw_text (this, text, &y);
     /*TODO*///#ifdef VC1541
     /*TODO*///	vc1541_drive_status (text, sizeof (text));
@@ -1638,4 +1639,5 @@ public class c64
         }
 	
 }
+
 

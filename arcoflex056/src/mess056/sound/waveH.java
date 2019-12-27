@@ -5,6 +5,10 @@
 package mess056.sound;
 
 import static common.ptr.*;
+import static consoleflex056.funcPtr.*;
+import static mess056.deviceH.*;
+import static mess056.messH.*;
+import static mess056.sound.wave.*;
 
 public class waveH {
 
@@ -26,31 +30,33 @@ public class waveH {
         public int[] mixing_level;//[MAX_WAVE];
     };
 
-    /*TODO*////*****************************************************************************
-/*TODO*/// * functions for the IODevice entry IO_CASSETTE. Example for the macro
-/*TODO*/// * IO_CASSETTE_WAVE(1,"wav\0cas\0",mycas_id,mycas_init,mycas_exit)
-/*TODO*/// *****************************************************************************/
-/*TODO*///#define IO_CASSETTE_WAVE(count,fileext,id,init,exit)	\
-/*TODO*///{														\
-/*TODO*///	IO_CASSETTE,		/* type */						\
-/*TODO*///	count,				/* count */ 					\
-/*TODO*///	fileext,			/* file extensions */			\
-/*TODO*///	IO_RESET_NONE,		/* reset depth */				\
-/*TODO*///	id, 				/* id */						\
-/*TODO*///	init,				/* init */						\
-/*TODO*///	exit,				/* exit */						\
-/*TODO*///	wave_info,			/* info */						\
-/*TODO*///	wave_open,			/* open */						\
-/*TODO*///	wave_close, 		/* close */ 					\
-/*TODO*///	wave_status,		/* status */					\
-/*TODO*///	wave_seek,			/* seek */						\
-/*TODO*///	wave_tell,			/* tell */						\
-/*TODO*///	wave_input, 		/* input */ 					\
-/*TODO*///	wave_output,		/* output */					\
-/*TODO*///	wave_input_chunk,	/* input_chunk */				\
-/*TODO*///	wave_output_chunk	/* output_chunk */				\
-/*TODO*///}
-/*TODO*///
+    /*****************************************************************************
+    * functions for the IODevice entry IO_CASSETTE. Example for the macro
+    * IO_CASSETTE_WAVE(1,"wav\0cas\0",mycas_id,mycas_init,mycas_exit)
+    *****************************************************************************/
+    public static IODevice IO_CASSETTE_WAVE(int count, String fileext,io_idPtr id,io_initPtr init, io_exitPtr exit)
+    {	
+        return new IODevice(
+            IO_CASSETTE,		/* type */
+            count,				/* count */
+            fileext,			/* file extensions */
+            IO_RESET_NONE,		/* reset depth */
+            id, 				/* id */
+            init,				/* init */
+            exit,				/* exit */
+            wave_info,			/* info */
+            wave_open,			/* open */
+            wave_close, 		/* close */
+            wave_status,		/* status */
+            wave_seek,			/* seek */
+            wave_tell,			/* tell */
+            wave_input, 		/* input */
+            wave_output,		/* output */
+            wave_input_chunk,	/* input_chunk */
+            wave_output_chunk	/* output_chunk */
+        );
+    }
+
 /*TODO*////*****************************************************************************
 /*TODO*/// * Use this structure for the "void *args" argument of device_open()
 /*TODO*/// * file

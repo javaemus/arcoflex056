@@ -75,8 +75,8 @@ public class input {
 	new KeyboardInfo( "=",          KEY_EQUALS,         KEYCODE_EQUALS ),*/
 	new KeyboardInfo( "BKSPACE",	KeyEvent.VK_BACK_SPACE,		KEYCODE_BACKSPACE ),
 	new KeyboardInfo( "TAB",	KeyEvent.VK_TAB,		KEYCODE_TAB ),
-	/*new KeyboardInfo( "[",          KEY_OPENBRACE,      KEYCODE_OPENBRACE ),
-	new KeyboardInfo( "]",          KEY_CLOSEBRACE,     KEYCODE_CLOSEBRACE ),*/
+	new KeyboardInfo( "[",          128,      KEYCODE_OPENBRACE ),
+	new KeyboardInfo( "]",          KeyEvent.VK_CLOSE_BRACKET,     KEYCODE_CLOSEBRACE ),
 	new KeyboardInfo( "ENTER",		KeyEvent.VK_ENTER,			KEYCODE_ENTER ),
 	new KeyboardInfo( ";",          KeyEvent.VK_COLON,          KEYCODE_COLON ),
 	new KeyboardInfo( ":",          KeyEvent.VK_QUOTE,          KEYCODE_QUOTE ),
@@ -86,9 +86,9 @@ public class input {
 	/*new KeyboardInfo( ".",          KEY_STOP,           KEYCODE_STOP ),
 	new KeyboardInfo( "/",          KEY_SLASH,          KEYCODE_SLASH ),*/
 	new KeyboardInfo( "SPACE",		KeyEvent.VK_SPACE,		KEYCODE_SPACE ),
-	/*new KeyboardInfo( "INS",		KEY_INSERT,			KEYCODE_INSERT ),
-	new KeyboardInfo( "DEL",		KEY_DEL,			KEYCODE_DEL ),
-	new KeyboardInfo( "HOME",		KEY_HOME,			KEYCODE_HOME ),
+	///new KeyboardInfo( "INS",		KEY_INSERT,			KEYCODE_INSERT ),
+	new KeyboardInfo( "DEL",		KeyEvent.VK_BACK_SLASH,			KEYCODE_DEL ),
+	/*new KeyboardInfo( "HOME",		KEY_HOME,			KEYCODE_HOME ),
 	new KeyboardInfo( "END",		KEY_END,			KEYCODE_END ),*/
 	new KeyboardInfo( "PGUP",		KeyEvent.VK_PAGE_UP,		KEYCODE_PGUP ),
 	new KeyboardInfo( "PGDN",		KeyEvent.VK_PAGE_DOWN,		KEYCODE_PGDN ),
@@ -112,7 +112,7 @@ public class input {
 	new KeyboardInfo( "RCTRL",		KeyEvent.VK_CONTROL,		KEYCODE_RCONTROL ),
  //RALT - LALT ARE THE SAME IN JAVA
 	new KeyboardInfo( "ALT",		KeyEvent.VK_ALT,		KEYCODE_LALT ),
-	new KeyboardInfo( "ALTGR",		KeyEvent.VK_ALT,		KEYCODE_RALT ),
+	new KeyboardInfo( "ALTGR",		KeyEvent.VK_ALT_GRAPH,		KEYCODE_RALT ),
 	/*new KeyboardInfo( "LWIN",		KEY_LWIN,			KEYCODE_OTHER ),
 	new KeyboardInfo( "RWIN",		KEY_RWIN,			KEYCODE_OTHER ),
 	new KeyboardInfo( "MENU",		KEY_MENU,			KEYCODE_OTHER ),*/

@@ -613,7 +613,8 @@ public class ops02H {
     *	ILL Illegal opcode
     ***************************************************************/
     public static void ILL() {
-        logerror("M6502 illegal opcode %04x: %02x\n", (m6502.pc.D - 1) & 0xffff, cpu_readop((m6502.pc.D - 1) & 0xffff));
+        //logerror("M6502 illegal opcode %04x: %02x\n", (m6502.pc.D - 1) & 0xffff, cpu_readop((m6502.pc.D - 1) & 0xffff));
+        System.out.println("M6502 illegal opcode "+((m6502.pc.D - 1) & 0xffff)+": "+new Integer(cpu_readop((m6502.pc.D - 1) & 0xffff)).toString().toString());
     }
 
     /* 6502 ********************************************************

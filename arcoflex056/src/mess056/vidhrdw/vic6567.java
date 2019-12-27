@@ -808,6 +808,7 @@ public class vic6567
 		}
 		else
 	*/	{
+            //System.out.println("vic2.chargenaddrNR="+vic2.chargenaddr);
 			for (y = ybegin; y <= yend; y++)
 			{
 				code = vic2.dma_read.handler(vic2.chargenaddr + ch * 8 + y);
@@ -846,6 +847,7 @@ public class vic6567
 		}
 		else
 	*/	{
+                        //System.out.println("vic2.chargenaddr="+vic2.chargenaddr);
 			for (y = ybegin; y <= yend; y++)
 			{
 				code = vic2.dma_read.handler(vic2.chargenaddr + ch * 8 + y);
@@ -904,7 +906,7 @@ public class vic6567
 	public static void vic2_draw_bitmap_multi (int ybegin, int yend, int ch, int yoff, int xoff)
 	{
 		int y, code;
-                System.out.println("vic2_draw_bitmap_multi "+vic2.chargenaddr);
+                //System.out.println("vic2_draw_bitmap_multi "+vic2.chargenaddr);
 	
 	/*	if (Machine.color_depth == 8)
 		{
@@ -926,7 +928,7 @@ public class vic6567
 	*/	{
 			for (y = ybegin; y <= yend; y++)
 			{
-				code = vic2.dma_read.handler((CHARGENADDR()&0x2000) + ch * 8 + y);
+				code = vic2.dma_read.handler((vic2.chargenaddr&0x2000) + ch * 8 + y);
                             //code = vic2.dma_read.handler((8192&0x2000) + ch * 8 + y);
 				(vic2.screen[y + yoff]).write(xoff >> 3, (char) vic2.foreground[code]);
 				new UShortPtr( vic2.bitmap.line[y + yoff]).write(xoff, (char) vic2.bitmapmulti[code >> 6]);
