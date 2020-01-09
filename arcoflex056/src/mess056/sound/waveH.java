@@ -41,17 +41,17 @@ public class waveH {
             count,				/* count */
             fileext,			/* file extensions */
             IO_RESET_NONE,		/* reset depth */
-            id, 				/* id */
+            null,//id, 				/* id */
             init,				/* init */
             exit,				/* exit */
             wave_info,			/* info */
             wave_open,			/* open */
-            wave_close, 		/* close */
+            null,//wave_close, 		/* close */
             wave_status,		/* status */
             wave_seek,			/* seek */
             wave_tell,			/* tell */
             wave_input, 		/* input */
-            wave_output,		/* output */
+            null,//wave_output,		/* output */
             wave_input_chunk,	/* input_chunk */
             wave_output_chunk	/* output_chunk */
         );

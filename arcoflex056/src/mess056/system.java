@@ -33,7 +33,7 @@ import static mess056.systems.gb.*;
 import static mess056.systems.c16.*;
 import static mess056.systems.nes.*;
 import static mess056.systems.c64.*;
-import static mess056.systems.k64.*;
+import static mess056.systems.svision.*;
 
 public class system {
 	/*TODO*///	
@@ -180,7 +180,7 @@ public class system {
 	/*TODO*///	TESTDRIVER( odyssey2 )	/* Magnavox Odyssey 2 - 1978-1983				  */
 	/*TODO*///	
 	/*TODO*///		/* Watara */
-	/*TODO*///		DRIVER( svision )	/* Super Vision	Handheld						  */
+	driver_svision,	/* Super Vision	Handheld						  */
 	/*TODO*///	
 	/*TODO*///		/* 1992 epoch barcode battler handheld*/
 	/*TODO*///	
@@ -334,7 +334,6 @@ public class system {
 	/*TODO*///		DRIVER( vic20i )	/* Commodore Vic-20 IEEE488 Interface			  */
 	/*TODO*///	
 	driver_max,		/* Max (Japan)/Ultimax (US)/VC10 (German)		  */
-	driver_k64,
         driver_c64,		/* Commodore 64 - NTSC							  */
 	/*TODO*///	/*	DRIVER( j64 )*/		/* Commodore 64 - NTSC (Japan)					  */
 	driver_c64pal,	/* Commodore 64 - PAL							  */

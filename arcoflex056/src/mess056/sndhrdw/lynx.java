@@ -338,25 +338,25 @@ public class lynx
                     left.write( 0 );
                     right.write( 0 );
                     j=0;
-                    for (channel=lynx_audio[_channel];  j<lynx_audio.length; j++) {
-                        lynx_audio_execute(channel);
-                        v=channel.reg.n.output;
-                        if ((master_enable&(0x10<<j)) == 0) {
-                            if ((attenuation_enable&(0x10<<j)) != 0) {
-                                left.write(left.read()+v*(channel.attenuation>>4));
-                            } else {
-                                left.write(left.read()+v*15);
-                            }
-                        }
-                        if ((master_enable&(1<<j)) == 0) {
-                            if ((attenuation_enable&(1<<j)) != 0) {
-                                right.write(right.read()+v*(channel.attenuation&0xf));
-                            } else {
-                                right.write(right.read()+v*15);
-                            }
-                        }
-                        _channel++;
-                    }
+/*TODO*///                    for (channel=lynx_audio[_channel];  j<lynx_audio.length; j++) {
+/*TODO*///                        lynx_audio_execute(channel);
+/*TODO*///                        v=channel.reg.n.output;
+/*TODO*///                        if ((master_enable&(0x10<<j)) == 0) {
+/*TODO*///                            if ((attenuation_enable&(0x10<<j)) != 0) {
+/*TODO*///                                left.write(left.read()+v*(channel.attenuation>>4));
+/*TODO*///                            } else {
+/*TODO*///                                left.write(left.read()+v*15);
+/*TODO*///                            }
+/*TODO*///                        }
+/*TODO*///                        if ((master_enable&(1<<j)) == 0) {
+/*TODO*///                            if ((attenuation_enable&(1<<j)) != 0) {
+/*TODO*///                                right.write(right.read()+v*(channel.attenuation&0xf));
+/*TODO*///                            } else {
+/*TODO*///                                right.write(right.read()+v*15);
+/*TODO*///                            }
+/*TODO*///                        }
+/*TODO*///                        _channel++;
+/*TODO*///                    }
                 }
             }
         };

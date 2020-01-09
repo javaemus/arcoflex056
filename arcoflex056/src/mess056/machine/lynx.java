@@ -445,7 +445,7 @@ public class lynx
                 
                 for (int _x=0 ; _x<256 ; _x++) {
                     /*TODO*///for ( y=blitter.y, hi=0;(blitter.memory_accesses++,i=blitter.mem.blitter.bitmap]); blitter.bitmap+=i ) {
-                         //blitter.memory_accesses++; i=blitter.mem.read(blitter.bitmap); blitter.bitmap+=i;
+                         blitter.memory_accesses++; i=blitter.mem.read(blitter.bitmap); blitter.bitmap+=i;
                                 
 			if (i==1) {
 			    // centered sprites sprdemo3, fat bobby, blockout
@@ -484,10 +484,12 @@ public class lynx
 		}
 	}
 	
-	public static void lynx_blitter_timer(int param)
-	{
-	    suzy.u.s.SPRSYS&=~1; //blitter finished
-	}
+	public static timer_callback lynx_blitter_timer = new timer_callback() {
+            public void handler(int i) {
+                suzy.u.s.SPRSYS&=~1; //blitter finished
+            }
+        };
+	
 	
 	/*
 	  control 0
@@ -694,7 +696,7 @@ public class lynx
 		blitter.memory_accesses+=2;
 		if ((blitter.cmd&0xff00)==0) break;
 	    }
-	//    timer_set(TIME_IN_CYCLES(blitter.memory_accesses*20,0), 0, lynx_blitter_timer);
+	    timer_set(TIME_IN_CYCLES(blitter.memory_accesses*20,0), 0, lynx_blitter_timer);
 	}
 	
 	public static void lynx_divide()

@@ -32,6 +32,7 @@ import mame056.cpu.i8085.i8080;
 import mame056.cpu.z8000.z8000;
 import mame056.cpu.z80.z80_MSX;
 import mame056.cpu.m6502.m6510;
+import mame056.cpu.m6502.m65c02;
 
 public class cpuintrf {
 
@@ -198,7 +199,7 @@ public class cpuintrf {
                 new i8080(),/*TODO*///	CPU0(8080,	   i8080,	 4,255,1.00,I8080_INTR_LINE,8, 16,	  0,16,LE,1, 3	),
                 new i8085(),/*TODO*///	CPU0(8085A,    i8085,	 4,255,1.00,I8085_INTR_LINE,8, 16,	  0,16,LE,1, 3	),
                 new m6502(),//CPU0(M6502,    m6502,	 1,  0,1.00,M6502_IRQ_LINE, 8, 16,	  0,16,LE,1, 3	),
-                new dummy_cpu(),/*TODO*///	CPU0(M65C02,   m65c02,	 1,  0,1.00,M65C02_IRQ_LINE, 8, 16,	  0,16,LE,1, 3	),
+                new m65c02(),/*TODO*///	CPU0(M65C02,   m65c02,	 1,  0,1.00,M65C02_IRQ_LINE, 8, 16,	  0,16,LE,1, 3	),
                 new dummy_cpu(),/*TODO*///	CPU0(M65SC02,  m65sc02,  1,  0,1.00,M65SC02_IRQ_LINE, 8, 16,	  0,16,LE,1, 3	),
                 new dummy_cpu(),/*TODO*///	CPU0(M65CE02,  m65ce02,  1,  0,1.00,M65CE02_IRQ_LINE, 8, 16,	  0,16,LE,1, 3	),
                 new dummy_cpu(),/*TODO*///	CPU0(M6509,    m6509,	 1,  0,1.00,M6509_IRQ_LINE, 8, 20,	  0,20,LE,1, 3	),

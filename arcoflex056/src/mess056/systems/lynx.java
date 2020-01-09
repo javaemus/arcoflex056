@@ -207,7 +207,7 @@ public class lynx
             public void handler(mame_bitmap bitmap, int full_refresh) {
                 int j;
 	
-	    /*TODO*///lynx_audio_debug(bitmap);
+	    lynx_audio_debug(bitmap);
 	
 	    for (j=0; j<debug_pos; j++) {
 		ui_text(bitmap, debug_strings[j], 0, j*8);
@@ -253,6 +253,7 @@ public class lynx
 		new MachineCPU[] {
 			new MachineCPU(
 				CPU_M65SC02, // vti core, integrated in vlsi, stz, but not bbr bbs
+                                //CPU_M6502, // vti core, integrated in vlsi, stz, but not bbr bbs
 				4000000,
 				lynx_readmem,lynx_writemem,null,null,
 				lynx_frame_int, 1
@@ -296,6 +297,7 @@ public class lynx
 		new MachineCPU[] {
 			new MachineCPU(
 				CPU_M65SC02, // vti core, integrated in vlsi, stz, but not bbr bbs
+                                //CPU_M6502, // vti core, integrated in vlsi, stz, but not bbr bbs
 				4000000,
 				lynx_readmem,lynx_writemem,null,null,
 				lynx_frame_int, 1
