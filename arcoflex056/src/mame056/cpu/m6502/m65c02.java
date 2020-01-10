@@ -73,6 +73,7 @@ public class m65c02 extends m6502 {
 	
 	public static void m65c02_take_irq()
 	{
+            //System.out.println("m65c02_take_irq!");
 		if( (m6502.u8_p & F_I) == 0 )
 		{
                     m6502.ea.SetD(M6502_IRQ_VEC);
@@ -107,6 +108,7 @@ public class m65c02 extends m6502 {
 /*TODO*///			CALL_MAME_DEBUG;
 	
 			op = RDOP();
+                        //System.out.println(op);
 			insn65c02[op].handler();
 	
 			/* if an irq is pending, take it now */
@@ -146,12 +148,14 @@ public class m65c02 extends m6502 {
         @Override
         public void set_irq_line(int irqline, int state)
 	{
+            //System.out.println("set_irq_line "+state);
 		if (irqline == IRQ_LINE_NMI)
 		{
 			if (m6502.u8_nmi_state == state) return;
 			m6502.u8_nmi_state = state;
 			if( state != CLEAR_LINE )
 			{
+                            
 /*TODO*///				LOG(( "M6502#%d set_nmi_line(ASSERT)\n", cpu_getactivecpu()));
 				m6502.ea.SetD(M6502_NMI_VEC);
 				m6502_ICount[0] -= 7;
@@ -166,8 +170,10 @@ public class m65c02 extends m6502 {
 				change_pc16(m6502.pc.D);
 			}
 		}
-		else
+                else{
+                    //System.out.println("kk");
 			super.set_irq_line(irqline,state);
+                }
 	}
 
 /*TODO*///	void m65c02_set_irq_callback(int (*callback)(int irqline)) { m6502_set_irq_callback(callback); }

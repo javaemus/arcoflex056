@@ -266,6 +266,7 @@ public class m6502 extends cpu_interface {
 
     @Override
     public void set_irq_line(int irqline, int state) {
+        //System.out.println("m6502_set_irq_line");
         if (irqline == IRQ_LINE_NMI) {
             if (m6502.u8_nmi_state == state) {
                 return;

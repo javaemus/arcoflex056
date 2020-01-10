@@ -338,15 +338,28 @@ public class svision {
 
 	static VhUpdatePtr svision_vh_screenrefresh = new VhUpdatePtr() {
             public void handler(mame_bitmap bitmap, int full_refresh) {
-		int x, y, i, j;
-		UBytePtr vram=new UBytePtr(memory_region(REGION_CPU1), 0x4000+XPOS()/4);
-	
-		for (y=0,i=0; y<160; y++,i+=0x30) {
-			for (x=0,j=i; x<160; x+=4,j++) {
-				drawgfx(bitmap, Machine.gfx[0], vram.read(j),0,0,0,
-						x,y, null, TRANSPARENCY_NONE,0);
-			}
-		}
+                int x, y;
+                UBytePtr vram = new UBytePtr(memory_region(REGION_CPU1), 0x4000 + (svision_reg.read(2) / 4));
+                UBytePtr vram_line;
+                UShortPtr line;
+                int b;
+
+                for (y = 0; y < 160; y++)
+                {
+                        line = new UShortPtr(bitmap.line[y]);
+                        vram_line = new UBytePtr(vram, y * 0x30);
+
+                        for (x = 0; x < 160; x += 4)
+                        {
+                                b = vram_line.readinc();
+                                //System.out.println(b);
+                                line.write(3, (char) (((b >> 6) & 0x03) + 2));
+                                line.write(2, (char) (((b >> 4) & 0x03) + 2));
+                                line.write(1, (char) (((b >> 2) & 0x03) + 2));
+                                line.write(0, (char) (((b >> 0) & 0x03) + 2));
+                                line.inc(4);
+                        }
+                }
             }
         };
 
@@ -401,7 +414,7 @@ public class svision {
 		160, 160, /* width and height of screen and allocated sizes */
 		new rectangle( 0, 160 - 1, 0, 160 - 1), /* left, right, top, bottom of visible area */
 		svision_gfxdecodeinfo,			   /* graphics decode info */
-		svision_palette.length,
+		svision_palette.length/3,
 		svision_colortable.length,
 		svision_init_colors,		/* convert color prom */
 	
