@@ -242,6 +242,7 @@ public class svision {
             }
         };
 
+
 	
 	public static Memory_ReadAddress readmem[]={
 		new Memory_ReadAddress(MEMPORT_MARKER, MEMPORT_DIRECTION_READ | MEMPORT_TYPE_MEM | MEMPORT_WIDTH_8),
@@ -250,7 +251,7 @@ public class svision {
                 new Memory_ReadAddress( 0x4000, 0x5fff, MRA_RAM ), //?
 		new Memory_ReadAddress( 0x6000, 0x7fff, MRA_ROM ),
 		new Memory_ReadAddress( 0x8000, 0xbfff, MRA_BANK1 ),
-		new Memory_ReadAddress( 0xc000, 0xffff, MRA_ROM ),
+		new Memory_ReadAddress( 0xc000, 0xffff, MRA_BANK2 ),
 		new Memory_ReadAddress(MEMPORT_MARKER, 0)
 	};
         
@@ -308,19 +309,22 @@ public class svision {
 	/* palette in red, green, blue tribles */
 	static char svision_palette[] =
 	{
+            0x00, 0x00, 0x00,
+            0xff, 0xff, 0xff,
 /*TODO*///	#if 0
 /*TODO*///	    // greens grabbed from a scan of a handheld
 /*TODO*///	    // in its best adjustment for contrast
-/*TODO*///		{ 53, 73, 42 },
-/*TODO*///		{ 42, 64, 47 },
-/*TODO*///		{ 22, 42, 51 },
-/*TODO*///		{ 22, 25, 32 }
+/* 53, 73, 42 ,
+ 42, 64, 47 ,
+ 22, 42, 51 ,
+ 22, 25, 32 */
 /*TODO*///	#else
 		// grabbed from chris covell's black white pics
 		 0xe0, 0xe0, 0xe0 ,
 		 0xb9, 0xb9, 0xb9 ,
 		 0x54, 0x54, 0x54 ,
 		 0x12, 0x12, 0x12 
+
 /*TODO*///	#endif
 	};
 	
@@ -369,6 +373,8 @@ public class svision {
 		return ignore_interrupt.handler();
             }
         };
+        
+        
 	
 	static void init_svision()
 	{
@@ -380,8 +386,8 @@ public class svision {
 	
 	static InitMachinePtr svision_reset = new InitMachinePtr() {
             public void handler() {
-                svision.timer1=null;
-                svision.timer1_shot=false;
+                svision.timer1_shot = false;
+                //svision_update_banks();
             }
         };
 	
@@ -389,7 +395,7 @@ public class svision {
 	static CustomSound_interface svision_sound_interface = new CustomSound_interface
         (
 		svision_custom_start,
-		svision_custom_stop,
+		null, //svision_custom_stop,
 		svision_custom_update
 	);
         
