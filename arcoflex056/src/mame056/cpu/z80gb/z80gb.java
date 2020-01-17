@@ -17,20 +17,20 @@ import static mame056.memoryH.*;
 import static arcadeflex056.osdepend.*;
 import arcadeflex056.settings;
 
-public class z80 extends cpu_interface {
+public class z80gb extends cpu_interface {
 
     public static int[] z80_ICount = new int[1];
     
     public static boolean isZ80_MSX = false;
 
-    public z80() {
-        cpu_num = CPU_Z80;
-        burn = burn_function;
-        num_irqs = 1;
+    public z80gb() {
+        cpu_num = CPU_Z80GB;
+        burn = burn_function;//not exist
+        num_irqs = 5;
         default_vector = 255;
         icount = z80_ICount;
         overclock = 1.00;
-        irq_int = -1000;
+        irq_int = 0;
         databus_width = 8;
         pgm_memory_base = 0;
         address_shift = 0;

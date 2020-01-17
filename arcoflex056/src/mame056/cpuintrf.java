@@ -33,6 +33,7 @@ import mame056.cpu.z8000.z8000;
 import mame056.cpu.z80.z80_MSX;
 import mame056.cpu.m6502.m6510;
 import mame056.cpu.m6502.m65c02;
+import mame056.cpu.z80gb.z80gb;
 
 public class cpuintrf {
 
@@ -312,7 +313,7 @@ public class cpuintrf {
             new dummy_cpu(),/*TODO*///	CPU0(SC61860,  sc61860,  1,  0,1.00,-1,			    8, 16,	  0,16,BE,1, 4	),
             new dummy_cpu(),/*TODO*///	CPU4(SH2,	   sh2, 	16,  0,1.00, 0, 		   32,32bedw,   0,32,BE,2, 2  ),
             new dummy_cpu(),/*TODO*///	CPU0(SPC700,   spc700,	 0,  0,1.00,-1,			    8, 16,	  0,16,LE,1, 3	),
-            new dummy_cpu(),/*TODO*///	CPU0(Z80GB,    z80gb,	 5,255,1.00,0,			    8, 16,	  0,16,LE,1, 4	),
+            new z80gb(),/*TODO*///	CPU0(Z80GB,    z80gb,	 5,255,1.00,0,			    8, 16,	  0,16,LE,1, 4	),
             new z80_MSX()/*TODO*///	CPU1(Z80_MSX,  z80_msx,	 1,255,1.00,-1000,    8, 16,	  0,16,LE,1, 4	),
             };
     /*TODO*///

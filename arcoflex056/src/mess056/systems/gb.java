@@ -147,7 +147,6 @@ public class gb
 		new MachineCPU[] {
 			new MachineCPU(
 				CPU_Z80GB,
-                                //CPU_Z80,
 				4194304,	  /* 4.194304 Mhz */
 				readmem,writemem,null,null,
 				gb_scanline_interrupt, 154 *3 /* 1 int each scanline ! */

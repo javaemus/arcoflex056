@@ -5,7 +5,7 @@ package mame056.cpu.z80gb;
 
 import mame056.cpu.z80.*;
 
-public class z80H {
+public class z80gbH {
 
     public static final int Z80_PC = 1;
     public static final int Z80_SP = 2;
