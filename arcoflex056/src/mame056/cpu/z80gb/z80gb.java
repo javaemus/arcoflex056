@@ -16,6 +16,14 @@ import static mame056.memory.*;
 import static mame056.memoryH.*;
 import static arcadeflex056.osdepend.*;
 import arcadeflex056.settings;
+import static mess056.machine.gbH.IFLAGS;
+import static mess056.machine.gbH.ISWITCH;
+import static mess056.machine.gbH.TIMEFRQ;
+import static mess056.machine.gbH.TIMEMOD;
+import static mess056.machine.gbH.TIM_IFLAG;
+import static mess056.machine.gbH.gb_divcount;
+import static mess056.machine.gbH.gb_timer_count;
+import static mess056.machine.gbH.gb_timer_shift;
 
 public class z80gb extends cpu_interface {
 
@@ -58,6 +66,7 @@ public class z80gb extends cpu_interface {
         public int service_irq;/* daisy chain next reti handling device */
         public int nmi_state;/* nmi line state */
         public int irq_state;/* irq line state */
+        public int enable;
         public int[] int_state = new int[Z80_MAXDAISY];
         public Z80_DaisyChain[] irq = new Z80_DaisyChain[Z80_MAXDAISY];
         public irqcallbacksPtr irq_callback;
@@ -135,6 +144,56 @@ public class z80gb extends cpu_interface {
         Z80.H2 = (nn >> 8) & 0xff;
         Z80.L2 = nn & 0xff;
     }
+    
+    public static int  FLAG_Z  =0x80;
+    public static int  FLAG_N  =0x40;
+    public static int  FLAG_H  =0x20;
+    public static int  FLAG_C  =0x10;
+
+    public static int /*UINT8*/ ICycles;
+    public static int/*UINT8*/ CheckInterrupts;
+    public static int IME     =0x01;
+    public static int HALTED  =0x02;
+    
+    static int Cycles[] =
+    {
+             4,12, 8, 8, 4, 4, 8, 4,20, 8, 8, 8, 4, 4, 8, 4,
+             4,12, 8, 8, 4, 4, 8, 4, 8, 8, 8, 8, 4, 4, 8, 4,
+             8,12, 8, 8, 4, 4, 8, 4, 8, 8, 8, 8, 4, 4, 8, 4,
+             8,12, 8, 8,12,12,12, 4, 8, 8, 8, 8, 4, 4, 8, 4,
+             4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
+             4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
+             4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
+             8, 8, 8, 8, 8, 8, 4, 8, 4, 4, 4, 4, 4, 4, 8, 4,
+             4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
+             4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
+             4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
+             4, 4, 4, 4, 4, 4, 8, 4, 4, 4, 4, 4, 4, 4, 8, 4,
+             8,12,12,12,12,16, 8,16, 8, 8,12, 0,12,24, 8,16,
+             8,12,12, 4,12,16, 8,16, 8,16,12, 4,12, 4, 8,16,
+            12,12, 8, 4, 4,16, 8,16,16, 4,16, 4, 4, 4, 8,16,
+            12,12, 8, 4, 4,16, 8,16,12, 8,16, 4, 4, 4, 8,16
+    };
+
+    static int CyclesCB[] =
+    {
+             8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
+             8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
+             8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
+             8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
+             8, 8, 8, 8, 8, 8,12, 8, 8, 8, 8, 8, 8, 8,16, 8,
+             8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
+             8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
+             8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
+             8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
+             8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
+             8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
+             8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
+             8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
+             8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
+             8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8,
+             8, 8, 8, 8, 8, 8,16, 8, 8, 8, 8, 8, 8, 8,16, 8
+    };
 
     public static final int CF = 0x01;
     public static final int NF = 0x02;
@@ -422,25 +481,15 @@ public class z80gb extends cpu_interface {
      * *************************************************************
      */
     public static /*UINT8*/ int ARG() {
-        int pc = Z80.PC & 0xFFFF;
-        
-        if (isZ80_MSX){
-            if ( (pc & 0x1fff) == 0 ) change_pc16 (pc);
-        }
-            
+        int pc = Z80.PC & 0xFFFF; 
         Z80.PC = (Z80.PC + 1 & 0xFFFF);
         return cpu_readop_arg(pc) & 0xFF;
     }
 
     public static int /*UINT32*/ ARG16() {
-        if (isZ80_MSX){
-		int ret = ARG();
-		return ret | ((ARG()&0xffff) << 8);
-        } else {
             int pc = Z80.PC & 0xFFFF;
             Z80.PC = (Z80.PC + 2) & 0xFFFF;
             return (cpu_readop_arg(pc) | (cpu_readop_arg((pc + 1) & 0xffff) << 8)) & 0xFFFF;
-        }
     }
 
     /**
@@ -484,8 +533,6 @@ public class z80gb extends cpu_interface {
      */
     public static void JP() {
         Z80.PC = ARG16();
-        Z80.WZ = Z80.PC;
-        change_pc16(Z80.PC);
     }
 
     /**
@@ -694,9 +741,12 @@ public class z80gb extends cpu_interface {
      * *************************************************************
      * INC	r8 *************************************************************
      */
-    public static int INC(int value) {
+    public static int INC(int value) {  
         value = (value + 1) & 0xFF;
-        Z80.F = (Z80.F & CF | SZHV_inc[value]);
+        int f = (Z80.F&FLAG_C)&0xFF;
+        if( value==0 )       f|=FLAG_Z; 
+        if( (value&0xF)==0 ) f|=FLAG_H; 
+        Z80.F = f&0xFF;
         return value;
     }
 
@@ -3692,27 +3742,16 @@ public class z80gb extends cpu_interface {
         Z80.irq_callback = null;
         Z80.extra_cycles = 0;
 
-        Z80.IX = Z80.IY = 0xffff;/* IX and IY are FFFF after a reset! */
-        Z80.F = ZF;/* Zero flag is set */
-        Z80.request_irq = -1;
-        Z80.service_irq = -1;
-        Z80.nmi_state = CLEAR_LINE;
-        Z80.irq_state = CLEAR_LINE;
+        //gb intialaze
+        AF(0x01B0);
+	BC(0x0013);
+	DE(0x00D8);
+	HL(0x014D);
+	Z80.SP = 0xFFFE;
+	Z80.PC = 0x0100;
+        Z80.enable &= ~IME;
 
-        int dci = 0;
-        if (daisy_chain != null) {
-            while (daisy_chain[dci].irq_param != -1 && Z80.irq_max < Z80_MAXDAISY) {
-                /* set callbackhandler after reti */
-                Z80.irq[Z80.irq_max] = daisy_chain[dci];
-                /* device reset */
-                if (Z80.irq[Z80.irq_max].reset != null) {
-                    Z80.irq[Z80.irq_max].reset.handler(Z80.irq[Z80.irq_max].irq_param);
-                }
-                Z80.irq_max++;
-                dci++;
-            }
-        }
-        change_pc16(Z80.PC);
+	CheckInterrupts = 0;
 
     }
 
@@ -3722,6 +3761,56 @@ public class z80gb extends cpu_interface {
         SZHVC_sub = null;
     }
 
+    public static void z80gb_ProcessInterrupts ()
+    {
+
+            if (CheckInterrupts!=0 && ((Z80.enable & IME))!=0)
+            {
+                            int /*UINT8*/ irq;
+
+                            CheckInterrupts = 0;
+
+                            irq = (ISWITCH() & IFLAGS())&0xFF;
+
+                            /*
+                            logerror("Attempting to process Z80GB Interrupt IRQ $%02X\n", irq);
+                            logerror("Attempting to process Z80GB Interrupt ISWITCH $%02X\n", ISWITCH);
+                            logerror("Attempting to process Z80GB Interrupt IFLAGS $%02X\n", IFLAGS);
+                            */
+
+
+                    if (irq!=0)
+                    {
+                            int irqline = 0;
+                            /*
+                            logerror("Z80GB Interrupt IRQ $%02X\n", irq);
+                            */
+
+                            while( irqline < 5 )
+                            {
+                                    if(( irq & (1<<irqline) )!=0)
+                                    {
+                                            if( Z80.irq_callback!=null )
+                                                    (Z80.irq_callback).handler(irqline);
+                        if ((Z80.enable & HALTED)!=0)
+                                            {
+                                                    Z80.enable &= ~HALTED;
+                                                    Z80.PC= (Z80.PC+1)&0xFFFF;
+                                            }
+                                            Z80.enable &= ~IME;
+                                            IFLAGS(IFLAGS() & ~(1 << irqline));
+                                            ICycles += 20;
+                                            Z80.SP = (Z80.SP -2)&0xFFFF; 
+                                            WM16 (Z80.SP, Z80.PC);
+                                            Z80.PC = (0x40 + irqline * 8)&0xFFFF;
+                                            /*logerror("Z80GB Interrupt PC $%04X\n", Regs.w.PC );*/
+                                            return;
+                                    }
+                                    irqline++;
+                            }
+                    }
+            }
+    }
     /**
      * **************************************************************************
      * Execute 'cycles' T-states. Return number of T-states really executed
@@ -3729,21 +3818,34 @@ public class z80gb extends cpu_interface {
      */
     @Override
     public int execute(int cycles) {
-        z80_ICount[0] = cycles - Z80.extra_cycles;
-        Z80.extra_cycles = 0;
+        int/*UINT8*/ x;
 
-        do {
-            Z80.PREPC = Z80.PC & 0xFFFF;
-            Z80.R = (Z80.R + 1) & 0xFF;//_R++;
-            int op = ROP();
-            z80_ICount[0] -= cc[Z80_TABLE_op][op];
-            Z80op[op].handler();//EXEC_INLINE(op, ROP());
-        } while (z80_ICount[0] > 0);
+	z80_ICount[0] = cycles;
 
-        z80_ICount[0] -= Z80.extra_cycles;
-        Z80.extra_cycles = 0;
+	do
+	{
+		ICycles = 0;
+		z80gb_ProcessInterrupts ();
+		x = RM (Z80.PC);
+                Z80.PC = (Z80.PC+1)&0xFFFF;
+		ICycles += Cycles[x];
+		Z80op[x].handler();
+                System.out.println(Integer.toHexString(x));
+		z80_ICount[0] -= ICycles;
+		gb_divcount += ICycles;
+		if ((TIMEFRQ() & 0x04)!=0)
+		{
+			gb_timer_count += ICycles;
+			if ((gb_timer_count & (0xFF00 << gb_timer_shift))!=0)
+			{
+				gb_timer_count = TIMEMOD() << gb_timer_shift;
+				IFLAGS(IFLAGS() | TIM_IFLAG);
+				CheckInterrupts = 1;
+			}
+		}
+	} while (z80_ICount[0] > 0);
 
-        return cycles - z80_ICount[0];
+	return cycles - z80_ICount[0];
     }
 
     /**
@@ -3805,6 +3907,7 @@ public class z80gb extends cpu_interface {
         Regs.service_irq = Z80.service_irq;
         Regs.nmi_state = Z80.nmi_state;
         Regs.irq_state = Z80.irq_state;
+        Regs.enable=Z80.enable;
         Regs.int_state[0] = Z80.int_state[0];
         Regs.int_state[1] = Z80.int_state[1];
         Regs.int_state[2] = Z80.int_state[2];
@@ -3861,6 +3964,7 @@ public class z80gb extends cpu_interface {
         Z80.service_irq = Regs.service_irq;
         Z80.nmi_state = Regs.nmi_state;
         Z80.irq_state = Regs.irq_state;
+        Z80.enable=Regs.enable;
         Z80.int_state[0] = Regs.int_state[0];
         Z80.int_state[1] = Regs.int_state[1];
         Z80.int_state[2] = Regs.int_state[2];
@@ -4078,66 +4182,26 @@ public class z80gb extends cpu_interface {
      */
     @Override
     public void set_irq_line(int irqline, int state) {
-        if (irqline == IRQ_LINE_NMI) {
-            if (Z80.nmi_state == state) {
-                return;
-            }
-            //LOG(("Z80 #%d set_nmi_line %d\n", cpu_getactivecpu(), state));
-            Z80.nmi_state = state;
-            if (state == CLEAR_LINE) {
-                return;
-            }
-            //LOG(("Z80 #%d take NMI\n", cpu_getactivecpu()));
-            Z80.PREPC = -1;/* there isn't a valid previous program counter */
-            LEAVE_HALT();/* Check if processor was halted */
+        	/*logerror("setting irq line 0x%02x state 0x%08x\n", irqline, state);*/
+	//if( Regs.w.irq_state == state )
+	//	return;
 
-            Z80.IFF1 = 0;
-            PUSH(Z80.PC);
-            Z80.PC = 0x0066;
-            Z80.WZ = Z80.PC;
-            Z80.extra_cycles += 11;
-        } else {
-            //LOG(("Z80 #%d set_irq_line %d\n",cpu_getactivecpu() , state));
-            Z80.irq_state = state;
-            if (state == CLEAR_LINE) {
-                return;
-            }
-            if (Z80.irq_max != 0) {
-                int daisychain, device, int_state;
-                daisychain = Z80.irq_callback.handler(irqline);
-                device = daisychain >> 8;
-                int_state = daisychain & 0xff;
-                //LOG(("Z80 #%d daisy chain $%04x -> device %d, state $%02x",cpu_getactivecpu(), daisychain, device, int_state));
+	Z80.irq_state = state;
+	if( state == ASSERT_LINE )
+	{
 
-                if (Z80.int_state[device] != int_state) {
-                    //LOG((" change\n"));
-                    /* set new interrupt status */
-                    Z80.int_state[device] = int_state;
-                    /* check interrupt status */
-                    Z80.request_irq = Z80.service_irq = -1;
+		IFLAGS(IFLAGS() | (0x01 << irqline));
+		CheckInterrupts = 1;
+		/*logerror("Z80GB assert irq line %d ($%02X)\n", irqline, IFLAGS);*/
 
-                    /* search higher IRQ or IEO */
-                    for (device = 0; device < Z80.irq_max; device++) {
-                        /* IEO = disable ? */
-                        if ((Z80.int_state[device] & Z80_INT_IEO) != 0) {
-                            Z80.request_irq = -1;/* if IEO is disable , masking lower IRQ */
-                            Z80.service_irq = device;/* set highest interrupt service device */
-                        }
-                        /* IRQ = request ? */
-                        if ((Z80.int_state[device] & Z80_INT_REQ) != 0) {
-                            Z80.request_irq = device;
-                        }
-                    }
-                    //LOG(("Z80 #%d daisy chain service_irq $%02x, request_irq $%02x\n", cpu_getactivecpu(), Z80.service_irq, Z80.request_irq));
-                    if (Z80.request_irq < 0) {
-                        return;
-                    }
-                } else {
-                    //LOG((" no change\n"));
-                    return;
-                }
-            }
-            take_interrupt();
+	}
+	else
+	{
+
+		IFLAGS(IFLAGS() & ~(0x01 << irqline));
+		if( IFLAGS() == 0 )
+			CheckInterrupts = 0;
+		/*logerror("Z80GB clear irq line %d ($%02X)\n", irqline, IFLAGS);*/
         }
     }
 
@@ -4371,13 +4435,23 @@ public class z80gb extends cpu_interface {
     opcode ed_7b = new opcode() { public void handler() { EA = ARG16(); Z80.SP=RM16(EA); Z80.WZ = (EA + 1) & 0xFFFF;						}}; /* LD   SP,(w)	  */
     opcode op_01 = new opcode() { public void handler() { BC(ARG16());											}}; /* LD   BC,w		  */
     opcode op_11 = new opcode() { public void handler() { DE(ARG16());											}}; /* LD   DE,w		  */
-    opcode op_21 = new opcode() { public void handler() { HL(ARG16());											}}; /* LD   HL,w		  */
+    opcode op_21 = new opcode() { public void handler() 
+    { 
+        HL(ARG16());
+    }}; /* LD   HL,w		  */
     opcode op_31 = new opcode() { public void handler() { Z80.SP = ARG16();											}}; /* LD   SP,w		  */
     opcode op_02 = new opcode() { public void handler() { WM( BC(), Z80.A ); Z80.WZ = (Z80.WZ & 0xff00) | ((BC() + 1) & 0xFF); Z80.WZ = ((Z80.WZ & 0x00ff) | Z80.A <<8);											}}; /* LD   (BC),A	  */
-    opcode op_12 = new opcode() { public void handler() { WM( DE(), Z80.A ); Z80.WZ = (Z80.WZ & 0xff00) | ((DE() + 1) & 0xFF); Z80.WZ = ((Z80.WZ & 0x00ff) | Z80.A <<8);					}}; /* LD   (DE),A	  */    
+    opcode op_12 = new opcode() { public void handler() 
+    { 
+        WM( DE(), Z80.A ); 					
+    }}; /* LD   (DE),A	  */    
     opcode op_22 = new opcode() { public void handler() { EA = ARG16(); WM16( EA, HL() ); Z80.WZ = (EA + 1) & 0xFFFF; 						}}; /* LD   (w),HL	  */
     opcode op_32 = new opcode() { public void handler() { EA = ARG16(); WM( EA, Z80.A ); Z80.WZ = (Z80.WZ & 0xff00) | ((EA + 1) & 0xFF); Z80.WZ = ((Z80.WZ & 0x00ff) | Z80.A <<8);							}}; /* LD   (w),A 	  */
-    opcode op_2a = new opcode() { public void handler() { EA = ARG16(); HL(RM16(EA)); Z80.WZ = (EA + 1) & 0xFFFF;						}}; /* LD   HL,(w)	  */
+    opcode op_2a = new opcode() { public void handler() 
+    { 
+        Z80.A = RM (HL());
+        HL((HL() + 1) & 0xFFFF);					
+    }}; /* LDI  A,(HL)	  */
     opcode dd_24 = new opcode() { public void handler() { Z80.R = (Z80.R + 1) & 0xFF; Z80.IX = ((Z80.IX & 0x00ff) | INC((Z80.IX >> 8) & 0xFF)<<8);									}}; /* INC  HX		  */
     opcode dd_25 = new opcode() { public void handler() { Z80.R = (Z80.R + 1) & 0xFF; Z80.IX = ((Z80.IX & 0x00ff) | DEC((Z80.IX >> 8) & 0xFF)<<8);									}}; /* DEC  HX		  */
     opcode dd_26 = new opcode() { public void handler() { Z80.R = (Z80.R + 1) & 0xFF; Z80.IX = ((Z80.IX & 0x00ff) | ARG()<<8);										}}; /* LD   HX,n		  */
@@ -4532,7 +4606,21 @@ public class z80gb extends cpu_interface {
     * JR_COND opcodes
     **********************************************************/
     opcode op_10 = new opcode() { public void handler() { Z80.B = (Z80.B - 1) & 0xFF; JR_COND( Z80.B != 0, 0x10 );	}}; /* DJNZ o 		  */
-    opcode op_20 = new opcode() { public void handler() { JR_COND( (Z80.F & ZF)==0, 0x20 );							}}; /* JR   NZ,o		  */
+    opcode op_20 = new opcode() { public void handler() 
+    { 
+        if ((Z80.F & FLAG_Z)!=0)
+        {
+          Z80.PC=(Z80.PC+1)&0xFFFF;
+        }
+        else
+        {
+            byte arg = (byte) ARG();
+            Z80.PC = (Z80.PC + arg) & 0xFFFF;
+            ICycles += 4;
+        }
+
+        //JR_COND( (Z80.F & ZF)==0, 0x20 );							
+    }}; /* JR   NZ,o		  */
     opcode op_28 = new opcode() { public void handler() { JR_COND( (Z80.F & ZF)!=0, 0x28 );								}}; /* JR   Z,o		  */
     opcode op_30 = new opcode() { public void handler() { JR_COND( (Z80.F & CF)==0, 0x30 );							}}; /* JR   NC,o		  */
     opcode op_38 = new opcode() { public void handler() { JR_COND( (Z80.F & CF)!=0, 0x38 );								}}; /* JR   C,o		  */
