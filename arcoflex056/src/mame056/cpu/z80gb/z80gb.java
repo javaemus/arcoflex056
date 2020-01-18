@@ -511,6 +511,52 @@ public class z80gb extends cpuintrfH.cpu_interface {
         Regs.F = f & 0xFF;
     }
 
+    public static void SUB_A_X(int x) {
+        int /*UINT16*/ r1, r2;
+        int /*UINT8*/ f;
+        r1 = ((Regs.A & 0xF) - ((x) & 0xF)) & 0xFFFF;
+        r2 = (Regs.A - (x)) & 0xFFFF;
+        Regs.A = r2 & 0xFF;
+        if ((r2 & 0xFF) == 0) {
+            f = FLAG_N | FLAG_Z;
+        } else {
+            f = FLAG_N;
+        }
+        if (r2 > 0xFF) {
+            f |= FLAG_C;
+        }
+        if (r1 > 0xF) {
+            f |= FLAG_H;
+        }
+        Regs.F = f & 0xFF;
+    }
+
+    public static int SRL_8BIT(int x) {
+        int f;
+        if (((x) & 1) != 0) {
+            f = FLAG_C;
+        } else {
+            f = 0;
+        }
+        x = x >> 1 & 0xFF;
+        if ((x) == 0) {
+            f |= FLAG_Z;
+        }
+        Regs.F = f & 0xFF;
+        return x;
+    }
+
+    public static int RR_8BIT(int x) {
+        int /*UINT8*/ r;
+        r = ((x) & 1) != 0 ? FLAG_C : 0;
+        (x) = (((x) >> 1) | ((Regs.F & FLAG_C) != 0 ? 0x80 : 0)) & 0xFF;
+        if ((x) == 0) {
+            r |= FLAG_Z;
+        }
+        Regs.F = r & 0xFF;
+        return x;
+    }
+
     @Override
     public int execute(int cycles) {
         int/*UINT8*/ x;
@@ -661,13 +707,12 @@ public class z80gb extends cpuintrfH.cpu_interface {
 /*TODO*///
 /*TODO*///  Regs.b.E = mem_ReadByte (Regs.w.PC++);
 /*TODO*///  break;
-/*TODO*///case 0x1F: /*	   RRA */
-/*TODO*///  
-/*TODO*///  x = (Regs.b.A & 1) ? FLAG_C : 0;
-/*TODO*///
-/*TODO*///  Regs.b.A = (UINT8) ((Regs.b.A >> 1) | ((Regs.b.F & FLAG_C) ? 0x80 : 0));
-/*TODO*///  Regs.b.F = x;
-/*TODO*///  break;
+                case 0x1F: /*	   RRA */ {
+                    int x1 = (Regs.A & 1) != 0 ? FLAG_C : 0;
+                    Regs.A = ((Regs.A >> 1) | ((Regs.F & FLAG_C) != 0 ? 0x80 : 0)) & 0xFF;
+                    Regs.F = x1;
+                }
+                break;
                 case 0x20:
                     if ((Regs.F & FLAG_Z) != 0) {/*	   JR NZ,n8 */
                         Regs.PC = (Regs.PC + 1) & 0xFFFF;
@@ -695,11 +740,11 @@ public class z80gb extends cpuintrfH.cpu_interface {
                 case 0x25:
                     Regs.H = DEC_8BIT(Regs.H);/*	   DEC H */
                     break;
-                /*TODO*///case 0x26: /*	   LD H,n8 */
-/*TODO*///
-/*TODO*///  Regs.b.H = mem_ReadByte (Regs.w.PC++);
-/*TODO*///  break;
-/*TODO*///case 0x27: /*	   DAA */
+                case 0x26:
+                    Regs.H = mem_ReadByte(Regs.PC);/*	   LD H,n8 */
+                    Regs.PC = (Regs.PC + 1) & 0xFFFF;
+                    break;
+                /*TODO*///case 0x27: /*	   DAA */
 /*TODO*///
 /*TODO*///  Regs.w.AF = DAATable[(((UINT16) (Regs.b.F & (FLAG_N | FLAG_C | FLAG_H))) << 4) | Regs.b.A];
 /*TODO*///  break;
@@ -751,21 +796,17 @@ public class z80gb extends cpuintrfH.cpu_interface {
 /*TODO*///  Regs.b.F |= FLAG_N | FLAG_H;
 /*TODO*///  return 4;
 /*TODO*///  break;
-/*TODO*///case 0x30: /*	   JR NC,n8 */
-/*TODO*///
-/*TODO*///  if (Regs.b.F & FLAG_C)
-/*TODO*///  {
-/*TODO*///    Regs.w.PC += 1;
-/*TODO*///  }
-/*TODO*///  else
-/*TODO*///  {
-/*TODO*///	INT8 offset;
-/*TODO*///
-/*TODO*///    offset = mem_ReadByte (Regs.w.PC++);
-/*TODO*///    Regs.w.PC += offset;
-/*TODO*///    ICycles += 4;
-/*TODO*///  }
-/*TODO*///  break;
+                case 0x30:
+                    if ((Regs.F & FLAG_C) != 0)/*	   JR NC,n8 */ {
+                        Regs.PC = (Regs.PC + 1) & 0xFFFF;
+                    } else {
+                        byte offset;
+                        offset = (byte) mem_ReadByte(Regs.PC);
+                        Regs.PC = (Regs.PC + 1) & 0xFFFF;
+                        Regs.PC = (Regs.PC + offset) & 0xFFFF;
+                        ICycles += 4;
+                    }
+                    break;
                 case 0x31:
                     Regs.SP = mem_ReadWord(Regs.PC);/*	   LD SP,n16 */
                     Regs.PC = (Regs.PC + 2) & 0xFFFF;
@@ -872,209 +913,211 @@ public class z80gb extends cpuintrfH.cpu_interface {
 /*TODO*///
 /*TODO*///  Regs.b.F = (UINT8) ((Regs.b.F & FLAG_Z) | ((Regs.b.F & FLAG_C) ? 0 : FLAG_C));
 /*TODO*///  break;
-/*TODO*///case 0x40: /*	   LD B,B */
-/*TODO*///  break;
-/*TODO*///case 0x41: /*	   LD B,C */
-/*TODO*///
-/*TODO*///  Regs.b.B = Regs.b.C;
-/*TODO*///  break;
-/*TODO*///case 0x42: /*	   LD B,D */
-/*TODO*///
-/*TODO*///  Regs.b.B = Regs.b.D;
-/*TODO*///  break;
-/*TODO*///case 0x43: /*	   LD B,E */
-/*TODO*///
-/*TODO*///  Regs.b.B = Regs.b.E;
-/*TODO*///  break;
-/*TODO*///case 0x44: /*	   LD B,H */
-/*TODO*///
-/*TODO*///  Regs.b.B = Regs.b.H;
-/*TODO*///  break;
-/*TODO*///case 0x45: /*	   LD B,L */
-/*TODO*///
-/*TODO*///  Regs.b.B = Regs.b.L;
-/*TODO*///  break;
-/*TODO*///case 0x46: /*	   LD B,(HL) */
-/*TODO*///
-/*TODO*///  Regs.b.B = mem_ReadByte (Regs.w.HL);
-/*TODO*///  break;
+                case 0x40:
+                    /*	   LD B,B */
+                    break;
+                case 0x41:
+                    /*	   LD B,C */
+                    Regs.B = Regs.C;
+                    break;
+                case 0x42:
+                    /*	   LD B,D */
+                    Regs.B = Regs.D;
+                    break;
+                case 0x43:
+                    /*	   LD B,E */
+                    Regs.B = Regs.E;
+                    break;
+                case 0x44:
+                    /*	   LD B,H */
+                    Regs.B = Regs.H;
+                    break;
+                case 0x45:
+                    /*	   LD B,L */
+                    Regs.B = Regs.L;
+                    break;
+                case 0x46:
+                    Regs.B = mem_ReadByte(HL());/*	   LD B,(HL) */
+                    break;
                 case 0x47:
                     Regs.B = Regs.A;/*	   LD B,A */
                     break;
-                /*TODO*///case 0x48: /*	   LD C,B */
-/*TODO*///
-/*TODO*///  Regs.b.C = Regs.b.B;
-/*TODO*///  break;
-/*TODO*///case 0x49: /*	   LD C,C */
-/*TODO*///  break;
-/*TODO*///case 0x4A: /*	   LD C,D */
-/*TODO*///
-/*TODO*///  Regs.b.C = Regs.b.D;
-/*TODO*///  break;
-/*TODO*///case 0x4B: /*	   LD C,E */
-/*TODO*///
-/*TODO*///  Regs.b.C = Regs.b.E;
-/*TODO*///  break;
-/*TODO*///case 0x4C: /*	   LD C,H */
-/*TODO*///
-/*TODO*///  Regs.b.C = Regs.b.H;
-/*TODO*///  break;
-/*TODO*///case 0x4D: /*	   LD C,L */
-/*TODO*///
-/*TODO*///  Regs.b.C = Regs.b.L;
-/*TODO*///  break;
-/*TODO*///case 0x4E: /*	   LD C,(HL) */
-/*TODO*///
-/*TODO*///  Regs.b.C = mem_ReadByte (Regs.w.HL);
-/*TODO*///  break;
-/*TODO*///case 0x4F: /*	   LD C,A */
-/*TODO*///
-/*TODO*///  Regs.b.C = Regs.b.A;
-/*TODO*///  break;
-/*TODO*///case 0x50: /*	   LD D,B */
-/*TODO*///
-/*TODO*///  Regs.b.D = Regs.b.B;
-/*TODO*///  break;
-/*TODO*///case 0x51: /*	   LD D,C */
-/*TODO*///
-/*TODO*///  Regs.b.D = Regs.b.C;
-/*TODO*///  break;
-/*TODO*///case 0x52: /*	   LD D,D */
-/*TODO*///  break;
-/*TODO*///case 0x53: /*	   LD D,E */
-/*TODO*///
-/*TODO*///  Regs.b.D = Regs.b.E;
-/*TODO*///  break;
-/*TODO*///case 0x54: /*	   LD D,H */
-/*TODO*///
-/*TODO*///  Regs.b.D = Regs.b.H;
-/*TODO*///  break;
-/*TODO*///case 0x55: /*	   LD D,L */
-/*TODO*///
-/*TODO*///  Regs.b.D = Regs.b.L;
-/*TODO*///  break;
-/*TODO*///case 0x56: /*	   LD D,(HL) */
-/*TODO*///
-/*TODO*///  Regs.b.D = mem_ReadByte (Regs.w.HL);
-/*TODO*///  break;
-/*TODO*///case 0x57: /*	   LD D,A */
-/*TODO*///
-/*TODO*///  Regs.b.D = Regs.b.A;
-/*TODO*///  break;
-/*TODO*///case 0x58: /*	   LD E,B */
-/*TODO*///
-/*TODO*///  Regs.b.E = Regs.b.B;
-/*TODO*///  break;
-/*TODO*///case 0x59: /*	   LD E,C */
-/*TODO*///
-/*TODO*///  Regs.b.E = Regs.b.C;
-/*TODO*///  break;
-/*TODO*///case 0x5A: /*	   LD E,D */
-/*TODO*///
-/*TODO*///  Regs.b.E = Regs.b.D;
-/*TODO*///  break;
-/*TODO*///case 0x5B: /*	   LD E,E */
-/*TODO*///  break;
-/*TODO*///case 0x5C: /*	   LD E,H */
-/*TODO*///
-/*TODO*///  Regs.b.E = Regs.b.H;
-/*TODO*///  break;
-/*TODO*///case 0x5D: /*	   LD E,L */
-/*TODO*///
-/*TODO*///  Regs.b.E = Regs.b.L;
-/*TODO*///  break;
-/*TODO*///case 0x5E: /*	   LD E,(HL) */
-/*TODO*///
-/*TODO*///  Regs.b.E = mem_ReadByte (Regs.w.HL);
-/*TODO*///  break;
-/*TODO*///case 0x5F: /*	   LD E,A */
-/*TODO*///
-/*TODO*///  Regs.b.E = Regs.b.A;
-/*TODO*///  break;
-/*TODO*///case 0x60: /*	   LD H,B */
-/*TODO*///
-/*TODO*///  Regs.b.H = Regs.b.B;
-/*TODO*///  break;
-/*TODO*///case 0x61: /*	   LD H,C */
-/*TODO*///
-/*TODO*///  Regs.b.H = Regs.b.C;
-/*TODO*///  break;
-/*TODO*///case 0x62: /*	   LD H,D */
-/*TODO*///
-/*TODO*///  Regs.b.H = Regs.b.D;
-/*TODO*///  break;
-/*TODO*///case 0x63: /*	   LD H,E */
-/*TODO*///
-/*TODO*///  Regs.b.H = Regs.b.E;
-/*TODO*///  break;
-/*TODO*///case 0x64: /*	   LD H,H */
-/*TODO*///  break;
-/*TODO*///case 0x65: /*	   LD H,L */
-/*TODO*///
-/*TODO*///  Regs.b.H = Regs.b.L;
-/*TODO*///  break;
-/*TODO*///case 0x66: /*	   LD H,(HL) */
-/*TODO*///
-/*TODO*///  Regs.b.H = mem_ReadByte (Regs.w.HL);
-/*TODO*///  break;
-/*TODO*///case 0x67: /*	   LD H,A */
-/*TODO*///
-/*TODO*///  Regs.b.H = Regs.b.A;
-/*TODO*///  break;
-/*TODO*///case 0x68: /*	   LD L,B */
-/*TODO*///
-/*TODO*///  Regs.b.L = Regs.b.B;
-/*TODO*///  break;
-/*TODO*///case 0x69: /*	   LD L,C */
-/*TODO*///
-/*TODO*///  Regs.b.L = Regs.b.C;
-/*TODO*///  break;
-/*TODO*///case 0x6A: /*	   LD L,D */
-/*TODO*///  Regs.b.L = Regs.b.D;
-/*TODO*///  break;
-/*TODO*///case 0x6B: /*	   LD L,E */
-/*TODO*///
-/*TODO*///  Regs.b.L = Regs.b.E;
-/*TODO*///  break;
-/*TODO*///case 0x6C: /*	   LD L,H */
-/*TODO*///
-/*TODO*///  Regs.b.L = Regs.b.H;
-/*TODO*///  break;
-/*TODO*///case 0x6D: /*	   LD L,L */
-/*TODO*///  break;
-/*TODO*///case 0x6E: /*	   LD L,(HL) */
-/*TODO*///
-/*TODO*///  Regs.b.L = mem_ReadByte (Regs.w.HL);
-/*TODO*///  break;
-/*TODO*///case 0x6F: /*	   LD L,A */
-/*TODO*///
-/*TODO*///  Regs.b.L = Regs.b.A;
-/*TODO*///  break;
-/*TODO*///case 0x70: /*	   LD (HL),B */
-/*TODO*///
-/*TODO*///  mem_WriteByte (Regs.w.HL, Regs.b.B);
-/*TODO*///  break;
-/*TODO*///case 0x71: /*	   LD (HL),C */
-/*TODO*///
-/*TODO*///  mem_WriteByte (Regs.w.HL, Regs.b.C);
-/*TODO*///  break;
-/*TODO*///case 0x72: /*	   LD (HL),D */
-/*TODO*///
-/*TODO*///  mem_WriteByte (Regs.w.HL, Regs.b.D);
-/*TODO*///  break;
-/*TODO*///case 0x73: /*	   LD (HL),E */
-/*TODO*///
-/*TODO*///  mem_WriteByte (Regs.w.HL, Regs.b.E);
-/*TODO*///  break;
-/*TODO*///case 0x74: /*	   LD (HL),H */
-/*TODO*///
-/*TODO*///  mem_WriteByte (Regs.w.HL, Regs.b.H);
-/*TODO*///  break;
-/*TODO*///case 0x75: /*	   LD (HL),L */
-/*TODO*///
-/*TODO*///  mem_WriteByte (Regs.w.HL, Regs.b.L);
-/*TODO*///  break;
-/*TODO*///case 0x76: /*	   HALT */
+                case 0x48:
+                    /*	   LD C,B */
+                    Regs.C = Regs.B;
+                    break;
+                case 0x49:
+                    /*	   LD C,C */
+                    break;
+                case 0x4A:
+                    /*	   LD C,D */
+                    Regs.C = Regs.D;
+                    break;
+                case 0x4B:
+                    /*	   LD C,E */
+                    Regs.C = Regs.E;
+                    break;
+                case 0x4C:
+                    /*	   LD C,H */
+                    Regs.C = Regs.H;
+                    break;
+                case 0x4D:
+                    /*	   LD C,L */
+                    Regs.C = Regs.L;
+                    break;
+                case 0x4E:
+                    Regs.C = mem_ReadByte(HL());/*	   LD C,(HL) */
+                    break;
+                case 0x4F:
+                    /*	   LD C,A */
+                    Regs.C = Regs.A;
+                    break;
+                case 0x50:
+                    /*	   LD D,B */
+                    Regs.D = Regs.B;
+                    break;
+                case 0x51:
+                    /*	   LD D,C */
+                    Regs.D = Regs.C;
+                    break;
+                case 0x52:
+                    /*	   LD D,D */
+                    break;
+                case 0x53:
+                    /*	   LD D,E */
+                    Regs.D = Regs.E;
+                    break;
+                case 0x54:
+                    /*	   LD D,H */
+                    Regs.D = Regs.H;
+                    break;
+                case 0x55:
+                    /*	   LD D,L */
+                    Regs.D = Regs.L;
+                    break;
+                case 0x56:
+                    Regs.D = mem_ReadByte(HL());/*	   LD D,(HL) */
+                    break;
+                case 0x57:
+                    /*	   LD D,A */
+                    Regs.D = Regs.A;
+                    break;
+                case 0x58:
+                    /*	   LD E,B */
+                    Regs.E = Regs.B;
+                    break;
+                case 0x59:
+                    /*	   LD E,C */
+                    Regs.E = Regs.C;
+                    break;
+                case 0x5A:
+                    /*	   LD E,D */
+                    Regs.E = Regs.D;
+                    break;
+                case 0x5B:
+                    /*	   LD E,E */
+                    break;
+                case 0x5C:
+                    /*	   LD E,H */
+                    Regs.E = Regs.H;
+                    break;
+                case 0x5D:
+                    /*	   LD E,L */
+                    Regs.E = Regs.L;
+                    break;
+                case 0x5E:
+                    Regs.E = mem_ReadByte(HL());/*	   LD E,(HL) */
+                    break;
+                case 0x5F:
+                    /*	   LD E,A */
+                    Regs.E = Regs.A;
+                    break;
+                case 0x60:
+                    /*	   LD H,B */
+                    Regs.H = Regs.B;
+                    break;
+                case 0x61:
+                    /*	   LD H,C */
+                    Regs.H = Regs.C;
+                    break;
+                case 0x62:
+                    /*	   LD H,D */
+                    Regs.H = Regs.D;
+                    break;
+                case 0x63:
+                    /*	   LD H,E */
+                    Regs.H = Regs.E;
+                    break;
+                case 0x64:
+                    /*	   LD H,H */
+                    break;
+                case 0x65:
+                    /*	   LD H,L */
+                    Regs.H = Regs.L;
+                    break;
+                case 0x66:
+                    Regs.H = mem_ReadByte(HL());/*	   LD H,(HL) */
+                    break;
+                case 0x67:
+                    /*	   LD H,A */
+                    Regs.H = Regs.A;
+                    break;
+                case 0x68:
+                    /*	   LD L,B */
+                    Regs.L = Regs.B;
+                    break;
+                case 0x69:
+                    /*	   LD L,C */
+                    Regs.L = Regs.C;
+                    break;
+                case 0x6A:
+                    /*	   LD L,D */
+                    Regs.L = Regs.D;
+                    break;
+                case 0x6B:
+                    /*	   LD L,E */
+                    Regs.L = Regs.E;
+                    break;
+                case 0x6C:
+                    /*	   LD L,H */
+                    Regs.L = Regs.H;
+                    break;
+                case 0x6D:
+                    /*	   LD L,L */
+                    break;
+                case 0x6E:
+                    /*	   LD L,(HL) */
+                    Regs.L = mem_ReadByte(HL());
+                    break;
+                case 0x6F:
+                    /*	   LD L,A */
+                    Regs.L = Regs.A;
+                    break;
+                case 0x70:
+                    /*	   LD (HL),B */
+                    mem_WriteByte(HL(), Regs.B);
+                    break;
+                case 0x71:
+                    /*	   LD (HL),C */
+                    mem_WriteByte(HL(), Regs.C);
+                    break;
+                case 0x72:
+                    /*	   LD (HL),D */
+                    mem_WriteByte(HL(), Regs.D);
+                    break;
+                case 0x73:
+                    /*	   LD (HL),E */
+                    mem_WriteByte(HL(), Regs.E);
+                    break;
+                case 0x74:
+                    /*	   LD (HL),H */
+                    mem_WriteByte(HL(), Regs.H);
+                    break;
+                case 0x75:
+                    /*	   LD (HL),L */
+                    mem_WriteByte(HL(), Regs.L);
+                    break;
+                /*TODO*///case 0x76: /*	   HALT */
 /*TODO*///  {
 /*TODO*///	UINT32 skip_cycles;
 /*TODO*///	Regs.w.enable |= HALTED;
@@ -1307,16 +1350,14 @@ public class z80gb extends cpuintrfH.cpu_interface {
                 case 0xAD:
                     XOR_A_X(Regs.L);/*	   XOR A,L */
                     break;
-                /*TODO*///case 0xAE: /*	   XOR A,(HL) */
-/*TODO*///
-/*TODO*///  x = mem_ReadByte (Regs.w.HL);
-/*TODO*///
-/*TODO*///  XOR_A_X (x)
-/*TODO*///  break;
-/*TODO*///case 0xAF: /*	   XOR A,A */
-/*TODO*///
-/*TODO*///  XOR_A_X (Regs.b.A)
-/*TODO*///  break;
+                case 0xAE: /*	   XOR A,(HL) */ {
+                    int x1 = mem_ReadByte(HL());
+                    XOR_A_X(x1);
+                }
+                break;
+                case 0xAF:
+                    XOR_A_X(Regs.A);/*	   XOR A,A */
+                    break;
                 case 0xB0:
                     OR_A_X(Regs.B);/*	   OR A,B */
                     break;
@@ -1341,11 +1382,10 @@ public class z80gb extends cpuintrfH.cpu_interface {
 /*TODO*///
 /*TODO*///  OR_A_X (x)
 /*TODO*///  break;
-/*TODO*///case 0xB7: /*	   OR A,A */
-/*TODO*///
-/*TODO*///  OR_A_X (Regs.b.A)
-/*TODO*///  break;
-/*TODO*///case 0xB8: /*	   CP A,B */
+                case 0xB7:
+                    OR_A_X(Regs.A);/*	   OR A,A */
+                    break;
+                /*TODO*///case 0xB8: /*	   CP A,B */
 /*TODO*///
 /*TODO*///  CP_A_X (Regs.b.B)
 /*TODO*///  break;
@@ -1467,15 +1507,1345 @@ public class z80gb extends cpuintrfH.cpu_interface {
 /*TODO*///    Regs.PC = (Regs.PC + 2) & 0xFFFF;
 /*TODO*///  }
 /*TODO*///  break;
-/*TODO*///case 0xCB: /*	   PREFIX! */
-/*TODO*///  x = mem_ReadByte (Regs.w.PC++);
-/*TODO*///  ICycles += CyclesCB[x];
-/*TODO*///  switch (x)
-/*TODO*///  {
-/*TODO*///    #include "opc_cb.h"
-/*TODO*///  }  
+                case 0xCB:
+                    x = mem_ReadByte(Regs.PC);/*	   PREFIX! */
+                    Regs.PC = (Regs.PC + 1) & 0xFFFF;
+                    ICycles += CyclesCB[x];
+                    switch (x) {
+                        /*TODO*///case 0x00:
+/*TODO*///  /*      RLC B */
+/*TODO*///
+/*TODO*///  RLC_8BIT (Regs.b.B)
 /*TODO*///  break;
-/*TODO*///case 0xCC: /*	   CALL Z,n16 */
+/*TODO*///case 0x01:
+/*TODO*///  /*      RLC C */
+/*TODO*///
+/*TODO*///  RLC_8BIT (Regs.b.C)
+/*TODO*///  break;
+/*TODO*///case 0x02:
+/*TODO*///  /*      RLC D */
+/*TODO*///
+/*TODO*///  RLC_8BIT (Regs.b.D)
+/*TODO*///  break;
+/*TODO*///case 0x03:
+/*TODO*///  /*      RLC E */
+/*TODO*///
+/*TODO*///  RLC_8BIT (Regs.b.E)
+/*TODO*///  break;
+/*TODO*///case 0x04:
+/*TODO*///  /*      RLC H */
+/*TODO*///
+/*TODO*///  RLC_8BIT (Regs.b.H)
+/*TODO*///  break;
+/*TODO*///case 0x05:
+/*TODO*///  /*      RLC L */
+/*TODO*///
+/*TODO*///  RLC_8BIT (Regs.b.L)
+/*TODO*///  break;
+/*TODO*///case 0x06:
+/*TODO*///  /*      RLC (HL) */
+/*TODO*///
+/*TODO*///  x = mem_ReadByte (Regs.w.HL);
+/*TODO*///  RLC_8BIT (x)
+/*TODO*///  mem_WriteByte (Regs.w.HL, x);
+/*TODO*///  break;
+/*TODO*///case 0x07:
+/*TODO*///  /*      RLC A */
+/*TODO*///
+/*TODO*///  RLC_8BIT (Regs.b.A)
+/*TODO*///  break;
+/*TODO*///case 0x08:
+/*TODO*///  /*      RRC B */
+/*TODO*///
+/*TODO*///  RRC_8BIT (Regs.b.B)
+/*TODO*///  break;
+/*TODO*///case 0x09:
+/*TODO*///  /*      RRC C */
+/*TODO*///
+/*TODO*///  RRC_8BIT (Regs.b.C)
+/*TODO*///  break;
+/*TODO*///case 0x0A:
+/*TODO*///  /*      RRC D */
+/*TODO*///
+/*TODO*///  RRC_8BIT (Regs.b.D)
+/*TODO*///  break;
+/*TODO*///case 0x0B:
+/*TODO*///  /*      RRC E */
+/*TODO*///
+/*TODO*///  RRC_8BIT (Regs.b.E)
+/*TODO*///  break;
+/*TODO*///case 0x0C:
+/*TODO*///  /*      RRC H */
+/*TODO*///
+/*TODO*///  RRC_8BIT (Regs.b.H)
+/*TODO*///  break;
+/*TODO*///case 0x0D:
+/*TODO*///  /*      RRC L */
+/*TODO*///
+/*TODO*///  RRC_8BIT (Regs.b.L)
+/*TODO*///  break;
+/*TODO*///case 0x0E:
+/*TODO*///  /*      RRC (HL) */
+/*TODO*///
+/*TODO*///  x = mem_ReadByte (Regs.w.HL);
+/*TODO*///  RRC_8BIT (x)
+/*TODO*///  mem_WriteByte (Regs.w.HL, x);
+/*TODO*///  break;
+/*TODO*///case 0x0F:
+/*TODO*///  /*      RRC A */
+/*TODO*///
+/*TODO*///  RRC_8BIT (Regs.b.A)
+/*TODO*///  break;
+/*TODO*///case 0x10:
+/*TODO*///  /*      RL B */
+/*TODO*///
+/*TODO*///  RL_8BIT (Regs.b.B)
+/*TODO*///  break;
+/*TODO*///case 0x11:
+/*TODO*///  /*      RL C */
+/*TODO*///
+/*TODO*///  RL_8BIT (Regs.b.C)
+/*TODO*///  break;
+/*TODO*///case 0x12:
+/*TODO*///  /*      RL D */
+/*TODO*///
+/*TODO*///  RL_8BIT (Regs.b.D)
+/*TODO*///  break;
+/*TODO*///case 0x13:
+/*TODO*///  /*      RL E */
+/*TODO*///
+/*TODO*///  RL_8BIT (Regs.b.E)
+/*TODO*///  break;
+/*TODO*///case 0x14:
+/*TODO*///  /*      RL H */
+/*TODO*///
+/*TODO*///  RL_8BIT (Regs.b.H)
+/*TODO*///  break;
+/*TODO*///case 0x15:
+/*TODO*///  /*      RL L */
+/*TODO*///
+/*TODO*///  RL_8BIT (Regs.b.L)
+/*TODO*///  break;
+/*TODO*///case 0x16:
+/*TODO*///  /*      RL (HL) */
+/*TODO*///
+/*TODO*///  x = mem_ReadByte (Regs.w.HL);
+/*TODO*///  RL_8BIT (x)
+/*TODO*///  mem_WriteByte (Regs.w.HL, x);
+/*TODO*///  break;
+/*TODO*///case 0x17:
+/*TODO*///  /*      RL A */
+/*TODO*///
+/*TODO*///  RL_8BIT (Regs.b.A)
+/*TODO*///  break;
+/*TODO*///case 0x18:
+/*TODO*///  /*      RR B */
+/*TODO*///
+/*TODO*///  RR_8BIT (Regs.b.B)
+/*TODO*///  break;
+                        case 0x19:
+                            Regs.C = RR_8BIT(Regs.C);/*      RR C */
+                            break;
+                        case 0x1A:
+                            Regs.D = RR_8BIT(Regs.D);/*      RR D */
+                            break;
+                        case 0x1B:
+                            Regs.E = RR_8BIT(Regs.E);/*      RR E */
+                            break;
+                        /*TODO*///case 0x1C:
+/*TODO*///  /*      RR H */
+/*TODO*///
+/*TODO*///  RR_8BIT (Regs.b.H)
+/*TODO*///  break;
+/*TODO*///case 0x1D:
+/*TODO*///  /*      RR L */
+/*TODO*///
+/*TODO*///  RR_8BIT (Regs.b.L)
+/*TODO*///  break;
+/*TODO*///case 0x1E:
+/*TODO*///  /*      RR (HL) */
+/*TODO*///
+/*TODO*///  x = mem_ReadByte (Regs.w.HL);
+/*TODO*///  RR_8BIT (x)
+/*TODO*///  mem_WriteByte (Regs.w.HL, x);
+/*TODO*///  break;
+/*TODO*///case 0x1F:
+/*TODO*///  /*      RR A */
+/*TODO*///
+/*TODO*///  RR_8BIT (Regs.b.A)
+/*TODO*///  break;
+/*TODO*///case 0x20:
+/*TODO*///  /*      SLA B */
+/*TODO*///
+/*TODO*///  SLA_8BIT (Regs.b.B)
+/*TODO*///  break;
+/*TODO*///case 0x21:
+/*TODO*///  /*      SLA C */
+/*TODO*///
+/*TODO*///  SLA_8BIT (Regs.b.C)
+/*TODO*///  break;
+/*TODO*///case 0x22:
+/*TODO*///  /*      SLA D */
+/*TODO*///
+/*TODO*///  SLA_8BIT (Regs.b.D)
+/*TODO*///  break;
+/*TODO*///case 0x23:
+/*TODO*///  /*      SLA E */
+/*TODO*///
+/*TODO*///  SLA_8BIT (Regs.b.E)
+/*TODO*///  break;
+/*TODO*///case 0x24:
+/*TODO*///  /*      SLA H */
+/*TODO*///
+/*TODO*///  SLA_8BIT (Regs.b.H)
+/*TODO*///  break;
+/*TODO*///case 0x25:
+/*TODO*///  /*      SLA L */
+/*TODO*///
+/*TODO*///  SLA_8BIT (Regs.b.L)
+/*TODO*///  break;
+/*TODO*///case 0x26:
+/*TODO*///  /*      SLA (HL) */
+/*TODO*///
+/*TODO*///  x = mem_ReadByte (Regs.w.HL);
+/*TODO*///  SLA_8BIT (x)
+/*TODO*///  mem_WriteByte (Regs.w.HL, x);
+/*TODO*///  break;
+/*TODO*///case 0x27:
+/*TODO*///  /*      SLA A */
+/*TODO*///
+/*TODO*///  SLA_8BIT (Regs.b.A)
+/*TODO*///  break;
+/*TODO*///case 0x28:
+/*TODO*///  /*      SRA B */
+/*TODO*///
+/*TODO*///  SRA_8BIT (Regs.b.B)
+/*TODO*///  break;
+/*TODO*///case 0x29:
+/*TODO*///  /*      SRA C */
+/*TODO*///
+/*TODO*///  SRA_8BIT (Regs.b.C)
+/*TODO*///  break;
+/*TODO*///case 0x2A:
+/*TODO*///  /*      SRA D */
+/*TODO*///
+/*TODO*///  SRA_8BIT (Regs.b.D)
+/*TODO*///  break;
+/*TODO*///case 0x2B:
+/*TODO*///  /*      SRA E */
+/*TODO*///
+/*TODO*///  SRA_8BIT (Regs.b.E)
+/*TODO*///  break;
+/*TODO*///case 0x2C:
+/*TODO*///  /*      SRA H */
+/*TODO*///
+/*TODO*///  SRA_8BIT (Regs.b.H)
+/*TODO*///  break;
+/*TODO*///case 0x2D:
+/*TODO*///  /*      SRA L */
+/*TODO*///
+/*TODO*///  SRA_8BIT (Regs.b.L)
+/*TODO*///  break;
+/*TODO*///case 0x2E:
+/*TODO*///  /*      SRA (HL) */
+/*TODO*///
+/*TODO*///  x = mem_ReadByte (Regs.w.HL);
+/*TODO*///  SRA_8BIT (x)
+/*TODO*///  mem_WriteByte (Regs.w.HL, x);
+/*TODO*///  break;
+/*TODO*///case 0x2F:
+/*TODO*///  /*      SRA A */
+/*TODO*///
+/*TODO*///  SRA_8BIT (Regs.b.A)
+/*TODO*///  break;
+/*TODO*///case 0x30:
+/*TODO*///  /*      SWAP B */
+/*TODO*///
+/*TODO*///  SWAP_8BIT (Regs.b.B)
+/*TODO*///  break;
+/*TODO*///case 0x31:
+/*TODO*///  /*      SWAP C */
+/*TODO*///
+/*TODO*///  SWAP_8BIT (Regs.b.C)
+/*TODO*///  break;
+/*TODO*///case 0x32:
+/*TODO*///  /*      SWAP D */
+/*TODO*///
+/*TODO*///  SWAP_8BIT (Regs.b.D)
+/*TODO*///  break;
+/*TODO*///case 0x33:
+/*TODO*///  /*      SWAP E */
+/*TODO*///
+/*TODO*///  SWAP_8BIT (Regs.b.E)
+/*TODO*///  break;
+/*TODO*///case 0x34:
+/*TODO*///  /*      SWAP H */
+/*TODO*///
+/*TODO*///  SWAP_8BIT (Regs.b.H)
+/*TODO*///  break;
+/*TODO*///case 0x35:
+/*TODO*///  /*      SWAP L */
+/*TODO*///
+/*TODO*///  SWAP_8BIT (Regs.b.L)
+/*TODO*///  break;
+/*TODO*///case 0x36:
+/*TODO*///  /*      SWAP (HL) */
+/*TODO*///
+/*TODO*///  x = mem_ReadByte (Regs.w.HL);
+/*TODO*///  SWAP_8BIT (x)
+/*TODO*///  mem_WriteByte (Regs.w.HL, x);
+/*TODO*///  break;
+/*TODO*///case 0x37:
+/*TODO*///  /*      SWAP A */
+/*TODO*///
+/*TODO*///  SWAP_8BIT (Regs.b.A)
+/*TODO*///  break;
+                        case 0x38:
+                            Regs.B = SRL_8BIT(Regs.B);/*      SRL B */
+                            break;
+                        /*TODO*///case 0x39:
+/*TODO*///  /*      SRL C */
+/*TODO*///
+/*TODO*///  SRL_8BIT (Regs.b.C)
+/*TODO*///  break;
+/*TODO*///case 0x3A:
+/*TODO*///  /*      SRL D */
+/*TODO*///
+/*TODO*///  SRL_8BIT (Regs.b.D)
+/*TODO*///  break;
+/*TODO*///case 0x3B:
+/*TODO*///  /*      SRL E */
+/*TODO*///
+/*TODO*///  SRL_8BIT (Regs.b.E)
+/*TODO*///  break;
+/*TODO*///case 0x3C:
+/*TODO*///  /*      SRL H */
+/*TODO*///
+/*TODO*///  SRL_8BIT (Regs.b.H)
+/*TODO*///  break;
+/*TODO*///case 0x3D:
+/*TODO*///  /*      SRL L */
+/*TODO*///
+/*TODO*///  SRL_8BIT (Regs.b.L)
+/*TODO*///  break;
+/*TODO*///case 0x3E:
+/*TODO*///  /*      SRL (HL) */
+/*TODO*///
+/*TODO*///  x = mem_ReadByte (Regs.w.HL);
+/*TODO*///  SRL_8BIT (x)
+/*TODO*///  mem_WriteByte (Regs.w.HL, x);
+/*TODO*///  break;
+/*TODO*///case 0x3F:
+/*TODO*///  /*      SRL A */
+/*TODO*///
+/*TODO*///  SRL_8BIT (Regs.b.A)
+/*TODO*///  break;
+/*TODO*///case 0x40:
+/*TODO*///  /*      BIT 0,B */
+/*TODO*///
+/*TODO*///  BIT_8BIT (0, Regs.b.B)
+/*TODO*///  break;
+/*TODO*///case 0x41:
+/*TODO*///  /*      BIT 0,C */
+/*TODO*///
+/*TODO*///  BIT_8BIT (0, Regs.b.C)
+/*TODO*///  break;
+/*TODO*///case 0x42:
+/*TODO*///  /*      BIT 0,D */
+/*TODO*///
+/*TODO*///  BIT_8BIT (0, Regs.b.D)
+/*TODO*///  break;
+/*TODO*///case 0x43:
+/*TODO*///  /*      BIT 0,E */
+/*TODO*///
+/*TODO*///  BIT_8BIT (0, Regs.b.E)
+/*TODO*///  break;
+/*TODO*///case 0x44:
+/*TODO*///  /*      BIT 0,H */
+/*TODO*///
+/*TODO*///  BIT_8BIT (0, Regs.b.H)
+/*TODO*///  break;
+/*TODO*///case 0x45:
+/*TODO*///  /*      BIT 0,L */
+/*TODO*///
+/*TODO*///  BIT_8BIT (0, Regs.b.L)
+/*TODO*///  break;
+/*TODO*///case 0x46:
+/*TODO*///  /*      BIT 0,(HL) */
+/*TODO*///
+/*TODO*///  x = mem_ReadByte (Regs.w.HL);
+/*TODO*///  BIT_8BIT (0, x)
+/*TODO*///  break;
+/*TODO*///case 0x47:
+/*TODO*///  /*      BIT 0,A */
+/*TODO*///
+/*TODO*///  BIT_8BIT (0, Regs.b.A)
+/*TODO*///  break;
+/*TODO*///case 0x48:
+/*TODO*///  /*      BIT 1,B */
+/*TODO*///
+/*TODO*///  BIT_8BIT (1, Regs.b.B)
+/*TODO*///  break;
+/*TODO*///case 0x49:
+/*TODO*///  /*      BIT 1,C */
+/*TODO*///
+/*TODO*///  BIT_8BIT (1, Regs.b.C)
+/*TODO*///  break;
+/*TODO*///case 0x4A:
+/*TODO*///  /*      BIT 1,D */
+/*TODO*///
+/*TODO*///  BIT_8BIT (1, Regs.b.D)
+/*TODO*///  break;
+/*TODO*///case 0x4B:
+/*TODO*///  /*      BIT 1,E */
+/*TODO*///
+/*TODO*///  BIT_8BIT (1, Regs.b.E)
+/*TODO*///  break;
+/*TODO*///case 0x4C:
+/*TODO*///  /*      BIT 1,H */
+/*TODO*///
+/*TODO*///  BIT_8BIT (1, Regs.b.H)
+/*TODO*///  break;
+/*TODO*///case 0x4D:
+/*TODO*///  /*      BIT 1,L */
+/*TODO*///
+/*TODO*///  BIT_8BIT (1, Regs.b.L)
+/*TODO*///  break;
+/*TODO*///case 0x4E:
+/*TODO*///  /*      BIT 1,(HL) */
+/*TODO*///
+/*TODO*///  x = mem_ReadByte (Regs.w.HL);
+/*TODO*///  BIT_8BIT (1, x)
+/*TODO*///  break;
+/*TODO*///case 0x4F:
+/*TODO*///  /*      BIT 1,A */
+/*TODO*///
+/*TODO*///  BIT_8BIT (1, Regs.b.A)
+/*TODO*///  break;
+/*TODO*///case 0x50:
+/*TODO*///  /*      BIT 2,B */
+/*TODO*///
+/*TODO*///  BIT_8BIT (2, Regs.b.B)
+/*TODO*///  break;
+/*TODO*///case 0x51:
+/*TODO*///  /*      BIT 2,C */
+/*TODO*///
+/*TODO*///  BIT_8BIT (2, Regs.b.C)
+/*TODO*///  break;
+/*TODO*///case 0x52:
+/*TODO*///  /*      BIT 2,D */
+/*TODO*///
+/*TODO*///  BIT_8BIT (2, Regs.b.D)
+/*TODO*///  break;
+/*TODO*///case 0x53:
+/*TODO*///  /*      BIT 2,E */
+/*TODO*///
+/*TODO*///  BIT_8BIT (2, Regs.b.E)
+/*TODO*///  break;
+/*TODO*///case 0x54:
+/*TODO*///  /*      BIT 2,H */
+/*TODO*///
+/*TODO*///  BIT_8BIT (2, Regs.b.H)
+/*TODO*///  break;
+/*TODO*///case 0x55:
+/*TODO*///  /*      BIT 2,L */
+/*TODO*///
+/*TODO*///  BIT_8BIT (2, Regs.b.L)
+/*TODO*///  break;
+/*TODO*///case 0x56:
+/*TODO*///  /*      BIT 2,(HL) */
+/*TODO*///
+/*TODO*///  x = mem_ReadByte (Regs.w.HL);
+/*TODO*///  BIT_8BIT (2, x)
+/*TODO*///  break;
+/*TODO*///case 0x57:
+/*TODO*///  /*      BIT 2,A */
+/*TODO*///
+/*TODO*///  BIT_8BIT (2, Regs.b.A)
+/*TODO*///  break;
+/*TODO*///case 0x58:
+/*TODO*///  /*      BIT 3,B */
+/*TODO*///
+/*TODO*///  BIT_8BIT (3, Regs.b.B)
+/*TODO*///  break;
+/*TODO*///case 0x59:
+/*TODO*///  /*      BIT 3,C */
+/*TODO*///
+/*TODO*///  BIT_8BIT (3, Regs.b.C)
+/*TODO*///  break;
+/*TODO*///case 0x5A:
+/*TODO*///  /*      BIT 3,D */
+/*TODO*///
+/*TODO*///  BIT_8BIT (3, Regs.b.D)
+/*TODO*///  break;
+/*TODO*///case 0x5B:
+/*TODO*///  /*      BIT 3,E */
+/*TODO*///
+/*TODO*///  BIT_8BIT (3, Regs.b.E)
+/*TODO*///  break;
+/*TODO*///case 0x5C:
+/*TODO*///  /*      BIT 3,H */
+/*TODO*///
+/*TODO*///  BIT_8BIT (3, Regs.b.H)
+/*TODO*///  break;
+/*TODO*///case 0x5D:
+/*TODO*///  /*      BIT 3,L */
+/*TODO*///
+/*TODO*///  BIT_8BIT (3, Regs.b.L)
+/*TODO*///  break;
+/*TODO*///case 0x5E:
+/*TODO*///  /*      BIT 3,(HL) */
+/*TODO*///
+/*TODO*///  x = mem_ReadByte (Regs.w.HL);
+/*TODO*///  BIT_8BIT (3, x)
+/*TODO*///  break;
+/*TODO*///case 0x5F:
+/*TODO*///  /*      BIT 3,A */
+/*TODO*///
+/*TODO*///  BIT_8BIT (3, Regs.b.A)
+/*TODO*///  break;
+/*TODO*///case 0x60:
+/*TODO*///  /*      BIT 4,B */
+/*TODO*///
+/*TODO*///  BIT_8BIT (4, Regs.b.B)
+/*TODO*///  break;
+/*TODO*///case 0x61:
+/*TODO*///  /*      BIT 4,C */
+/*TODO*///
+/*TODO*///  BIT_8BIT (4, Regs.b.C)
+/*TODO*///  break;
+/*TODO*///case 0x62:
+/*TODO*///  /*      BIT 4,D */
+/*TODO*///
+/*TODO*///  BIT_8BIT (4, Regs.b.D)
+/*TODO*///  break;
+/*TODO*///case 0x63:
+/*TODO*///  /*      BIT 4,E */
+/*TODO*///
+/*TODO*///  BIT_8BIT (4, Regs.b.E)
+/*TODO*///  break;
+/*TODO*///case 0x64:
+/*TODO*///  /*      BIT 4,H */
+/*TODO*///
+/*TODO*///  BIT_8BIT (4, Regs.b.H)
+/*TODO*///  break;
+/*TODO*///case 0x65:
+/*TODO*///  /*      BIT 4,L */
+/*TODO*///
+/*TODO*///  BIT_8BIT (4, Regs.b.L)
+/*TODO*///  break;
+/*TODO*///case 0x66:
+/*TODO*///  /*      BIT 4,(HL) */
+/*TODO*///
+/*TODO*///  x = mem_ReadByte (Regs.w.HL);
+/*TODO*///  BIT_8BIT (4, x)
+/*TODO*///  break;
+/*TODO*///case 0x67:
+/*TODO*///  /*      BIT 4,A */
+/*TODO*///
+/*TODO*///  BIT_8BIT (4, Regs.b.A)
+/*TODO*///  break;
+/*TODO*///case 0x68:
+/*TODO*///  /*      BIT 5,B */
+/*TODO*///
+/*TODO*///  BIT_8BIT (5, Regs.b.B)
+/*TODO*///  break;
+/*TODO*///case 0x69:
+/*TODO*///  /*      BIT 5,C */
+/*TODO*///
+/*TODO*///  BIT_8BIT (5, Regs.b.C)
+/*TODO*///  break;
+/*TODO*///case 0x6A:
+/*TODO*///  /*      BIT 5,D */
+/*TODO*///
+/*TODO*///  BIT_8BIT (5, Regs.b.D)
+/*TODO*///  break;
+/*TODO*///case 0x6B:
+/*TODO*///  /*      BIT 5,E */
+/*TODO*///
+/*TODO*///  BIT_8BIT (5, Regs.b.E)
+/*TODO*///  break;
+/*TODO*///case 0x6C:
+/*TODO*///  /*      BIT 5,H */
+/*TODO*///
+/*TODO*///  BIT_8BIT (5, Regs.b.H)
+/*TODO*///  break;
+/*TODO*///case 0x6D:
+/*TODO*///  /*      BIT 5,L */
+/*TODO*///
+/*TODO*///  BIT_8BIT (5, Regs.b.L)
+/*TODO*///  break;
+/*TODO*///case 0x6E:
+/*TODO*///  /*      BIT 5,(HL) */
+/*TODO*///
+/*TODO*///  x = mem_ReadByte (Regs.w.HL);
+/*TODO*///  BIT_8BIT (5, x)
+/*TODO*///  break;
+/*TODO*///case 0x6F:
+/*TODO*///  /*      BIT 5,A */
+/*TODO*///
+/*TODO*///  BIT_8BIT (5, Regs.b.A)
+/*TODO*///  break;
+/*TODO*///case 0x70:
+/*TODO*///  /*      BIT 6,B */
+/*TODO*///
+/*TODO*///  BIT_8BIT (6, Regs.b.B)
+/*TODO*///  break;
+/*TODO*///case 0x71:
+/*TODO*///  /*      BIT 6,C */
+/*TODO*///
+/*TODO*///  BIT_8BIT (6, Regs.b.C)
+/*TODO*///  break;
+/*TODO*///case 0x72:
+/*TODO*///  /*      BIT 6,D */
+/*TODO*///
+/*TODO*///  BIT_8BIT (6, Regs.b.D)
+/*TODO*///  break;
+/*TODO*///case 0x73:
+/*TODO*///  /*      BIT 6,E */
+/*TODO*///
+/*TODO*///  BIT_8BIT (6, Regs.b.E)
+/*TODO*///  break;
+/*TODO*///case 0x74:
+/*TODO*///  /*      BIT 6,H */
+/*TODO*///
+/*TODO*///  BIT_8BIT (6, Regs.b.H)
+/*TODO*///  break;
+/*TODO*///case 0x75:
+/*TODO*///  /*      BIT 6,L */
+/*TODO*///
+/*TODO*///  BIT_8BIT (6, Regs.b.L)
+/*TODO*///  break;
+/*TODO*///case 0x76:
+/*TODO*///  /*      BIT 6,(HL) */
+/*TODO*///
+/*TODO*///  x = mem_ReadByte (Regs.w.HL);
+/*TODO*///  BIT_8BIT (6, x)
+/*TODO*///  break;
+/*TODO*///case 0x77:
+/*TODO*///  /*      BIT 6,A */
+/*TODO*///
+/*TODO*///  BIT_8BIT (6, Regs.b.A)
+/*TODO*///  break;
+/*TODO*///case 0x78:
+/*TODO*///  /*      BIT 7,B */
+/*TODO*///
+/*TODO*///  BIT_8BIT (7, Regs.b.B)
+/*TODO*///  break;
+/*TODO*///case 0x79:
+/*TODO*///  /*      BIT 7,C */
+/*TODO*///
+/*TODO*///  BIT_8BIT (7, Regs.b.C)
+/*TODO*///  break;
+/*TODO*///case 0x7A:
+/*TODO*///  /*      BIT 7,D */
+/*TODO*///
+/*TODO*///  BIT_8BIT (7, Regs.b.D)
+/*TODO*///  break;
+/*TODO*///case 0x7B:
+/*TODO*///  /*      BIT 7,E */
+/*TODO*///
+/*TODO*///  BIT_8BIT (7, Regs.b.E)
+/*TODO*///  break;
+/*TODO*///case 0x7C:
+/*TODO*///  /*      BIT 7,H */
+/*TODO*///
+/*TODO*///  BIT_8BIT (7, Regs.b.H)
+/*TODO*///  break;
+/*TODO*///case 0x7D:
+/*TODO*///  /*      BIT 7,L */
+/*TODO*///
+/*TODO*///  BIT_8BIT (7, Regs.b.L)
+/*TODO*///  break;
+/*TODO*///case 0x7E:
+/*TODO*///  /*      BIT 7,(HL) */
+/*TODO*///
+/*TODO*///  x = mem_ReadByte (Regs.w.HL);
+/*TODO*///  BIT_8BIT (7, x)
+/*TODO*///  break;
+/*TODO*///case 0x7F:
+/*TODO*///  /*      BIT 7,A */
+/*TODO*///
+/*TODO*///  BIT_8BIT (7, Regs.b.A)
+/*TODO*///  break;
+/*TODO*///case 0x80:
+/*TODO*///  /*      RES 0,B */
+/*TODO*///
+/*TODO*///  RES_8BIT (0, Regs.b.B)
+/*TODO*///  break;
+/*TODO*///case 0x81:
+/*TODO*///  /*      RES 0,C */
+/*TODO*///
+/*TODO*///  RES_8BIT (0, Regs.b.C)
+/*TODO*///  break;
+/*TODO*///case 0x82:
+/*TODO*///  /*      RES 0,D */
+/*TODO*///
+/*TODO*///  RES_8BIT (0, Regs.b.D)
+/*TODO*///  break;
+/*TODO*///case 0x83:
+/*TODO*///  /*      RES 0,E */
+/*TODO*///
+/*TODO*///  RES_8BIT (0, Regs.b.E)
+/*TODO*///  break;
+/*TODO*///case 0x84:
+/*TODO*///  /*      RES 0,H */
+/*TODO*///
+/*TODO*///  RES_8BIT (0, Regs.b.H)
+/*TODO*///  break;
+/*TODO*///case 0x85:
+/*TODO*///  /*      RES 0,L */
+/*TODO*///
+/*TODO*///  RES_8BIT (0, Regs.b.L)
+/*TODO*///  break;
+/*TODO*///case 0x86:
+/*TODO*///  /*      RES 0,(HL) */
+/*TODO*///
+/*TODO*///  x = mem_ReadByte (Regs.w.HL);
+/*TODO*///  RES_8BIT (0, x)
+/*TODO*///  mem_WriteByte (Regs.w.HL, x);
+/*TODO*///  break;
+/*TODO*///case 0x87:
+/*TODO*///  /*      RES 0,A */
+/*TODO*///
+/*TODO*///  RES_8BIT (0, Regs.b.A)
+/*TODO*///  break;
+/*TODO*///case 0x88:
+/*TODO*///  /*      RES 1,B */
+/*TODO*///
+/*TODO*///  RES_8BIT (1, Regs.b.B)
+/*TODO*///  break;
+/*TODO*///case 0x89:
+/*TODO*///  /*      RES 1,C */
+/*TODO*///
+/*TODO*///  RES_8BIT (1, Regs.b.C)
+/*TODO*///  break;
+/*TODO*///case 0x8A:
+/*TODO*///  /*      RES 1,D */
+/*TODO*///
+/*TODO*///  RES_8BIT (1, Regs.b.D)
+/*TODO*///  break;
+/*TODO*///case 0x8B:
+/*TODO*///  /*      RES 1,E */
+/*TODO*///
+/*TODO*///  RES_8BIT (1, Regs.b.E)
+/*TODO*///  break;
+/*TODO*///case 0x8C:
+/*TODO*///  /*      RES 1,H */
+/*TODO*///
+/*TODO*///  RES_8BIT (1, Regs.b.H)
+/*TODO*///  break;
+/*TODO*///case 0x8D:
+/*TODO*///  /*      RES 1,L */
+/*TODO*///
+/*TODO*///  RES_8BIT (1, Regs.b.L)
+/*TODO*///  break;
+/*TODO*///case 0x8E:
+/*TODO*///  /*      RES 1,(HL) */
+/*TODO*///
+/*TODO*///  x = mem_ReadByte (Regs.w.HL);
+/*TODO*///  RES_8BIT (1, x)
+/*TODO*///  mem_WriteByte (Regs.w.HL, x);
+/*TODO*///  break;
+/*TODO*///case 0x8F:
+/*TODO*///  /*      RES 1,A */
+/*TODO*///
+/*TODO*///  RES_8BIT (1, Regs.b.A)
+/*TODO*///  break;
+/*TODO*///case 0x90:
+/*TODO*///  /*      RES 2,B */
+/*TODO*///
+/*TODO*///  RES_8BIT (2, Regs.b.B)
+/*TODO*///  break;
+/*TODO*///case 0x91:
+/*TODO*///  /*      RES 2,C */
+/*TODO*///
+/*TODO*///  RES_8BIT (2, Regs.b.C)
+/*TODO*///  break;
+/*TODO*///case 0x92:
+/*TODO*///  /*      RES 2,D */
+/*TODO*///
+/*TODO*///  RES_8BIT (2, Regs.b.D)
+/*TODO*///  break;
+/*TODO*///case 0x93:
+/*TODO*///  /*      RES 2,E */
+/*TODO*///
+/*TODO*///  RES_8BIT (2, Regs.b.E)
+/*TODO*///  break;
+/*TODO*///case 0x94:
+/*TODO*///  /*      RES 2,H */
+/*TODO*///
+/*TODO*///  RES_8BIT (2, Regs.b.H)
+/*TODO*///  break;
+/*TODO*///case 0x95:
+/*TODO*///  /*      RES 2,L */
+/*TODO*///
+/*TODO*///  RES_8BIT (2, Regs.b.L)
+/*TODO*///  break;
+/*TODO*///case 0x96:
+/*TODO*///  /*      RES 2,(HL) */
+/*TODO*///
+/*TODO*///  x = mem_ReadByte (Regs.w.HL);
+/*TODO*///  RES_8BIT (2, x)
+/*TODO*///  mem_WriteByte (Regs.w.HL, x);
+/*TODO*///  break;
+/*TODO*///case 0x97:
+/*TODO*///  /*      RES 2,A */
+/*TODO*///
+/*TODO*///  RES_8BIT (2, Regs.b.A)
+/*TODO*///  break;
+/*TODO*///case 0x98:
+/*TODO*///  /*      RES 3,B */
+/*TODO*///
+/*TODO*///  RES_8BIT (3, Regs.b.B)
+/*TODO*///  break;
+/*TODO*///case 0x99:
+/*TODO*///  /*      RES 3,C */
+/*TODO*///
+/*TODO*///  RES_8BIT (3, Regs.b.C)
+/*TODO*///  break;
+/*TODO*///case 0x9A:
+/*TODO*///  /*      RES 3,D */
+/*TODO*///
+/*TODO*///  RES_8BIT (3, Regs.b.D)
+/*TODO*///  break;
+/*TODO*///case 0x9B:
+/*TODO*///  /*      RES 3,E */
+/*TODO*///
+/*TODO*///  RES_8BIT (3, Regs.b.E)
+/*TODO*///  break;
+/*TODO*///case 0x9C:
+/*TODO*///  /*      RES 3,H */
+/*TODO*///
+/*TODO*///  RES_8BIT (3, Regs.b.H)
+/*TODO*///  break;
+/*TODO*///case 0x9D:
+/*TODO*///  /*      RES 3,L */
+/*TODO*///
+/*TODO*///  RES_8BIT (3, Regs.b.L)
+/*TODO*///  break;
+/*TODO*///case 0x9E:
+/*TODO*///  /*      RES 3,(HL) */
+/*TODO*///
+/*TODO*///  x = mem_ReadByte (Regs.w.HL);
+/*TODO*///  RES_8BIT (3, x)
+/*TODO*///  mem_WriteByte (Regs.w.HL, x);
+/*TODO*///  break;
+/*TODO*///case 0x9F:
+/*TODO*///  /*      RES 3,A */
+/*TODO*///
+/*TODO*///  RES_8BIT (3, Regs.b.A)
+/*TODO*///  break;
+/*TODO*///case 0xA0:
+/*TODO*///  /*      RES 4,B */
+/*TODO*///
+/*TODO*///  RES_8BIT (4, Regs.b.B)
+/*TODO*///  break;
+/*TODO*///case 0xA1:
+/*TODO*///  /*      RES 4,C */
+/*TODO*///
+/*TODO*///  RES_8BIT (4, Regs.b.C)
+/*TODO*///  break;
+/*TODO*///case 0xA2:
+/*TODO*///  /*      RES 4,D */
+/*TODO*///
+/*TODO*///  RES_8BIT (4, Regs.b.D)
+/*TODO*///  break;
+/*TODO*///case 0xA3:
+/*TODO*///  /*      RES 4,E */
+/*TODO*///
+/*TODO*///  RES_8BIT (4, Regs.b.E)
+/*TODO*///  break;
+/*TODO*///case 0xA4:
+/*TODO*///  /*      RES 4,H */
+/*TODO*///
+/*TODO*///  RES_8BIT (4, Regs.b.H)
+/*TODO*///  break;
+/*TODO*///case 0xA5:
+/*TODO*///  /*      RES 4,L */
+/*TODO*///
+/*TODO*///  RES_8BIT (4, Regs.b.L)
+/*TODO*///  break;
+/*TODO*///case 0xA6:
+/*TODO*///  /*      RES 4,(HL) */
+/*TODO*///
+/*TODO*///  x = mem_ReadByte (Regs.w.HL);
+/*TODO*///  RES_8BIT (4, x)
+/*TODO*///  mem_WriteByte (Regs.w.HL, x);
+/*TODO*///  break;
+/*TODO*///case 0xA7:
+/*TODO*///  /*      RES 4,A */
+/*TODO*///
+/*TODO*///  RES_8BIT (4, Regs.b.A)
+/*TODO*///  break;
+/*TODO*///case 0xA8:
+/*TODO*///  /*      RES 5,B */
+/*TODO*///
+/*TODO*///  RES_8BIT (5, Regs.b.B)
+/*TODO*///  break;
+/*TODO*///case 0xA9:
+/*TODO*///  /*      RES 5,C */
+/*TODO*///
+/*TODO*///  RES_8BIT (5, Regs.b.C)
+/*TODO*///  break;
+/*TODO*///case 0xAA:
+/*TODO*///  /*      RES 5,D */
+/*TODO*///
+/*TODO*///  RES_8BIT (5, Regs.b.D)
+/*TODO*///  break;
+/*TODO*///case 0xAB:
+/*TODO*///  /*      RES 5,E */
+/*TODO*///
+/*TODO*///  RES_8BIT (5, Regs.b.E)
+/*TODO*///  break;
+/*TODO*///case 0xAC:
+/*TODO*///  /*      RES 5,H */
+/*TODO*///
+/*TODO*///  RES_8BIT (5, Regs.b.H)
+/*TODO*///  break;
+/*TODO*///case 0xAD:
+/*TODO*///  /*      RES 5,L */
+/*TODO*///
+/*TODO*///  RES_8BIT (5, Regs.b.L)
+/*TODO*///  break;
+/*TODO*///case 0xAE:
+/*TODO*///  /*      RES 5,(HL) */
+/*TODO*///
+/*TODO*///  x = mem_ReadByte (Regs.w.HL);
+/*TODO*///  RES_8BIT (5, x)
+/*TODO*///  mem_WriteByte (Regs.w.HL, x);
+/*TODO*///  break;
+/*TODO*///case 0xAF:
+/*TODO*///  /*      RES 5,A */
+/*TODO*///
+/*TODO*///  RES_8BIT (5, Regs.b.A)
+/*TODO*///  break;
+/*TODO*///case 0xB0:
+/*TODO*///  /*      RES 6,B */
+/*TODO*///
+/*TODO*///  RES_8BIT (6, Regs.b.B)
+/*TODO*///  break;
+/*TODO*///case 0xB1:
+/*TODO*///  /*      RES 6,C */
+/*TODO*///
+/*TODO*///  RES_8BIT (6, Regs.b.C)
+/*TODO*///  break;
+/*TODO*///case 0xB2:
+/*TODO*///  /*      RES 6,D */
+/*TODO*///
+/*TODO*///  RES_8BIT (6, Regs.b.D)
+/*TODO*///  break;
+/*TODO*///case 0xB3:
+/*TODO*///  /*      RES 6,E */
+/*TODO*///
+/*TODO*///  RES_8BIT (6, Regs.b.E)
+/*TODO*///  break;
+/*TODO*///case 0xB4:
+/*TODO*///  /*      RES 6,H */
+/*TODO*///
+/*TODO*///  RES_8BIT (6, Regs.b.H)
+/*TODO*///  break;
+/*TODO*///case 0xB5:
+/*TODO*///  /*      RES 6,L */
+/*TODO*///
+/*TODO*///  RES_8BIT (6, Regs.b.L)
+/*TODO*///  break;
+/*TODO*///case 0xB6:
+/*TODO*///  /*      RES 6,(HL) */
+/*TODO*///
+/*TODO*///  x = mem_ReadByte (Regs.w.HL);
+/*TODO*///  RES_8BIT (6, x)
+/*TODO*///  mem_WriteByte (Regs.w.HL, x);
+/*TODO*///  break;
+/*TODO*///case 0xB7:
+/*TODO*///  /*      RES 6,A */
+/*TODO*///
+/*TODO*///  RES_8BIT (6, Regs.b.A)
+/*TODO*///  break;
+/*TODO*///case 0xB8:
+/*TODO*///  /*      RES 7,B */
+/*TODO*///
+/*TODO*///  RES_8BIT (7, Regs.b.B)
+/*TODO*///  break;
+/*TODO*///case 0xB9:
+/*TODO*///  /*      RES 7,C */
+/*TODO*///
+/*TODO*///  RES_8BIT (7, Regs.b.C)
+/*TODO*///  break;
+/*TODO*///case 0xBA:
+/*TODO*///  /*      RES 7,D */
+/*TODO*///
+/*TODO*///  RES_8BIT (7, Regs.b.D)
+/*TODO*///  break;
+/*TODO*///case 0xBB:
+/*TODO*///  /*      RES 7,E */
+/*TODO*///
+/*TODO*///  RES_8BIT (7, Regs.b.E)
+/*TODO*///  break;
+/*TODO*///case 0xBC:
+/*TODO*///  /*      RES 7,H */
+/*TODO*///
+/*TODO*///  RES_8BIT (7, Regs.b.H)
+/*TODO*///  break;
+/*TODO*///case 0xBD:
+/*TODO*///  /*      RES 7,L */
+/*TODO*///
+/*TODO*///  RES_8BIT (7, Regs.b.L)
+/*TODO*///  break;
+/*TODO*///case 0xBE:
+/*TODO*///  /*      RES 7,(HL) */
+/*TODO*///
+/*TODO*///  x = mem_ReadByte (Regs.w.HL);
+/*TODO*///  RES_8BIT (7, x)
+/*TODO*///  mem_WriteByte (Regs.w.HL, x);
+/*TODO*///  break;
+/*TODO*///case 0xBF:
+/*TODO*///  /*      RES 7,A */
+/*TODO*///
+/*TODO*///  RES_8BIT (7, Regs.b.A)
+/*TODO*///  break;
+/*TODO*///case 0xC0:
+/*TODO*///  /*      SET 0,B */
+/*TODO*///
+/*TODO*///  SET_8BIT (0, Regs.b.B)
+/*TODO*///  break;
+/*TODO*///case 0xC1:
+/*TODO*///  /*      SET 0,C */
+/*TODO*///
+/*TODO*///  SET_8BIT (0, Regs.b.C)
+/*TODO*///  break;
+/*TODO*///case 0xC2:
+/*TODO*///  /*      SET 0,D */
+/*TODO*///
+/*TODO*///  SET_8BIT (0, Regs.b.D)
+/*TODO*///  break;
+/*TODO*///case 0xC3:
+/*TODO*///  /*      SET 0,E */
+/*TODO*///
+/*TODO*///  SET_8BIT (0, Regs.b.E)
+/*TODO*///  break;
+/*TODO*///case 0xC4:
+/*TODO*///  /*      SET 0,H */
+/*TODO*///
+/*TODO*///  SET_8BIT (0, Regs.b.H)
+/*TODO*///  break;
+/*TODO*///case 0xC5:
+/*TODO*///  /*      SET 0,L */
+/*TODO*///
+/*TODO*///  SET_8BIT (0, Regs.b.L)
+/*TODO*///  break;
+/*TODO*///case 0xC6:
+/*TODO*///  /*      SET 0,(HL) */
+/*TODO*///
+/*TODO*///  x = mem_ReadByte (Regs.w.HL);
+/*TODO*///  SET_8BIT (0, x)
+/*TODO*///  mem_WriteByte (Regs.w.HL, x);
+/*TODO*///  break;
+/*TODO*///case 0xC7:
+/*TODO*///  /*      SET 0,A */
+/*TODO*///
+/*TODO*///  SET_8BIT (0, Regs.b.A)
+/*TODO*///  break;
+/*TODO*///case 0xC8:
+/*TODO*///  /*      SET 1,B */
+/*TODO*///
+/*TODO*///  SET_8BIT (1, Regs.b.B)
+/*TODO*///  break;
+/*TODO*///case 0xC9:
+/*TODO*///  /*      SET 1,C */
+/*TODO*///
+/*TODO*///  SET_8BIT (1, Regs.b.C)
+/*TODO*///  break;
+/*TODO*///case 0xCA:
+/*TODO*///  /*      SET 1,D */
+/*TODO*///
+/*TODO*///  SET_8BIT (1, Regs.b.D)
+/*TODO*///  break;
+/*TODO*///case 0xCB:
+/*TODO*///  /*      SET 1,E */
+/*TODO*///
+/*TODO*///  SET_8BIT (1, Regs.b.E)
+/*TODO*///  break;
+/*TODO*///case 0xCC:
+/*TODO*///  /*      SET 1,H */
+/*TODO*///
+/*TODO*///  SET_8BIT (1, Regs.b.H)
+/*TODO*///  break;
+/*TODO*///case 0xCD:
+/*TODO*///  /*      SET 1,L */
+/*TODO*///
+/*TODO*///  SET_8BIT (1, Regs.b.L)
+/*TODO*///  break;
+/*TODO*///case 0xCE:
+/*TODO*///  /*      SET 1,(HL) */
+/*TODO*///
+/*TODO*///  x = mem_ReadByte (Regs.w.HL);
+/*TODO*///  SET_8BIT (1, x)
+/*TODO*///  mem_WriteByte (Regs.w.HL, x);
+/*TODO*///  break;
+/*TODO*///case 0xCF:
+/*TODO*///  /*      SET 1,A */
+/*TODO*///
+/*TODO*///  SET_8BIT (1, Regs.b.A)
+/*TODO*///  break;
+/*TODO*///case 0xD0:
+/*TODO*///  /*      SET 2,B */
+/*TODO*///
+/*TODO*///  SET_8BIT (2, Regs.b.B)
+/*TODO*///  break;
+/*TODO*///case 0xD1:
+/*TODO*///  /*      SET 2,C */
+/*TODO*///
+/*TODO*///  SET_8BIT (2, Regs.b.C)
+/*TODO*///  break;
+/*TODO*///case 0xD2:
+/*TODO*///  /*      SET 2,D */
+/*TODO*///
+/*TODO*///  SET_8BIT (2, Regs.b.D)
+/*TODO*///  break;
+/*TODO*///case 0xD3:
+/*TODO*///  /*      SET 2,E */
+/*TODO*///
+/*TODO*///  SET_8BIT (2, Regs.b.E)
+/*TODO*///  break;
+/*TODO*///case 0xD4:
+/*TODO*///  /*      SET 2,H */
+/*TODO*///
+/*TODO*///  SET_8BIT (2, Regs.b.H)
+/*TODO*///  break;
+/*TODO*///case 0xD5:
+/*TODO*///  /*      SET 2,L */
+/*TODO*///
+/*TODO*///  SET_8BIT (2, Regs.b.L)
+/*TODO*///  break;
+/*TODO*///case 0xD6:
+/*TODO*///  /*      SET 2,(HL) */
+/*TODO*///
+/*TODO*///  x = mem_ReadByte (Regs.w.HL);
+/*TODO*///  SET_8BIT (2, x)
+/*TODO*///  mem_WriteByte (Regs.w.HL, x);
+/*TODO*///  break;
+/*TODO*///case 0xD7:
+/*TODO*///  /*      SET 2,A */
+/*TODO*///
+/*TODO*///  SET_8BIT (2, Regs.b.A)
+/*TODO*///  break;
+/*TODO*///case 0xD8:
+/*TODO*///  /*      SET 3,B */
+/*TODO*///
+/*TODO*///  SET_8BIT (3, Regs.b.B)
+/*TODO*///  break;
+/*TODO*///case 0xD9:
+/*TODO*///  /*      SET 3,C */
+/*TODO*///
+/*TODO*///  SET_8BIT (3, Regs.b.C)
+/*TODO*///  break;
+/*TODO*///case 0xDA:
+/*TODO*///  /*      SET 3,D */
+/*TODO*///
+/*TODO*///  SET_8BIT (3, Regs.b.D)
+/*TODO*///  break;
+/*TODO*///case 0xDB:
+/*TODO*///  /*      SET 3,E */
+/*TODO*///
+/*TODO*///  SET_8BIT (3, Regs.b.E)
+/*TODO*///  break;
+/*TODO*///case 0xDC:
+/*TODO*///  /*      SET 3,H */
+/*TODO*///
+/*TODO*///  SET_8BIT (3, Regs.b.H)
+/*TODO*///  break;
+/*TODO*///case 0xDD:
+/*TODO*///  /*      SET 3,L */
+/*TODO*///
+/*TODO*///  SET_8BIT (3, Regs.b.L)
+/*TODO*///  break;
+/*TODO*///case 0xDE:
+/*TODO*///  /*      SET 3,(HL) */
+/*TODO*///
+/*TODO*///  x = mem_ReadByte (Regs.w.HL);
+/*TODO*///  SET_8BIT (3, x)
+/*TODO*///  mem_WriteByte (Regs.w.HL, x);
+/*TODO*///  break;
+/*TODO*///case 0xDF:
+/*TODO*///  /*      SET 3,A */
+/*TODO*///
+/*TODO*///  SET_8BIT (3, Regs.b.A)
+/*TODO*///  break;
+/*TODO*///case 0xE0:
+/*TODO*///  /*      SET 4,B */
+/*TODO*///
+/*TODO*///  SET_8BIT (4, Regs.b.B)
+/*TODO*///  break;
+/*TODO*///case 0xE1:
+/*TODO*///  /*      SET 4,C */
+/*TODO*///
+/*TODO*///  SET_8BIT (4, Regs.b.C)
+/*TODO*///  break;
+/*TODO*///case 0xE2:
+/*TODO*///  /*      SET 4,D */
+/*TODO*///
+/*TODO*///  SET_8BIT (4, Regs.b.D)
+/*TODO*///  break;
+/*TODO*///case 0xE3:
+/*TODO*///  /*      SET 4,E */
+/*TODO*///
+/*TODO*///  SET_8BIT (4, Regs.b.E)
+/*TODO*///  break;
+/*TODO*///case 0xE4:
+/*TODO*///  /*      SET 4,H */
+/*TODO*///
+/*TODO*///  SET_8BIT (4, Regs.b.H)
+/*TODO*///  break;
+/*TODO*///case 0xE5:
+/*TODO*///  /*      SET 4,L */
+/*TODO*///
+/*TODO*///  SET_8BIT (4, Regs.b.L)
+/*TODO*///  break;
+/*TODO*///case 0xE6:
+/*TODO*///  /*      SET 4,(HL) */
+/*TODO*///
+/*TODO*///  x = mem_ReadByte (Regs.w.HL);
+/*TODO*///  SET_8BIT (4, x)
+/*TODO*///  mem_WriteByte (Regs.w.HL, x);
+/*TODO*///  break;
+/*TODO*///case 0xE7:
+/*TODO*///  /*      SET 4,A */
+/*TODO*///
+/*TODO*///  SET_8BIT (4, Regs.b.A)
+/*TODO*///  break;
+/*TODO*///case 0xE8:
+/*TODO*///  /*      SET 5,B */
+/*TODO*///
+/*TODO*///  SET_8BIT (5, Regs.b.B)
+/*TODO*///  break;
+/*TODO*///case 0xE9:
+/*TODO*///  /*      SET 5,C */
+/*TODO*///
+/*TODO*///  SET_8BIT (5, Regs.b.C)
+/*TODO*///  break;
+/*TODO*///case 0xEA:
+/*TODO*///  /*      SET 5,D */
+/*TODO*///
+/*TODO*///  SET_8BIT (5, Regs.b.D)
+/*TODO*///  break;
+/*TODO*///case 0xEB:
+/*TODO*///  /*      SET 5,E */
+/*TODO*///
+/*TODO*///  SET_8BIT (5, Regs.b.E)
+/*TODO*///  break;
+/*TODO*///case 0xEC:
+/*TODO*///  /*      SET 5,H */
+/*TODO*///
+/*TODO*///  SET_8BIT (5, Regs.b.H)
+/*TODO*///  break;
+/*TODO*///case 0xED:
+/*TODO*///  /*      SET 5,L */
+/*TODO*///
+/*TODO*///  SET_8BIT (5, Regs.b.L)
+/*TODO*///  break;
+/*TODO*///case 0xEE:
+/*TODO*///  /*      SET 5,(HL) */
+/*TODO*///
+/*TODO*///  x = mem_ReadByte (Regs.w.HL);
+/*TODO*///  SET_8BIT (5, x)
+/*TODO*///  mem_WriteByte (Regs.w.HL, x);
+/*TODO*///  break;
+/*TODO*///case 0xEF:
+/*TODO*///  /*      SET 5,A */
+/*TODO*///
+/*TODO*///  SET_8BIT (5, Regs.b.A)
+/*TODO*///  break;
+/*TODO*///case 0xF0:
+/*TODO*///  /*      SET 6,B */
+/*TODO*///
+/*TODO*///  SET_8BIT (6, Regs.b.B)
+/*TODO*///  break;
+/*TODO*///case 0xF1:
+/*TODO*///  /*      SET 6,C */
+/*TODO*///
+/*TODO*///  SET_8BIT (6, Regs.b.C)
+/*TODO*///  break;
+/*TODO*///case 0xF2:
+/*TODO*///  /*      SET 6,D */
+/*TODO*///
+/*TODO*///  SET_8BIT (6, Regs.b.D)
+/*TODO*///  break;
+/*TODO*///case 0xF3:
+/*TODO*///  /*      SET 6,E */
+/*TODO*///
+/*TODO*///  SET_8BIT (6, Regs.b.E)
+/*TODO*///  break;
+/*TODO*///case 0xF4:
+/*TODO*///  /*      SET 6,H */
+/*TODO*///
+/*TODO*///  SET_8BIT (6, Regs.b.H)
+/*TODO*///  break;
+/*TODO*///case 0xF5:
+/*TODO*///  /*      SET 6,L */
+/*TODO*///
+/*TODO*///  SET_8BIT (6, Regs.b.L)
+/*TODO*///  break;
+/*TODO*///case 0xF6:
+/*TODO*///  /*      SET 6,(HL) */
+/*TODO*///
+/*TODO*///  x = mem_ReadByte (Regs.w.HL);
+/*TODO*///  SET_8BIT (6, x)
+/*TODO*///  mem_WriteByte (Regs.w.HL, x);
+/*TODO*///  break;
+/*TODO*///case 0xF7:
+/*TODO*///  /*      SET 6,A */
+/*TODO*///
+/*TODO*///  SET_8BIT (6, Regs.b.A)
+/*TODO*///  break;
+/*TODO*///case 0xF8:
+/*TODO*///  /*      SET 7,B */
+/*TODO*///
+/*TODO*///  SET_8BIT (7, Regs.b.B)
+/*TODO*///  break;
+/*TODO*///case 0xF9:
+/*TODO*///  /*      SET 7,C */
+/*TODO*///
+/*TODO*///  SET_8BIT (7, Regs.b.C)
+/*TODO*///  break;
+/*TODO*///case 0xFA:
+/*TODO*///  /*      SET 7,D */
+/*TODO*///
+/*TODO*///  SET_8BIT (7, Regs.b.D)
+/*TODO*///  break;
+/*TODO*///case 0xFB:
+/*TODO*///  /*      SET 7,E */
+/*TODO*///
+/*TODO*///  SET_8BIT (7, Regs.b.E)
+/*TODO*///  break;
+/*TODO*///case 0xFC:
+/*TODO*///  /*      SET 7,H */
+/*TODO*///
+/*TODO*///  SET_8BIT (7, Regs.b.H)
+/*TODO*///  break;
+/*TODO*///case 0xFD:
+/*TODO*///  /*      SET 7,L */
+/*TODO*///
+/*TODO*///  SET_8BIT (7, Regs.b.L)
+/*TODO*///  break;
+/*TODO*///case 0xFE:
+/*TODO*///  /*      SET 7,(HL) */
+/*TODO*///
+/*TODO*///  x = mem_ReadByte (Regs.w.HL);
+/*TODO*///  SET_8BIT (7, x)
+/*TODO*///  mem_WriteByte (Regs.w.HL, x);
+/*TODO*///  break;
+/*TODO*///case 0xFF:
+/*TODO*///  /*      SET 7,A */
+/*TODO*///
+/*TODO*///  SET_8BIT (7, Regs.b.A)
+/*TODO*///  break;
+                        default:
+                            System.out.println("Unsupported CB 0x" + Integer.toHexString(x));
+                            throw new UnsupportedOperationException("Unsupported");
+                    }
+                    break;
+                /*TODO*///case 0xCC: /*	   CALL Z,n16 */
 /*TODO*///
 /*TODO*///  if (Regs.b.F & FLAG_Z)
 /*TODO*///  {
@@ -1522,12 +2892,12 @@ public class z80gb extends cpuintrfH.cpu_interface {
 /*TODO*///    ICycles += 12;
 /*TODO*///  }
 /*TODO*///  break;
-/*TODO*///case 0xD1: /*	   POP DE */
-/*TODO*///
-/*TODO*///  Regs.w.DE = mem_ReadWord (Regs.w.SP);
-/*TODO*///  Regs.SP = (Regs.SP + 2) & 0xFFFF;
-/*TODO*///  break;
-/*TODO*///case 0xD2: /*	   JP NC,n16 */
+                case 0xD1:
+                    /*	   POP DE */
+                    DE(mem_ReadWord(Regs.SP));
+                    Regs.SP = (Regs.SP + 2) & 0xFFFF;
+                    break;
+                /*TODO*///case 0xD2: /*	   JP NC,n16 */
 /*TODO*///
 /*TODO*///  if (Regs.b.F & FLAG_C)
 /*TODO*///  {
@@ -1559,17 +2929,17 @@ public class z80gb extends cpuintrfH.cpu_interface {
 /*TODO*///    ICycles += 12;
 /*TODO*///  }
 /*TODO*///  break;
-/*TODO*///case 0xD5: /*	   PUSH DE */
-/*TODO*///
-/*TODO*///  Regs.SP = (Regs.SP - 2) & 0xFFFF;
-/*TODO*///  mem_WriteWord (Regs.w.SP, Regs.w.DE);
-/*TODO*///  break;
-/*TODO*///case 0xD6: /*	   SUB A,n8 */
-/*TODO*///
-/*TODO*///  x = mem_ReadByte (Regs.w.PC++);
-/*TODO*///  SUB_A_X (x)
-/*TODO*///  break;
-/*TODO*///case 0xD7: /*	   RST	   $10 */
+                case 0xD5:
+                    Regs.SP = (Regs.SP - 2) & 0xFFFF;/*	   PUSH DE */
+                    mem_WriteWord(Regs.SP, DE());
+                    break;
+                case 0xD6: {
+                    int x1 = mem_ReadByte(Regs.PC);/*	   SUB A,n8 */
+                    Regs.PC = (Regs.PC + 1) & 0xFFFF;
+                    SUB_A_X(x1);
+                }
+                break;
+                /*TODO*///case 0xD7: /*	   RST	   $10 */
 /*TODO*///
 /*TODO*///  Regs.SP = (Regs.SP - 2) & 0xFFFF;
 /*TODO*///  mem_WriteWord (Regs.w.SP, Regs.w.PC);
@@ -1714,23 +3084,27 @@ public class z80gb extends cpuintrfH.cpu_interface {
                     mem_WriteByte(mem_ReadWord(Regs.PC), Regs.A);/*	   LD (n16),A */
                     Regs.PC = (Regs.PC + 2) & 0xFFFF;
                     break;
-                /*TODO*///case 0xEB: /*	   EH? */
-/*TODO*///  break;
-/*TODO*///case 0xEC: /*	   EH? */
-/*TODO*///  break;
-/*TODO*///case 0xED: /*	   EH? */
-/*TODO*///  break;
-/*TODO*///case 0xEE: /*	   XOR A,n8 */
-/*TODO*///
-/*TODO*///  x = mem_ReadByte (Regs.w.PC++);
-/*TODO*///  XOR_A_X (x)
-/*TODO*///  break;
-/*TODO*///case 0xEF: /*	   RST $28 */
-/*TODO*///
-/*TODO*///  Regs.SP = (Regs.SP - 2) & 0xFFFF;
-/*TODO*///  mem_WriteWord (Regs.w.SP, Regs.w.PC);
-/*TODO*///  Regs.w.PC = 0x28;
-/*TODO*///  break;
+                case 0xEB:
+                    /*	   EH? */
+                    break;
+                case 0xEC:
+                    /*	   EH? */
+                    break;
+                case 0xED:
+                    /*	   EH? */
+                    break;
+                case 0xEE: /*	   XOR A,n8 */ {
+                    int x1 = mem_ReadByte(Regs.PC);
+                    Regs.PC = (Regs.PC + 1) & 0xFFFF;
+                    XOR_A_X(x1);
+                }
+                break;
+                case 0xEF:
+                    /*	   RST $28 */
+                    Regs.SP = (Regs.SP - 2) & 0xFFFF;
+                    mem_WriteWord(Regs.SP, Regs.PC);
+                    Regs.PC = 0x28;
+                    break;
                 case 0xF0:
                     Regs.A = mem_ReadByte(0xFF00 + mem_ReadByte(Regs.PC));/*	   LD A,($FF00+n8) */
                     Regs.PC = (Regs.PC + 1) & 0xFFFF;
