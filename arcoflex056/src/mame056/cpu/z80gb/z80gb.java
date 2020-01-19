@@ -593,6 +593,16 @@ public class z80gb extends cpuintrfH.cpu_interface {
         return x;
     }
 
+    public static int SWAP_8BIT(int x) {
+        (x) = (((x) >> 4) | ((x) << 4)) & 0xFF;
+        if ((x) == 0) {
+            Regs.F = FLAG_Z;
+        } else {
+            Regs.F = 0;
+        }
+        return x;
+    }
+
     @Override
     public int execute(int cycles) {
         int/*UINT8*/ x;
@@ -692,15 +702,16 @@ public class z80gb extends cpuintrfH.cpu_interface {
                 case 0x14:
                     Regs.D = INC_8BIT(Regs.D);/*	   INC D */
                     break;
-                /*TODO*///case 0x15: /*	   DEC D */
-/*TODO*///
-/*TODO*///  DEC_8BIT (Regs.b.D)
-/*TODO*///  break;
-/*TODO*///case 0x16: /*	   LD D,n8 */
-/*TODO*///
-/*TODO*///  Regs.b.D = mem_ReadByte (Regs.w.PC++);
-/*TODO*///  break;
-/*TODO*///case 0x17: /*	   RLA */
+                case 0x15:
+                    /*	   DEC D */
+                    Regs.D = DEC_8BIT(Regs.D);
+                    break;
+                case 0x16:
+                    /*	   LD D,n8 */
+                    Regs.D = mem_ReadByte(Regs.PC);
+                    Regs.PC = (Regs.PC + 1) & 0xFFFF;
+                    break;
+                /*TODO*///case 0x17: /*	   RLA */
 /*TODO*///  
 /*TODO*///  x = (Regs.b.A & 0x80) ? FLAG_C : 0;
 /*TODO*///
@@ -714,10 +725,10 @@ public class z80gb extends cpuintrfH.cpu_interface {
                     Regs.PC = (Regs.PC + offset) & 0xFFFF;
                 }
                 break;
-                /*TODO*///case 0x19: /*	   ADD HL,DE */
-/*TODO*///
-/*TODO*///  ADD_HL_RR (Regs.w.DE)
-/*TODO*///  break;
+                case 0x19:
+                    /*	   ADD HL,DE */
+                    ADD_HL_RR(DE());
+                    break;
                 case 0x1A:
                     Regs.A = mem_ReadByte(DE());/*	   LD A,(DE) */
                     break;
@@ -825,12 +836,12 @@ public class z80gb extends cpuintrfH.cpu_interface {
                     Regs.L = mem_ReadByte(Regs.PC);
                     Regs.PC = (Regs.PC + 1) & 0xFFFF;
                     break;
-                /*TODO*///case 0x2F: /*	   CPL */
-/*TODO*///
-/*TODO*///  Regs.b.A = ~Regs.b.A;
-/*TODO*///  Regs.b.F |= FLAG_N | FLAG_H;
-/*TODO*///  return 4;
-/*TODO*///  break;
+                case 0x2F:
+                    /*	   CPL */
+                    Regs.A = (~Regs.A) & 0xFF;
+                    Regs.F |= FLAG_N | FLAG_H;
+                    //return 4;
+                    break;
                 case 0x30:
                     if ((Regs.F & FLAG_C) != 0)/*	   JR NC,n8 */ {
                         Regs.PC = (Regs.PC + 1) & 0xFFFF;
@@ -887,35 +898,38 @@ public class z80gb extends cpuintrfH.cpu_interface {
 
                     Regs.F = f & 0xFF;
                 }
-                /*TODO*///  break;
-/*TODO*///case 0x36: /*	   LD (HL),n8 */
-/*TODO*///  /* FIXED / broken ? */
-/*TODO*///  mem_WriteByte (Regs.w.HL, mem_ReadByte (Regs.w.PC++));
-/*TODO*///  break;
-/*TODO*///case 0x37: /*	   SCF */
-/*TODO*///
-/*TODO*///  Regs.b.F = (UINT8) ((Regs.b.F & FLAG_Z) | FLAG_C);
-/*TODO*///  break;
-/*TODO*///case 0x38: /*	   JR C,n8 */
-/*TODO*///
-/*TODO*///  if (Regs.b.F & FLAG_C)
-/*TODO*///  {
-/*TODO*///	INT8 offset;
-/*TODO*///
-/*TODO*///    offset = mem_ReadByte (Regs.w.PC++);
-/*TODO*///    Regs.w.PC += offset;
-/*TODO*///
-/*TODO*///    ICycles += 4;
-/*TODO*///  }
-/*TODO*///  else
-/*TODO*///  {
-/*TODO*///    Regs.w.PC += 1;
-/*TODO*///  }
-/*TODO*///  break;
-/*TODO*///case 0x39: /*	   ADD HL,SP */
-/*TODO*///  ADD_HL_RR (Regs.w.SP)
-/*TODO*///  break;
-/*TODO*///case 0x3A: /*	   LD A,(HL-) */
+                break;
+                case 0x36:
+                    /*	   LD (HL),n8 */
+ /* FIXED / broken ? */
+                    mem_WriteByte(HL(), mem_ReadByte(Regs.PC));
+                    Regs.PC = (Regs.PC + 1) & 0xFFFF;
+                    break;
+                case 0x37:
+                    /*	   SCF */
+
+                    Regs.F = ((Regs.F & FLAG_Z) | FLAG_C) & 0xFF;
+                    break;
+                case 0x38:
+                    /*	   JR C,n8 */
+
+                    if ((Regs.F & FLAG_C) != 0) {
+                        byte offset;
+
+                        offset = (byte) mem_ReadByte(Regs.PC);
+                        Regs.PC = (Regs.PC + 1) & 0xFFFF;
+                        Regs.PC = (Regs.PC + offset) & 0xFFFF;
+
+                        ICycles += 4;
+                    } else {
+                        Regs.PC = (Regs.PC + 1) & 0xFFFF;
+                    }
+                    break;
+                case 0x39:
+                    /*	   ADD HL,SP */
+                    ADD_HL_RR(Regs.SP);
+                    break;
+                /*TODO*///case 0x3A: /*	   LD A,(HL-) */
 /*TODO*///#if 0				/* FIXME ?? do we want to support this? (bug emulation) */
 /*TODO*///  if (Regs.b.H == 0xFE)
 /*TODO*///  {
@@ -1189,43 +1203,43 @@ public class z80gb extends cpuintrfH.cpu_interface {
                     /*	   LD A,(HL) */
                     Regs.A = mem_ReadByte(HL());
                     break;
-                /*TODO*///case 0x7F: /*	   LD A,A */
-/*TODO*///  break;
-/*TODO*///case 0x80: /*	   ADD A,B */
-/*TODO*///
-/*TODO*///  ADD_A_X (Regs.b.B)
-/*TODO*///  break;
-/*TODO*///case 0x81: /*	   ADD A,C */
-/*TODO*///
-/*TODO*///  ADD_A_X (Regs.b.C)
-/*TODO*///  break;
-/*TODO*///case 0x82: /*	   ADD A,D */
-/*TODO*///
-/*TODO*///  ADD_A_X (Regs.b.D)
-/*TODO*///  break;
-/*TODO*///case 0x83: /*	   ADD A,E */
-/*TODO*///
-/*TODO*///  ADD_A_X (Regs.b.E)
-/*TODO*///  break;
-/*TODO*///case 0x84: /*	   ADD A,H */
-/*TODO*///
-/*TODO*///  ADD_A_X (Regs.b.H)
-/*TODO*///  break;
-/*TODO*///case 0x85: /*	   ADD A,L */
-/*TODO*///
-/*TODO*///  ADD_A_X (Regs.b.L)
-/*TODO*///  break;
-/*TODO*///case 0x86: /*	   ADD A,(HL) */
-/*TODO*///
-/*TODO*///  x = mem_ReadByte (Regs.w.HL);
-/*TODO*///
-/*TODO*///  ADD_A_X (x)
-/*TODO*///  break;
-/*TODO*///case 0x87: /*	   ADD A,A */
-/*TODO*///
-/*TODO*///  ADD_A_X (Regs.b.A)
-/*TODO*///  break;
-/*TODO*///case 0x88: /*	   ADC A,B */
+                case 0x7F:
+                    /*	   LD A,A */
+                    break;
+                case 0x80:
+                    /*	   ADD A,B */
+                    ADD_A_X(Regs.B);
+                    break;
+                case 0x81:
+                    /*	   ADD A,C */
+                    ADD_A_X(Regs.C);
+                    break;
+                case 0x82:
+                    /*	   ADD A,D */
+                    ADD_A_X(Regs.D);
+                    break;
+                case 0x83:
+                    /*	   ADD A,E */
+                    ADD_A_X(Regs.E);
+                    break;
+                case 0x84:
+                    /*	   ADD A,H */
+                    ADD_A_X(Regs.H);
+                    break;
+                case 0x85:
+                    /*	   ADD A,L */
+                    ADD_A_X(Regs.L);
+                    break;
+                case 0x86: /*	   ADD A,(HL) */ {
+                    int x1 = mem_ReadByte(HL());
+                    ADD_A_X(x1);
+                }
+                break;
+                case 0x87:
+                    /*	   ADD A,A */
+                    ADD_A_X(Regs.A);
+                    break;
+                /*TODO*///case 0x88: /*	   ADC A,B */
 /*TODO*///
 /*TODO*///  ADC_A_X (Regs.b.B)
 /*TODO*///  break;
@@ -1328,40 +1342,40 @@ public class z80gb extends cpuintrfH.cpu_interface {
 /*TODO*///
 /*TODO*///  SBC_A_X (Regs.b.A)
 /*TODO*///  break;
-/*TODO*///case 0xA0: /*	   AND A,B */
-/*TODO*///
-/*TODO*///  AND_A_X (Regs.b.B)
-/*TODO*///  break;
-/*TODO*///case 0xA1: /*	   AND A,C */
-/*TODO*///
-/*TODO*///  AND_A_X (Regs.b.C)
-/*TODO*///  break;
-/*TODO*///case 0xA2: /*	   AND A,D */
-/*TODO*///
-/*TODO*///  AND_A_X (Regs.b.D)
-/*TODO*///  break;
-/*TODO*///case 0xA3: /*	   AND A,E */
-/*TODO*///
-/*TODO*///  AND_A_X (Regs.b.E)
-/*TODO*///  break;
-/*TODO*///case 0xA4: /*	   AND A,H */
-/*TODO*///
-/*TODO*///  AND_A_X (Regs.b.H)
-/*TODO*///  break;
-/*TODO*///case 0xA5: /*	   AND A,L */
-/*TODO*///
-/*TODO*///  AND_A_X (Regs.b.L)
-/*TODO*///  break;
-/*TODO*///case 0xA6: /*	   AND A,(HL) */
-/*TODO*///
-/*TODO*///  x = mem_ReadByte (Regs.w.HL);
-/*TODO*///
-/*TODO*///  AND_A_X (x)
-/*TODO*///  break;
-/*TODO*///case 0xA7: /*	   AND A,A */
-/*TODO*///
-/*TODO*///  Regs.b.F = (Regs.b.A == 0) ? (FLAG_H | FLAG_Z) : FLAG_H;
-/*TODO*///  break;
+                case 0xA0:
+                    /*	   AND A,B */
+                    AND_A_X(Regs.B);
+                    break;
+                case 0xA1:
+                    /*	   AND A,C */
+                    AND_A_X(Regs.C);
+                    break;
+                case 0xA2:
+                    /*	   AND A,D */
+                    AND_A_X(Regs.D);
+                    break;
+                case 0xA3:
+                    /*	   AND A,E */
+                    AND_A_X(Regs.E);
+                    break;
+                case 0xA4:
+                    /*	   AND A,H */
+                    AND_A_X(Regs.H);
+                    break;
+                case 0xA5:
+                    /*	   AND A,L */
+                    AND_A_X(Regs.L);
+                    break;
+                case 0xA6: /*	   AND A,(HL) */ {
+                    int x1 = mem_ReadByte(HL());
+
+                    AND_A_X(x1);
+                }
+                break;
+                case 0xA7:
+                    /*	   AND A,A */
+                    Regs.F = (Regs.A == 0) ? (FLAG_H | FLAG_Z) : FLAG_H;
+                    break;
                 case 0xA8:
                     XOR_A_X(Regs.B);/*	   XOR A,B */
                     break;
@@ -1448,15 +1462,14 @@ public class z80gb extends cpuintrfH.cpu_interface {
 /*TODO*///
 /*TODO*///  CP_A_X (Regs.b.A)
 /*TODO*///  break;
-/*TODO*///case 0xC0: /*	   RET NZ */
-/*TODO*///
-/*TODO*///  if (!(Regs.b.F & FLAG_Z))
-/*TODO*///  {
-/*TODO*///    Regs.w.PC = mem_ReadWord (Regs.w.SP);
-/*TODO*///    Regs.SP = (Regs.SP + 2) & 0xFFFF;
-/*TODO*///    ICycles += 12;
-/*TODO*///  }
-/*TODO*///  break;
+                case 0xC0:
+                    /*	   RET NZ */
+                    if ((Regs.F & FLAG_Z) == 0) {
+                        Regs.PC = mem_ReadWord(Regs.SP);
+                        Regs.SP = (Regs.SP + 2) & 0xFFFF;
+                        ICycles += 12;
+                    }
+                    break;
                 case 0xC1:
                     BC(mem_ReadWord(Regs.SP));/*	   POP BC */
                     Regs.SP = (Regs.SP + 2) & 0xFFFF;
@@ -1820,11 +1833,10 @@ public class z80gb extends cpuintrfH.cpu_interface {
 /*TODO*///  SWAP_8BIT (x)
 /*TODO*///  mem_WriteByte (Regs.w.HL, x);
 /*TODO*///  break;
-/*TODO*///case 0x37:
-/*TODO*///  /*      SWAP A */
-/*TODO*///
-/*TODO*///  SWAP_8BIT (Regs.b.A)
-/*TODO*///  break;
+                        case 0x37:
+                            /*      SWAP A */
+                            Regs.A = SWAP_8BIT(Regs.A);
+                            break;
                         case 0x38:
                             Regs.B = SRL_8BIT(Regs.B);/*      SRL B */
                             break;
@@ -2964,22 +2976,21 @@ public class z80gb extends cpuintrfH.cpu_interface {
                     SUB_A_X(x1);
                 }
                 break;
-                /*TODO*///case 0xD7: /*	   RST	   $10 */
-/*TODO*///
-/*TODO*///  Regs.SP = (Regs.SP - 2) & 0xFFFF;
-/*TODO*///  mem_WriteWord (Regs.w.SP, Regs.w.PC);
-/*TODO*///  Regs.w.PC = 0x10;
-/*TODO*///  break;
-/*TODO*///case 0xD8: /*	   RET C */
-/*TODO*///
-/*TODO*///  if (Regs.b.F & FLAG_C)
-/*TODO*///  {
-/*TODO*///    Regs.w.PC = mem_ReadWord (Regs.w.SP);
-/*TODO*///    Regs.SP = (Regs.SP + 2) & 0xFFFF;
-/*TODO*///    ICycles += 12;
-/*TODO*///  }
-/*TODO*///  break;
-/*TODO*///case 0xD9: /*	   RETI */
+                case 0xD7:
+                    /*	   RST	   $10 */
+                    Regs.SP = (Regs.SP - 2) & 0xFFFF;
+                    mem_WriteWord(Regs.SP, Regs.PC);
+                    Regs.PC = 0x10;
+                    break;
+                case 0xD8:
+                    /*	   RET C */
+                    if ((Regs.F & FLAG_C) != 0) {
+                        Regs.PC = mem_ReadWord(Regs.SP);
+                        Regs.SP = (Regs.SP + 2) & 0xFFFF;
+                        ICycles += 12;
+                    }
+                    break;
+                /*TODO*///case 0xD9: /*	   RETI */
 /*TODO*///
 /*TODO*///  Regs.w.PC = mem_ReadWord (Regs.w.SP);
 /*TODO*///  Regs.SP = (Regs.SP + 2) & 0xFFFF;
@@ -3064,43 +3075,36 @@ public class z80gb extends cpuintrfH.cpu_interface {
 /*TODO*///  mem_WriteWord (Regs.w.SP, Regs.w.PC);
 /*TODO*///  Regs.w.PC = 0x20;
 /*TODO*///  break;
-/*TODO*///case 0xE8: /*	   ADD SP,n8 */
-/*TODO*////*
-/*TODO*/// *	 Z - Reset.
-/*TODO*/// *	 N - Reset.
-/*TODO*/// *	 H - Set or reset according to operation.
-/*TODO*/// *	 C - Set or reset according to operation.
-/*TODO*/// */
-/*TODO*///
-/*TODO*///  {
-/*TODO*///	register INT32 n;
-/*TODO*///	register UINT32 r1, r2;
-/*TODO*///	register UINT8 f;
-/*TODO*///
-/*TODO*///    /* printf( "Hmmm.. ADD SP,n8\n" ); */
-/*TODO*///
-/*TODO*///	n = (INT32) ((INT8) mem_ReadByte (Regs.w.PC++));
-/*TODO*///    r1 = Regs.w.SP + n;
-/*TODO*///    r2 = (Regs.w.SP & 0xFFF) + (n & 0xFFF);
-/*TODO*///
-/*TODO*///    if (r1 > 0xFFFF)
-/*TODO*///    {
-/*TODO*///      f = FLAG_C;
-/*TODO*///    }
-/*TODO*///    else
-/*TODO*///    {
-/*TODO*///      f = 0;
-/*TODO*///    }
-/*TODO*///
-/*TODO*///    if (r2 > 0xFFF)
-/*TODO*///    {
-/*TODO*///      f |= FLAG_H;
-/*TODO*///    }
-/*TODO*///
-/*TODO*///	Regs.w.SP = (UINT16) r1;
-/*TODO*///    Regs.b.F = f;
-/*TODO*///  }
-/*TODO*///  break;
+                case 0xE8: /*	   ADD SP,n8 */ /*
+ *	 Z - Reset.
+ *	 N - Reset.
+ *	 H - Set or reset according to operation.
+ *	 C - Set or reset according to operation.
+                 */ {
+                    int n;
+                    int /*UINT32*/ r1, r2;
+                    int /*UINT8*/ f;
+
+                    /* printf( "Hmmm.. ADD SP,n8\n" ); */
+                    n = (int) ((byte) mem_ReadByte(Regs.PC));
+                    Regs.PC = (Regs.PC + 1) & 0xFFFF;
+                    r1 = Regs.SP + n;
+                    r2 = (Regs.SP & 0xFFF) + (n & 0xFFF);
+
+                    if (r1 > 0xFFFF) {
+                        f = FLAG_C;
+                    } else {
+                        f = 0;
+                    }
+
+                    if (r2 > 0xFFF) {
+                        f |= FLAG_H;
+                    }
+
+                    Regs.SP = r1 & 0xFFFF;
+                    Regs.F = f & 0xFF;
+                }
+                break;
                 case 0xE9:
                     Regs.PC = HL();/*	   JP (HL) */
                     break;
@@ -3161,44 +3165,38 @@ public class z80gb extends cpuintrfH.cpu_interface {
 /*TODO*///  mem_WriteWord (Regs.w.SP, Regs.w.PC);
 /*TODO*///  Regs.w.PC = 0x30;
 /*TODO*///  break;
-/*TODO*///case 0xF8: /*	   LD HL,SP+n8 */
-/*TODO*////*
-/*TODO*/// *	 n = one UINT8 signed immediate value.
-/*TODO*/// * Flags affected:
-/*TODO*/// *	 Z - Reset.
-/*TODO*/// *	 N - Reset.
-/*TODO*/// *	 H - Set or reset according to operation.
-/*TODO*/// *	 C - Set or reset according to operation.
-/*TODO*/// *
-/*TODO*/// */
-/*TODO*///
-/*TODO*///  {
-/*TODO*///	register INT32 n;
-/*TODO*///	register UINT32 r1, r2;
-/*TODO*///	register UINT8 f;
-/*TODO*///
-/*TODO*///	n = (INT32) ((INT8) mem_ReadByte (Regs.w.PC++));
-/*TODO*///    r1 = Regs.w.SP + n;
-/*TODO*///    r2 = (Regs.w.SP & 0xFFF) + (n & 0xFFF);
-/*TODO*///
-/*TODO*///    if (r1 > 0xFFFF)
-/*TODO*///    {
-/*TODO*///      f = FLAG_C;
-/*TODO*///    }
-/*TODO*///    else
-/*TODO*///    {
-/*TODO*///      f = 0;
-/*TODO*///    }
-/*TODO*///
-/*TODO*///    if (r2 > 0xFFF)
-/*TODO*///    {
-/*TODO*///      f |= FLAG_H;
-/*TODO*///    }
-/*TODO*///
-/*TODO*///	Regs.w.HL = (UINT16) r1;
-/*TODO*///    Regs.b.F = f;
-/*TODO*///  }
-/*TODO*///  break;
+                case 0xF8: /*	   LD HL,SP+n8 */ /*
+ *	 n = one UINT8 signed immediate value.
+ * Flags affected:
+ *	 Z - Reset.
+ *	 N - Reset.
+ *	 H - Set or reset according to operation.
+ *	 C - Set or reset according to operation.
+ *
+                 */ {
+                    int n;
+                    int /*UINT32*/ r1, r2;
+                    int /*UINT8*/ f;
+
+                    n = (int) ((byte) mem_ReadByte(Regs.PC));
+                    Regs.PC = (Regs.PC + 1) & 0xFFFF;
+                    r1 = Regs.SP + n;
+                    r2 = (Regs.SP & 0xFFF) + (n & 0xFFF);
+
+                    if (r1 > 0xFFFF) {
+                        f = FLAG_C;
+                    } else {
+                        f = 0;
+                    }
+
+                    if (r2 > 0xFFF) {
+                        f |= FLAG_H;
+                    }
+
+                    HL(r1 & 0xFFFF);
+                    Regs.F = f & 0xFF;
+                }
+                break;
                 case 0xF9:
                     /*	   LD SP,HL */
                     Regs.SP = HL();
@@ -3207,15 +3205,17 @@ public class z80gb extends cpuintrfH.cpu_interface {
                     Regs.A = mem_ReadByte(mem_ReadWord(Regs.PC));/*	   LD A,(n16) */
                     Regs.PC = (Regs.PC + 2) & 0xFFFF;
                     break;
-                /*TODO*///case 0xFB: /*	   EI */
-/*TODO*///
-/*TODO*///  Regs.w.enable |= IME;
-/*TODO*///  CheckInterrupts = 1;
-/*TODO*///  break;
-/*TODO*///case 0xFC: /*	   EH? */
-/*TODO*///  break;
-/*TODO*///case 0xFD: /*	   EH? */
-/*TODO*///  break;
+                case 0xFB:
+                    /*	   EI */
+                    Regs.enable |= IME;
+                    CheckInterrupts = 1;
+                    break;
+                case 0xFC:
+                    /*	   EH? */
+                    break;
+                case 0xFD:
+                    /*	   EH? */
+                    break;
                 case 0xFE: /*	   CP A,n8 */ {
                     int x1 = mem_ReadByte(Regs.PC);
                     Regs.PC = (Regs.PC + 1) & 0xFFFF;
