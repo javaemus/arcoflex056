@@ -29,6 +29,10 @@ public class gb
 {
 	
 	static char[] bg_zbuf = new char[160];
+        static{
+            for (int _i=0 ; _i<160 ; _i++)
+                bg_zbuf[_i] = 0;
+        }
 	
 	public static void gb_update_sprites ()
 	{
@@ -74,7 +78,7 @@ public class gb
 					data = (new UShortPtr(gb_ram, VRAM + (oam.read(2) & tilemask) * 16 + (line - oam.read(0)) * 2)).read(0);
 				}
 	/*TODO*///#ifndef LSB_FIRST
-	/*TODO*///			data = (data << 8) | (data >> 8);
+	//			data = (data << 8) | (data >> 8);
 	/*TODO*///#endif
 	
 				switch (oam.read(3) & 0xA0)
@@ -164,9 +168,12 @@ public class gb
 	
 		if (layer[0].enabled != 0)
 		{
+                    //System.out.println("layer[0].enabled");
 			int bgline;
 	
 			bgline = (SCROLLY() + CURLINE()) & 0xFF;
+                        
+                        //System.out.println(bgline);
 	
 			layer[0].bg_map = new UBytePtr(gb_bgdtab);
 			layer[0].bg_map.inc( (bgline << 2) & 0x3E0 );
@@ -178,6 +185,7 @@ public class gb
 	
 		if (layer[1].enabled != 0)
 		{
+                    //System.out.println("layer[1].enabled");
 			int bgline, xpos;
 	
 			bgline = (CURLINE() - WNDPOSY()) & 0xFF;
@@ -225,9 +233,13 @@ public class gb
                         System.out.println("C "+tiles.memory.length);
                         */
 	
-			data = (tiles.read((map.memory[xidx] ^ gb_tile_no_mod) * 8) << bit);
+			data = (tiles.read((map.read(xidx) ^ gb_tile_no_mod) * 8) << bit);
+                        /*if (data!=0)
+                            System.out.println("DATA0 "+data);*/
 	/*TODO*///#ifndef LSB_FIRST
-	/*TODO*///		data = (data << 8) | (data >> 8);
+			/*data = (data << 8) | (data >> 8);
+                        if (data!=0)
+                            System.out.println("DATA1 "+data);*/
 	/*TODO*///#endif
 			xindex = 0;
 			while (i != 0)
@@ -235,6 +247,8 @@ public class gb
 				while ((bit < 8) && i!=0)
 				{
 					int colour = ((data & 0x8000)!=0 ? 2 : 0) | ((data & 0x0080)!=0 ? 1 : 0);
+                                        /*if (colour!=0)
+                                            System.out.println("PLOT "+colour+" = "+gb_bpal[colour]);*/
 					plot_pixel.handler(bitmap, xindex, yindex, gb_bpal[colour]);
 					xindex++;
 					zbuf.writeinc( colour );
@@ -244,9 +258,11 @@ public class gb
 				}
 				xidx = (xidx + 1) & 31;
 				bit = 0;
-				data = tiles.read((map.memory[xidx] ^ gb_tile_no_mod) * 8);
+				data = tiles.read((map.read(xidx) ^ gb_tile_no_mod) * 8);
 			}
 			l++;
+                        
+                        //bg_zbuf = zbuf.memory;
 		}
 	
 		if ((LCDCONT() & 0x02) != 0)
