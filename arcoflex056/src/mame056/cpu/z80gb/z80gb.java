@@ -630,6 +630,14 @@ public class z80gb extends cpuintrfH.cpu_interface {
         return x;
     }
 
+    public static void BIT_8BIT(int n, int x) {
+        if (((x) & (1 << (n))) != 0) {
+            Regs.F = (FLAG_H | (Regs.F & FLAG_C)) & 0xFF;
+        } else {
+            Regs.F = (FLAG_Z | FLAG_H | (Regs.F & FLAG_C)) & 0xFF;
+        }
+    }
+
     @Override
     public int execute(int cycles) {
         int/*UINT8*/ x;
@@ -666,18 +674,15 @@ public class z80gb extends cpuintrfH.cpu_interface {
                     Regs.B = mem_ReadByte(Regs.PC);/*	   LD B,n8 */
                     Regs.PC = (Regs.PC + 1) & 0xFFFF;
                     break;
-                /*TODO*///case 0x07: /*	   RLCA */
-/*TODO*///
-/*TODO*///  Regs.b.A = (UINT8) ((Regs.b.A << 1) | (Regs.b.A >> 7));
-/*TODO*///  if (Regs.b.A & 1)
-/*TODO*///  {
-/*TODO*///    Regs.b.F = FLAG_C;
-/*TODO*///  }
-/*TODO*///  else
-/*TODO*///  {
-/*TODO*///    Regs.b.F = 0;
-/*TODO*///  }
-/*TODO*///  break;
+                case 0x07:
+                    /*	   RLCA */
+                    Regs.A = ((Regs.A << 1) | (Regs.A >> 7)) & 0xFF;
+                    if ((Regs.A & 1) != 0) {
+                        Regs.F = FLAG_C;
+                    } else {
+                        Regs.F = 0;
+                    }
+                    break;
                 case 0x08:
                     mem_WriteWord(mem_ReadWord(Regs.PC), Regs.SP);/*	   LD (n16),SP */
                     Regs.PC = (Regs.PC + 2) & 0xFFFF;
@@ -759,27 +764,21 @@ public class z80gb extends cpuintrfH.cpu_interface {
                 case 0x1A:
                     Regs.A = mem_ReadByte(DE());/*	   LD A,(DE) */
                     break;
-                /*TODO*///case 0x1B: /*	   DEC DE */
-/*TODO*///
-/*TODO*///#if 0				/* FIXME ?? do we want to support this? (bug emulation) */
-/*TODO*///  if (Regs.b.D == 0xFE)
-/*TODO*///  {
-/*TODO*///    trash_sprites (state);
-/*TODO*///  }
-/*TODO*///#endif
-/*TODO*///
-/*TODO*///  Regs.w.DE -= 1;
-/*TODO*///  break;
+                case 0x1B:
+                    /*	   DEC DE */
+                    DE((DE() - 1) & 0xFFFF);
+                    break;
                 case 0x1C:
                     Regs.E = INC_8BIT(Regs.E);/*	   INC E */
                     break;
                 case 0x1D:
                     Regs.E = DEC_8BIT(Regs.E);/*	   DEC E */
                     break;
-                /*TODO*///case 0x1E: /*	   LD E,n8 */
-/*TODO*///
-/*TODO*///  Regs.b.E = mem_ReadByte (Regs.w.PC++);
-/*TODO*///  break;
+                case 0x1E:
+                    /*	   LD E,n8 */
+                    Regs.E = mem_ReadByte(Regs.PC);
+                    Regs.PC = (Regs.PC + 1) & 0xFFFF;
+                    break;
                 case 0x1F: /*	   RRA */ {
                     int x1 = (Regs.A & 1) != 0 ? FLAG_C : 0;
                     Regs.A = ((Regs.A >> 1) | ((Regs.F & FLAG_C) != 0 ? 0x80 : 0)) & 0xFF;
@@ -841,17 +840,10 @@ public class z80gb extends cpuintrfH.cpu_interface {
                     Regs.A = mem_ReadByte(HL());/*	   LD A,(HL+) */
                     HL((HL() + 1) & 0xFFFF);
                     break;
-                /*TODO*///case 0x2B: /*	   DEC HL */
-/*TODO*///
-/*TODO*///#if 0				/* FIXME ?? do we want to support this? (bug emulation) */
-/*TODO*///  if (Regs.b.H == 0xFE)
-/*TODO*///  {
-/*TODO*///    trash_sprites (state);
-/*TODO*///  }
-/*TODO*///#endif
-/*TODO*///
-/*TODO*///  Regs.w.HL -= 1;
-/*TODO*///  break;
+                case 0x2B:
+                    /*	   DEC HL */
+                    HL((HL() - 1) & 0xFFFF);
+                    break;
                 case 0x2C:
                     Regs.L = INC_8BIT(Regs.L);/*	   INC L */
                     break;
@@ -1879,335 +1871,336 @@ public class z80gb extends cpuintrfH.cpu_interface {
 
                             SRL_8BIT(Regs.A);
                             break;
-                        /*TODO*///case 0x40:
-/*TODO*///  /*      BIT 0,B */
-/*TODO*///
-/*TODO*///  BIT_8BIT (0, Regs.b.B)
-/*TODO*///  break;
-/*TODO*///case 0x41:
-/*TODO*///  /*      BIT 0,C */
-/*TODO*///
-/*TODO*///  BIT_8BIT (0, Regs.b.C)
-/*TODO*///  break;
-/*TODO*///case 0x42:
-/*TODO*///  /*      BIT 0,D */
-/*TODO*///
-/*TODO*///  BIT_8BIT (0, Regs.b.D)
-/*TODO*///  break;
-/*TODO*///case 0x43:
-/*TODO*///  /*      BIT 0,E */
-/*TODO*///
-/*TODO*///  BIT_8BIT (0, Regs.b.E)
-/*TODO*///  break;
-/*TODO*///case 0x44:
-/*TODO*///  /*      BIT 0,H */
-/*TODO*///
-/*TODO*///  BIT_8BIT (0, Regs.b.H)
-/*TODO*///  break;
-/*TODO*///case 0x45:
-/*TODO*///  /*      BIT 0,L */
-/*TODO*///
-/*TODO*///  BIT_8BIT (0, Regs.b.L)
-/*TODO*///  break;
-/*TODO*///case 0x46:
-/*TODO*///  /*      BIT 0,(HL) */
-/*TODO*///
-/*TODO*///  x = mem_ReadByte (Regs.w.HL);
-/*TODO*///  BIT_8BIT (0, x)
-/*TODO*///  break;
-/*TODO*///case 0x47:
-/*TODO*///  /*      BIT 0,A */
-/*TODO*///
-/*TODO*///  BIT_8BIT (0, Regs.b.A)
-/*TODO*///  break;
-/*TODO*///case 0x48:
-/*TODO*///  /*      BIT 1,B */
-/*TODO*///
-/*TODO*///  BIT_8BIT (1, Regs.b.B)
-/*TODO*///  break;
-/*TODO*///case 0x49:
-/*TODO*///  /*      BIT 1,C */
-/*TODO*///
-/*TODO*///  BIT_8BIT (1, Regs.b.C)
-/*TODO*///  break;
-/*TODO*///case 0x4A:
-/*TODO*///  /*      BIT 1,D */
-/*TODO*///
-/*TODO*///  BIT_8BIT (1, Regs.b.D)
-/*TODO*///  break;
-/*TODO*///case 0x4B:
-/*TODO*///  /*      BIT 1,E */
-/*TODO*///
-/*TODO*///  BIT_8BIT (1, Regs.b.E)
-/*TODO*///  break;
-/*TODO*///case 0x4C:
-/*TODO*///  /*      BIT 1,H */
-/*TODO*///
-/*TODO*///  BIT_8BIT (1, Regs.b.H)
-/*TODO*///  break;
-/*TODO*///case 0x4D:
-/*TODO*///  /*      BIT 1,L */
-/*TODO*///
-/*TODO*///  BIT_8BIT (1, Regs.b.L)
-/*TODO*///  break;
-/*TODO*///case 0x4E:
-/*TODO*///  /*      BIT 1,(HL) */
-/*TODO*///
-/*TODO*///  x = mem_ReadByte (Regs.w.HL);
-/*TODO*///  BIT_8BIT (1, x)
-/*TODO*///  break;
-/*TODO*///case 0x4F:
-/*TODO*///  /*      BIT 1,A */
-/*TODO*///
-/*TODO*///  BIT_8BIT (1, Regs.b.A)
-/*TODO*///  break;
-/*TODO*///case 0x50:
-/*TODO*///  /*      BIT 2,B */
-/*TODO*///
-/*TODO*///  BIT_8BIT (2, Regs.b.B)
-/*TODO*///  break;
-/*TODO*///case 0x51:
-/*TODO*///  /*      BIT 2,C */
-/*TODO*///
-/*TODO*///  BIT_8BIT (2, Regs.b.C)
-/*TODO*///  break;
-/*TODO*///case 0x52:
-/*TODO*///  /*      BIT 2,D */
-/*TODO*///
-/*TODO*///  BIT_8BIT (2, Regs.b.D)
-/*TODO*///  break;
-/*TODO*///case 0x53:
-/*TODO*///  /*      BIT 2,E */
-/*TODO*///
-/*TODO*///  BIT_8BIT (2, Regs.b.E)
-/*TODO*///  break;
-/*TODO*///case 0x54:
-/*TODO*///  /*      BIT 2,H */
-/*TODO*///
-/*TODO*///  BIT_8BIT (2, Regs.b.H)
-/*TODO*///  break;
-/*TODO*///case 0x55:
-/*TODO*///  /*      BIT 2,L */
-/*TODO*///
-/*TODO*///  BIT_8BIT (2, Regs.b.L)
-/*TODO*///  break;
-/*TODO*///case 0x56:
-/*TODO*///  /*      BIT 2,(HL) */
-/*TODO*///
-/*TODO*///  x = mem_ReadByte (Regs.w.HL);
-/*TODO*///  BIT_8BIT (2, x)
-/*TODO*///  break;
-/*TODO*///case 0x57:
-/*TODO*///  /*      BIT 2,A */
-/*TODO*///
-/*TODO*///  BIT_8BIT (2, Regs.b.A)
-/*TODO*///  break;
-/*TODO*///case 0x58:
-/*TODO*///  /*      BIT 3,B */
-/*TODO*///
-/*TODO*///  BIT_8BIT (3, Regs.b.B)
-/*TODO*///  break;
-/*TODO*///case 0x59:
-/*TODO*///  /*      BIT 3,C */
-/*TODO*///
-/*TODO*///  BIT_8BIT (3, Regs.b.C)
-/*TODO*///  break;
-/*TODO*///case 0x5A:
-/*TODO*///  /*      BIT 3,D */
-/*TODO*///
-/*TODO*///  BIT_8BIT (3, Regs.b.D)
-/*TODO*///  break;
-/*TODO*///case 0x5B:
-/*TODO*///  /*      BIT 3,E */
-/*TODO*///
-/*TODO*///  BIT_8BIT (3, Regs.b.E)
-/*TODO*///  break;
-/*TODO*///case 0x5C:
-/*TODO*///  /*      BIT 3,H */
-/*TODO*///
-/*TODO*///  BIT_8BIT (3, Regs.b.H)
-/*TODO*///  break;
-/*TODO*///case 0x5D:
-/*TODO*///  /*      BIT 3,L */
-/*TODO*///
-/*TODO*///  BIT_8BIT (3, Regs.b.L)
-/*TODO*///  break;
-/*TODO*///case 0x5E:
-/*TODO*///  /*      BIT 3,(HL) */
-/*TODO*///
-/*TODO*///  x = mem_ReadByte (Regs.w.HL);
-/*TODO*///  BIT_8BIT (3, x)
-/*TODO*///  break;
-/*TODO*///case 0x5F:
-/*TODO*///  /*      BIT 3,A */
-/*TODO*///
-/*TODO*///  BIT_8BIT (3, Regs.b.A)
-/*TODO*///  break;
-/*TODO*///case 0x60:
-/*TODO*///  /*      BIT 4,B */
-/*TODO*///
-/*TODO*///  BIT_8BIT (4, Regs.b.B)
-/*TODO*///  break;
-/*TODO*///case 0x61:
-/*TODO*///  /*      BIT 4,C */
-/*TODO*///
-/*TODO*///  BIT_8BIT (4, Regs.b.C)
-/*TODO*///  break;
-/*TODO*///case 0x62:
-/*TODO*///  /*      BIT 4,D */
-/*TODO*///
-/*TODO*///  BIT_8BIT (4, Regs.b.D)
-/*TODO*///  break;
-/*TODO*///case 0x63:
-/*TODO*///  /*      BIT 4,E */
-/*TODO*///
-/*TODO*///  BIT_8BIT (4, Regs.b.E)
-/*TODO*///  break;
-/*TODO*///case 0x64:
-/*TODO*///  /*      BIT 4,H */
-/*TODO*///
-/*TODO*///  BIT_8BIT (4, Regs.b.H)
-/*TODO*///  break;
-/*TODO*///case 0x65:
-/*TODO*///  /*      BIT 4,L */
-/*TODO*///
-/*TODO*///  BIT_8BIT (4, Regs.b.L)
-/*TODO*///  break;
-/*TODO*///case 0x66:
-/*TODO*///  /*      BIT 4,(HL) */
-/*TODO*///
-/*TODO*///  x = mem_ReadByte (Regs.w.HL);
-/*TODO*///  BIT_8BIT (4, x)
-/*TODO*///  break;
-/*TODO*///case 0x67:
-/*TODO*///  /*      BIT 4,A */
-/*TODO*///
-/*TODO*///  BIT_8BIT (4, Regs.b.A)
-/*TODO*///  break;
-/*TODO*///case 0x68:
-/*TODO*///  /*      BIT 5,B */
-/*TODO*///
-/*TODO*///  BIT_8BIT (5, Regs.b.B)
-/*TODO*///  break;
-/*TODO*///case 0x69:
-/*TODO*///  /*      BIT 5,C */
-/*TODO*///
-/*TODO*///  BIT_8BIT (5, Regs.b.C)
-/*TODO*///  break;
-/*TODO*///case 0x6A:
-/*TODO*///  /*      BIT 5,D */
-/*TODO*///
-/*TODO*///  BIT_8BIT (5, Regs.b.D)
-/*TODO*///  break;
-/*TODO*///case 0x6B:
-/*TODO*///  /*      BIT 5,E */
-/*TODO*///
-/*TODO*///  BIT_8BIT (5, Regs.b.E)
-/*TODO*///  break;
-/*TODO*///case 0x6C:
-/*TODO*///  /*      BIT 5,H */
-/*TODO*///
-/*TODO*///  BIT_8BIT (5, Regs.b.H)
-/*TODO*///  break;
-/*TODO*///case 0x6D:
-/*TODO*///  /*      BIT 5,L */
-/*TODO*///
-/*TODO*///  BIT_8BIT (5, Regs.b.L)
-/*TODO*///  break;
-/*TODO*///case 0x6E:
-/*TODO*///  /*      BIT 5,(HL) */
-/*TODO*///
-/*TODO*///  x = mem_ReadByte (Regs.w.HL);
-/*TODO*///  BIT_8BIT (5, x)
-/*TODO*///  break;
-/*TODO*///case 0x6F:
-/*TODO*///  /*      BIT 5,A */
-/*TODO*///
-/*TODO*///  BIT_8BIT (5, Regs.b.A)
-/*TODO*///  break;
-/*TODO*///case 0x70:
-/*TODO*///  /*      BIT 6,B */
-/*TODO*///
-/*TODO*///  BIT_8BIT (6, Regs.b.B)
-/*TODO*///  break;
-/*TODO*///case 0x71:
-/*TODO*///  /*      BIT 6,C */
-/*TODO*///
-/*TODO*///  BIT_8BIT (6, Regs.b.C)
-/*TODO*///  break;
-/*TODO*///case 0x72:
-/*TODO*///  /*      BIT 6,D */
-/*TODO*///
-/*TODO*///  BIT_8BIT (6, Regs.b.D)
-/*TODO*///  break;
-/*TODO*///case 0x73:
-/*TODO*///  /*      BIT 6,E */
-/*TODO*///
-/*TODO*///  BIT_8BIT (6, Regs.b.E)
-/*TODO*///  break;
-/*TODO*///case 0x74:
-/*TODO*///  /*      BIT 6,H */
-/*TODO*///
-/*TODO*///  BIT_8BIT (6, Regs.b.H)
-/*TODO*///  break;
-/*TODO*///case 0x75:
-/*TODO*///  /*      BIT 6,L */
-/*TODO*///
-/*TODO*///  BIT_8BIT (6, Regs.b.L)
-/*TODO*///  break;
-/*TODO*///case 0x76:
-/*TODO*///  /*      BIT 6,(HL) */
-/*TODO*///
-/*TODO*///  x = mem_ReadByte (Regs.w.HL);
-/*TODO*///  BIT_8BIT (6, x)
-/*TODO*///  break;
-/*TODO*///case 0x77:
-/*TODO*///  /*      BIT 6,A */
-/*TODO*///
-/*TODO*///  BIT_8BIT (6, Regs.b.A)
-/*TODO*///  break;
-/*TODO*///case 0x78:
-/*TODO*///  /*      BIT 7,B */
-/*TODO*///
-/*TODO*///  BIT_8BIT (7, Regs.b.B)
-/*TODO*///  break;
-/*TODO*///case 0x79:
-/*TODO*///  /*      BIT 7,C */
-/*TODO*///
-/*TODO*///  BIT_8BIT (7, Regs.b.C)
-/*TODO*///  break;
-/*TODO*///case 0x7A:
-/*TODO*///  /*      BIT 7,D */
-/*TODO*///
-/*TODO*///  BIT_8BIT (7, Regs.b.D)
-/*TODO*///  break;
-/*TODO*///case 0x7B:
-/*TODO*///  /*      BIT 7,E */
-/*TODO*///
-/*TODO*///  BIT_8BIT (7, Regs.b.E)
-/*TODO*///  break;
-/*TODO*///case 0x7C:
-/*TODO*///  /*      BIT 7,H */
-/*TODO*///
-/*TODO*///  BIT_8BIT (7, Regs.b.H)
-/*TODO*///  break;
-/*TODO*///case 0x7D:
-/*TODO*///  /*      BIT 7,L */
-/*TODO*///
-/*TODO*///  BIT_8BIT (7, Regs.b.L)
-/*TODO*///  break;
-/*TODO*///case 0x7E:
-/*TODO*///  /*      BIT 7,(HL) */
-/*TODO*///
-/*TODO*///  x = mem_ReadByte (Regs.w.HL);
-/*TODO*///  BIT_8BIT (7, x)
-/*TODO*///  break;
-/*TODO*///case 0x7F:
-/*TODO*///  /*      BIT 7,A */
-/*TODO*///
-/*TODO*///  BIT_8BIT (7, Regs.b.A)
-/*TODO*///  break;
-/*TODO*///case 0x80:
+                        case 0x40:
+                            /*      BIT 0,B */
+
+                            BIT_8BIT(0, Regs.B);
+                            break;
+                        case 0x41:
+                            /*      BIT 0,C */
+
+                            BIT_8BIT(0, Regs.C);
+                            break;
+                        case 0x42:
+                            /*      BIT 0,D */
+
+                            BIT_8BIT(0, Regs.D);
+                            break;
+                        case 0x43:
+                            /*      BIT 0,E */
+
+                            BIT_8BIT(0, Regs.E);
+                            break;
+                        case 0x44:
+                            /*      BIT 0,H */
+
+                            BIT_8BIT(0, Regs.H);
+                            break;
+                        case 0x45:
+                            /*      BIT 0,L */
+
+                            BIT_8BIT(0, Regs.L);
+                            break;
+                        case 0x46: /*      BIT 0,(HL) */ {
+
+                            int x1 = mem_ReadByte(HL());
+                            BIT_8BIT(0, x1);
+                        }
+                        break;
+                        case 0x47:
+                            /*      BIT 0,A */
+
+                            BIT_8BIT(0, Regs.A);
+                            break;
+                        case 0x48:
+                            /*      BIT 1,B */
+
+                            BIT_8BIT(1, Regs.B);
+                            break;
+                        case 0x49:
+                            /*      BIT 1,C */
+
+                            BIT_8BIT(1, Regs.C);
+                            break;
+                        case 0x4A:
+                            /*      BIT 1,D */
+
+                            BIT_8BIT(1, Regs.D);
+                            break;
+                        case 0x4B:
+                            /*      BIT 1,E */
+
+                            BIT_8BIT(1, Regs.E);
+                            break;
+                        case 0x4C:
+                            /*      BIT 1,H */
+
+                            BIT_8BIT(1, Regs.H);
+                            break;
+                        case 0x4D:
+                            /*      BIT 1,L */
+
+                            BIT_8BIT(1, Regs.L);
+                            break;
+                        case 0x4E: /*      BIT 1,(HL) */ {
+
+                            int x1 = mem_ReadByte(HL());
+                            BIT_8BIT(1, x1);
+                        }
+                        break;
+                        case 0x4F:
+                            /*      BIT 1,A */
+
+                            BIT_8BIT(1, Regs.A);
+                            break;
+                        case 0x50:
+                            /*      BIT 2,B */
+
+                            BIT_8BIT(2, Regs.B);
+                            break;
+                        case 0x51:
+                            /*      BIT 2,C */
+
+                            BIT_8BIT(2, Regs.C);
+                            break;
+                        case 0x52:
+                            /*      BIT 2,D */
+
+                            BIT_8BIT(2, Regs.D);
+                            break;
+                        case 0x53:
+                            /*      BIT 2,E */
+
+                            BIT_8BIT(2, Regs.E);
+                            break;
+                        case 0x54:
+                            /*      BIT 2,H */
+
+                            BIT_8BIT(2, Regs.H);
+                            break;
+                        case 0x55:
+                            /*      BIT 2,L */
+
+                            BIT_8BIT(2, Regs.L);
+                            break;
+                        case 0x56: {
+                            /*      BIT 2,(HL) */
+
+                            int x1 = mem_ReadByte(HL());
+                            BIT_8BIT(2, x1);
+                        }
+                        break;
+                        case 0x57:
+                            /*      BIT 2,A */
+
+                            BIT_8BIT(2, Regs.A);
+                            break;
+                        case 0x58:
+                            /*      BIT 3,B */
+
+                            BIT_8BIT(3, Regs.B);
+                            break;
+                        case 0x59:
+                            /*      BIT 3,C */
+
+                            BIT_8BIT(3, Regs.C);
+                            break;
+                        case 0x5A:
+                            /*      BIT 3,D */
+
+                            BIT_8BIT(3, Regs.D);
+                            break;
+                        case 0x5B:
+                            /*      BIT 3,E */
+
+                            BIT_8BIT(3, Regs.E);
+                            break;
+                        case 0x5C:
+                            /*      BIT 3,H */
+
+                            BIT_8BIT(3, Regs.H);
+                            break;
+                        case 0x5D:
+                            /*      BIT 3,L */
+
+                            BIT_8BIT(3, Regs.L);
+                            break;
+                        case 0x5E: /*      BIT 3,(HL) */ {
+
+                            int x1 = mem_ReadByte(HL());
+                            BIT_8BIT(3, x1);
+                        }
+                        break;
+                        case 0x5F:
+                            /*      BIT 3,A */
+
+                            BIT_8BIT(3, Regs.A);
+                            break;
+                        case 0x60:
+                            /*      BIT 4,B */
+
+                            BIT_8BIT(4, Regs.B);
+                            break;
+                        case 0x61:
+                            /*      BIT 4,C */
+
+                            BIT_8BIT(4, Regs.C);
+                            break;
+                        case 0x62:
+                            /*      BIT 4,D */
+
+                            BIT_8BIT(4, Regs.D);
+                            break;
+                        case 0x63:
+                            /*      BIT 4,E */
+
+                            BIT_8BIT(4, Regs.E);
+                            break;
+                        case 0x64:
+                            /*      BIT 4,H */
+
+                            BIT_8BIT(4, Regs.H);
+                            break;
+                        case 0x65:
+                            /*      BIT 4,L */
+
+                            BIT_8BIT(4, Regs.L);
+                            break;
+                        case 0x66: /*      BIT 4,(HL) */ {
+
+                            int x1 = mem_ReadByte(HL());
+                            BIT_8BIT(4, x1);
+                        }
+                        break;
+                        case 0x67:
+                            /*      BIT 4,A */
+
+                            BIT_8BIT(4, Regs.A);
+                            break;
+                        case 0x68:
+                            /*      BIT 5,B */
+
+                            BIT_8BIT(5, Regs.B);
+                            break;
+                        case 0x69:
+                            /*      BIT 5,C */
+
+                            BIT_8BIT(5, Regs.C);
+                            break;
+                        case 0x6A:
+                            /*      BIT 5,D */
+
+                            BIT_8BIT(5, Regs.D);
+                            break;
+                        case 0x6B:
+                            /*      BIT 5,E */
+
+                            BIT_8BIT(5, Regs.E);
+                            break;
+                        case 0x6C:
+                            /*      BIT 5,H */
+
+                            BIT_8BIT(5, Regs.H);
+                            break;
+                        case 0x6D:
+                            /*      BIT 5,L */
+
+                            BIT_8BIT(5, Regs.L);
+                            break;
+                        case 0x6E: /*      BIT 5,(HL) */ {
+
+                            int x1 = mem_ReadByte(HL());
+                            BIT_8BIT(5, x1);
+                        }
+                        break;
+                        case 0x6F:
+                            /*      BIT 5,A */
+
+                            BIT_8BIT(5, Regs.A);
+                            break;
+                        case 0x70:
+                            /*      BIT 6,B */
+
+                            BIT_8BIT(6, Regs.B);
+                            break;
+                        case 0x71:
+                            /*      BIT 6,C */
+
+                            BIT_8BIT(6, Regs.C);
+                            break;
+                        case 0x72:
+                            /*      BIT 6,D */
+
+                            BIT_8BIT(6, Regs.D);
+                            break;
+                        case 0x73:
+                            /*      BIT 6,E */
+
+                            BIT_8BIT(6, Regs.E);
+                            break;
+                        case 0x74:
+                            /*      BIT 6,H */
+
+                            BIT_8BIT(6, Regs.H);
+                            break;
+                        case 0x75:
+                            /*      BIT 6,L */
+
+                            BIT_8BIT(6, Regs.L);
+                            break;
+                        case 0x76: /*      BIT 6,(HL) */ {
+
+                            int x1 = mem_ReadByte(HL());
+                            BIT_8BIT(6, x1);
+                        }
+                        break;
+                        case 0x77:
+                            /*      BIT 6,A */
+
+                            BIT_8BIT(6, Regs.A);
+                            break;
+                        case 0x78:
+                            /*      BIT 7,B */
+
+                            BIT_8BIT(7, Regs.B);
+                            break;
+                        case 0x79:
+                            /*      BIT 7,C */
+
+                            BIT_8BIT(7, Regs.C);
+                            break;
+                        case 0x7A:
+                            /*      BIT 7,D */
+
+                            BIT_8BIT(7, Regs.D);
+                            break;
+                        case 0x7B:
+                            /*      BIT 7,E */
+
+                            BIT_8BIT(7, Regs.E);
+                            break;
+                        case 0x7C:
+                            /*      BIT 7,H */
+
+                            BIT_8BIT(7, Regs.H);
+                            break;
+                        case 0x7D:
+                            /*      BIT 7,L */
+
+                            BIT_8BIT(7, Regs.L);
+                            break;
+                        case 0x7E: /*      BIT 7,(HL) */ {
+
+                            int x1 = mem_ReadByte(HL());
+                            BIT_8BIT(7, x1);
+                        }
+                        break;
+                        case 0x7F:
+                            /*      BIT 7,A */
+
+                            BIT_8BIT(7, Regs.A);
+                            break;
+                        /*TODO*///case 0x80:
 /*TODO*///  /*      RES 0,B */
 /*TODO*///
 /*TODO*///  RES_8BIT (0, Regs.b.B)
@@ -2237,13 +2230,13 @@ public class z80gb extends cpuintrfH.cpu_interface {
 /*TODO*///
 /*TODO*///  RES_8BIT (0, Regs.b.L)
 /*TODO*///  break;
-/*TODO*///case 0x86:
-/*TODO*///  /*      RES 0,(HL) */
-/*TODO*///
-/*TODO*///  x = mem_ReadByte (Regs.w.HL);
-/*TODO*///  RES_8BIT (0, x)
-/*TODO*///  mem_WriteByte (Regs.w.HL, x);
-/*TODO*///  break;
+                        case 0x86: /*      RES 0,(HL) */ {
+
+                            int x1 = mem_ReadByte(HL());
+                            x1 = RES(0, x1);
+                            mem_WriteByte(HL(), x1);
+                        }
+                        break;
                         case 0x87:
                             /*      RES 0,A */
                             Regs.A = RES(0, Regs.A);
@@ -2524,24 +2517,21 @@ public class z80gb extends cpuintrfH.cpu_interface {
 /*TODO*///
 /*TODO*///  RES_8BIT (7, Regs.b.L)
 /*TODO*///  break;
-/*TODO*///case 0xBE:
-/*TODO*///  /*      RES 7,(HL) */
-/*TODO*///
-/*TODO*///  x = mem_ReadByte (Regs.w.HL);
-/*TODO*///  RES_8BIT (7, x)
-/*TODO*///  mem_WriteByte (Regs.w.HL, x);
-/*TODO*///  break;
-/*TODO*///case 0xBF:
-/*TODO*///  /*      RES 7,A */
-/*TODO*///
-/*TODO*///  RES_8BIT (7, Regs.b.A)
-/*TODO*///  break;
-/*TODO*///case 0xC0:
-/*TODO*///  /*      SET 0,B */
-/*TODO*///
-/*TODO*///  SET_8BIT (0, Regs.b.B)
-/*TODO*///  break;
-/*TODO*///case 0xC1:
+                        case 0xBE: /*      RES 7,(HL) */ {
+                            int x1 = mem_ReadByte(HL());
+                            x1 = RES(7, x1);
+                            mem_WriteByte(HL(), x1);
+                        }
+                        break;
+                        case 0xBF:
+                            /*      RES 7,A */
+                            Regs.A = RES(7, Regs.A);
+                            break;
+                        case 0xC0:
+                            /*      SET 0,B */
+                            Regs.B = SET(0, Regs.B);
+                            break;
+                        /*TODO*///case 0xC1:
 /*TODO*///  /*      SET 0,C */
 /*TODO*///
 /*TODO*///  SET_8BIT (0, Regs.b.C)
@@ -2860,18 +2850,17 @@ public class z80gb extends cpuintrfH.cpu_interface {
 /*TODO*///
 /*TODO*///  SET_8BIT (7, Regs.b.L)
 /*TODO*///  break;
-/*TODO*///case 0xFE:
-/*TODO*///  /*      SET 7,(HL) */
-/*TODO*///
-/*TODO*///  x = mem_ReadByte (Regs.w.HL);
-/*TODO*///  SET_8BIT (7, x)
-/*TODO*///  mem_WriteByte (Regs.w.HL, x);
-/*TODO*///  break;
-/*TODO*///case 0xFF:
-/*TODO*///  /*      SET 7,A */
-/*TODO*///
-/*TODO*///  SET_8BIT (7, Regs.b.A)
-/*TODO*///  break;
+                        case 0xFE: /*      SET 7,(HL) */ {
+
+                            int x1 = mem_ReadByte(HL());
+                            x1 = SET(7, x1);
+                            mem_WriteByte(HL(), x1);
+                        }
+                        break;
+                        case 0xFF:
+                            /*      SET 7,A */
+                            Regs.A = SET(7, Regs.A);
+                            break;
                         default:
                             System.out.println("Unsupported CB 0x" + Integer.toHexString(x));
                             throw new UnsupportedOperationException("Unsupported");
