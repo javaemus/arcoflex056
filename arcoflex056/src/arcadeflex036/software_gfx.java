@@ -222,6 +222,8 @@ public class software_gfx extends java.awt.Frame implements Runnable, ImageProdu
             super.setSize(width + this._insets.left + this._insets.right, height * 2 + this._insets.top + this._insets.bottom);
         } else if ((Machine.gamedrv.name.equals("msx2")) || (Machine.gamedrv.name.equals("msx2a"))) {
             super.setSize(width + this._insets.left + this._insets.right, height + this._insets.top + this._insets.bottom);
+        } else if ((Machine.gamedrv.name.equals("gameboy"))) {
+            super.setSize(width + this._insets.left + this._insets.right, height + this._insets.top + this._insets.bottom);
         } else {
             super.setSize(width * 2 + this._insets.left + this._insets.right, height * 2 + this._insets.top + this._insets.bottom);
         }

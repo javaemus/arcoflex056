@@ -78,9 +78,9 @@ public class gbH
         public static char[] gb_wpal = new char[4];
 	public static int[] gb_spal0 = new int[4];			/* Sprite 0 palette */
 	public static int[] gb_spal1 = new int[4];			/* Sprite 1 palette */
-	public static UBytePtr gb_chrgen = new UBytePtr();		/* Character generator */
-	public static UBytePtr gb_bgdtab = new UBytePtr();		/* Background character table */
-	public static UBytePtr gb_wndtab = new UBytePtr();		/* Window character table */
+	public static UBytePtr gb_chrgen;		/* Character generator */
+	public static UBytePtr gb_bgdtab;		/* Background character table */
+	public static UBytePtr gb_wndtab;		/* Window character table */
         public static int gb_divcount;
 	public static int gb_timer_count;
 	public static int gb_timer_shift;

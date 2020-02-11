@@ -421,8 +421,8 @@ public class gb
                 case 0xFF40:						/* LCDC - LCD Control */
                         gb_chrgen = new UBytePtr(gb_ram, ((data & 0x10)!=0 ? 0x8000 : 0x8800));
                         gb_tile_no_mod = (data & 0x10)!=0 ? 0x00 : 0x80;
-                        gb_bgdtab = new UBytePtr(gb_ram, ((data & 0x08)!=0 ? 0x9C00 : 0x9800));
-                        gb_wndtab = new UBytePtr(gb_ram, ((data & 0x40)!=0 ? 0x9C00 : 0x9800));
+                        gb_bgdtab = new UBytePtr(gb_ram, 0x9800);
+                        gb_wndtab = new UBytePtr(gb_ram, 0x9C00);
                         break;
                 case 0xFF41:						/* STAT - LCD Status */
                         data = (data & 0xF8) | (LCDSTAT() & 0x07);
@@ -971,15 +971,15 @@ public class gb
             }
         };
         
-    static int count = 0;
+    //static int count = 0;
 
     public static InterruptPtr gb_scanline_interrupt = new InterruptPtr() {
         public int handler() {
             /* This is a little dodgy, but it works... mostly */
 	
-            count = (count + 1) % 3;
+            /*count = (count + 1) % 3;
             if ( count != 0 )
-                    return ignore_interrupt.handler();
+                    return ignore_interrupt.handler();*/
 
             /* First let's draw the current scanline */
             if (CURLINE() < 144)
