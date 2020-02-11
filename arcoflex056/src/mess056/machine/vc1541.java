@@ -115,14 +115,15 @@ public class vc1541
 /*TODO*///	 */
 /*TODO*///	
 /*TODO*///	#define WRITEPROTECTED 0
-/*TODO*///	
-/*TODO*///	/* 0 summarized, 1 computer, 2 vc1541 */
-/*TODO*///	static struct
-/*TODO*///	{
-/*TODO*///		int atn[3], data[3], clock[3];
-/*TODO*///	}
-/*TODO*///	serial;
-/*TODO*///	
+
+	/* 0 summarized, 1 computer, 2 vc1541 */
+	public static class _serial
+	{
+		public int[] atn=new int[3], data=new int[3], clock=new int[3];
+	}
+	
+        public static _serial serial = new _serial();
+
 /*TODO*///	/* G64 or D64 image
 /*TODO*///	 implementation as writeback system
 /*TODO*///	 */
@@ -685,19 +686,19 @@ public class vc1541
 /*TODO*///	
         public static void vc1541_reset ()
 	{
-/*TODO*///		int i;
-/*TODO*///	
-/*TODO*///		if (vc1541->type==TypeVC1541) {
-/*TODO*///			for (i = 0; i < sizeof (serial.atn) / sizeof (serial.atn[0]); i++)
+		int i;
+	
+/*TODO*///		if (vc1541.type==TypeVC1541) {
+/*TODO*///			for (i = 0; i < serial.atn.length; i++)
 /*TODO*///			{
 /*TODO*///				serial.atn[i] = serial.data[i] = serial.clock[i] = 1;
 /*TODO*///			}
 /*TODO*///		}
-/*TODO*///		vc1541->track=1.0;
-/*TODO*///		if ((vc1541->type==TypeVC1541)||(vc1541->type==Type2031)) {
+/*TODO*///		vc1541.track=1.0;
+/*TODO*///		if ((vc1541.type==TypeVC1541)||(vc1541.type==Type2031)) {
 /*TODO*///			via_reset ();
 /*TODO*///		}
-/*TODO*///		if ((vc1541->type==TypeC1551)) {
+/*TODO*///		if ((vc1541.type==TypeC1551)) {
 /*TODO*///			tpi6525_0_reset();
 /*TODO*///		}
 	}

@@ -62,7 +62,7 @@ public class gb
 			if ((line >= oam.read(0)) && (line < (oam.read(0) + height)) && (oam.read(1)!=0 && oam.read(1) < 168))
 			{
 				int data;
-                                int[] spal;
+                                char[] spal;
 				int bit;
 				int xindex;
 	
@@ -134,14 +134,16 @@ public class gb
 		public int xshift;
 		public int xend;
 	};
+        
+        //static int last_line = -1;
 	
 	public static void gb_refresh_scanline ()
 	{
 		mame_bitmap bitmap = Machine.scrbitmap;
 		UBytePtr zbuf = new UBytePtr(bg_zbuf);
 		int l = 0, yindex = CURLINE();
-	
-		/* layer info layer[0]=background, layer[1]=window */
+                
+                /* layer info layer[0]=background, layer[1]=window */
 		layer_struct[] layer = new layer_struct[2];
                 for (int _i=0 ; _i<2 ; _i++)
                     layer[_i] = new layer_struct();
@@ -166,12 +168,17 @@ public class gb
 		 * AND window's X position is >=7 ) ) */
 		layer[0].enabled = ((LCDCONT() & 0x01)!=0 && ((layer[1].enabled==0) || (layer[1].enabled!=0 && WNDPOSX() >= 7))) ? 1 : 0;
 	
-		if (layer[0].enabled != 0)
+		if ((layer[0].enabled != 0) //&& (last_line != CURLINE())
+                        )
 		{
                     //System.out.println("layer[0].enabled");
 			int bgline;
+                        
+                        /*if (last_line == -1)
+                            last_line = CURLINE();*/
 	
 			bgline = (SCROLLY() + CURLINE()) & 0xFF;
+                        //bgline = (CURLINE() - WNDPOSY()) & 0xFF;
                         
                         //System.out.println(bgline);
 	
@@ -242,8 +249,13 @@ public class gb
                             System.out.println("DATA1 "+data);*/
 	/*TODO*///#endif
 			xindex = 0;
-			while (i != 0)
+			while ((i != 0) 
+                                //&& (last_line != yindex)
+                                )
 			{
+                                /*if (last_line == -1)
+                                    last_line = CURLINE();*/
+                                
 				while ((bit < 8) && i!=0)
 				{
 					int colour = ((data & 0x8000)!=0 ? 2 : 0) | ((data & 0x0080)!=0 ? 1 : 0);
@@ -261,6 +273,7 @@ public class gb
 				data = tiles.read((map.read(xidx) ^ gb_tile_no_mod) * 8);
 			}
 			l++;
+                        //last_line = CURLINE();
                         
                         //bg_zbuf = zbuf.memory;
 		}
@@ -290,3 +303,4 @@ public class gb
         };
 	
 }
+

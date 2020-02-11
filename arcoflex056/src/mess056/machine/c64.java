@@ -330,6 +330,7 @@ public class c64
 		if (level != cia0irq)
 		{
 			c64_irq ((level!=0 || vicirq!=0) ? 1:0);
+                        vicirq=0;
 			cia0irq = level;
 		}
                 /*try {
@@ -444,16 +445,17 @@ public class c64
             public int handler(int level) {
                 System.out.println("c64_cia1_interrupt");
                 
-                /*
+                
                     cia1irq=level;
                     c64_nmi();
-                */
                 
-                if (level != cia1irq)
+                
+               /* if (level != cia1irq)
 		{
 			c64_irq ((level!=0 || vicirq!=0) ? 1:0);
+                        vicirq=0;
 			cia1irq = level;
-		}
+		}*/
                 
 /*TODO*///	#if 0
 /*TODO*///		static int old_level = 0;

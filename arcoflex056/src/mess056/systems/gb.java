@@ -67,15 +67,14 @@ public class gb
 	
 	static Memory_ReadAddress readmem[] = {
             new Memory_ReadAddress(MEMPORT_MARKER, MEMPORT_DIRECTION_READ | MEMPORT_TYPE_MEM | MEMPORT_WIDTH_8),
-            new Memory_ReadAddress( 0x0000, 0x3fff, MRA_ROM ),   /* 16k fixed ROM BANK #0*/
-            new Memory_ReadAddress( 0x4000, 0x7fff, MRA_BANK1 ), /* 16k switched ROM bank */
-            new Memory_ReadAddress( 0x8000, 0x9fff, MRA_RAM ),   /* 8k video ram */
-            new Memory_ReadAddress( 0xa000, 0xbfff, MRA_BANK2 ), /* 8k RAM bank (on cartridge) */
-            new Memory_ReadAddress( 0xc000, 0xfeff, MRA_RAM ),   /* internal ram + echo + sprite Ram & IO */
-            new Memory_ReadAddress( 0xff00, 0xff03, gb_ser_regs ),    /* serial regs */
-            new Memory_ReadAddress( 0xff04, 0xff04, gb_r_divreg ),    /* special case for the division reg */
-            new Memory_ReadAddress( 0xff05, 0xff05, gb_r_timer_cnt ), /* special case for the timer count reg */
-            new Memory_ReadAddress( 0xff06, 0xffff, MRA_RAM ),   /* IO */
+            new Memory_ReadAddress(0x0000, 0x3fff, MRA_ROM ),			/* 16k fixed ROM BANK #0*/
+            new Memory_ReadAddress(0x4000, 0x7fff, MRA_BANK1 ),			/* 16k switched ROM bank */
+            new Memory_ReadAddress(0x8000, 0x9fff, MRA_RAM ),			/* 8k video ram */
+            new Memory_ReadAddress(0xa000, 0xbfff, MRA_BANK2 ),			/* 8k switched RAM bank (on cartridge) */
+            new Memory_ReadAddress(0xc000, 0xfe9f, MRA_RAM ),			/* internal ram + echo + sprite Ram & IO */
+            new Memory_ReadAddress(0xfea0, 0xfeff, MRA_NOP ),			/* Unusable */
+            new Memory_ReadAddress(0xff00, 0xff7f, gb_r_io ),			/* gb io */
+            new Memory_ReadAddress(0xff80, 0xffff, MRA_RAM ),			/* plain ram (high) */            
             new Memory_ReadAddress(MEMPORT_MARKER, 0) /* end of table */
         };
 	
@@ -84,17 +83,38 @@ public class gb
             new Memory_WriteAddress( 0x0000, 0x1fff, MWA_ROM ),            /* plain rom */
             new Memory_WriteAddress( 0x2000, 0x3fff, gb_rom_bank_select ), /* rom bank select */
             new Memory_WriteAddress( 0x4000, 0x5fff, gb_ram_bank_select ), /* ram bank select */
-            new Memory_WriteAddress( 0x6000, 0x7fff, MWA_ROM ),            /* plain rom */
+            new Memory_WriteAddress( 0x6000, 0x7fff, gb_mem_mode_select ),            /* plain rom */
             new Memory_WriteAddress( 0x8000, 0x9fff, MWA_RAM ),            /* plain ram */
             new Memory_WriteAddress( 0xa000, 0xbfff, MWA_BANK2 ),          /* banked (cartridge) ram */
-            new Memory_WriteAddress( 0xc000, 0xfeff, MWA_RAM, videoram, videoram_size ), /* video & sprite ram */
-            new Memory_WriteAddress( 0xff00, 0xffff, gb_w_io ),	        /* gb io */
+            new Memory_WriteAddress( 0xc000, 0xfe9f, MWA_RAM, videoram, videoram_size ), /* video & sprite ram */
+            new Memory_WriteAddress( 0xfea0, 0xfeff, MWA_NOP ),
+            new Memory_WriteAddress( 0xff00, 0xff7f, gb_w_io ),			/* gb io */
+            new Memory_WriteAddress( 0xff80, 0xfffe, MWA_RAM ),			/* plain ram (high) */
+            new Memory_WriteAddress( 0xffff, 0xffff, gb_w_ie ),			/* gb io (interrupt enable) */
+            
             new Memory_WriteAddress(MEMPORT_MARKER, 0) /* end of table */
+            
         };
+        
+        static GfxLayout gb_charlayout = new GfxLayout(
+		8,8,
+		256,
+		1,						/* 1 bits per pixel */
+	
+		new int[] { 0 },					/* no bitplanes; 1 bit per pixel */
+	
+		new int[] { 0, 1, 2, 3, 4, 5, 6, 7 },
+		new int[] { 0, 8*256, 16*256, 24*256, 32*256, 40*256, 48*256, 56*256 },
+	
+		8				/* every char takes 1 consecutive byte */
+	);
 	
 	static GfxDecodeInfo gfxdecodeinfo[] =
 	{
-		new GfxDecodeInfo( -1 ) /* end of array */
+            new GfxDecodeInfo( 0, 0x0, gb_charlayout, 0, 0x80 ),
+		new GfxDecodeInfo( 0, 0x0, gb_charlayout, 0, 0x80 ),
+		new GfxDecodeInfo( 0, 0x0, gb_charlayout, 0, 0x80 ),
+		new GfxDecodeInfo( -1 )
 	};
 	
 	static InputPortPtr input_ports_gameboy = new InputPortPtr(){ public void handler() { 
@@ -113,13 +133,17 @@ public class gb
 	
 	static char palette[] =
 	{
-		0xFF,0xFF,0xFF, 	   /* Background colours */
-		0xB0,0xB0,0xB0,
-		0x60,0x60,0x60,
-		0x00,0x00,0x00,
+            /*0xFF,0xFF,0xFF,
+            0x00,0x00,0x00,*/
+            0xFF,0xFB,0x87,
+            0xB1,0xAE,0x4E,
+            0x84,0x80,0x4E,
+            0x4E,0x4E,0x4E
 	};
 	
 	static char colortable[] = {
+            /*0,1,2,3,
+            0,1,2,3,*/
 	    0,1,2,3,    /* Background colours */
 	    0,1,2,3,    /* Sprite 0 colours */
 	    0,1,2,3,    /* Sprite 1 colours */
@@ -155,14 +179,14 @@ public class gb
 		60, 0,	/* frames per second, vblank duration */
 		1,
 		gb_init_machine,
-		null,	/* shutdown machine */
+		gb_shutdown_machine,	/* shutdown machine */
 	
 		/* video hardware (double size) */
 		160, 144,
 		new rectangle( 0, 160-1, 0, 144-1 ),
 		gfxdecodeinfo,
 		palette.length/3,
-		colortable.length,
+		16,
 		gb_init_palette,				/* init palette */
 	
 		VIDEO_TYPE_RASTER,

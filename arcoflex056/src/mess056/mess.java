@@ -21,12 +21,14 @@ import static arcadeflex056.osdepend.logerror;
 import static arcadeflex056.fileio.*;
 import static common.libc.cstring.*;
 import static common.libc.cstdio.*;
+import static common.ptr.*;
 import mame056.commonH.mame_bitmap;
 import static mame056.cpuexec.machine_reset;
 import static mame056.inptportH.*;
 import static mame056.input.*;
 import static mame056.inputH.*;
 import static mame056.mame.*;
+import static mame056.osdependH.OSD_FILETYPE_NVRAM;
 import static mame056.usrintrf.*;
 
 public class mess
@@ -1177,6 +1179,49 @@ public class mess
 			"See mess.txt for help, readme.txt for options.\n");
 	
 	}
+        
+    /* load battery backed nvram from a driver subdir. in the nvram dir. */
+    public static int battery_load( String filename, UBytePtr buffer, int length )
+    {
+            Object f;
+            int bytes_read = 0;
+            int result = 0;
+
+            /* some sanity checking */
+            if( buffer != null && length > 0 )
+            {
+                    f = osd_fopen(Machine.gamedrv.name, filename, OSD_FILETYPE_NVRAM, 0);
+                    if (f != null)
+                    {
+                            bytes_read = osd_fread(f, buffer, length);
+                            osd_fclose(f);
+                            result = 1;
+                    }
+
+                    /* fill remaining bytes (if necessary) */
+                    memset(new UBytePtr(buffer, bytes_read), '\0', length - bytes_read);
+            }
+            return result;
+    }
+
+    /* save battery backed nvram to a driver subdir. in the nvram dir. */
+    public static int battery_save( String filename, UBytePtr buffer, int length )
+    {
+            Object f;
+
+            /* some sanity checking */
+            if( buffer != null && length > 0 )
+            {
+                    f = osd_fopen(Machine.gamedrv.name, filename, OSD_FILETYPE_NVRAM, 1);
+                    if (f != null)
+                    {
+                            osd_fwrite(f, buffer, length);
+                            osd_fclose(f);
+                            return 1;
+                    }
+            }
+            return 0;
+    }
 	/*
     * Copy the image names from options.image_files[] to
     * the array of filenames we keep here, depending on the

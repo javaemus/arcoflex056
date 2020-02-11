@@ -357,7 +357,7 @@ public class cbmdrive
 	
 	public static int c1551_d64_command (CBM_Drive c1551, String name)
 	{
-                System.out.println("c1551_d64_command "+name);
+                //System.out.println("c1551_d64_command "+name);
 		int pos;
 	
 		/* name eventuell mit 0xa0 auffuellen */
@@ -835,6 +835,8 @@ public class cbmdrive
 /*TODO*///		int oldstate = vc1541.i.serial.state;
 /*TODO*///	
 /*TODO*///	#endif
+            
+            //System.out.println(vc1541.number);
 	
 		switch (vc1541.i.serial.state)
 		{
@@ -1445,6 +1447,9 @@ public class cbmdrive
 /*TODO*///					 cbm_serial.clock[0] ? "CLOCK" : "clock",
 /*TODO*///					 cbm_serial.data[0] ? "DATA" : "data");
 /*TODO*///	#endif
+                
+                // HACK
+                //cbm_serial.drives[vc1541.number] = vc1541;
 	}
 /*TODO*///	
 /*TODO*///	/* difference between vic20 and pet (first series)

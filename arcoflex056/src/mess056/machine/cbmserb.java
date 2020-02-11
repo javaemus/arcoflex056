@@ -37,6 +37,7 @@ public class cbmserb
 	/* must be called before other functions */
 	public static void cbm_drive_open ()
 	{
+            System.out.println("cbm_drive_open");
 		int i;
 	
 		cbm_drive_open_helper ();
@@ -53,6 +54,7 @@ public class cbmserb
 	
 	public static void cbm_drive_close ()
 	{
+            System.out.println("cbm_drive_close");
 		int i;
 	
 		cbm_serial.count = 0;
@@ -71,6 +73,7 @@ public class cbmserb
 	
 	public static void cbm_drive_config (CBM_Drive drive, int _interface, int serialnr)
 	{
+            System.out.println("cbm_drive_config");
 		int i;
 	
 		if (_interface==SERIAL)
@@ -109,16 +112,19 @@ public class cbmserb
 	
 	public static void cbm_drive_0_config (int _interface, int serialnr)
 	{
+            System.out.println("cbm_drive_0_config");
 		cbm_drive_config (cbm_drive[0], _interface, serialnr);
 	}
 	public static void cbm_drive_1_config (int _interface, int serialnr)
 	{
+            System.out.println("cbm_drive_1_config");
 		cbm_drive_config (cbm_drive[1], _interface, serialnr);
 	}
 	
 	/* load *.prg files directy from filesystem (rom directory) */
 	public static int cbm_drive_attach_fs (int id)
 	{
+            System.out.println("cbm_drive_attach_fs");
 		CBM_Drive drive = cbm_drive[id];
 	
 		if (drive.drive == D64_IMAGE)
@@ -266,6 +272,7 @@ public class cbmserb
 				vc1541.i.serial.atn = 1;
 			vc1541.i.serial.state = 0;
 		}
+                //cbm_serial.drives[vc1541.number] = vc1541;
 	}
 	
 	static int vc1541_atn_read (CBM_Drive vc1541)
@@ -305,6 +312,7 @@ public class cbmserb
 	/* bus handling */
 	public static void cbm_serial_reset_write (int level)
 	{
+            //System.out.println("cbm_serial_reset_write");
 		int i;
 	
 		for (i = 0; i < cbm_serial.count; i++)
@@ -314,16 +322,19 @@ public class cbmserb
 	
 	public static int cbm_serial_request_read ()
 	{
+            //System.out.println("cbm_serial_request_read");
 		/* in c16 not connected */
 		return 1;
 	}
 	
 	public static void cbm_serial_request_write (int level)
 	{
+            System.out.println("cbm_serial_request_write");
 	}
 	
 	public static int cbm_serial_atn_read ()
 	{
+            //System.out.println("cbm_serial_atn_read");
 		int i;
 	
 		cbm_serial.atn[0] = cbm_serial.atn[1];
@@ -349,6 +360,7 @@ public class cbmserb
 	
 	public static int cbm_serial_clock_read ()
 	{
+            //System.out.println("cbm_serial_clock_read");
 		int i;
 	
 		cbm_serial.clock[0] = cbm_serial.clock[1];
@@ -360,6 +372,7 @@ public class cbmserb
 	
 	public static void cbm_serial_data_write (int level)
 	{
+            //System.out.println("cbm_serial_data_write");
 		int i;
 	
 		cbm_serial.data[0] =
@@ -374,6 +387,7 @@ public class cbmserb
 	
 	public static void cbm_serial_clock_write (int level)
 	{
+            //System.out.println("cbm_serial_clock_write");
 		int i;
 	
 		cbm_serial.clock[0] =
@@ -388,6 +402,7 @@ public class cbmserb
 	
 	public static void cbm_serial_atn_write (int level)
 	{
+            //System.out.println("cbm_serial_atn_write");
 		int i;
 	
 		cbm_serial.atn[0] =
@@ -403,6 +418,7 @@ public class cbmserb
 	/* delivers status for displaying */
 	static void cbm_drive_status (CBM_Drive c1551, String text, int size)
 	{
+            //System.out.println("cbm_drive_status");
             //System.out.println("cbm_drive_status");
 	/*TODO*///	text[0] = 0;
 	/*TODO*///#if VERBOSE_DBG
@@ -473,11 +489,13 @@ public class cbmserb
 	
 	public static void cbm_drive_0_status (String text, int size)
 	{
+            //System.out.println("cbm_drive_0_status");
 		cbm_drive_status (cbm_drive[0], text, size);
 	}
 	
 	public static void cbm_drive_1_status (String text, int size)
 	{
+            //System.out.println("cbm_drive_1_status");
 		cbm_drive_status (cbm_drive[1], text, size);
 	}
 }

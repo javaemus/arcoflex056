@@ -136,6 +136,7 @@ public class lynx
 	    
 	public static void lynx_draw_lines(int newline)
 	{
+            //System.out.println("lynx_draw_lines");
 	    int h,w;
 	    int x, yend;
 	    int j; // clipping needed!

@@ -1205,7 +1205,7 @@ public class vc20tape
 	public static io_exitPtr vc20_tape_detach_image = new io_exitPtr() {
             public int handler(int id) {
                 System.out.println("vc20_tape_detach_image");
-                vc20_tape_close();
+                //vc20_tape_close();
                 
                 return INIT_PASS;
             }
@@ -1328,7 +1328,7 @@ public class vc20tape
 	
 	static void vc20_tape_buttons (int play, int record, int stop)
 	{
-            System.out.println("vc20_tape_buttons PLAY="+play);
+            //System.out.println("vc20_tape_buttons PLAY="+play);
 		if (stop != 0)
 		{
 			tape.play = 0; tape.record = 0;
@@ -1360,10 +1360,10 @@ public class vc20tape
 			switch (wav.state)
 			{
 			case 4:
-				printf (text, size, "Tape saving");
+				text = sprintf ("Tape saving");
 				break;
 			case 3:
-				printf (text, size, "Tape (%s) loading %d/%dsec",
+				text = sprintf ("Tape (%s) loading %d/%dsec",
 						  device_filename(wav.image_type, wav.image_id),
 						  wav.pos / wav.sample.smpfreq,
 						  wav.sample.length / wav.sample.smpfreq);
@@ -1374,10 +1374,10 @@ public class vc20tape
 			switch (prg.state)
 			{
 			case 4:
-				printf (text, size, "Tape saving");
+				text = sprintf ("Tape saving");
 				break;
 			case 3:
-				printf (text, size, "Tape (%s) loading %d",
+				text = sprintf ("Tape (%s) loading %d",
 					device_filename(prg.image_type, prg.image_id), prg.pos);
 				break;
 			}
@@ -1386,7 +1386,7 @@ public class vc20tape
 			switch (zip.state)
 			{
 			case 4:
-				printf (text, size, "Tape saving");
+				text = sprintf ("Tape saving");
 				break;
 			case 3:
 				System.out.println("device_filename(zip.image_type... NOT IMPLEMENTED!!!!");
@@ -1396,7 +1396,7 @@ public class vc20tape
 			}
 			break;
 		}
-                System.out.println(text);
+                //System.out.println(text);
                 int y = Machine.uiymin + Machine.uiheight - 9;
                 ui_text(Machine.scrbitmap, text, 0, y);
 	}

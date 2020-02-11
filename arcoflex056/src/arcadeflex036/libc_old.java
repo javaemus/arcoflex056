@@ -108,6 +108,14 @@ public class libc_old {
         }
     }
     
+    public static void strncpy(char[] dst, UBytePtr src, int size) {
+        if ((src.memory.length - src.offset) > 0) {
+            for (int i = 0; i < size; i++) {
+                dst[i] = src.read(i);
+            }
+        }
+    }
+    
     public static void strncpy(String dst2, String src, int size) {
         char[] dst=new char[dst2.length()];
         if (src.length() > 0) {

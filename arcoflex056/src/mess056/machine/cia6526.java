@@ -53,12 +53,12 @@ public class cia6526
 	
 	public static int SERIAL_MODE_OUT(CIA6526 This){ return (This.cra&0x40); }
 	public static int TOD_ALARM(CIA6526 This){ return (This.crb&0x80); }   /* else write to tod clock */
-	public static int BCD_INC(int v){ if((v&0xf)==9){
+	public static void BCD_INC(int v){ if((v&0xf)==9){
                                                 v+=0x10-9;
                                             } else { 
                                                 v++;
                                             } 
-                                            return v;
+                                            //return v;
                                          }
 	
 	public static class CIA6526 {
@@ -166,15 +166,19 @@ public class cia6526
                                 cia[i].timer2 = timer2;
                                 cia[i].todtimer = todtimer;
 
-                                //timer_reset(cia[i].timer1, TIME_NEVER);
-                                //timer_reset(cia[i].timer2, TIME_NEVER);
+                                /*if (cia[i].timer1 != null)
+                                    timer_reset(cia[i].timer1, TIME_NEVER);
+                                if (cia[i].timer2 != null)
+                                    timer_reset(cia[i].timer2, TIME_NEVER);*/
                                 
-                                //if (cia[i].intf != null){
+                                if (cia[i].todtimer == null){
                                         /*TODO*///timer_adjust(cia[i].todtimer, 0.1, /*i,*/ 0);
                                         cia[i].todtimer=timer_set(0.1,i,cia_tod_timeout);
-                                /*} else {
+                                } else {
                                         timer_reset(cia[i].todtimer, TIME_NEVER);
-                                }*/
+                                }
+                                /*if (cia[i].todtimer != null)
+                                    timer_reset(cia[i].todtimer, TIME_NEVER);*/
                         }
                 }
         }
@@ -196,7 +200,7 @@ public class cia6526
                     }
             }
             
-            cia[This.number] = This;
+            //cia[This.number] = This;
     }
 
     static void cia_clear_interrupt (CIA6526 This, int data)
@@ -209,7 +213,7 @@ public class cia6526
                             This.intf.irq_func.handler(0);
             }
             
-            cia[This.number] = This;
+            //cia[This.number] = This;
     }
 
         /******************* Timer timeouts *************************/
@@ -221,11 +225,13 @@ public class cia6526
                 if (This.tod10ths > 9)
                 {
                         This.tod10ths = 0;
-                        This.todsec = BCD_INC (This.todsec);
+                        //This.todsec = BCD_INC (This.todsec);
+                        BCD_INC (This.todsec);
                         if (This.todsec > 0x59)
                         {
                                 This.todsec = 0;
-                                This.todmin = BCD_INC (This.todmin);
+                                //This.todmin = BCD_INC (This.todmin);
+                                BCD_INC (This.todmin);
                                 if (This.todmin > 0x59)
                                 {
                                         This.todmin = 0;
@@ -262,7 +268,7 @@ public class cia6526
                                 timer_reset (This.todtimer, 0.1);
                 }
                 
-                cia[which] = This;
+                //cia[which] = This;
             }
         };
 
@@ -330,7 +336,7 @@ public class cia6526
                         break;
                 }
 /*TODO*///                DBG_LOG (1, "timer1 state", ("%d\n", This.timer1_state));
-                cia[This.number] = This;
+                //cia[This.number] = This;
         }
 
         static void cia_timer2_state (CIA6526 This)
@@ -399,7 +405,7 @@ public class cia6526
                         break;
                 }
                 
-                cia[This.number] = This;
+                //cia[This.number] = This;
         }
 
         public static timer_callback cia_timer1_timeout = new timer_callback() {
@@ -455,7 +461,7 @@ public class cia6526
                         cia_timer2_state (This);
                 }
                 
-                cia[which] = This;
+                //cia[which] = This;
             }
         };
 
@@ -478,7 +484,7 @@ public class cia6526
                 cia_set_interrupt (This, 2);
                 /*  cia_timer2_state(This); */
                 
-                cia[which] = This;
+                //cia[which] = This;
             }
         };
 
@@ -580,7 +586,7 @@ public class cia6526
             }
     /*TODO*///	DBG_LOG (1, "cia read", ("%d %.2x:%.2x\n", This.number, offset, val));
             
-            cia[This.number] = This;
+            //cia[This.number] = This;
             
             return val;
     }
@@ -738,7 +744,7 @@ public class cia6526
                         break;
                 }
                 
-                cia[This.number] = This;
+                //cia[This.number] = This;
         }
 
 /*TODO*///static void cia_set_input_a (CIA6526 *This, int data)
@@ -757,7 +763,7 @@ public class cia6526
                     cia_set_interrupt (This, 0x10);
             This.flag = data;
             
-            cia[This.number] = This;
+            //cia[This.number] = This;
     }
 
 /*TODO*///static void cia6526_set_input_sp (CIA6526 *This, int data)
