@@ -159,7 +159,7 @@ public class spectrum
 
         public static StopMachinePtr spectrum_shutdown_machine = new StopMachinePtr() {
             public void handler() {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                
             }
         };
         
