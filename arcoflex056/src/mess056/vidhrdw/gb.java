@@ -29,10 +29,10 @@ public class gb
 {
 	
 	static char[] bg_zbuf = new char[160];
-        static{
+        /*static{
             for (int _i=0 ; _i<160 ; _i++)
                 bg_zbuf[_i] = 0;
-        }
+        }*/
 	
 	public static void gb_update_sprites ()
 	{
@@ -41,16 +41,16 @@ public class gb
                 UBytePtr oam;
                 int i, yindex;
 
-                if ((LCDCONT() & 0x04) != 0)
+                //if ((LCDCONT() & 0x04) != 0)
                 {
                         height = 16;
                         tilemask = 0xFE;
                 }
-                else
-                {
+                /*else*/
+                /*{
                         height = 8;
                         tilemask = 0xFF;
-                }
+                }*/
 
                 yindex = CURLINE();
                 line = CURLINE() + 16;
@@ -91,7 +91,7 @@ public class gb
                                                 data >>= 1;
                                         }
                                         break;
-                                case 0x20:				   /* priority is not set (overlaps bgnd & wnd, flip x) */
+                                case 0x20:				   
                                         for (bit = 0; bit < 8; bit++, xindex++)
                                         {
                                                 int colour = ((data & 0x0100)!=0 ? 2 : 0) | ((data & 0x0001)!=0 ? 1 : 0);
@@ -100,7 +100,7 @@ public class gb
                                                 data >>= 1;
                                         }
                                         break;
-                                case 0x80:				   /* priority is set (behind bgnd & wnd, don't flip x) */
+                                case 0x80:				   
                                         for (bit = 0; bit < 8; bit++, xindex++)
                                         {
                                                 int colour = ((data & 0x8000)!=0 ? 2 : 0) | ((data & 0x0080)!=0 ? 1 : 0);
@@ -109,7 +109,7 @@ public class gb
                                                 data <<= 1;
                                         }
                                         break;
-                                case 0x00:				   /* priority is not set (overlaps bgnd & wnd, don't flip x) */
+                                case 0x00:				   
                                         for (bit = 0; bit < 8; bit++, xindex++)
                                         {
                                                 int colour = ((data & 0x8000)!=0 ? 2 : 0) | ((data & 0x0080)!=0 ? 1 : 0);
@@ -119,6 +119,10 @@ public class gb
                                         }
                                         break;
                                 }
+                                /*int colour = ((data & 0x8000)!=0 ? 2 : 0) | ((data & 0x0080)!=0 ? 1 : 0);
+                                                if (colour!=0)
+                                                        plot_pixel.handler(bitmap, xindex, yindex, spal[colour]);
+                                                data <<= 1;*/
                         }
                         oam.dec( 4 );
                 }
@@ -141,7 +145,8 @@ public class gb
 	public static void gb_refresh_scanline ()
 	{
 		mame_bitmap bitmap = Machine.scrbitmap;
-                UBytePtr zbuf = new UBytePtr(bg_zbuf);
+                //UBytePtr zbuf = new UBytePtr(bg_zbuf);
+                
                 int l = 0, yindex = CURLINE();
 
                 /* layer info layer[0]=background, layer[1]=window */
@@ -245,8 +250,10 @@ public class gb
                                         int colour = ((data & 0x8000)!=0 ? 2 : 0) | ((data & 0x0080)!=0 ? 1 : 0);
                                         plot_pixel.handler(bitmap, xindex, yindex, layer[l].bg_pal[colour]);
         /*				plot_pixel(bitmap, xindex, yindex, gb_bpal[colour]); */
+                                        bg_zbuf[xindex] = (char) colour;
                                         xindex++;
-                                        zbuf.writeinc( colour );
+                                        //zbuf.writeinc( colour );
+                                        
                                         data <<= 1;
                                         bit++;
                                         i--;

@@ -111,9 +111,9 @@ public class gb
 	
 	static GfxDecodeInfo gfxdecodeinfo[] =
 	{
-            new GfxDecodeInfo( 0, 0x0, gb_charlayout, 0, 0x80 ),
+            /*new GfxDecodeInfo( 0, 0x0, gb_charlayout, 0, 0x80 ),
 		new GfxDecodeInfo( 0, 0x0, gb_charlayout, 0, 0x80 ),
-		new GfxDecodeInfo( 0, 0x0, gb_charlayout, 0, 0x80 ),
+		new GfxDecodeInfo( 0, 0x0, gb_charlayout, 0, 0x80 ),*/
 		new GfxDecodeInfo( -1 )
 	};
 	
@@ -139,11 +139,15 @@ public class gb
             0xB1,0xAE,0x4E,
             0x84,0x80,0x4E,
             0x4E,0x4E,0x4E
+            /*248, 224, 136,
+            216, 176, 88,
+            152, 120, 56,
+            72, 56, 24 */
 	};
 	
 	static char colortable[] = {
-            /*0,1,2,3,
-            0,1,2,3,*/
+            0,1,2,3,
+            0,1,2,3,
 	    0,1,2,3,    /* Background colours */
 	    0,1,2,3,    /* Sprite 0 colours */
 	    0,1,2,3,    /* Sprite 1 colours */
@@ -185,7 +189,7 @@ public class gb
 		160, 144,
 		new rectangle( 0, 160-1, 0, 144-1 ),
 		gfxdecodeinfo,
-		palette.length/3,
+		palette.length,
 		16,
 		gb_init_palette,				/* init palette */
 	
