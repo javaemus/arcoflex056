@@ -189,7 +189,7 @@ public class gb
 		160, 144,
 		new rectangle( 0, 160-1, 0, 144-1 ),
 		gfxdecodeinfo,
-		palette.length,
+		palette.length/3,
 		16,
 		gb_init_palette,				/* init palette */
 	

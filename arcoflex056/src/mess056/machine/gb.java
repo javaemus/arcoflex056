@@ -73,7 +73,7 @@ public class gb
         
 	public static InitMachinePtr gb_init_machine = new InitMachinePtr() { public void handler() 
 	{
-		gb_ram = memory_region (REGION_CPU1);
+		gb_ram = new UBytePtr(memory_region (REGION_CPU1));
 
                 ROMBank = 1;
                 RAMBank = 0;
@@ -391,7 +391,7 @@ public class gb
                                 if ((data & 0x20)==0)
                                         JOYPAD( JOYPAD() & (readinputport (0) >> 4) | 0xF0);
                                 if ((data & 0x10)==0)
-                                        JOYPAD( JOYPAD() & readinputport (0) | 0xF0);
+                                        JOYPAD( JOYPAD() & readinputport (0) | 0xF0 );
                         }
                         return;
                 case 0xFF01:						/* SB - Serial transfer data */
@@ -420,9 +420,9 @@ public class gb
                         break;
                 case 0xFF40:						/* LCDC - LCD Control */
                         gb_chrgen = new UBytePtr(gb_ram, ((data & 0x10)!=0 ? 0x8000 : 0x8800));
-                        gb_tile_no_mod = (data & 0x10)!=0 ? 0x00 : 0x80;
-                        gb_bgdtab = new UBytePtr(gb_ram, 0x9800);
-                        gb_wndtab = new UBytePtr(gb_ram, 0x9C00);
+                        gb_tile_no_mod = ((data & 0x10)!=0 ? 0x00 : 0x80);
+                        gb_bgdtab = new UBytePtr(gb_ram, ((data & 0x08)!=0 ? 0x9C00 : 0x9800));
+                        gb_wndtab = new UBytePtr(gb_ram, ((data & 0x40)!=0 ? 0x9C00 : 0x9800));
                         break;
                 case 0xFF41:						/* STAT - LCD Status */
                         data = (data & 0xF8) | (LCDSTAT() & 0x07);
@@ -432,7 +432,7 @@ public class gb
                         break;
                 case 0xFF46:						/* DMA - DMA Transfer and Start Address */
                         P = new UBytePtr(gb_ram, 0xFE00);
-                        offset = (data << 8) & 0xffff;
+                        offset = (data << 8)&0xffff;
                         for (data = 0; data < 0xA0; data++)
                                 P.writeinc( cpu_readmem16 (offset++) );
                         return;
@@ -469,7 +469,7 @@ public class gb
                                 return;
                         }
                 }
-                gb_ram.write(offset, data);
+                gb_ram.memory[offset] = (char) (data & 0xff);
             }
         };
         
@@ -528,7 +528,7 @@ public class gb
                         case 0xFF49:
                         case 0xFF4A:
                         case 0xFF4B:
-                                return gb_ram.read(offset);
+                                return gb_ram.memory[offset];
                         default:
                                 /* It seems unsupported registers return 0xFF */
                                 return 0xFF;
