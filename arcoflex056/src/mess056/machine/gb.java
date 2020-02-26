@@ -78,6 +78,12 @@ public static int[] sgb_atf_data = new int[4050];	   /* (SGB) Attribute files   
 	public static int LineDelay = 0;
 	public static int IFreq = 60;
         
+public static abstract interface _refresh_scanline {
+    public abstract void handler();
+}
+
+public static _refresh_scanline refresh_scanline = gb_refresh_scanline;
+        
 	public static InitMachinePtr gb_init_machine = new InitMachinePtr() { public void handler() 
 	{
 		gb_ram = new UBytePtr(memory_region (REGION_CPU1));
@@ -563,12 +569,12 @@ public static int[] sgb_atf_data = new int[4050];	   /* (SGB) Attribute files   
                         return;
                 case 0xFF47:						/* BGP - Background Palette */
                         gb_bpal[0] = (char) Machine.remapped_colortable.read((data & 0x03));
-                        System.out.println("COLOR 0: "+data);
+                        //System.out.println("COLOR 0: "+data);
                         int palette = 252 | 19 << 8;
                         int r = palette & 0x1f;
                         int g = (palette & 0x3e0) >> 5;
                         int b = (palette & 0x7c00) >> 10;
-                        System.out.println(r+","+g+", "+b);
+                        //System.out.println(r+","+g+", "+b);
                         gb_bpal[1] = (char) Machine.remapped_colortable.read((data & 0x0C) >> 2);
                         gb_bpal[2] = (char) Machine.remapped_colortable.read((data & 0x30) >> 4);
                         gb_bpal[3] = (char) Machine.remapped_colortable.read((data & 0xC0) >> 6);
@@ -1289,7 +1295,7 @@ public static int[] sgb_atf_data = new int[4050];	   /* (SGB) Attribute files   
 
             /* First let's draw the current scanline */
             if (CURLINE() < 144)
-                    gb_refresh_scanline ();
+                    refresh_scanline.handler();
 
             /* The rest only makes sense if the display is enabled */
             if ((LCDCONT() & 0x80) != 0)

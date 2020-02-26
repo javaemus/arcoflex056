@@ -47,20 +47,22 @@ public class gb
         private static final int PRIORITY = 7;
         private static final int SPRITE_HEIGHT = 2;
         
-        public static void gb_refresh_scanline ()
-	{
-	
-            mame_bitmap bitmap = Machine.scrbitmap;
-            int currentScanLine = CURLINE();
-            
-            int lcdc = gb_ram.read(LCDC_CONTROL) & 0xff;
-            if (isSet(lcdc, BACKGROUND_ENABLE))
-                drawBackground(bitmap, currentScanLine);
-            if (isSet(lcdc, WINDOW_DISPLAY_ENABLE))
-                drawWindow(bitmap, currentScanLine);
-            if (isSet(lcdc, SPRITE_ENABLE))
-                drawSprites(bitmap, currentScanLine);
-        }
+        public static _refresh_scanline gb_refresh_scanline = new _refresh_scanline() {
+            public void handler() {
+
+
+                mame_bitmap bitmap = Machine.scrbitmap;
+                int currentScanLine = CURLINE();
+
+                int lcdc = gb_ram.read(LCDC_CONTROL) & 0xff;
+                if (isSet(lcdc, BACKGROUND_ENABLE))
+                    drawBackground(bitmap, currentScanLine);
+                if (isSet(lcdc, WINDOW_DISPLAY_ENABLE))
+                    drawWindow(bitmap, currentScanLine);
+                if (isSet(lcdc, SPRITE_ENABLE))
+                    drawSprites(bitmap, currentScanLine);
+            }
+        };
         
         /**
         * draws the window onto the LCD display screen
