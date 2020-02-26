@@ -82,6 +82,7 @@ public static abstract interface _refresh_scanline {
     public abstract void handler();
 }
 
+
 public static _refresh_scanline refresh_scanline = gb_refresh_scanline;
         
 	public static InitMachinePtr gb_init_machine = new InitMachinePtr() { public void handler() 
@@ -230,7 +231,7 @@ public static _refresh_scanline refresh_scanline = gb_refresh_scanline;
                 gbc_hdma_enabled = 0;
 
                 /* set the scanline refresh function */
-/*TODO*///                refresh_scanline = gbc_refresh_scanline;
+                refresh_scanline = gbc_refresh_scanline;
             }
         };
         
