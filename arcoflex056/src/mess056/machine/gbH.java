@@ -85,4 +85,46 @@ public class gbH
 	public static int gb_timer_count;
 	public static int gb_timer_shift;
 	public static int gb_tile_no_mod;
+        
+        /* -- Super GameBoy specific -- */
+        public static int SGB_BORDER_PAL_OFFSET = 64;	/* Border colours stored from pal 4-7	*/
+        public static int SGB_XOFFSET = 48;				/* GB screen starts at column 48		*/
+        public static int SGB_YOFFSET = 40;				/* GB screen starts at row 40			*/
+
+        public static int[] sgb_pal_data = new int[4096];	/* 512 palettes of 4 colours			*/
+        public static int[][] sgb_pal_map = new int[20][18];	/* Palette tile map						*/
+        public static UBytePtr sgb_tile_data;		/* 256 tiles of 32 bytes each			*/
+        public static int[] sgb_tile_map = new int[2048];	/* 32x32 tile map data (0-tile,1-attribute)	*/
+        public static int sgb_window_mask;		/* Current GB screen mask				*/
+        public static int sgb_hack;				/* Flag set if we're using a hack		*/
+        
+        /* -- GameBoy Color specific -- */
+        public static int HDMA1(){ return  gb_ram.memory[0xFF51]; }		/* HDMA source high byte				*/
+        public static void HDMA1(int val){ gb_ram.memory[0xFF51] = (char) val; }
+        public static int HDMA2(){ return  gb_ram.memory[0xFF52]; }		/* HDMA source low byte					*/
+        public static void HDMA2(int val){ gb_ram.memory[0xFF52] = (char) val; }
+        public static int HDMA3(){ return  gb_ram.memory[0xFF53]; }		/* HDMA destination high byte			*/
+        public static void HDMA3(int val){ gb_ram.memory[0xFF53] = (char) val; }
+        public static int HDMA4(){ return  gb_ram.memory[0xFF54]; }		/* HDMA destination low byte			*/
+        public static void HDMA4(int val){ gb_ram.memory[0xFF54] = (char) val; }
+        public static int HDMA5(){ return  gb_ram.memory[0xFF55]; }		/* HDMA length/mode/start				*/
+        public static void HDMA5(int val){ gb_ram.memory[0xFF55] = (char) val; }
+
+        public static int GBCBCPS(){ return  gb_ram.memory[0xFF68]; }		/* Backgound palette spec				*/
+        public static void GBCBCPS(int val){ gb_ram.memory[0xFF68] = (char) val; }
+        public static int GBCBCPD(){ return  gb_ram.memory[0xFF69]; }		/* Backgound palette data				*/
+        public static int GBCOCPS(){ return  gb_ram.memory[0xFF6A]; }		/* Object palette spec					*/
+        public static void GBCOCPS(int val){ gb_ram.memory[0xFF6A] = (char) val; }
+        public static int GBCOCPD(){ return  gb_ram.memory[0xFF6B]; }		/* Object palette data					*/
+        
+        public static final int GBC_MODE_GBC       = 1;			/* GBC is in colour mode				*/
+        public static final int GBC_MODE_MONO      = 2;			/* GBC is in mono mode					*/
+        public static final int GBC_PAL_OBJ_OFFSET = 32;		/* Object palette offset				*/
+
+        public static UBytePtr gbc_chrgen;		/* Character generator					*/
+        public static UBytePtr gbc_bgdtab;		/* Background character table			*/
+        public static UBytePtr gbc_wndtab;		/* Window character table				*/
+        public static int gbc_mode;			/* is the GBC in mono/colour mode?		*/
+        public static int gbc_hdma_enabled;		/* is HDMA enabled?						*/
+        
 }

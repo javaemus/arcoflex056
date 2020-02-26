@@ -116,6 +116,8 @@ public class system {
 	/*TODO*///		DRIVER( nespal )	/* Nintendo Entertainment System			*/
 	driver_famicom,
 	driver_gameboy,         /* Nintendo GameBoy Handheld				*/
+        driver_gbcolor,         /* Nintendo GameBoy Color Handheld				*/
+        driver_supergb,         /* Nintendo Super GameBoy Handheld				*/
 	/*TODO*///		DRIVER (snes)		/* Nintendo Super Nintendo				*/
 	/*TODO*///	//      DRIVER (vboy)		/* Nintendo Virtual Boy 				*/
 	/*TODO*///	

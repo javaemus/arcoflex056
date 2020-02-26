@@ -64,6 +64,13 @@ public class gb
         public static int/*UINT8*/ MBC3RTCBank;			   /* Number of RTC bank for MBC3                 */
         public static char[] nvram_name = new char[1024];//char nvram_name[1024];/* Name to store NVRAM under                   */
         public static UBytePtr gb_ram = new UBytePtr();
+        
+        
+public static UBytePtr[] GBC_RAMMap = new UBytePtr[8];		   /* (GBC) Addresses of internal RAM banks       */
+public static int GBC_RAMBank;			   /* (GBC) Number of RAM bank currently used     */
+public static UBytePtr[] GBC_VRAMMap = new UBytePtr[2];				   /* (GBC) Addressses of video RAM banks         */
+public static int GBC_VRAMBank;					   /* (GBC) Number of video RAM bank currently used */
+public static int[] sgb_atf_data = new int[4050];	   /* (SGB) Attribute files                       */
 
         public static int Verbose = 0x00;
 	public static int SGB = 0;
@@ -121,6 +128,103 @@ public class gb
                 gameboy_sound_w.handler(0xFF23,0xBF);
                 gameboy_sound_w.handler(0xFF24,0x77);
                 gameboy_sound_w.handler(0xFF25,0xF3);
+            }
+        };
+        
+        public static InitMachinePtr sgb_init_machine = new InitMachinePtr() {
+            public void handler() {
+                /* Call GameBoy init */
+                gb_init_machine.handler();
+
+                if( new_memory_region( REGION_GFX1, 0x2000, 0 ) != 0 )
+                {
+                        logerror("Memory allocation failed for SGB border tiles!\n");
+                }
+                sgb_tile_data = new UBytePtr(memory_region( REGION_GFX1 ));
+                memset( sgb_tile_data, 0, 0x2000 );
+
+                /* Initialize the Sound Registers */
+                gameboy_sound_w.handler(0xFF26,0xF0); /* F0 for SGB */
+
+                sgb_window_mask = 0;
+/*TODO*///                memset( sgb_pal_map, 0, 20*18 );
+                memset( sgb_atf_data, 0, 4050 );
+
+                /* HACKS for Donkey Kong Land 2 + 3.
+                   For some reason that I haven't figured out, they store the tile
+                   data differently.  Hacks will go once I figure it out */
+                sgb_hack = 0;
+/*TODO*///                if( strncmp( (const char*)(gb_ram + 0x134), "DONKEYKONGLAND 2", 16 ) == 0 ||
+/*TODO*///                        strncmp( (const char*)(gb_ram + 0x134), "DONKEYKONGLAND 3", 16 ) == 0 )
+/*TODO*///                {
+/*TODO*///                        sgb_hack = 1;
+/*TODO*///                }
+
+                /* set the scanline refresh function */
+/*TODO*///                refresh_scanline = sgb_refresh_scanline;
+            }
+        };
+        
+        public static InitMachinePtr gbc_init_machine = new InitMachinePtr() {
+            public void handler() {
+                int I;
+
+                /* Call GameBoy init */
+                gb_init_machine.handler();
+
+                /* Allocate memory for internal ram */
+                for( I = 0; I < 8; I++ )
+                {
+                        if ((GBC_RAMMap[I] = new UBytePtr(0x1000)) != null)
+                                memset (GBC_RAMMap[I], 0, 0x1000);
+                        else
+                        {
+                                logerror("Error allocating memory\n");
+                        }
+                }
+                GBC_RAMBank = 0;
+                cpu_setbank (3, GBC_RAMMap[GBC_RAMBank]);
+
+                /* Allocate memory for video ram */
+                for( I = 0; I < 2; I++ )
+                {
+                        if ((GBC_VRAMMap[I] = new UBytePtr(0x2000)) != null)
+                        {
+                                memset (GBC_VRAMMap[I], 0, 0x2000);
+                        }
+                        else
+                        {
+                                printf("Error allocating video memory\n");
+                        }
+                }
+                GBC_VRAMBank = 0;
+                cpu_setbank (4, GBC_VRAMMap[GBC_VRAMBank]);
+
+                gb_chrgen = GBC_VRAMMap[0];
+                gbc_chrgen = GBC_VRAMMap[1];
+                gb_bgdtab = gb_wndtab = new UBytePtr(GBC_VRAMMap[0], 0x1C00);
+                gbc_bgdtab = gbc_wndtab = new UBytePtr(GBC_VRAMMap[1], 0x1C00);
+
+                /* Initialise registers */
+                gb_w_io.handler(0x6C, 0xFE );
+                gb_w_io.handler( 0x72, 0x00 );
+                gb_w_io.handler( 0x73, 0x00 );
+                gb_w_io.handler( 0x74, 0x8F );
+                gb_w_io.handler( 0x75, 0x00 );
+                gb_w_io.handler( 0x76, 0x00 );
+                gb_w_io.handler( 0x77, 0x00 );
+
+                /* Are we in colour or mono mode? */
+                if( gb_ram.read(0x143) == 0x80 || gb_ram.read(0x143) == 0xC0 )
+                        gbc_mode = GBC_MODE_GBC;
+                else
+                        gbc_mode = GBC_MODE_MONO;
+
+                /* HDMA disabled */
+                gbc_hdma_enabled = 0;
+
+                /* set the scanline refresh function */
+/*TODO*///                refresh_scanline = gbc_refresh_scanline;
             }
         };
         
@@ -293,10 +397,30 @@ public class gb
         static int bit_count = 0, byte_count = 0, start = 0, rest = 0;
 	static int[] sgb_data = new int[16];
 	static int controller_no = 0, controller_mode = 0;
+        
+        static boolean autoInc = false;
+        static int bgColorIndex;
 	
 	public static WriteHandlerPtr gb_w_io = new WriteHandlerPtr() {
             public void handler(int offset, int data) {
                 UBytePtr P;
+                
+                //System.out.println("gb_w_io: "+data+" en "+offset);
+                
+                int newAddress = offset - 0xff00;
+                int midata = data & 0xff;
+                
+                if (newAddress == 0xff68) {
+                    // color 'register'
+                    autoInc = (data & 0x80) != 0x0;
+                    bgColorIndex = data & 0x3f;
+                    //IOPorts[newAddress] = data;
+                } else if (newAddress == 0xff69) {
+                    bgPalettes[bgColorIndex] = data;
+                    bgColorIndex += autoInc ? 1 : 0;
+                    bgColorIndex &= 0x3f;
+                    System.out.println("KOLOR: "+data+" en "+bgColorIndex);
+                }
                 
                 offset += 0xFF00;
 
@@ -431,6 +555,7 @@ public class gb
                         data = 0;
                         break;
                 case 0xFF46:						/* DMA - DMA Transfer and Start Address */
+                    //System.out.println("COLOR A: "+data);
                         P = new UBytePtr(gb_ram, 0xFE00);
                         offset = (data << 8)&0xffff;
                         for (data = 0; data < 0xA0; data++)
@@ -438,6 +563,12 @@ public class gb
                         return;
                 case 0xFF47:						/* BGP - Background Palette */
                         gb_bpal[0] = (char) Machine.remapped_colortable.read((data & 0x03));
+                        System.out.println("COLOR 0: "+data);
+                        int palette = 252 | 19 << 8;
+                        int r = palette & 0x1f;
+                        int g = (palette & 0x3e0) >> 5;
+                        int b = (palette & 0x7c00) >> 10;
+                        System.out.println(r+","+g+", "+b);
                         gb_bpal[1] = (char) Machine.remapped_colortable.read((data & 0x0C) >> 2);
                         gb_bpal[2] = (char) Machine.remapped_colortable.read((data & 0x30) >> 4);
                         gb_bpal[3] = (char) Machine.remapped_colortable.read((data & 0xC0) >> 6);
@@ -461,6 +592,17 @@ public class gb
                         gb_spal1[2] = Machine.remapped_colortable.read(((data & 0x30) >> 4) + 8);
                         gb_spal1[3] = Machine.remapped_colortable.read(((data & 0xC0) >> 6) + 8);
                         break;
+                /*case 0xFF68:
+                        // color 'register'
+                        autoInc = (data & 0x80) != 0x0;
+                        bgColorIndex = data & 0x3f;
+                        break;
+                case 0xFF69:
+                        bgPalettes[bgColorIndex] = data;
+                        bgColorIndex += autoInc ? 1 : 0;
+                        bgColorIndex &= 0x3f;
+                        System.out.println("KOLOR: "+data+" en "+bgColorIndex);
+                        break;*/
                 default:
                         /* Sound Registers */
                         if ((offset >= 0xFF10) && (offset <= 0xFF26))
@@ -476,6 +618,163 @@ public class gb
         public static WriteHandlerPtr gb_w_ie = new WriteHandlerPtr() {
             public void handler(int offset, int data) {
                 gb_ram.write(0xFFFF, data & 0x1F);
+            }
+        };
+        
+        public static WriteHandlerPtr sgb_w_io = new WriteHandlerPtr() {
+            public void handler(int offset, int data) {
+                // nothing to do
+            }
+        };
+        
+        static int gbc_to_gb_pal[] = {32767, 21140, 10570, 0};
+        static int BP = 0, OP = 0;
+        
+        public static WriteHandlerPtr gbc_w_io = new WriteHandlerPtr() {
+            public void handler(int offset, int data) {
+                
+                offset += 0xFF00;
+
+                switch( offset )
+                {
+                        case 0xFF40:
+                                gb_chrgen = new UBytePtr(GBC_VRAMMap[0], ((data & 0x10)!=0 ? 0x0000 : 0x0800));
+                                gbc_chrgen = new UBytePtr(GBC_VRAMMap[1], ((data & 0x10)!=0 ? 0x0000 : 0x0800));
+                                gb_tile_no_mod = (data & 0x10)!=0 ? 0x00 : 0x80;
+                                gb_bgdtab = new UBytePtr(GBC_VRAMMap[0], ((data & 0x08)!=0 ? 0x1C00 : 0x1800));
+                                gbc_bgdtab = new UBytePtr(GBC_VRAMMap[1], ((data & 0x08)!=0 ? 0x1C00 : 0x1800));
+                                gb_wndtab = new UBytePtr(GBC_VRAMMap[0], ((data & 0x40)!=0 ? 0x1C00 : 0x1800));
+                                gbc_wndtab = new UBytePtr(GBC_VRAMMap[1], ((data & 0x40)!=0 ? 0x1C00 : 0x1800));
+                                break;
+                        case 0xFF47:	/* BGP - GB background palette */
+                                if( gbc_mode == GBC_MODE_MONO ) /* Some GBC games are lazy and still call this */
+                                {
+                                        Machine.remapped_colortable.write(0, gbc_to_gb_pal[(data & 0x03)]);
+                                        Machine.remapped_colortable.write(1, gbc_to_gb_pal[(data & 0x0C) >> 2]);
+                                        Machine.remapped_colortable.write(2, gbc_to_gb_pal[(data & 0x30) >> 4]);
+                                        Machine.remapped_colortable.write(3, gbc_to_gb_pal[(data & 0xC0) >> 6]);
+                                }
+                                break;
+                        case 0xFF48:	/* OBP0 - GB Object 0 palette */
+                                if( gbc_mode == GBC_MODE_MONO ) /* Some GBC games are lazy and still call this */
+                                {
+                                        Machine.remapped_colortable.write(4, gbc_to_gb_pal[(data & 0x03)]);
+                                        Machine.remapped_colortable.write(5, gbc_to_gb_pal[(data & 0x0C) >> 2]);
+                                        Machine.remapped_colortable.write(6, gbc_to_gb_pal[(data & 0x30) >> 4]);
+                                        Machine.remapped_colortable.write(7, gbc_to_gb_pal[(data & 0xC0) >> 6]);
+                                }
+                                break;
+                        case 0xFF49:	/* OBP1 - GB Object 1 palette */
+                                if( gbc_mode == GBC_MODE_MONO ) /* Some GBC games are lazy and still call this */
+                                {
+                                        Machine.remapped_colortable.write(8, gbc_to_gb_pal[(data & 0x03)]);
+                                        Machine.remapped_colortable.write(9, gbc_to_gb_pal[(data & 0x0C) >> 2]);
+                                        Machine.remapped_colortable.write(10, gbc_to_gb_pal[(data & 0x30) >> 4]);
+                                        Machine.remapped_colortable.write(11, gbc_to_gb_pal[(data & 0xC0) >> 6]);
+                                }
+                                break;
+                        case 0xFF4D:	/* KEY1 - Prepare speed switch */
+                                if(( data & 0x1 ) != 0)
+                                {
+                                        data = (gb_ram.read(offset) & 0x80)!=0?0x00:0x80;
+        //				timer_set_overclock( 0, (data & 0x80)?2.0:1.0 );
+                                        logerror( "Switched to %s mode.\n", (data & 0x80)!=0 ? "FAST":"NORMAL" );
+                                }
+                                break;
+                        case 0xFF4F:	/* VBK - VRAM bank select */
+                                GBC_VRAMBank = data & 0x1;
+                                cpu_setbank (4, GBC_VRAMMap[GBC_VRAMBank]);
+                                data |= 0xFE;
+                                break;
+                        case 0xFF51:	/* HDMA1 - HBL General DMA - Source High */
+                                break;
+                        case 0xFF52:	/* HDMA2 - HBL General DMA - Source Low */
+                                data &= 0xF0;
+                                break;
+                        case 0xFF53:	/* HDMA3 - HBL General DMA - Destination High */
+                                data &= 0x1F;
+                                break;
+                        case 0xFF54:	/* HDMA4 - HBL General DMA - Destination Low */
+                                data &= 0xF0;
+                                break;
+                        case 0xFF55:	/* HDMA5 - HBL General DMA - Mode, Length */
+                                if( (data & 0x80) == 0 )
+                                {
+                                        /* General DMA */
+                                        gbc_hdma( ((data & 0x7F) + 1) * 0x10 );
+                                        data = 0xff;
+                                }
+                                else
+                                {
+                                        /* H-Blank DMA */
+                                        gbc_hdma_enabled = 1;
+                                        data &= 0x7f;
+                                }
+                                break;
+                        case 0xFF56:	/* RP - Infrared port */
+                                break;
+                        case 0xFF68:	/* BCPS - Background palette specification */
+                                break;
+                        case 0xFF69:	/* BCPD - background palette data */
+                                if(( GBCBCPS() & 0x1 ) != 0)
+                                {
+        //				BP = Machine.remapped_colortable[(GBCBCPS & 0x3e) >> 1];
+        //				Machine.remapped_colortable[(GBCBCPS & 0x3e) >> 1] = data + (BP & 0xFF00);
+        //				Machine.remapped_colortable[((GBCBCPS & 0x38) >> 1) + ((GBCBCPS & 0x6) >> 1)] = ((UINT16)(data & 0x7f) << 8) | BP;
+                                        Machine.remapped_colortable.write(((GBCBCPS() & 0x3e) >> 1), ((data & 0x7f) << 8) | BP);
+                                }
+                                else
+                                {
+        //				BP = Machine.remapped_colortable[(GBCBCPS & 0x3e) >> 1];
+        //				Machine.remapped_colortable[(GBCBCPS & 0x3e) >> 1] = ((data << 8) + (BP & 0xFF));
+                                        BP = data;
+                                }
+
+                                if(( GBCBCPS() & 0x80 ) != 0)
+                                {
+                                        GBCBCPS(GBCBCPS()+1);
+                                        GBCBCPS(GBCBCPS() & 0xBF);
+                                }
+                                break;
+                        case 0xFF6A:	/* OCPS - Object palette specification */
+                                break;
+                        case 0xFF6B:	/* OCPD - Object palette data */
+                                if(( GBCOCPS() & 0x1 ) != 0)
+                                {
+                                        Machine.remapped_colortable.write(GBC_PAL_OBJ_OFFSET + ((GBCOCPS() & 0x3e) >> 1), ((data & 0x7f) << 8) | OP);
+                                }
+                                else
+                                        OP = data;
+
+                                if(( GBCOCPS() & 0x80 ) != 0)
+                                {
+                                        GBCOCPS(GBCOCPS() + 1);
+                                        GBCOCPS(GBCOCPS() & 0xBF);
+                                }
+                                break;
+                        case 0xFF70:	/* SVBK - RAM bank select */
+                                GBC_RAMBank = data & 0x7;
+                                cpu_setbank (3, GBC_RAMMap[GBC_RAMBank]);
+                                break;
+                        /* Undocumented registers */
+                        case 0xFF6C:
+                        case 0xFF72:
+                        case 0xFF73:
+                        case 0xFF74:
+                        case 0xFF75:
+                        case 0xFF76:
+                        case 0xFF77:
+                                logerror( "Write to undoco'ed register: %X = %X\n", offset, data );
+                                return;
+                        default:
+                                /* we didn't handle the write, so pass it to the GB handler */
+                                gb_w_io.handler(offset - 0xFF00, data );
+                                return;
+                }
+
+                gb_ram.write(offset, data);
+       
+
             }
         };
         
@@ -667,6 +966,9 @@ public class gb
 		new _Companies(0x1801, "Hudson Soft"),
 		new _Companies(0x0000, null)
 	};
+        
+        // boolean for checking if is a GB or GBColor CART // added by Chuso
+        public static boolean gbcMode = false;
 	
         public static io_initPtr gb_load_rom = new io_initPtr() {
             public int handler(int id) {
@@ -840,6 +1142,10 @@ public class gb
                                 MBCType = 0;
                                 CartType = UNKNOWN;
                 }
+                
+                //System.out.println("MBCType: "+MBCType);
+                gbcMode = ((gb_ram.read(0x0143)&0xff) != 0x0);
+                System.out.println("Color: "+gbcMode);
 
                 if (( CartType & UNKNOWN ) != 0)
                 {
@@ -1062,5 +1368,32 @@ public class gb
             LCDSTAT( (LCDSTAT() & 0xFC) | 0x03 );
         }
     };
+    
+    public static void gbc_hdma(int length)
+    {
+            int src, dst;
+
+            src = (HDMA1() << 8) | (HDMA2() & 0xF0);
+            dst = ((HDMA3() & 0x1F) << 8) | (HDMA4() & 0xF0);
+            dst |= 0x8000;
+            if( Verbose != 0 )
+                    printf( "\tsrc=%X  dst=%X  length=%X\n", src, dst, length );
+            while( length > 0 )
+            {
+                    cpu_writemem16( dst++, cpu_readmem16( src++ ) );
+                    length--;
+            }
+            HDMA1( src >> 8 );
+            HDMA2( src & 0xF0 );
+            HDMA3( 0x1f & (dst >> 8) );
+            HDMA4( dst & 0xF0 );
+            HDMA5(HDMA5()-1);
+            if( (HDMA5() & 0x7f) == 0 )
+            {
+                    HDMA5( 0xff );
+                    gbc_hdma_enabled = 0;
+            }
+    }
+
     
 }
