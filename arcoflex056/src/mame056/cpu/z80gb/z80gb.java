@@ -647,19 +647,14 @@ public class z80gb extends cpuintrfH.cpu_interface {
     private static final int[] bitSet = {1, 2, 4, 8, 16, 32, 64, 128};           // lookup table for setting a bit of an 8-bit value using OR
     private static final int[] bitRes = {254, 253, 251, 247, 239, 223, 191, 127}; // lookup table for resetting a bit of an 8-bit value using AND
 
-    public static int RES(int bitNumber, int value) {
+    public static int RES_8BIT(int bitNumber, int value) {
         value = value & bitRes[bitNumber];
         return value;
     }
 
-    public static int SET(int bitNumber, int value) {
+    public static int SET_8BIT(int bitNumber, int value) {
         value = value | bitSet[bitNumber];
         return value;
-    }
-
-    public static int SET_8BIT(int n, int x) {
-        (x) |= (1 << (n));
-        return x;
     }
 
     public static int SLA_8BIT(int x) {
@@ -701,10 +696,6 @@ public class z80gb extends cpuintrfH.cpu_interface {
         }
     }
 
-    public static int RES_8BIT(int n, int x) {
-        (x) &= ~(1 << (n));
-        return x;
-    }
 
     @Override
     public int execute(int cycles) {
@@ -2313,37 +2304,37 @@ public class z80gb extends cpuintrfH.cpu_interface {
                         case 0x86: /*      RES 0,(HL) */ {
 
                             int x1 = mem_ReadByte(HL());
-                            x1 = RES(0, x1);
+                            x1 = RES_8BIT(0, x1);
                             mem_WriteByte(HL(), x1);
                         }
                         break;
                         case 0x87:
                             /*      RES 0,A */
-                            Regs.A = RES(0, Regs.A);
+                            Regs.A = RES_8BIT(0, Regs.A);
                             break;
                         case 0x88:
                             /*      RES 1,B */
-                            Regs.B = RES(1, Regs.B);
+                            Regs.B = RES_8BIT(1, Regs.B);
                             break;
                         case 0x89:
                             /*      RES 1,C */
-                            Regs.C = RES(1, Regs.C);
+                            Regs.C = RES_8BIT(1, Regs.C);
                             break;
                         case 0x8A:
                             /*      RES 1,D */
-                            Regs.D = RES(1, Regs.D);
+                            Regs.D = RES_8BIT(1, Regs.D);
                             break;
                         case 0x8B:
                             /*      RES 1,E */
-                            Regs.E = RES(1, Regs.E);
+                            Regs.E = RES_8BIT(1, Regs.E);
                             break;
                         case 0x8C:
                             /*      RES 1,H */
-                            Regs.H = RES(1, Regs.H);
+                            Regs.H = RES_8BIT(1, Regs.H);
                             break;
                         case 0x8D:
                             /*      RES 1,L */
-                            Regs.L = RES(1, Regs.L);
+                            Regs.L = RES_8BIT(1, Regs.L);
                             break;
                         case 0x8E:
                             /*      RES 1,(HL) */
@@ -2564,52 +2555,45 @@ public class z80gb extends cpuintrfH.cpu_interface {
                             break;
                         case 0xB7:
                             /*      RES 6,A */
-
                             Regs.A = RES_8BIT(6, Regs.A);
                             break;
-                        /*TODO*///case 0xB8:
-/*TODO*///  /*      RES 7,B */
-/*TODO*///
-/*TODO*///  RES_8BIT (7, Regs.b.B)
-/*TODO*///  break;
-/*TODO*///case 0xB9:
-/*TODO*///  /*      RES 7,C */
-/*TODO*///
-/*TODO*///  RES_8BIT (7, Regs.b.C)
-/*TODO*///  break;
-/*TODO*///case 0xBA:
-/*TODO*///  /*      RES 7,D */
-/*TODO*///
-/*TODO*///  RES_8BIT (7, Regs.b.D)
-/*TODO*///  break;
-/*TODO*///case 0xBB:
-/*TODO*///  /*      RES 7,E */
-/*TODO*///
-/*TODO*///  RES_8BIT (7, Regs.b.E)
-/*TODO*///  break;
-/*TODO*///case 0xBC:
-/*TODO*///  /*      RES 7,H */
-/*TODO*///
-/*TODO*///  RES_8BIT (7, Regs.b.H)
-/*TODO*///  break;
-/*TODO*///case 0xBD:
-/*TODO*///  /*      RES 7,L */
-/*TODO*///
-/*TODO*///  RES_8BIT (7, Regs.b.L)
-/*TODO*///  break;
+                        case 0xB8:
+                            /*      RES 7,B */
+                            Regs.B = RES_8BIT(7, Regs.B);
+                            break;
+                        case 0xB9:
+                            /*      RES 7,C */
+                            Regs.C = RES_8BIT(7, Regs.C);
+                            break;
+                        case 0xBA:
+                            /*      RES 7,D */
+                            Regs.D = RES_8BIT(7, Regs.D);
+                            break;
+                        case 0xBB:
+                            /*      RES 7,E */
+                            Regs.E = RES_8BIT(7, Regs.E);
+                            break;
+                        case 0xBC:
+                            /*      RES 7,H */
+                            Regs.H = RES_8BIT(7, Regs.H);
+                            break;
+                        case 0xBD:
+                            /*      RES 7,L */
+                            Regs.L = RES_8BIT(7, Regs.L);
+                            break;
                         case 0xBE: /*      RES 7,(HL) */ {
                             int x1 = mem_ReadByte(HL());
-                            x1 = RES(7, x1);
+                            x1 = RES_8BIT(7, x1);
                             mem_WriteByte(HL(), x1);
                         }
                         break;
                         case 0xBF:
                             /*      RES 7,A */
-                            Regs.A = RES(7, Regs.A);
+                            Regs.A = RES_8BIT(7, Regs.A);
                             break;
                         case 0xC0:
                             /*      SET 0,B */
-                            Regs.B = SET(0, Regs.B);
+                            Regs.B = SET_8BIT(0, Regs.B);
                             break;
                         case 0xC1:
                             /*      SET 0,C */
@@ -2933,13 +2917,13 @@ public class z80gb extends cpuintrfH.cpu_interface {
                         case 0xFE: /*      SET 7,(HL) */ {
 
                             int x1 = mem_ReadByte(HL());
-                            x1 = SET(7, x1);
+                            x1 = SET_8BIT(7, x1);
                             mem_WriteByte(HL(), x1);
                         }
                         break;
                         case 0xFF:
                             /*      SET 7,A */
-                            Regs.A = SET(7, Regs.A);
+                            Regs.A = SET_8BIT(7, Regs.A);
                             break;
                         default:
                             System.out.println("Unsupported CB 0x" + Integer.toHexString(x));
