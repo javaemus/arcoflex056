@@ -47,7 +47,7 @@ public class gb
         private static final int PRIORITY = 7;
         private static final int SPRITE_HEIGHT = 2;
         
-        static char[] bg_zbuf = new char[160];
+        static char[] bg_zbuf = new char[160 * 2];
         
         public static class layer_struct
         {
@@ -104,9 +104,9 @@ public class gb
 
                         layer[0].bgline = bgline;
                         layer[0].bg_map = new UBytePtr(gb_bgdtab);
-                        layer[0].bg_map.inc((bgline << 2) & 0x3E0);
+                        layer[0].bg_map.offset +=((bgline << 2) & 0x3E0);
                         layer[0].gbc_map = new UBytePtr(gbc_bgdtab);
-                        layer[0].gbc_map.inc((bgline << 2) & 0x3E0);
+                        layer[0].gbc_map.offset +=((bgline << 2) & 0x3E0);
                         layer[0].gbc_tiles[0] = new UShortPtr(gb_chrgen, (bgline & 7));
                         layer[0].gbc_tiles[1] = new UShortPtr(gbc_chrgen, (bgline & 7));
                         layer[0].xindex = SCROLLX() >> 3;
@@ -127,9 +127,9 @@ public class gb
 
                         layer[1].bgline = bgline;
                         layer[1].bg_map = new UBytePtr(gb_wndtab);
-                        layer[1].bg_map.inc((bgline << 2) & 0x3E0);
+                        layer[1].bg_map.offset+=((bgline << 2) & 0x3E0);
                         layer[1].gbc_map = new UBytePtr(gbc_wndtab);
-                        layer[1].gbc_map.inc((bgline << 2) & 0x3E0);
+                        layer[1].gbc_map.offset +=((bgline << 2) & 0x3E0);
                         layer[1].gbc_tiles[0] = new UShortPtr(gb_chrgen, (bgline & 7));
                         layer[1].gbc_tiles[1] = new UShortPtr(gbc_chrgen, (bgline & 7));
                         layer[1].xindex = 0;
@@ -308,7 +308,7 @@ public class gb
                 mame_bitmap bitmap = Machine.scrbitmap;
                 int currentScanLine = CURLINE();
 
-                int lcdc = gb_ram.read(LCDC_CONTROL) & 0xff;
+                int lcdc = gb_ram.memory[LCDC_CONTROL] & 0xff;
                 if (isSet(lcdc, BACKGROUND_ENABLE))
                     drawBackground(bitmap, currentScanLine);
                 if (isSet(lcdc, WINDOW_DISPLAY_ENABLE))
@@ -323,9 +323,9 @@ public class gb
         * as specified by wX and wY registers
         */
        private static void drawWindow(mame_bitmap bitmap, int scanLine) {
-           int lcdc = gb_ram.read(LCDC_CONTROL)&0xff;
-           int wX = gb_ram.read(W_X)&0xff;
-           int wY = gb_ram.read(W_Y)&0xff;
+           int lcdc = gb_ram.memory[LCDC_CONTROL]&0xff;
+           int wX = gb_ram.memory[W_X]&0xff;
+           int wY = gb_ram.memory[W_Y]&0xff;
            int tileMapAddress = isSet(lcdc, 6) ? 0x9c00 : 0x9800;
            int tileDataAddress = isSet(lcdc, 4) ? 0x8000 : 0x9000;
            boolean signedIndex = !isSet(lcdc, 4);
@@ -340,10 +340,10 @@ public class gb
            int tileLine = (scanLine - wY) % 8;
 
            for (int xTile = 0; xTile <= 20; ++xTile) {
-               int tileIndex = gb_ram.read(tileMapAddress + yOffset + xTile)&0xff;
+               int tileIndex = gb_ram.memory[tileMapAddress + yOffset + xTile]&0xff;
                if (gbcMode){
-                   //bgTileInfo = memory.readVram(tileMapAddress + yOffset + xTile, 1);
-                   bgTileInfo = gb_ram.read((tileMapAddress + yOffset + xTile)- 0x8000);
+                   //bgTileInfo = memory.memoryVram(tileMapAddress + yOffset + xTile, 1);
+                   bgTileInfo = gb_ram.memory[(tileMapAddress + yOffset + xTile)- 0x8000];
                } else {
                    bgTileInfo = 0;
                }
@@ -368,18 +368,18 @@ public class gb
     private static void drawWindowTile(mame_bitmap bitmap, int tileAddress, int line, int xPos, int yPos, int bgTileInfo) {
         int paletteAddress = 0xff47;
 
-        int pixByteA = gb_ram.read(tileAddress + (2 * line))&0xff;
-        int pixByteB = gb_ram.read(tileAddress + (2 * line) + 1)&0xff;
+        int pixByteA = gb_ram.memory[tileAddress + (2 * line)]&0xff;
+        int pixByteB = gb_ram.memory[tileAddress + (2 * line) + 1]&0xff;
 //System.out.println("paletteAddress ANTES="+paletteAddress);
         if (gbcMode) {
             //set correct GBC tile info
             paletteAddress = bgTileInfo & 0x7;
             //System.out.println("paletteAddress DESPUES="+paletteAddress);
             int bankNum = isSet(bgTileInfo, 3) ? 1 : 0;
-            //pixByteA = memory.readVram(tileAddress + (2 * line), bankNum);
-            pixByteA = gb_ram.read((tileAddress + (2 * line))- 0x8000);
-            //pixByteB = memory.readVram(tileAddress + (2 * line) + 1, bankNum);
-            pixByteB = gb_ram.read((tileAddress + (2 * line) + 1)- 0x8000);
+            //pixByteA = memory.memoryVram(tileAddress + (2 * line), bankNum);
+            pixByteA = gb_ram.memory[(tileAddress + (2 * line))- 0x8000];
+            //pixByteB = memory.memoryVram(tileAddress + (2 * line) + 1, bankNum);
+            pixByteB = gb_ram.memory[(tileAddress + (2 * line) + 1)- 0x8000];
         }
 
         //draw each pixel in the line
@@ -441,16 +441,16 @@ public class gb
         } else {
             offset = 2 * (sprite_line - 1);
         }
-        int pixDataA = gb_ram.read(address + offset)&0xff;
-        int pixDataB = gb_ram.read(address + offset + 1)&0xff;
+        int pixDataA = gb_ram.memory[address + offset]&0xff;
+        int pixDataB = gb_ram.memory[address + offset + 1]&0xff;
 
         if (gbcMode) {
             paletteAddress = flags & 0x7;
             int bankNum = isSet(flags, 3) ? 1 : 0;
-            //pixDataA = memory.readVram(address + offset, bankNum);
-            pixDataA = gb_ram.read((address + offset)- 0x8000);
-            //pixDataB = memory.readVram(address + offset + 1, bankNum);
-            pixDataB = gb_ram.read((address + offset + 1)- 0x8000);
+            //pixDataA = memory.memoryVram(address + offset, bankNum);
+            pixDataA = gb_ram.memory[(address + offset)- 0x8000];
+            //pixDataB = memory.memoryVram(address + offset + 1, bankNum);
+            pixDataB = gb_ram.memory[(address + offset + 1)- 0x8000];
         }
 
         for (int pix = 0; pix < 8; ++pix) {
@@ -471,10 +471,11 @@ public class gb
         
         public static void drawBackground(mame_bitmap bitmap, int scanLine){
             
-                int lcdc = gb_ram.read(LCDC_CONTROL) & 0xFF;
+                int lcdc = gb_ram.memory[LCDC_CONTROL] & 0xFF;
                 int tileMapAddress = isSet(lcdc, 3) ? 0x9c00 : 0x9800;
-                int scY = gb_ram.read(SC_Y) & 0xFF;
-                int scX = gb_ram.read(SC_X) & 0xFF;
+                //int tileMapAddress = 0x9800;
+                int scY = gb_ram.memory[SC_Y] & 0xFF;
+                int scX = gb_ram.memory[SC_X] & 0xFF;
                 int tileDataAddress = isSet(lcdc, 4) ? 0x8000 : 0x9000;
                 boolean signedIndex = !isSet(lcdc, 4);
 
@@ -495,11 +496,11 @@ public class gb
                 for (int xTile = 0; xTile <= 20; ++xTile) {
                     int xOffset = (xTile + (scX / 8)) % 32;
                     //byte tileIndex = (byte)memory.readVram(tileMapAddress + yOffset + xOffset, 0);
-                    int tileIndex = (gb_ram.read(tileMapAddress + yOffset + xOffset))&0xFF;
+                    int tileIndex = (gb_ram.memory[tileMapAddress + yOffset + xOffset])&0xFF;
                     int bgTileInfo;
                     if (gbcMode){
                         //bgTileInfo = memory.readVram(tileMapAddress + yOffset + xOffset, 1);
-                        bgTileInfo = gb_ram.read((tileMapAddress + yOffset + xOffset)- 0x8000);
+                        bgTileInfo = gb_ram.memory[(tileMapAddress + yOffset + xOffset)- 0x8000];
                     } else {
                         bgTileInfo = 0;
                     }
@@ -527,11 +528,11 @@ public class gb
         public static void drawTile(mame_bitmap bitmap, int tileAddress, int line, int xPos, int yPos, int pixStart, int pixEnd, int bgTileInfo) {
             int paletteAddress = 0xff47;
             
-            int wX = (gb_ram.read(W_X) & 0xff) - 7;
-            int wY = gb_ram.read(W_Y) & 0xff;
-            boolean windowDrawn = isSet(gb_ram.read(LCDC_CONTROL)&0xff, WINDOW_DISPLAY_ENABLE);
-            int pixByteA = gb_ram.read(tileAddress + (2 * line))&0xff;
-            int pixByteB = gb_ram.read(tileAddress + (2 * line) + 1)&0xff;
+            int wX = (gb_ram.memory[W_X] & 0xff) - 7;
+            int wY = gb_ram.memory[W_Y] & 0xff;
+            boolean windowDrawn = isSet(gb_ram.memory[LCDC_CONTROL]&0xff, WINDOW_DISPLAY_ENABLE);
+            int pixByteA = gb_ram.memory[tileAddress + (2 * line)]&0xff;
+            int pixByteB = gb_ram.memory[tileAddress + (2 * line) + 1]&0xff;
 
             if (gbcMode) {
                 
@@ -542,10 +543,10 @@ public class gb
                 }
                 paletteAddress = bgTileInfo & 0x7;
                 int bankNum = isSet(bgTileInfo, 3) ? 1 : 0;
-                //pixByteA = memory.readVram(tileAddress + (2 * line), bankNum);
-               // pixByteA = gb_ram.read((tileAddress + (2 * line))- 0x8000);
-                //pixByteB = memory.readVram(tileAddress + (2 * line) + 1, bankNum);
-               // pixByteB = gb_ram.read((tileAddress + (2 * line) + 1)- 0x8000);
+                //pixByteA = memory.memoryVram(tileAddress + (2 * line), bankNum);
+               // pixByteA = gb_ram.memory((tileAddress + (2 * line))- 0x8000);
+                //pixByteB = memory.memoryVram(tileAddress + (2 * line) + 1, bankNum);
+               // pixByteB = gb_ram.memory((tileAddress + (2 * line) + 1)- 0x8000);
             }
 
             //draw each pixel in the line

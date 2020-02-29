@@ -222,10 +222,13 @@ public static _refresh_scanline refresh_scanline = gb_refresh_scanline;
                 gb_w_io.handler( 0x77, 0x00 );
 
                 /* Are we in colour or mono mode? */
-                if( gb_ram.read(0x143) == 0x80 || gb_ram.read(0x143) == 0xC0 )
+                if( gb_ram.read(0x143) == 0x80 || gb_ram.read(0x143) == 0xC0 ){
                         gbc_mode = GBC_MODE_GBC;
-                else
+                        System.out.println("Mode COLOR");
+                } else {
                         gbc_mode = GBC_MODE_MONO;
+                        System.out.println("Mode MONO");
+                }
 
                 /* HDMA disabled */
                 gbc_hdma_enabled = 0;
@@ -1151,7 +1154,7 @@ public static _refresh_scanline refresh_scanline = gb_refresh_scanline;
                 }
                 
                 //System.out.println("MBCType: "+MBCType);
-                gbcMode = ((gb_ram.read(0x0143)&0xff) != 0x0);
+                //gbcMode = ((gb_ram.read(0x0143)&0xff) != 0x0);
                 System.out.println("Color: "+gbcMode);
 
                 if (( CartType & UNKNOWN ) != 0)
