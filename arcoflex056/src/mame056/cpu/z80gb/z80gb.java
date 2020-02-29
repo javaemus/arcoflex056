@@ -1,6 +1,5 @@
 package mame056.cpu.z80gb;
 
-import static mame056.cpu.z80gb.daa_tabH.DAATable;
 import static mame056.cpu.z80gb.opc_mainH.*;
 import static mame056.cpu.z80gb.z80gbH.*;
 import mame056.cpuintrfH;
@@ -696,7 +695,6 @@ public class z80gb extends cpuintrfH.cpu_interface {
         }
     }
 
-
     @Override
     public int execute(int cycles) {
         int/*UINT8*/ x;
@@ -875,10 +873,37 @@ public class z80gb extends cpuintrfH.cpu_interface {
                     Regs.H = mem_ReadByte(Regs.PC);/*	   LD H,n8 */
                     Regs.PC = (Regs.PC + 1) & 0xFFFF;
                     break;
-                case 0x27:
-                    /*	   DAA */
-                    AF(DAATable[(((Regs.F & (FLAG_N | FLAG_C | FLAG_H)) & 0xFFFF) << 4) | Regs.A]);
-                    break;
+                case 0x27: /*	   DAA */ {
+                    int tmp = Regs.A;
+
+                    if ((Regs.F & FLAG_N) == 0) {
+                        if ((Regs.F & FLAG_H) != 0 || (tmp & 0x0F) > 9) {
+                            tmp += 6;
+                        }
+                        if ((Regs.F & FLAG_C) != 0 || tmp > 0x9F) {
+                            tmp += 0x60;
+                        }
+                    } else {
+                        if ((Regs.F & FLAG_H) != 0) {
+                            tmp -= 6;
+                            if ((Regs.F & FLAG_C) == 0) {
+                                tmp &= 0xFF;
+                            }
+                        }
+                        if ((Regs.F & FLAG_C) != 0) {
+                            tmp -= 0x60;
+                        }
+                    }
+                    Regs.F = (Regs.F & ~(FLAG_H | FLAG_Z)) & 0xFF;
+                    if ((tmp & 0x100) != 0) {
+                        Regs.F |= FLAG_C;
+                    }
+                    Regs.A = tmp & 0xFF;
+                    if (Regs.A == 0) {
+                        Regs.F |= FLAG_Z;
+                    }
+                }
+                break;
                 case 0x28:
                     if ((Regs.F & FLAG_Z) != 0) /*	   JR Z,n8 */ {
                         byte offset;
