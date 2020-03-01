@@ -1,23 +1,6 @@
 package mame056.cpu.z80gb;
 
-import static mame056.cpu.z80gb.daa_tabH.DAATable;
-import static mame056.cpu.z80gb.z80gbH.*;
 import static mame056.cpu.z80gb.z80gb.*;
-import mame056.cpuintrfH;
-import static mame056.cpuintrfH.*;
-import mame056.cpuintrfH.irqcallbacksPtr;
-import static mame056.memory.cpu_readmem16;
-import static mame056.memory.cpu_setOPbase16;
-import static mame056.memory.cpu_writemem16;
-import static mame056.memoryH.change_pc16;
-import static mess056.machine.gbH.IFLAGS;
-import static mess056.machine.gbH.ISWITCH;
-import static mess056.machine.gbH.TIMEFRQ;
-import static mess056.machine.gbH.TIMEMOD;
-import static mess056.machine.gbH.TIM_IFLAG;
-import static mess056.machine.gbH.gb_divcount;
-import static mess056.machine.gbH.gb_timer_count;
-import static mess056.machine.gbH.gb_timer_shift;
 
 public class opc_mainH {
     
