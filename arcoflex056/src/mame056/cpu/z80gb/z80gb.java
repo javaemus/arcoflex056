@@ -433,17 +433,19 @@ public class z80gb extends cpuintrfH.cpu_interface {
         return r;
     }
 
-    public static int DEC_8BIT(int r) {
-        r = (r - 1) & 0xFF;
+    public static int DEC_8BIT(int x) {
+        //uint8_t r,f; \
+        x = (x - 1) & 0xFF;
+        int r = (x);
         int f = ((Regs.F & FLAG_C) | FLAG_N) & 0xFF;
         if (r == 0) {
             f |= FLAG_Z;
         }
-        if ((r & 0xF) == 0) {
+        if ((r & 0xF) == 0xF) {
             f |= FLAG_H;
         }
         Regs.F = f & 0xFF;
-        return r;
+        return x;
     }
 
     public static void OR_A_X(int value) {
@@ -594,8 +596,8 @@ public class z80gb extends cpuintrfH.cpu_interface {
     }
 
     public static int RLC_8BIT(int x) {
-        int f;
-        (x) = (((x) << 1) | ((x) >> 7));
+        int /*uint8_t*/ f;
+        (x) = (((x) << 1) | ((x) >> 7)) & 0xFF;
         if (((x) & 1) != 0) {
             f = FLAG_C;
         } else {
@@ -604,7 +606,7 @@ public class z80gb extends cpuintrfH.cpu_interface {
         if ((x) == 0) {
             f |= FLAG_Z;
         }
-        Regs.F = f;
+        Regs.F = f & 0xFF;
         return x;
     }
 
@@ -678,12 +680,11 @@ public class z80gb extends cpuintrfH.cpu_interface {
         } else {
             f = 0;
         }
-        (x) = (((char) (x)) >> 1) & 0xff;
+        (x) = (((byte) (x)) >> 1) & 0xFF;
         if ((x) == 0) {
             f |= FLAG_Z;
         }
-        Regs.F = f;
-
+        Regs.F = f & 0xFF;
         return x;
     }
 
@@ -764,16 +765,14 @@ public class z80gb extends cpuintrfH.cpu_interface {
                     Regs.C = mem_ReadByte(Regs.PC);/*	   LD C,n8 */
                     Regs.PC = (Regs.PC + 1) & 0xFFFF;
                     break;
-                case 0x0F:
-                    /*	   RRCA */
-
-                    Regs.A = ((Regs.A >> 1) | (Regs.A << 7)) & 0xff;
+                case 0x0F: /*	   RRCA */ {
+                    Regs.A = ((Regs.A >> 1) | (Regs.A << 7)) & 0xFF;
+                    Regs.F = 0;
                     if ((Regs.A & 0x80) != 0) {
                         Regs.F |= FLAG_C;
-                    } else {
-                        Regs.F = 0;
                     }
-                    break;
+                }
+                break;
                 case 0x10:
                     /*	   STOP */
                     break;
@@ -1648,34 +1647,28 @@ public class z80gb extends cpuintrfH.cpu_interface {
                     Regs.PC = (Regs.PC + 1) & 0xFFFF;
                     ICycles += CyclesCB[x];
                     switch (x) {
-                        /*TODO*///case 0x00:
-/*TODO*///  /*      RLC B */
-/*TODO*///
-/*TODO*///  RLC_8BIT (Regs.b.B)
-/*TODO*///  break;
-/*TODO*///case 0x01:
-/*TODO*///  /*      RLC C */
-/*TODO*///
-/*TODO*///  RLC_8BIT (Regs.b.C)
-/*TODO*///  break;
+                        case 0x00:
+                            /*      RLC B */
+                            Regs.B = RLC_8BIT(Regs.B);
+                            break;
+                        case 0x01:
+                            /*      RLC C */
+                            Regs.C = RLC_8BIT(Regs.C);
+                            break;
                         case 0x02:
                             /*      RLC D */
-
                             Regs.D = RLC_8BIT(Regs.D);
                             break;
                         case 0x03:
                             /*      RLC E */
-
                             Regs.E = RLC_8BIT(Regs.E);
                             break;
                         case 0x04:
                             /*      RLC H */
-
                             Regs.H = RLC_8BIT(Regs.H);
                             break;
                         case 0x05:
                             /*      RLC L */
-
                             Regs.L = RLC_8BIT(Regs.L);
                             break;
                         case 0x06:
