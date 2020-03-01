@@ -985,15 +985,19 @@ public class z80gb extends cpuintrfH.cpu_interface {
                 }
                 break;
                 case 0x35: /*	   DEC (HL) */ {
-                    int /*UINT8*/ r, f;
+                    int addr = HL();
+                    int r, f;
+
                     f = ((Regs.F & FLAG_C) | FLAG_N) & 0xFF;
-                    r = (mem_ReadByte(HL()) - 1) & 0xFF;
-                    mem_WriteByte(HL(), r);
+                    r = mem_ReadByte(addr);
+                    r = (r - 1) & 0xFF;
+                    mem_WriteByte(addr, r);
+
                     if (r == 0) {
                         f |= FLAG_Z;
                     }
 
-                    if ((r & 0xF) != 0xF) {
+                    if ((r & 0xF) == 0xF) {
                         f |= FLAG_H;
                     }
 
@@ -1436,9 +1440,7 @@ public class z80gb extends cpuintrfH.cpu_interface {
                     break;
                 case 0x9E:
                     /*	   SBC A,(HL) */
-
                     x = mem_ReadByte(HL());
-
                     SBC_A_X(x);
                     break;
                 case 0x9F:
@@ -1790,8 +1792,8 @@ public class z80gb extends cpuintrfH.cpu_interface {
                             break;
                         case 0x1E: /*      RR (HL) */ {
                             int x1 = mem_ReadByte(HL());
-                            RR_8BIT(x1);
-                            mem_WriteByte(HL(), x);
+                            x1 = RR_8BIT(x1);
+                            mem_WriteByte(HL(), x1);
                         }
                         break;
                         case 0x1F:
@@ -1912,8 +1914,8 @@ public class z80gb extends cpuintrfH.cpu_interface {
                             break;
                         case 0x36: /*      SWAP (HL) */ {
                             int x1 = mem_ReadByte(HL());
-                            SWAP_8BIT(x1);
-                            mem_WriteByte(HL(), x);
+                            x1 = SWAP_8BIT(x1);
+                            mem_WriteByte(HL(), x1);
                         }
                         break;
                         case 0x37:
@@ -1951,8 +1953,8 @@ public class z80gb extends cpuintrfH.cpu_interface {
                         case 0x3E: /*      SRL (HL) */ {
 
                             int x1 = mem_ReadByte(HL());
-                            SRL_8BIT(x1);
-                            mem_WriteByte(HL(), x);
+                            x1 = SRL_8BIT(x1);
+                            mem_WriteByte(HL(), x1);
                         }
                         break;
                         case 0x3F:
@@ -3068,8 +3070,9 @@ public class z80gb extends cpuintrfH.cpu_interface {
                         Regs.PC = (Regs.PC + 2) & 0xFFFF;
                     }
                     break;
-                /*TODO*///case 0xDB: /*	   EH? */
-/*TODO*///  break;
+                case 0xDB:
+                    /*	   EH? */
+                    break;
                 case 0xDC:
                     /*	   CALL C,n16 */
 
@@ -3086,8 +3089,9 @@ public class z80gb extends cpuintrfH.cpu_interface {
                         Regs.PC = (Regs.PC + 2) & 0xFFFF;
                     }
                     break;
-                /*TODO*///case 0xDD: /*	   EH? */
-/*TODO*///  break;
+                case 0xDD:
+                    /*	   EH? */
+                    break;
                 case 0xDE:
                     /*	   SBC A,n8 */
 
