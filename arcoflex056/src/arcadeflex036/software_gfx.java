@@ -16,6 +16,7 @@
  */
 package arcadeflex036;
 
+import static arcadeflex056.settings.current_platform_configuration;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferStrategy;
@@ -90,8 +91,12 @@ public class software_gfx extends java.awt.Frame implements Runnable, ImageProdu
         }
         return temp;
     }
-
+    
+    
     public synchronized void blit() {
+        
+        current_platform_configuration.get_software_gfx_class().blit();
+        
         if (this._consumer != null)/* Check consumer. */ {
             /* Set dimensions. */
             this._consumer.setDimensions(this._width, this._height);

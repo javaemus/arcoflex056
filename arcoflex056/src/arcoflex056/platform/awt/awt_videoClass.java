@@ -5,12 +5,29 @@
  */
 package arcoflex056.platform.awt;
 
-import arcoflex056.platform.platformConfigurator;
+import static arcoflex056.platform.platformConfigurator.*;
+
+import java.awt.Toolkit;
 
 /**
  *
  * @author chusogar
  */
-public class awt_videoClass implements platformConfigurator.i_video_class{
+public class awt_videoClass implements i_video_class {
+
+    @Override
+    public double getWidth() {
+        java.awt.Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+        
+        return d.getWidth();
+    }
+
+    @Override
+    public double getHeight() {
+        java.awt.Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+        
+        return d.getHeight();
+    }
     
+        
 }

@@ -17,9 +17,11 @@ import static arcadeflex056.osdepend.logerror;
 import arcadeflex036.software_gfx;
 import static arcadeflex036.sound.update_audio;
 import static arcadeflex056.dirtyH.MARKDIRTY;
+import static arcadeflex056.settings.current_platform_configuration;
 import static common.libc.cstdio.sprintf;
 import common.libc.ctime;
 import static common.libc.ctime.*;
+import java.awt.Color;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -2968,9 +2970,11 @@ public static int osd_allocate_colors(int totalcolors,char[] palette,int[] rgb_c
     
     static int onlyone = 0;
     
+    
     public static void tempCreation() {
+        //current_platform_configuration.get_video_class().tempCreation();
         /*part of the old arcadeflex_old emulator probably need refactoring */
-        Dimension localDimension = Toolkit.getDefaultToolkit().getScreenSize();
+        //Dimension localDimension = current_platform_configuration.get_video_class().getDimension();
         if (onlyone == 0) {
             //kill loading window
             osdepend.dlprogress.setVisible(false);
@@ -2980,10 +2984,10 @@ public static int osd_allocate_colors(int totalcolors,char[] palette,int[] rgb_c
             //screen.setSize((scanlines==1),width,height);//this???
             
             screen.setSize((scanlines == 0), Machine.scrbitmap.width, Machine.scrbitmap.height);
-            screen.setBackground(Color.black);
+            screen.setBackground(Color.BLACK);
             screen.start();
             screen.run();
-            screen.setLocation((int) ((localDimension.getWidth() - screen.getWidth()) / 2.0D), (int) ((localDimension.getHeight() - screen.getHeight()) / 2.0D));
+            screen.setLocation((int) ((current_platform_configuration.get_video_class().getWidth() - screen.getWidth()) / 2.0D), (int) ((current_platform_configuration.get_video_class().getHeight() - screen.getHeight()) / 2.0D));
             screen.setVisible(true);
             screen.setResizable((scanlines == 1));
 
