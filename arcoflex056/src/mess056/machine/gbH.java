@@ -23,6 +23,7 @@ public class gbH
         public static final int SIO_INT = 3;
         public static final int EXT_INT = 4;
 
+        public static final int NONE  = 0;
         public static final int MBC1  = 1;
         public static final int MBC2  = 2;
         public static final int MBC3  = 3;
@@ -94,7 +95,7 @@ public class gbH
         public static int[] sgb_pal_data = new int[4096];	/* 512 palettes of 4 colours			*/
         public static int[][] sgb_pal_map = new int[20][18];	/* Palette tile map						*/
         public static UBytePtr sgb_tile_data;		/* 256 tiles of 32 bytes each			*/
-        public static int[] sgb_tile_map = new int[2048];	/* 32x32 tile map data (0-tile,1-attribute)	*/
+        public static UBytePtr sgb_tile_map = new UBytePtr(2048);	/* 32x32 tile map data (0-tile,1-attribute)	*/
         public static int sgb_window_mask;		/* Current GB screen mask				*/
         public static int sgb_hack;				/* Flag set if we're using a hack		*/
         

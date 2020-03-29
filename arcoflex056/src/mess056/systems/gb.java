@@ -282,7 +282,7 @@ public class gb
 		},
 		60, 0,	/* frames per second, vblank duration */
 		1,
-		gb_init_machine,
+		machine_init_gb,
 		gb_shutdown_machine,	/* shutdown machine */
 	
 		/* video hardware (double size) */
@@ -295,9 +295,9 @@ public class gb
 	
 		VIDEO_TYPE_RASTER,
 		null,
-		gb_vh_start,					/* vh_start */
-                gb_vh_stop,                     /* vh_stop */
-		gb_vh_screen_refresh,
+		generic_bitmapped_vh_start,					/* vh_start */
+                generic_bitmapped_vh_stop,                     /* vh_stop */
+		generic_bitmapped_vh_screenrefresh, //gb_vh_screen_refresh,
 	
 		/* sound hardware */
 		0,0,0,0,
@@ -319,7 +319,7 @@ public class gb
 		},
 		60, 0,	/* frames per second, vblank duration */
 		1,
-		sgb_init_machine,
+		machine_init_sgb,
 		gb_shutdown_machine,	/* shutdown machine */
 	
 		/* video hardware (double size) */
@@ -332,9 +332,9 @@ public class gb
 	
 		VIDEO_TYPE_RASTER,
 		null,
-		gb_vh_start,					/* vh_start */
-                gb_vh_stop,                     /* vh_stop */
-		gb_vh_screen_refresh,
+		generic_bitmapped_vh_start,					/* vh_start */
+                generic_bitmapped_vh_stop,                     /* vh_stop */
+		generic_bitmapped_vh_screenrefresh, //gb_vh_screen_refresh,
 	
 		/* sound hardware */
 		0,0,0,0,
@@ -356,7 +356,7 @@ public class gb
 		},
 		60, 0,	/* frames per second, vblank duration */
 		1,
-		gbc_init_machine,
+		machine_init_gbc,
 		gb_shutdown_machine,	/* shutdown machine */
                 /* MDRV_CPU_CONFIG(gbc_cpu_af_reset) */
 		/* video hardware (double size) */
@@ -369,9 +369,9 @@ public class gb
 	
 		VIDEO_TYPE_RASTER,
 		null,
-		gb_vh_start,					/* vh_start */
-                gb_vh_stop,                     /* vh_stop */
-		gb_vh_screen_refresh,
+		generic_bitmapped_vh_start,					/* vh_start */
+                generic_bitmapped_vh_stop,                     /* vh_stop */
+		generic_bitmapped_vh_screenrefresh, //gb_vh_screen_refresh,
 	
 		/* sound hardware */
 		0,0,0,0,

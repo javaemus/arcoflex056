@@ -3,6 +3,8 @@
  */
 package mame056;
 
+import static arcadeflex056.settings.current_platform_configuration;
+import arcoflex056.platform.platformConfigurator;
 import static common.libc.cstring.*;
 import static common.libc.ctime.*;
 import static mame056.inptport.*;
@@ -10,8 +12,6 @@ import static mame056.inptportH.*;
 import static mame056.inputH.*;
 import static mame056.mame.*;
 
-//to refactor
-import static arcadeflex036.input.*;
 
 public class input {
 
@@ -84,7 +84,7 @@ public class input {
     /* Find the osd record of an oscode */
     public static KeyboardInfo internal_oscode_find_keyboard(int oscode) {
         KeyboardInfo[] keyinfo;
-        keyinfo = osd_get_key_list();
+        keyinfo = current_platform_configuration.get_input_class().osd_get_key_list();
         int ptr = 0;
         while (keyinfo[ptr].name != null) {
             if (keyinfo[ptr].code == oscode) {
@@ -161,7 +161,7 @@ public class input {
     /* Find the osd record of a standard code */
     public static KeyboardInfo internal_code_find_keyboard(int code) {
         KeyboardInfo[] keyinfo;
-        keyinfo = osd_get_key_list();
+        keyinfo = current_platform_configuration.get_input_class().osd_get_key_list();
         int ptr = 0;
 
         if (code < __code_max) {
@@ -219,7 +219,7 @@ public class input {
                 case CODE_TYPE_KEYBOARD:
                     keyinfo = internal_code_find_keyboard(code);
                     if (keyinfo != null) {
-                        return osd_is_key_pressed(keyinfo.code);
+                        return current_platform_configuration.get_input_class().osd_is_key_pressed(keyinfo.code);
                     }
                     break;
                 /*TODO*///			case CODE_TYPE_JOYSTICK :
@@ -231,7 +231,7 @@ public class input {
         } else {
             switch (code_map[code].type) {
                 case CODE_TYPE_KEYBOARD:
-                    return osd_is_key_pressed(code_map[code].oscode);
+                    return current_platform_configuration.get_input_class().osd_is_key_pressed(code_map[code].oscode);
                 /*TODO*///			case CODE_TYPE_JOYSTICK :
 /*TODO*///				return osd_is_joy_pressed(code_map[code].oscode);
             }
@@ -268,7 +268,7 @@ public class input {
         /*TODO*///
         /* add only oscode because all standard codes are already present */
 
-        keyinfo = osd_get_key_list();
+        keyinfo = current_platform_configuration.get_input_class().osd_get_key_list();
         while (keyinfo[keyptr].name != null) {
             if (keyinfo[keyptr].standardcode == CODE_OTHER) {
                 if (internal_oscode_find(keyinfo[keyptr].code, CODE_TYPE_KEYBOARD) == CODE_NONE) {
