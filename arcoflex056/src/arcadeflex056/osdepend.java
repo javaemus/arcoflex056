@@ -5,6 +5,9 @@ import static common.libc.cstring.*;
 import static arcadeflex036.ticker.*;
 import static arcadeflex036.config.*;
 import static arcadeflex056.fronthlp.*;
+import static arcadeflex056.settings.current_platform_configuration;
+import arcoflex056.platform.platformConfigurator;
+import arcoflex056.platform.platformConfigurator.i_URLDownloadProgress_class;
 import static mame056.driver.drivers;
 import static mame056.mame.*;
 import static mess056.msdos.load_image;
@@ -19,7 +22,7 @@ public class osdepend {
 	
 	static FILE errorlog=null;
     public static int ignorecfg;
-    public static UrlDownloadProgress dlprogress;
+    public static i_URLDownloadProgress_class dlprogress;
     /* put here anything you need to do when the program is started. Return 0 if */
     /* initialization was successful, nonzero otherwise. */
     static String crcfilename = "";
@@ -99,7 +102,7 @@ public class osdepend {
     
     public static int main (int argc, String[] argv)
     {
-	    	dlprogress = new UrlDownloadProgress();
+	    	dlprogress = current_platform_configuration.get_URLDownloadProgress_class();
 	        dlprogress.setVersion(settings.system_name + " version: " + settings.version);
 	        System.out.println(settings.system_name + " version: " + settings.version);
 	        dlprogress.setVisible(true);

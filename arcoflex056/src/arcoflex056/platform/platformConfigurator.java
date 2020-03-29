@@ -42,7 +42,10 @@ public class platformConfigurator {
     };
 
     public interface i_URLDownloadProgress_class {
-
+        public abstract void setVersion(String _version);
+        public abstract void setVisible(boolean _visible);
+        public abstract void setRomName(String _romName);
+        public abstract void setFileName(String _fileName);
     };
 
     public interface i_video_class {
