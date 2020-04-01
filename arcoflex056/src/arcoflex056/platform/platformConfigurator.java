@@ -55,7 +55,14 @@ public class platformConfigurator {
     };
 
     public interface i_SoundPlayer_class {
-
+        public abstract void createAudioFormat(int stereo);
+        public abstract boolean isLineSupported();
+        public abstract Object getAudioFormat();
+        public abstract void getLine() throws Exception;
+        public abstract void Play();
+        public abstract void Stop();
+        public abstract void write(byte[] waveBuffer, int offset, int length);
+        
     };
 
     public interface i_gamesxml_game_class {

@@ -5,7 +5,8 @@
  */
 package arcadeflex036;
 
-import javax.sound.sampled.*;
+//import javax.sound.sampled.*;
+import static arcadeflex056.settings.current_platform_configuration;
 import static mame056.mame.Machine;
 
 /**
@@ -18,18 +19,12 @@ public class SoundPlayer {
     //private DynamicSoundEffectInstance soundInstance;
     private byte[] waveBuffer;
     int/*uint*/ stream_buffer_size;
-    SourceDataLine m_line;
+    
 
     public SoundPlayer(int sampleRate, int stereo, int framesPerSecond) {
         System.out.println(stereo);
         //soundInstance = new DynamicSoundEffectInstance(sampleRate, stereo ? AudioChannels.Stereo : AudioChannels.Mono);
-        AudioFormat format = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
-                Machine.sample_rate,
-                16,
-                (stereo!=0 ? 2:1),
-                (stereo!=0 ? 4:2),
-                Machine.sample_rate,
-                false);
+        current_platform_configuration.get_SoundPlayer_class().createAudioFormat(stereo);
 
         
         stream_buffer_size = (int) (((long) MAX_BUFFER_SIZE * (long) sampleRate) / 22050);
@@ -42,24 +37,21 @@ public class SoundPlayer {
 
         waveBuffer = new byte[stream_buffer_size];//soundInstance.GetSampleSizeInBytes(TimeSpan.FromMilliseconds(25))];
 
-        System.out.println("frameSize " + format.getFrameSize());
-        DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
-        //DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
+        
 
-        if (!AudioSystem.isLineSupported(info)) {
-            System.err.println("Unsupported audio: " + format);
+        if (!current_platform_configuration.get_SoundPlayer_class().isLineSupported()) {
+            System.err.println("Unsupported audio: " + current_platform_configuration.get_SoundPlayer_class().getAudioFormat());
             return;
         }
 
         try {
-            m_line = (SourceDataLine) AudioSystem.getLine(info);
-            m_line.open(format);
-        } catch (LineUnavailableException lue) {
+            current_platform_configuration.get_SoundPlayer_class().getLine();
+        } catch (Exception lue) {
             System.err.println("Unavailable data line");
             return;
         }
 
-        m_line.start();
+        current_platform_configuration.get_SoundPlayer_class().Play();
         //soundInstance.Play();
     }
 
@@ -72,11 +64,11 @@ public class SoundPlayer {
     }*/
 
     public void Play() {
-        m_line.start();
+        current_platform_configuration.get_SoundPlayer_class().Play();
     }
 
     public void Stop() {
-        m_line.stop();
+        current_platform_configuration.get_SoundPlayer_class().Stop();
     }
 
     public void WriteSample(int index, short sample) {
@@ -89,7 +81,7 @@ public class SoundPlayer {
 
     public void SubmitBuffer(int offset, int length) {
         if(waveBuffer!=null)
-        m_line.write(waveBuffer, offset, length);
+        current_platform_configuration.get_SoundPlayer_class().write(waveBuffer, offset, length);
     }
 
 }
