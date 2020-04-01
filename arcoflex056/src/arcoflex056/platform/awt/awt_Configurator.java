@@ -75,7 +75,7 @@ public class awt_Configurator implements i_platform_configurator {
 
     @Override
     public i_filemngr_class get_filemngr_class() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return current_filemngr_class;
     }
 
         

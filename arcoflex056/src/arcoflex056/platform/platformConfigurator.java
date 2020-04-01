@@ -6,6 +6,7 @@
 package arcoflex056.platform;
 
 import static arcadeflex056.settings.*;
+import java.io.File;
 import mame056.inputH;
 import mame056.inputH.KeyboardInfo;
 
@@ -70,7 +71,11 @@ public class platformConfigurator {
     };
 
     public interface i_filemngr_class {
-
+        public abstract void setCurrentDirectory(java.io.File file);
+        public abstract void setFileFilter(String _supFilesStr, String[] _arrExtensions);
+        public abstract File getCurrentDirectory();
+        public abstract int showOpenDialog(Object obj);
+        public abstract Object getSelectedFile();
     };
     
     public static void ConfigurePlatform(i_platform_configurator platform){

@@ -4,12 +4,10 @@
  */ 
 package mess056;
 
+import static arcadeflex056.settings.current_platform_configuration;
 import static common.libc.cstring.*;
 import java.io.File;
 import java.util.StringTokenizer;
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import static mame056.commonH.*;
 import static mame056.inptportH.*;
 import static mame056.input.*;
@@ -692,9 +690,10 @@ public class filemngr
         
         public static int osd_select_file(int sel, String filename)
 	{
-                javax.swing.JFileChooser jf = new JFileChooser();
+                //javax.swing.JFileChooser jf = new JFileChooser();
+                current_platform_configuration.get_filemngr_class().setCurrentDirectory(new File(osd_get_cwd()));
                 //jf.setCurrentDirectory(new File(osd_get_cwd() + "/" + Machine.gamedrv.name));
-                jf.setCurrentDirectory(new File(osd_get_cwd()));
+                //jf.setCurrentDirectory(new File(osd_get_cwd()));
                 
                 // extensions
                 String _supFilesStr = "Supported Files (";
@@ -712,19 +711,19 @@ public class filemngr
                     _supFilesStr += ")";
                 }
                 
-                FileFilter filter = new FileNameExtensionFilter(_supFilesStr, _arrExtensions);
-                jf.setFileFilter(filter);
-                jf.addChoosableFileFilter(filter);
+                //FileFilter filter = new FileNameExtensionFilter(_supFilesStr, _arrExtensions);
+                current_platform_configuration.get_filemngr_class().setFileFilter(_supFilesStr, _arrExtensions);
+                //jf.addChoosableFileFilter(filter);
                 
-                int option = jf.showOpenDialog(null);
+                int option = current_platform_configuration.get_filemngr_class().showOpenDialog(null);
                 
-                Object selected_file = jf.getSelectedFile();
+                Object selected_file = current_platform_configuration.get_filemngr_class().getSelectedFile();
                 
                 if (option == 0) { // selected file
                     if (selected_file != null){
                         filename = ((File)selected_file).getName().toString();
                         entered_filename = filename;
-                        szCurrentDirectory = jf.getCurrentDirectory().getAbsolutePath();
+                        szCurrentDirectory = current_platform_configuration.get_filemngr_class().getCurrentDirectory().getAbsolutePath();
                         System.out.println("Loading "+szCurrentDirectory+"/"+filename);
                         
                         return 1;
