@@ -21,15 +21,6 @@ import static arcadeflex056.settings.current_platform_configuration;
 import static common.libc.cstdio.sprintf;
 import common.libc.ctime;
 import static common.libc.ctime.*;
-import java.awt.Color;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Toolkit;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.KeyEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import static java.lang.Math.pow;
 import mame056.commonH.mame_bitmap;
 import static mame056.inptportH.*;
@@ -2972,47 +2963,15 @@ public static int osd_allocate_colors(int totalcolors,char[] palette,int[] rgb_c
     
     
     public static void tempCreation() {
+        
+        current_platform_configuration.get_video_class().tempCreation();
         //current_platform_configuration.get_video_class().tempCreation();
         /*part of the old arcadeflex_old emulator probably need refactoring */
         //Dimension localDimension = current_platform_configuration.get_video_class().getDimension();
         if (onlyone == 0) {
             //kill loading window
             osdepend.dlprogress.setVisible(false);
-            screen = new software_gfx(settings.version + " (based on mame v" + build_version + ")");
-            screen.pack();
-            //screen.setSize((scanlines==1),gfx_width,gfx_height);//this???
-            //screen.setSize((scanlines==1),width,height);//this???
             
-            screen.setSize((scanlines == 0), Machine.scrbitmap.width, Machine.scrbitmap.height);
-            screen.setBackground(Color.BLACK);
-            screen.start();
-            screen.run();
-            screen.setLocation((int) ((current_platform_configuration.get_video_class().getWidth() - screen.getWidth()) / 2.0D), (int) ((current_platform_configuration.get_video_class().getHeight() - screen.getHeight()) / 2.0D));
-            screen.setVisible(true);
-            screen.setResizable((scanlines == 1));
-
-            screen.addWindowListener(new WindowAdapter() {
-
-                public void windowClosing(WindowEvent evt) {
-                    screen.readkey = KeyEvent.VK_ESCAPE;
-                    screen.key[KeyEvent.VK_ESCAPE] = true;
-                    osd_refresh();
-                    if (screen != null) {
-                        screen.key[KeyEvent.VK_ESCAPE] = false;
-                    }
-                }
-            });
-
-            screen.addComponentListener(new ComponentAdapter() {
-
-                public void componentResized(ComponentEvent evt) {
-                    screen.resizeVideo();
-                }
-            });
-
-            screen.addKeyListener(screen);
-            screen.setFocusTraversalKeysEnabled(false);
-            screen.requestFocus();
             onlyone = 1;//big hack!!
         }
     }

@@ -39,7 +39,12 @@ public class platformConfigurator {
     };
 
     public interface i_software_gfx_class {
+        public abstract void setTitle(String title);
         public abstract void blit();
+        public abstract void initScreen();
+        public abstract void setSize(boolean scanlines, int width, int height);
+        public abstract void run();
+        public abstract void reint();
     };
 
     public interface i_URLDownloadProgress_class {
@@ -52,6 +57,7 @@ public class platformConfigurator {
     public interface i_video_class {
         public abstract double getWidth();
         public abstract double getHeight();
+        public abstract void tempCreation();
     };
 
     public interface i_SoundPlayer_class {

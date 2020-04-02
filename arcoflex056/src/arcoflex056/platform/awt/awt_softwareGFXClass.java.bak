@@ -57,7 +57,7 @@ public class awt_softwareGFXClass extends java.awt.Frame implements Runnable, Im
             //screen.setSize((scanlines==1),gfx_width,gfx_height);//this???
             //screen.setSize((scanlines==1),width,height);//this???
             
-            screen.setSize((scanlines == 0), Machine.scrbitmap.width, Machine.scrbitmap.height);
+            this.setSize((scanlines == 0), Machine.scrbitmap.width, Machine.scrbitmap.height);
             _width = Machine.scrbitmap.width;
             _height = Machine.scrbitmap.height;
             this.setBackground(Color.BLACK);

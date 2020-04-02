@@ -241,6 +241,9 @@ public class blit {
                            //     screen._pixels[x + (y * w)] = palette[(back_buffer[sbi + x + (y * w)])];
                             
                             //} else {
+                        
+                        
+                        
                                 
                                 screen._pixels[x + (y * w)] = palette[(back_buffer[sbi + x + (y * w)])];
                                 
