@@ -23,9 +23,6 @@ public class awt_Configurator implements i_platform_configurator {
     public awt_urlDownloadProgress current_awt_urlDownloadProgress_class = new awt_urlDownloadProgress();
     public awt_videoClass current_awt_video_class = new awt_videoClass();
     public awt_SoundPlayerClass current_awt_SoundPlayer_class = new awt_SoundPlayerClass();
-    public awt_gamesxml_gameClass current_awt_gamesxml_game_class = new awt_gamesxml_gameClass();
-    public awt_gamesxml_gameRootClass current_awt_gamesxml_gameRoot_class = new awt_gamesxml_gameRootClass();
-    public awt_gamesxml_gamesXmlParserClass current_gamesxml_gamesXmlParser_class = new awt_gamesxml_gamesXmlParserClass();
     public awt_filemngrClass current_filemngr_class = new awt_filemngrClass();
     
     @Override
@@ -56,21 +53,6 @@ public class awt_Configurator implements i_platform_configurator {
     @Override
     public i_SoundPlayer_class get_SoundPlayer_class() {
         return current_awt_SoundPlayer_class;
-    }
-
-    @Override
-    public i_gamesxml_game_class get_gamesxml_game_class() {
-        return current_awt_gamesxml_game_class;
-    }
-
-    @Override
-    public i_gamesxml_gameRoot_class get_gamesxml_gameRoot_class() {
-        return current_awt_gamesxml_gameRoot_class;
-    }
-
-    @Override
-    public i_gamesxml_gamesXmlParser_class get_gamesxml_gamesXmlParser_class() {
-        return current_gamesxml_gamesXmlParser_class;
     }
 
     @Override

@@ -48,9 +48,9 @@ public class awt_softwareGFXClass extends java.awt.Frame implements Runnable, Im
         super();
     }
     
-    public void setTitle(String title){
-        //this.setTitle(title);
-    }
+    /*public void setTitle(String title){
+        this.setTitle(title);
+    }*/
     
     public void initScreen(){
         this.pack();

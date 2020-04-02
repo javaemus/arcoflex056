@@ -25,9 +25,6 @@ public class platformConfigurator {
         public i_URLDownloadProgress_class get_URLDownloadProgress_class();
         public i_video_class get_video_class();
         public i_SoundPlayer_class get_SoundPlayer_class();
-        public i_gamesxml_game_class get_gamesxml_game_class();
-        public i_gamesxml_gameRoot_class get_gamesxml_gameRoot_class();
-        public i_gamesxml_gamesXmlParser_class get_gamesxml_gamesXmlParser_class();
         public i_filemngr_class get_filemngr_class();
         
     };
@@ -69,18 +66,6 @@ public class platformConfigurator {
         public abstract void Stop();
         public abstract void write(byte[] waveBuffer, int offset, int length);
         
-    };
-
-    public interface i_gamesxml_game_class {
-
-    };
-
-    public interface i_gamesxml_gameRoot_class {
-
-    };
-
-    public interface i_gamesxml_gamesXmlParser_class {
-
     };
 
     public interface i_filemngr_class {
