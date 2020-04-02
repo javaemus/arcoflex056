@@ -103,8 +103,8 @@ public class osdepend {
     public static int main (int argc, String[] argv)
     {
 	    	dlprogress = current_platform_configuration.get_URLDownloadProgress_class();
-	        dlprogress.setVersion(settings.system_name + " version: " + settings.version);
-	        System.out.println(settings.system_name + " version: " + settings.version);
+	        dlprogress.setVersion(settings.system_name + " version: " + settings.version + " " + current_platform_configuration.getPlatformName() + " platform");
+	        System.out.println(settings.system_name + " version: " + settings.version + " " + current_platform_configuration.getPlatformName() + " platform");
 	        dlprogress.setVisible(true);
 	        int res=0, i, j = 0, game_index;
 	        String playbackname = "";
