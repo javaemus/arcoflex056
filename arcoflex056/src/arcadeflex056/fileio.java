@@ -4,6 +4,7 @@
 package arcadeflex056;
 
 import static arcadeflex056.osdepend.*;
+import static arcadeflex056.settings.installationDir;
 import static common.ptr.*;
 import static common.util.*;
 import static common.libc.cstdio.*;
@@ -470,17 +471,17 @@ public class fileio {
 /*TODO*///			pathv = samplepathv;
 /*HACK*/ pathc = 1;
                     /*HACK*/ pathv = new String[1];
-                    /*HACK*/ pathv[0] = "samples";
+                    /*HACK*/ pathv[0] = installationDir+"samples";
                 } else {
                     /*TODO*///			LOG(("osd_fopen: using rompath\n"));
 /*TODO*///			pathc = rompathc;
 /*TODO*///			pathv = rompathv;
 /*HACK*/ pathc = 1;
                     /*HACK*/ pathv = new String[1];
-                    /*HACK*/ pathv[0] = "roms";
+                    /*HACK*/ pathv[0] = installationDir+"roms";
                     
                     if (settings.MESS)
-                        pathv[0] = "bios";
+                        pathv[0] = installationDir+"bios";
                 }
                 for (indx = 0; indx < pathc && found == 0; ++indx) {
                     String dir_name = pathv[indx];
