@@ -5,6 +5,7 @@
 package mess056;
 
 import static arcadeflex056.settings.current_platform_configuration;
+import static arcadeflex056.settings.installationDir;
 import static common.libc.cstring.*;
 import java.io.File;
 import java.util.StringTokenizer;
@@ -921,7 +922,7 @@ public class filemngr
         // OSD METHODS (windows/dirio class)
         public static String osd_get_cwd() {
             if (szCurrentDirectory == null)
-                szCurrentDirectory = "software/" + Machine.gamedrv.name;
+                szCurrentDirectory = installationDir+"software/" + Machine.gamedrv.name;
             
             return szCurrentDirectory;
         }
