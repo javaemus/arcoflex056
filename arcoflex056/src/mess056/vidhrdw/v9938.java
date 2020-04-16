@@ -1167,7 +1167,7 @@ public class v9938
 	
 	static void v9938_refresh_8 (mame_bitmap bmp, int line)
 		{
-                    System.out.println("v9938_refresh_8");
+                    //System.out.println("v9938_refresh_8");
 		int i, double_lines;
 		int[] col=new int[256];
                 UBytePtr ln=null, ln2 = null;
@@ -2477,7 +2477,7 @@ public class v9938
 	public static _vdpEngine HmmmEngine = new _vdpEngine() {
             @Override
             public void handler() {
-                System.out.println("HmmmEngine mode="+ScrMode());
+                //System.out.println("HmmmEngine mode="+ScrMode());
                 //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
                 int SX=MMC.SX;
                 int SY=MMC.SY;

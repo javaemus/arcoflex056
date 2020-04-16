@@ -43,7 +43,7 @@ public class tms34061H {
             public int			dirtychunk;					/* size of dirty chunks (must be power of 2) */
             public irqfuncPtr		interrupt;	/* interrupt gen callback */
 
-        tms34061_interface(int rowshift, int vramsize, int dirtychunk, irqfuncPtr generate_interrupt) {
+        public tms34061_interface(int rowshift, int vramsize, int dirtychunk, irqfuncPtr generate_interrupt) {
             this.rowshift = rowshift;
             this.vramsize = vramsize;
             this.dirtychunk = dirtychunk;

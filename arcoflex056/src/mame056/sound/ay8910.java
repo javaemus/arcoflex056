@@ -55,8 +55,8 @@ public class ay8910 extends snd_interface {
 
     public static final int STEP = 0x8000;
 
-    static int num = 0;
-    static int ay8910_index_ym = 0;/* index of first chip of YM2203's SSG */
+    public static int num = 0;
+    public static int ay8910_index_ym = 0;/* index of first chip of YM2203's SSG */
 
 
     public static class AY8910 {

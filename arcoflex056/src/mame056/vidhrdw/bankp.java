@@ -183,6 +183,7 @@ public class bankp {
      */
     public static VhUpdatePtr bankp_vh_screenrefresh = new VhUpdatePtr() {
         public void handler(mame_bitmap bitmap, int full_refresh) {
+
             int offs;
 
             /* for every character in the Video RAM, check if it has been modified */

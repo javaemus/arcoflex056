@@ -258,7 +258,7 @@ import static WIP.mame056.drivers.mrdo.*;
 
 public class driver {
 
-    public static GameDriver drivers[] = {
+    public static GameDriver driversArcadeFlex[] = {
         /**
          * Working
          */
@@ -4200,4 +4200,6 @@ public class driver {
         /*TODO*///	/* Bang Bead (c) 2000 Visco (prototype) */    
         null
     };
+
+    public static GameDriver[] drivers = driversArcadeFlex;
 }

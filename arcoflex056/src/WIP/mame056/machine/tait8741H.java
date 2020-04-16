@@ -18,10 +18,10 @@ public class tait8741H {
             this.serial_connect = serial_connect;
             this.portHandler_r = portHandler_r;
         }
-        int num;
-        int[] mode;//[MAX_TAITO8741];            /* program select */
-        int[] serial_connect;//[MAX_TAITO8741];	/* serial port connection */
-        ReadHandlerPtr[] portHandler_r; //int (*portHandler_r[MAX_TAITO8741])(int offset); /* parallel port handler */
+        public int num;
+        public int[] mode;//[MAX_TAITO8741];            /* program select */
+        public int[] serial_connect;//[MAX_TAITO8741];	/* serial port connection */
+        public ReadHandlerPtr[] portHandler_r; //int (*portHandler_r[MAX_TAITO8741])(int offset); /* parallel port handler */
     };
 
 }

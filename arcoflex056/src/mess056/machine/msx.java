@@ -1193,7 +1193,7 @@ public class msx
                     cpu_setbank (1 + page * 2, new UBytePtr(msx1.cart[0].mem, page * 0x4000));
                     cpu_setbank (2 + page * 2, new UBytePtr(msx1.cart[0].mem, page * 0x4000 + 0x2000));
                 } else {
-                    System.out.println("B");
+                    //System.out.println("B");
                     if (page == 0 || page == 3 || msx1.cart[0].mem==null)
                     {
                         //System.out.println("C");
@@ -1207,25 +1207,25 @@ public class msx
                             }
                                     else
                             {
-                                    System.out.println("E");
+                                    //System.out.println("E");
                                     cpu_setbank (1 + page * 2, msx1.empty);
                                     cpu_setbank (2 + page * 2, msx1.empty);
                             }
                             return 1;
                     }
-                    System.out.println("F");
+                    //System.out.println("F");
                     n = (page - 1) * 2;
                     cpu_setbank (3 + n, new UBytePtr(msx1.cart[0].mem, msx1.cart[0].banks[n] * 0x2000));
                     cpu_setbank (4 + n, new UBytePtr(msx1.cart[0].mem, msx1.cart[0].banks[1 + n] * 0x2000));
                             if (page == 1) {
-                                System.out.println("page == 1");
+                                //System.out.println("page == 1");
                                     if (msx1.cart[0].type == 15) {
                                             memory_set_bankhandler_r (4, 0, msx_disk_p1_r);
                                             msx1.disk = new UBytePtr(msx1.cart[0].mem, 0x2000);
                                     }
                             }
                             if (page == 2) {
-                                System.out.println("page == 2 "+msx1.cart[0].type);
+                                //System.out.println("page == 2 "+msx1.cart[0].type);
                                     if (msx1.cart[0].type == 15) {
                                             memory_set_bankhandler_r (6, 0, msx_disk_p2_r);
                                             msx1.disk = new UBytePtr(msx1.cart[0].mem, 0x2000);
@@ -1796,7 +1796,7 @@ public class msx
                             cas_len = -1;
                             if (check_fmsx_cas (file) == 0 )
                             {
-                                System.out.println("Dentro");
+                                //System.out.println("Dentro");
                                     wa.smpfreq = 22050;
                                     wa.fill_wave = msx_cassette_fill_wave;
                                     wa.header_samples = cas_len;
@@ -1805,7 +1805,7 @@ public class msx
                                     wa.chunk_samples = 0;
                             }
                             ret = device_open(IO_CASSETTE,id,0,wa);
-                            System.out.println("ret="+ret);
+                            //System.out.println("ret="+ret);
                             cas_samples = null;
                             cas_len = -1;
 
@@ -1815,7 +1815,7 @@ public class msx
                     OSD_FOPEN_RW_CREATE);
                 if( file != null )
                 {
-                    System.out.println("Dentro2");
+                    //Dentro2");
                     wave_args wa = new wave_args(file);
                     wa.file = file;
                     wa.display = 1;

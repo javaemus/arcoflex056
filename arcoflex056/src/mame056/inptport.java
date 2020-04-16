@@ -119,7 +119,7 @@ public class inptport {
 
     public static ipd[] inputport_defaults
             = {
-                new ipd(IPT_UI_CONFIGURE, "Config Menu", SEQ_DEF_3(KEYCODE_TAB, CODE_OR, KEYCODE_BACKSPACE)),
+                new ipd(IPT_UI_CONFIGURE, "Config Menu", SEQ_DEF_1(KEYCODE_TAB)),
                 new ipd(IPT_UI_ON_SCREEN_DISPLAY, "On Screen Display", SEQ_DEF_1(KEYCODE_TILDE)),
                 new ipd(IPT_UI_PAUSE, "Pause", SEQ_DEF_1(KEYCODE_P)),
                 new ipd(IPT_UI_RESET_MACHINE, "Reset Game", SEQ_DEF_1(KEYCODE_F3)),

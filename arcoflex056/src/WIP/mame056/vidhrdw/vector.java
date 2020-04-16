@@ -77,7 +77,7 @@ public class vector
 	static int antialias;                            /* flag for anti-aliasing */
 	static int beam;                                 /* size of vector beam    */
 	static int flicker;                              /* beam flicker value     */
-	static int translucency;
+	public static int translucency;
 	
 	static int beam_diameter_is_one;		  /* flag that beam is one pixel wide */
 	

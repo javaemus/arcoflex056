@@ -251,7 +251,7 @@ public class mcr {
 	
 	
 	/********* sound interfaces ***********/
-	static AY8910interface ssio_ay8910_interface = new AY8910interface
+	public static AY8910interface ssio_ay8910_interface = new AY8910interface
 	(
 		2,			/* 2 chips */
 		2000000,	/* 2 MHz ?? */

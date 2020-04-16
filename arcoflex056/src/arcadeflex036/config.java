@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 import static arcadeflex056.osdepend.ignorecfg;
 import static arcadeflex056.video.*;
 import static mame056.mame.options;
+import static arcadeflex056.settings.*;
 
 public class config {
 
@@ -28,7 +29,8 @@ public class config {
     //code from : http://stackoverflow.com/questions/190629/what-is-the-easiest-way-to-parse-an-ini-file-in-java
     //interesting also : http://java-program.developerfaqs.com/q_java-programming_255703.html
     public static void load_ini(String path) throws IOException {
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+        System.out.println("Ruta: "+installationDir+path);
+        try (BufferedReader br = new BufferedReader(new FileReader(installationDir+path))) {
             String line;
             String section = null;
             while ((line = br.readLine()) != null) {
@@ -379,7 +381,7 @@ public class config {
             load_ini("arcadeflex.cfg");
         } catch (IOException ex) {
             //try create a new file if not found
-            File config = new File("arcadeflex.cfg");
+            File config = new File(installationDir+"arcadeflex.cfg");
             try {
                 config.createNewFile();
                 //and reload the file
