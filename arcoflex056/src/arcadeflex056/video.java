@@ -2982,9 +2982,9 @@ public static int osd_allocate_colors(int totalcolors,char[] palette,int[] rgb_c
         if (screen != null) {
             screen.blit();
         }
-        try {
-            Thread.sleep(100L);
+        /*try {
+            Thread.sleep(200L);
         } catch (InterruptedException localInterruptedException) {
-        }
+        }*/
     }
 }

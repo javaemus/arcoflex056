@@ -925,7 +925,7 @@ public class filemngr
 
         // OSD METHODS (windows/dirio class)
         public static String osd_get_cwd() {
-            if (szCurrentDirectory == null)
+            //if (szCurrentDirectory == null)
                 szCurrentDirectory = installationDir+"software/" + Machine.gamedrv.name;
             
             return szCurrentDirectory;

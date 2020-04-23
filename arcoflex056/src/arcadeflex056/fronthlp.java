@@ -365,10 +365,6 @@ public class fronthlp {
 	
 	    public static int frontend_help(int argc, String[] argv)
 	    {
-                System.out.println("FRONT: "+argc);
-                System.out.println("ARG: "+argv.length);
-                System.out.println(argv[0]);
-                System.out.println(argv[1]);
 			int i, j;
 		    int list = 0;
 			int listclones = 1;
@@ -411,7 +407,7 @@ public class fronthlp {
 			/* check for front-end utilities */
 			if (stricmp(argv[i],"-list")==0) list = LIST_LIST;
 	/*TODO*///	 		if (!stricmp(argv[i],"-listinfo")) list = LIST_LISTINFO;
-			if (stricmp(argv[i],"-listfull")==0) list = LIST_LISTFULL;
+	/*TODO*///			if (!stricmp(argv[i],"-listfull")) list = LIST_LISTFULL;
 	/*TODO*///	        if (!stricmp(argv[i],"-listdetails")) list = LIST_LISTDETAILS; /* A detailed MAMELIST.TXT type roms lister */
 	/*TODO*///	        if (!stricmp(argv[i],"-gamelist")) list = LIST_GAMELIST; /* GAMELIST.TXT */
 	/*TODO*///			if (!stricmp(argv[i],"-listgames")) list = LIST_LISTGAMES;
@@ -535,7 +531,6 @@ public class fronthlp {
 						j++;
 						if ((j % 8)==0) printf("\n");
 						else printf("  ");
-                                                //printf("\n");
 					}
 					i++;
 				}

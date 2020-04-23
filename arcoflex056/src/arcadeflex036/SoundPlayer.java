@@ -37,7 +37,7 @@ public class SoundPlayer {
 
         waveBuffer = new byte[stream_buffer_size];//soundInstance.GetSampleSizeInBytes(TimeSpan.FromMilliseconds(25))];
 
-        
+
 
         if (!current_platform_configuration.get_SoundPlayer_class().isLineSupported()) {
             System.err.println("Unsupported audio: " + current_platform_configuration.get_SoundPlayer_class().getAudioFormat());

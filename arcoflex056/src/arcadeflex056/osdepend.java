@@ -157,8 +157,8 @@ public class osdepend {
 	    	/* check for frontend options */
 	        res = frontend_help (argc, argv);
 
-	        System.out.println("RES: "+res);
-			System.out.println("INSTALL DIR3: "+arcadeflex056.settings.installationDir);
+	        //System.out.println("RES: "+res);
+			//System.out.println("INSTALL DIR3: "+arcadeflex056.settings.installationDir);
 	    
 	    	/* if frontend options were used, return to DOS with the error code */
 	    	if (res != 1234)

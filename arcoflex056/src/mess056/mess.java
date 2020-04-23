@@ -702,6 +702,7 @@ public class mess
         int i, id;
         
         logerror("Initialising Devices...\n");
+        System.out.println("---------------------- COUNT: "+options.image_count);
 	
         /* Check that the driver supports all devices requested (options struct)*/
         for( i = 0; i < options.image_count; i++ )

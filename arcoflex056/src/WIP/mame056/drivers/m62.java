@@ -1100,8 +1100,8 @@ public class m62
 		1,	/* 1 CPU slice per frame - interleaving is forced when a sound command is written */ 
 		null,                                                                                       
 	                                                                                             
-		/* video hardware */                                                                     
-		64*8, 32*8, new rectangle( (64*8-256)/2, 64*8-(64*8-256)/2-1, 0*8, 32*8-1 ),  
+		/* video hardware */
+		64*8, 32*8, new rectangle( (64*8-256)/2, 64*8-(64*8-256)/2-1, 0*8, 32*8-1 ),
 		kungfum_gfxdecodeinfo,                                                               
 		512, 0, 
 		irem_vh_convert_color_prom,                                                    
