@@ -2790,11 +2790,16 @@ public class tilemapC {
             }
             else
             {
-		int _y=tile_height;
+		int _y=0;
+                if ((flags&TILE_FLIPY) != 0)
+                    _y=tile_height;
+                
                 for( ty=tile_height; ty!=0; ty-- )
 		{
 			pSource = new UBytePtr(pPenData);
                         int _x=0;
+                        if ((flags&TILE_FLIPX) != 0)
+                            _y=tile_width;
 			for( tx=tile_width; tx!=0; tx-- )
 			{
                             //System.out.println(XX++);
@@ -2816,10 +2821,18 @@ public class tilemapC {
 					(new UBytePtr(tilemap.transparency_bitmap.line[y])).write(x, code_opaque );
 					bWhollyTransparent = 0;
 				}
-                                _x++;
+                                
+                                if ((flags&TILE_FLIPX) != 0)
+                                    _x--;
+                                else
+                                    _x++;
 			}
 			pPenData.offset += pitch ;
-                        _y--;
+                        
+                        if ((flags&TILE_FLIPY) != 0)
+                            _y--;
+                        else
+                            _y++;
 		}
             }
 
