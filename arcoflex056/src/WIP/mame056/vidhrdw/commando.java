@@ -93,7 +93,7 @@ public class commando
 			return 1;
 	
 		tilemap_set_transparent_pen(fg_tilemap,3);
-                        
+                fg_tilemap.transparent_pen = 3;
                 
 		return 0;
 	} };
