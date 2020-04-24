@@ -602,12 +602,12 @@ public class namcos1
 		{
 			/* bit 0-2 priority */
 			/* bit 3   disable	*/
-			/*TODO*///if (namcos1_playfield_control[16] == priority) tilemap_draw(bitmap,tilemap[0],0);
-			/*TODO*///if (namcos1_playfield_control[17] == priority) tilemap_draw(bitmap,tilemap[1],0);
-			/*TODO*///if (namcos1_playfield_control[18] == priority) tilemap_draw(bitmap,tilemap[2],0);
-			/*TODO*///if (namcos1_playfield_control[19] == priority) tilemap_draw(bitmap,tilemap[3],0);
-			/*TODO*///if (namcos1_playfield_control[20] == priority) tilemap_draw(bitmap,tilemap[4],0);
-			/*TODO*///if (namcos1_playfield_control[21] == priority) tilemap_draw(bitmap,tilemap[5],0);
+			if (namcos1_playfield_control[16] == priority) tilemap_draw(bitmap,tilemap[0],0,0);
+			if (namcos1_playfield_control[17] == priority) tilemap_draw(bitmap,tilemap[1],0,0);
+			if (namcos1_playfield_control[18] == priority) tilemap_draw(bitmap,tilemap[2],0,0);
+			if (namcos1_playfield_control[19] == priority) tilemap_draw(bitmap,tilemap[3],0,0);
+			if (namcos1_playfield_control[20] == priority) tilemap_draw(bitmap,tilemap[4],0,0);
+			if (namcos1_playfield_control[21] == priority) tilemap_draw(bitmap,tilemap[5],0,0);
 	
 			draw_sprites(bitmap,priority);
 		}

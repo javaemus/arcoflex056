@@ -26,6 +26,10 @@ public class ptr {
         public UBytePtr(char[] m) {
             set(m, 0);
         }
+        
+        public UBytePtr(int[] m) {
+            set(m, 0);
+        }
 
         public UBytePtr(char[] m, int b) {
             set(m, b);
@@ -37,6 +41,13 @@ public class ptr {
 
         public UBytePtr(UBytePtr cp) {
             set(cp.memory, cp.offset);
+        }
+        
+        public void set(int[] m, int b) {
+            int _size= m.length;
+            for (int _i=0 ; _i<_size ; _i++)
+                memory[_i] = (char) m[_i];
+            offset = b;
         }
 
         public void set(char[] m, int b) {

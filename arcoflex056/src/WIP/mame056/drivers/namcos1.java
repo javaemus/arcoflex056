@@ -651,13 +651,13 @@ public class namcos1
 			),
 			new MachineCPU(
 				CPU_M6809,
-				49152000/32,	/* Not sure if divided by 32 or 24 */
+				49152000/32,	
 				sub_readmem,sub_writemem,null,null,
 				interrupt,1
 			),
 			new MachineCPU(
 				CPU_M6809,
-				49152000/32,	/* Not sure if divided by 32 or 24 */
+				49152000/32,	
 				sound_readmem,sound_writemem,null,null,
 				interrupt,1
 			),
@@ -686,7 +686,7 @@ public class namcos1
 	
 		/* sound hardware */
 		SOUND_SUPPORTS_STEREO,0,0,0,
-		new MachineSound[] {
+		/*new MachineSound[] {
 			new MachineSound(
 				SOUND_YM2151,
 				ym2151_interface
@@ -699,7 +699,8 @@ public class namcos1
 				SOUND_DAC,
 				dac_interface
 			)
-		},
+		},*/
+                null,
 	
 		nvram_handler
 	);
