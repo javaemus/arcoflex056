@@ -33,6 +33,7 @@ import static mame056.driver.*;
 import static arcadeflex056.video.*;
 
 import static mess056.mess.*;
+import static WIP.mame056.vidhrdw.vector.*;
 
 //to refactor
 import static arcadeflex036.sound.*;
@@ -416,6 +417,7 @@ public class usrintrf {
     }
 
     public static void ui_drawbox(mame_bitmap bitmap, int leftx, int topy, int width, int height) {
+        System.out.println("ui_drawbox");
         int black, white;
 
         switch_ui_orientation();
@@ -438,6 +440,9 @@ public class usrintrf {
 
         black = Machine.uifont.colortable.read(0);
         white = Machine.uifont.colortable.read(1);
+        
+        System.out.println("Black="+black);
+        System.out.println("White="+white);
 
         plot_box.handler(bitmap, leftx, topy, width, 1, white);
         plot_box.handler(bitmap, leftx, topy + height - 1, width, 1, white);
@@ -1785,6 +1790,7 @@ public class usrintrf {
     }
 
     public static int showcopyright(mame_bitmap bitmap) {
+        System.out.println("showcopyright!!!!");
         int done;
         String buf = "";
         String buf2 = "";
@@ -1795,13 +1801,17 @@ public class usrintrf {
         buf += buf2;
         buf += "\n\n";
         buf += ui_getstring(UI_copyright3);
+        
+        System.out.println(buf);
 
         erase_screen(bitmap);
         ui_displaymessagewindow(bitmap, buf);
+        System.out.println("next...");
 
         setup_selected = -1;////
         done = 0;
         do {
+            //System.out.println("video & audio");
             update_video_and_audio();
             if (input_ui_pressed(IPT_UI_CANCEL) != 0) {
                 setup_selected = 0;////
@@ -1816,6 +1826,8 @@ public class usrintrf {
                 done = 2;
             }
         } while (done < 2);
+        
+        System.out.println("go out");
 
         setup_selected = 0;////
         erase_screen(bitmap);
@@ -1939,6 +1951,8 @@ public class usrintrf {
                 sel = -2;
             }
         }
+        
+        System.out.println(buf);
 
         if (sel == -1 || sel == -2) {
             schedule_full_refresh();
@@ -2608,6 +2622,7 @@ public class usrintrf {
     static int menu_total;
 
     static void setup_menu_init() {
+        System.out.println("setup_menu_init");
         menu_total = 0;
 
         menu_item[menu_total] = ui_getstring(UI_inputgeneral);
@@ -2953,73 +2968,75 @@ public class usrintrf {
         }
     };
 
-    /*TODO*///static void onscrd_gamma(struct mame_bitmap *bitmap,int increment,int arg)
-/*TODO*///{
-/*TODO*///	char buf[20];
-/*TODO*///	float gamma_correction;
-/*TODO*///
-/*TODO*///	if (increment)
-/*TODO*///	{
-/*TODO*///		gamma_correction = osd_get_gamma();
-/*TODO*///
-/*TODO*///		gamma_correction += 0.05 * increment;
-/*TODO*///		if (gamma_correction < 0.5) gamma_correction = 0.5;
-/*TODO*///		if (gamma_correction > 2.0) gamma_correction = 2.0;
-/*TODO*///
-/*TODO*///		osd_set_gamma(gamma_correction);
-/*TODO*///	}
-/*TODO*///	gamma_correction = osd_get_gamma();
-/*TODO*///
-/*TODO*///	sprintf(buf,"%s %1.2f", ui_getstring (UI_gamma), gamma_correction);
-/*TODO*///	displayosd(bitmap,buf,100*(gamma_correction-0.5)/(2.0-0.5),100*(1.0-0.5)/(2.0-0.5));
-/*TODO*///}
-/*TODO*///
-/*TODO*///static void onscrd_vector_flicker(struct mame_bitmap *bitmap,int increment,int arg)
-/*TODO*///{
-/*TODO*///	char buf[1000];
-/*TODO*///	float flicker_correction;
-/*TODO*///
-/*TODO*///	if (!code_pressed(KEYCODE_LCONTROL) && !code_pressed(KEYCODE_RCONTROL))
-/*TODO*///		increment *= 5;
-/*TODO*///
-/*TODO*///	if (increment)
-/*TODO*///	{
-/*TODO*///		flicker_correction = vector_get_flicker();
-/*TODO*///
-/*TODO*///		flicker_correction += increment;
-/*TODO*///		if (flicker_correction < 0.0) flicker_correction = 0.0;
-/*TODO*///		if (flicker_correction > 100.0) flicker_correction = 100.0;
-/*TODO*///
-/*TODO*///		vector_set_flicker(flicker_correction);
-/*TODO*///	}
-/*TODO*///	flicker_correction = vector_get_flicker();
-/*TODO*///
-/*TODO*///	sprintf(buf,"%s %1.2f", ui_getstring (UI_vectorflicker), flicker_correction);
-/*TODO*///	displayosd(bitmap,buf,flicker_correction,0);
-/*TODO*///}
-/*TODO*///
-/*TODO*///static void onscrd_vector_intensity(struct mame_bitmap *bitmap,int increment,int arg)
-/*TODO*///{
-/*TODO*///	char buf[30];
-/*TODO*///	float intensity_correction;
-/*TODO*///
-/*TODO*///	if (increment)
-/*TODO*///	{
-/*TODO*///		intensity_correction = vector_get_intensity();
-/*TODO*///
-/*TODO*///		intensity_correction += 0.05 * increment;
-/*TODO*///		if (intensity_correction < 0.5) intensity_correction = 0.5;
-/*TODO*///		if (intensity_correction > 3.0) intensity_correction = 3.0;
-/*TODO*///
-/*TODO*///		vector_set_intensity(intensity_correction);
-/*TODO*///	}
-/*TODO*///	intensity_correction = vector_get_intensity();
-/*TODO*///
-/*TODO*///	sprintf(buf,"%s %1.2f", ui_getstring (UI_vectorintensity), intensity_correction);
-/*TODO*///	displayosd(bitmap,buf,100*(intensity_correction-0.5)/(3.0-0.5),100*(1.5-0.5)/(3.0-0.5));
-/*TODO*///}
-/*TODO*///
-/*TODO*///
+    public static onscrd_fncPtr onscrd_gamma = new onscrd_fncPtr() {
+        public void handler(mame_bitmap bitmap, int increment, int arg) {
+            String buf = "";
+            float gamma_correction;
+
+            if (increment != 0)
+            {
+                    gamma_correction = osd_get_gamma();
+
+                    gamma_correction += 0.05 * increment;
+                    if (gamma_correction < 0.5) gamma_correction = 0.5f;
+                    if (gamma_correction > 2.0) gamma_correction = 2.0f;
+
+                    osd_set_gamma(gamma_correction);
+            }
+            gamma_correction = osd_get_gamma();
+
+            buf = sprintf(buf,"%s %1.2f", ui_getstring (UI_gamma), gamma_correction);
+            displayosd(bitmap,buf,(int)(100*(gamma_correction-0.5)/(2.0-0.5)),(int)(100*(1.0-0.5)/(2.0-0.5)));
+        }
+    };
+
+    public static onscrd_fncPtr onscrd_vector_flicker = new onscrd_fncPtr() {
+        public void handler(mame_bitmap bitmap, int increment, int arg) {
+            String buf = "";
+            float flicker_correction;
+
+            if (code_pressed(KEYCODE_LCONTROL)==0 && code_pressed(KEYCODE_RCONTROL)==0)
+                    increment *= 5;
+
+            if (increment != 0)
+            {
+                    flicker_correction = vector_get_flicker();
+
+                    flicker_correction += increment;
+                    if (flicker_correction < 0.0) flicker_correction = 0.0f;
+                    if (flicker_correction > 100.0) flicker_correction = 100.0f;
+
+                    vector_set_flicker(flicker_correction);
+            }
+            flicker_correction = vector_get_flicker();
+
+            buf = sprintf(buf,"%s %1.2f", ui_getstring (UI_vectorflicker), flicker_correction);
+            displayosd(bitmap,buf,(int)flicker_correction,0);
+        }
+    };
+
+    public static onscrd_fncPtr onscrd_vector_intensity = new onscrd_fncPtr() {
+        public void handler(mame_bitmap bitmap, int increment, int arg) {
+            String buf = "";
+            float intensity_correction;
+
+            if (increment != 0)
+            {
+                    intensity_correction = vector_get_intensity();
+
+                    intensity_correction += 0.05 * increment;
+                    if (intensity_correction < 0.5) intensity_correction = 0.5f;
+                    if (intensity_correction > 3.0) intensity_correction = 3.0f;
+
+                    vector_set_intensity(intensity_correction);
+            }
+            intensity_correction = vector_get_intensity();
+
+            buf = sprintf(buf,"%s %1.2f", ui_getstring (UI_vectorintensity), intensity_correction);
+            displayosd(bitmap,buf,(int)(100*(intensity_correction-0.5)/(3.0-0.5)),(int)(100*(1.5-0.5)/(3.0-0.5)));
+        }
+    };
+
 /*TODO*///static void onscrd_overclock(struct mame_bitmap *bitmap,int increment,int arg)
 /*TODO*///{
 /*TODO*///	char buf[30];
@@ -3065,6 +3082,7 @@ public class usrintrf {
     static int onscrd_total_items;
 
     public static void onscrd_init() {
+        System.out.println("onscrd_init");
         int item, ch;
 
         item = 0;
@@ -3098,22 +3116,22 @@ public class usrintrf {
         onscrd_fnc[item] = onscrd_brightness;
         onscrd_arg[item] = 0;
         item++;
-        /*TODO*///
-/*TODO*///	onscrd_fnc[item] = onscrd_gamma;
-/*TODO*///	onscrd_arg[item] = 0;
-/*TODO*///	item++;
-/*TODO*///
-/*TODO*///	if (Machine->drv->video_attributes & VIDEO_TYPE_VECTOR)
-/*TODO*///	{
-/*TODO*///		onscrd_fnc[item] = onscrd_vector_flicker;
-/*TODO*///		onscrd_arg[item] = 0;
-/*TODO*///		item++;
-/*TODO*///
-/*TODO*///		onscrd_fnc[item] = onscrd_vector_intensity;
-/*TODO*///		onscrd_arg[item] = 0;
-/*TODO*///		item++;
-/*TODO*///	}
-/*TODO*///
+        
+	onscrd_fnc[item] = onscrd_gamma;
+	onscrd_arg[item] = 0;
+	item++;
+
+	if ((Machine.drv.video_attributes & VIDEO_TYPE_VECTOR) != 0)
+	{
+		onscrd_fnc[item] = onscrd_vector_flicker;
+		onscrd_arg[item] = 0;
+		item++;
+
+		onscrd_fnc[item] = onscrd_vector_intensity;
+		onscrd_arg[item] = 0;
+		item++;
+	}
+
         onscrd_total_items = item;
     }
     static int lastselected = 0;
@@ -3458,6 +3476,7 @@ public class usrintrf {
     }
 
     public static void init_user_interface() {
+        System.out.println("init_user_interface");
         snapno = 0;/* reset snapshot counter */
 
         setup_menu_init();

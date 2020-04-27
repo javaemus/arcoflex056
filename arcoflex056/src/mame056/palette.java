@@ -32,12 +32,10 @@ public class palette {
     static double shadow_factor, highlight_factor;
     static int palette_initialized;
 
-    /*TODO*///UINT32 direct_rgb_components[3];
-/*TODO*///
-/*TODO*///
-/*TODO*///
+    static int[] direct_rgb_components = new int[3];
+
     public static char[] palette_shadow_table;
-/*TODO*///
+
     public static int palette_start() {
 /*TODO*///        	int i;
 /*TODO*///
@@ -64,13 +62,13 @@ public class palette {
         game_palette = new char[3 * total_colors];
         actual_palette = new char[3 * total_colors];
         brightness = new double[Machine.drv.total_colors];
-        /*TODO*///
-/*TODO*///	if (Machine->color_depth == 15)
-/*TODO*///		colormode = DIRECT_15BIT;
-/*TODO*///	else if (Machine->color_depth == 32)
-/*TODO*///		colormode = DIRECT_32BIT;
-/*TODO*///	else
-        colormode = PALETTIZED_16BIT;
+        
+	if (Machine.color_depth == 15)
+		colormode = DIRECT_15BIT;
+	else if (Machine.color_depth == 32)
+		colormode = DIRECT_32BIT;
+	else
+            colormode = PALETTIZED_16BIT;
 
         Machine.pens = new int[total_colors * 4];//malloc(total_colors * sizeof(*Machine->pens));
 
@@ -202,22 +200,53 @@ public class palette {
                 }
             }
             break;
-            /*TODO*///
-/*TODO*///		case DIRECT_15BIT:
-/*TODO*///		{
-/*TODO*///			const UINT8 rgbpalette[3*3] = { 0xff,0x00,0x00, 0x00,0xff,0x00, 0x00,0x00,0xff };
-/*TODO*///
-/*TODO*///			if (osd_allocate_colors(3,rgbpalette,direct_rgb_components,debug_palette,debug_pens))
-/*TODO*///				return 1;
-/*TODO*///
-/*TODO*///			for (i = 0;i < total_colors;i++)
-/*TODO*///				Machine->pens[i] =
-/*TODO*///						(game_palette[3*i + 0] >> 3) * (direct_rgb_components[0] / 0x1f) +
-/*TODO*///						(game_palette[3*i + 1] >> 3) * (direct_rgb_components[1] / 0x1f) +
-/*TODO*///						(game_palette[3*i + 2] >> 3) * (direct_rgb_components[2] / 0x1f);
-/*TODO*///
-/*TODO*///			break;
-/*TODO*///		}
+            
+		case DIRECT_15BIT:
+		{
+			char rgbpalette[] = { 0xff,0x00,0x00, 0x00,0xff,0x00, 0x00,0x00,0xff };
+                        
+                        total_colors = 3;
+
+			//if (osd_allocate_colors(3,rgbpalette,direct_rgb_components,debug_palette,debug_pens))
+                        /*if (osd_allocate_colors(3,rgbpalette,direct_rgb_components) != 0)
+				return 1;
+                        
+                        System.out.println("Continue...");
+
+			for (i = 0;i < total_colors;i++)
+				Machine.pens[i] =
+						(game_palette[3*i + 0] >> 3) * (direct_rgb_components[0] / 0x1f) +
+						(game_palette[3*i + 1] >> 3) * (direct_rgb_components[1] / 0x1f) +
+						(game_palette[3*i + 2] >> 3) * (direct_rgb_components[2] / 0x1f);
+                        
+                        */
+                        
+                        if (osd_allocate_colors(3, rgbpalette, direct_rgb_components) != 0) {
+                            return 1;
+                        }
+
+                        for (i = 0;i < total_colors;i++)
+				Machine.pens[i] =
+						(game_palette[3*i + 0] >> 3) * (direct_rgb_components[0] / 0x1f) +
+						(game_palette[3*i + 1] >> 3) * (direct_rgb_components[1] / 0x1f) +
+						(game_palette[3*i + 2] >> 3) * (direct_rgb_components[2] / 0x1f);
+
+                        /* refresh the palette to support shadows in PROM games */
+                        //Machine.drv.total_colors = 3;
+                        /*for (i = 0; i < Machine.drv.total_colors; i++) {
+                            palette_set_color(i, rgbpalette[3 * i + 0], rgbpalette[3 * i + 1], rgbpalette[3 * i + 2]);
+                        }
+                        */
+                        
+                        Machine.pens[3] = 3;
+                        Machine.pens[4] = 4;
+                        
+                        palette_set_color(3, 0x000000, 0x000000, 0x000000);
+                        palette_set_color(4, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF);
+                        
+
+			break;
+		}
 /*TODO*///
 /*TODO*///		case DIRECT_32BIT:
 /*TODO*///		{
@@ -253,23 +282,23 @@ public class palette {
         return 0;
     }
 
-    /*TODO*///
-/*TODO*///
-/*TODO*///INLINE void palette_set_color_15_direct(int color,UINT8 red,UINT8 green,UINT8 blue)
-/*TODO*///{
-/*TODO*///	if (	actual_palette[3*color + 0] == red &&
-/*TODO*///			actual_palette[3*color + 1] == green &&
-/*TODO*///			actual_palette[3*color + 2] == blue)
-/*TODO*///		return;
-/*TODO*///	actual_palette[3*color + 0] = red;
-/*TODO*///	actual_palette[3*color + 1] = green;
-/*TODO*///	actual_palette[3*color + 2] = blue;
-/*TODO*///	Machine->pens[color] =
-/*TODO*///			(red   >> 3) * (direct_rgb_components[0] / 0x1f) +
-/*TODO*///			(green >> 3) * (direct_rgb_components[1] / 0x1f) +
-/*TODO*///			(blue  >> 3) * (direct_rgb_components[2] / 0x1f);
-/*TODO*///}
-/*TODO*///
+    
+
+    public static void palette_set_color_15_direct(int color,int red,int green,int blue)
+    {
+            if (	actual_palette[3*color + 0] == red &&
+                            actual_palette[3*color + 1] == green &&
+                            actual_palette[3*color + 2] == blue)
+                    return;
+            actual_palette[3*color + 0] = (char) red;
+            actual_palette[3*color + 1] = (char) green;
+            actual_palette[3*color + 2] = (char) blue;
+            Machine.pens[color] =
+                            (red   >> 3) * (direct_rgb_components[0] / 0x1f) +
+                            (green >> 3) * (direct_rgb_components[1] / 0x1f) +
+                            (blue  >> 3) * (direct_rgb_components[2] / 0x1f);
+    }
+
 /*TODO*///static void palette_reset_15_direct(void)
 /*TODO*///{
 /*TODO*///	int color;
@@ -371,9 +400,9 @@ public class palette {
             case PALETTIZED_16BIT:
                 palette_set_color_16_palettized(color, r, g, b);
                 break;
-            /*TODO*///		case DIRECT_15BIT:
-/*TODO*///			palette_set_color_15_direct(color,r,g,b);
-/*TODO*///			break;
+            case DIRECT_15BIT:
+		palette_set_color_15_direct(color,r,g,b);
+		break;
 /*TODO*///		case DIRECT_32BIT:
 /*TODO*///			palette_set_color_32_direct(color,r,g,b);
 /*TODO*///			break;

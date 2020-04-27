@@ -3913,6 +3913,7 @@ public class drawgfx {
     };
     public static plot_box_procPtr pb_8_nd = new plot_box_procPtr() {
         public void handler(mame_bitmap b, int x, int y, int w, int h, /*UINT32*/ int p) {
+            System.out.println("pb_8_nd");
             int t = x;
             while (h-- > 0) {
                 int c = w;
@@ -4004,6 +4005,7 @@ public class drawgfx {
 
     public static plot_box_procPtr pb_16_nd = new plot_box_procPtr() {
         public void handler(mame_bitmap b, int x, int y, int w, int h, /*UINT32*/ int p) {
+            System.out.println("pb_16_nd");
             int t = x;
             while (h-- > 0) {
                 int c = w;
@@ -4077,6 +4079,7 @@ public class drawgfx {
     public static plot_box_procPtr pb_16_nd_fx_s = new plot_box_procPtr() {
         public void handler(mame_bitmap b, int x, int y, int w, int h, /*UINT32*/ int p) {
             //throw new UnsupportedOperationException("unsupported");
+            System.out.println("pb_26_nd_fx_s");
             int t = x;
             y = b.width - 1 - y;
             while (h-- > 0) {
@@ -4122,8 +4125,9 @@ public class drawgfx {
 
     public static plot_box_procPtr pb_16_d = new plot_box_procPtr() {
         public void handler(mame_bitmap b, int x, int y, int w, int h, /*UINT32*/ int p) {
+            System.out.println("pb_16_d");
             int t = x;
-            osd_mark_dirty(t, y, t + w - 1, y + h - 1);
+/*TODO*///            osd_mark_dirty(t, y, t + w - 1, y + h - 1);
             while (h-- > 0) {
                 int c = w;
                 x = t;

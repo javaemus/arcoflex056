@@ -65,8 +65,10 @@ public class blit {
     
     public static void set_color(int index,RGB entry)
     {
+        
         int rgb =  entry.r<<16 | entry.g<<8 | entry.b;
         palette_16bit_lookup.write(index, (char) rgb);
+        //System.out.println("set_color "+index+"="+rgb);
         palette[index]=rgb;
     }
     
@@ -189,7 +191,7 @@ public class blit {
                 if (Machine.color_depth==8) {
                     mTop = Machine.scrbitmap.width;
                     nBytes = 1;
-                } else if (Machine.color_depth==16){
+                } else if (Machine.color_depth==16 || Machine.color_depth==15){
                     mTop = Machine.scrbitmap.width * 2;
                     nBytes = 2;
                 }
@@ -199,7 +201,7 @@ public class blit {
                     int offs=Machine.scrbitmap.line[i].offset;
                     int curr=Machine.scrbitmap.line[i].memory[r + offs];
 
-                    if (Machine.color_depth==16){
+                    if (Machine.color_depth==16 || Machine.color_depth==15){
                         if ((r%nBytes)==1){
 
                             int pre=Machine.scrbitmap.line[i].memory[r-1+offs];

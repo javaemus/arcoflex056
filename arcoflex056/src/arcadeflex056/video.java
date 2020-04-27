@@ -16,9 +16,14 @@ import static mame056.mame.Machine;
 import static arcadeflex056.osdepend.logerror;
 import arcadeflex036.software_gfx;
 import static arcadeflex036.sound.update_audio;
+import static arcadeflex056.dirtyH.DIRTY_H;
+import static arcadeflex056.dirtyH.DIRTY_V;
 import static arcadeflex056.dirtyH.MARKDIRTY;
+import static arcadeflex056.dirtyH.MAX_GFX_HEIGHT;
+import static arcadeflex056.dirtyH.MAX_GFX_WIDTH;
 import static arcadeflex056.settings.current_platform_configuration;
 import static common.libc.cstdio.sprintf;
+import static common.libc.cstring.memset;
 import common.libc.ctime;
 import static common.libc.ctime.*;
 import static java.lang.Math.pow;
@@ -95,8 +100,8 @@ public class video {
 /*TODO*///
 /*TODO*///
 /*TODO*///dirtygrid grid1;
-/*TODO*///char *dirty_new=grid1;
-/*TODO*///
+    public static char[] dirty_new=new char[DIRTY_V * DIRTY_H];
+
 /*TODO*///void center_mode(Register *pReg);
 /*TODO*///
 /*TODO*////* in msdos/sound.c */
@@ -449,10 +454,10 @@ public class video {
 /*TODO*///};
     public static software_gfx screen; //for our screen creation
     public static int video_depth,video_fps,video_attributes,video_orientation;
-/*TODO*///static int rgb_direct;
+    public static int rgb_direct;
     public static int screen_colors;
     public static UBytePtr current_palette;
-/*TODO*///static const UINT8 *dbg_palette;
+    public static char[] dbg_palette;
     public static /*unsigned int * */ int[] dirtycolor;
     public static int dirtypalette;
     public static int dirty_bright;
@@ -671,10 +676,10 @@ public class video {
             }
     }
 
-/*TODO*///static void init_dirty(char dirty)
-/*TODO*///{
-/*TODO*///	memset(dirty_new, dirty, MAX_GFX_WIDTH/16 * MAX_GFX_HEIGHT/16);
-/*TODO*///}
+static void init_dirty(char dirty)
+{
+	memset(dirty_new, dirty, MAX_GFX_WIDTH/16 * MAX_GFX_HEIGHT/16);
+}
 
 
 
@@ -1952,14 +1957,14 @@ public static int osd_allocate_colors(int totalcolors,char[] palette,int[] rgb_c
         System.out.println("Video depth="+video_depth);
         
 	int i;
-/*TODO*///
-/*TODO*///	if (video_attributes & VIDEO_RGB_DIRECT)
-/*TODO*///	{
-/*TODO*///		rgb_direct = 1;
+
+	if ((video_attributes & VIDEO_RGB_DIRECT) != 0)
+	{
+		rgb_direct = 1;
 /*TODO*///		return init_direct_mapped(totalcolors,palette,rgb_components,debug_palette,debug_pens);
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	rgb_direct = 0;
+	}
+
+	rgb_direct = 0;
 
 	screen_colors = totalcolors;
 	if (video_depth != 8)
@@ -2026,15 +2031,15 @@ public static int osd_allocate_colors(int totalcolors,char[] palette,int[] rgb_c
         current_palette.write((totalcolors+1)*3+1, 0xff);
         current_palette.write((totalcolors+1)*3+2, 0xff);*/
 
-/*TODO*///	if (debug_pens)
+/*TODO*///	if (debug_pens != null)
 /*TODO*///	{
 /*TODO*///		for (i = 0;i < DEBUGGER_TOTAL_COLORS;i++)
 /*TODO*///			debug_pens[i] = i;
 /*TODO*///	}
-/*TODO*///
+
 /*TODO*///	dbg_palette = debug_palette;
-/*TODO*///
-/*TODO*///
+
+
 /*TODO*///	if (use_vesa == 0)
 /*TODO*///	{
 /*TODO*///		if (use_dirty) /* supports dirty ? */
@@ -2246,6 +2251,7 @@ public static int osd_allocate_colors(int totalcolors,char[] palette,int[] rgb_c
     /* Update the display. */
     public static void osd_update_video_and_audio(mame_bitmap game_bitmap, /*mame_bitmap debug_bitmap,*/ int leds_status)
     {
+        //System.out.println("osd_update_video_and_audio");
         /*TODO*///mame_bitmap bitmap;
         //int i;
 	
@@ -2513,7 +2519,7 @@ public static int osd_allocate_colors(int totalcolors,char[] palette,int[] rgb_c
 			}
 			if (dirtypalette != 0)
 			{
-				/*TODO*///if (use_dirty != 0) init_dirty(1);	/* have to redraw the whole screen */
+				if (use_dirty != 0) init_dirty((char)1);	/* have to redraw the whole screen */
 
 				dirtypalette = 0;
 
@@ -2572,10 +2578,10 @@ public static int osd_allocate_colors(int totalcolors,char[] palette,int[] rgb_c
 /*TODO*///		/* see if we need to give the card enough time to draw both odd/even fields of the interlaced display
 /*TODO*///			(req. for 15.75KHz Arcade Monitor Modes */
 /*TODO*///		interlace_sync();
-/*TODO*///
-/*TODO*///
-/*TODO*///		if (use_dirty) init_dirty(0);
-/*TODO*///
+
+
+		if (use_dirty != 0) init_dirty((char)0);
+
 
 		if ((throttle!=0) && (autoframeskip!=0) && frameskip_counter == 0)
 		{
@@ -2686,23 +2692,22 @@ public static int osd_allocate_colors(int totalcolors,char[] palette,int[] rgb_c
     }
 
 
+    public static void osd_set_gamma(float _gamma)
+    {
+            int i;
 
-/*TODO*///void osd_set_gamma(float _gamma)
-/*TODO*///{
-/*TODO*///	int i;
-/*TODO*///
-/*TODO*///	osd_gamma_correction = _gamma;
-/*TODO*///
-/*TODO*///	for (i = 0;i < screen_colors;i++)
-/*TODO*///		dirtycolor[i] = 1;
-/*TODO*///	dirtypalette = 1;
-/*TODO*///	dirty_bright = 1;
-/*TODO*///}
-/*TODO*///
-/*TODO*///float osd_get_gamma(void)
-/*TODO*///{
-/*TODO*///	return osd_gamma_correction;
-/*TODO*///}
+            osd_gamma_correction = _gamma;
+
+            for (i = 0;i < screen_colors;i++)
+                    dirtycolor[i] = 1;
+            dirtypalette = 1;
+            dirty_bright = 1;
+    }
+
+    public static float osd_get_gamma()
+    {
+            return osd_gamma_correction;
+    }
 
     /* brightess = percentage 0-100% */
     public static void osd_set_brightness(int _brightness)

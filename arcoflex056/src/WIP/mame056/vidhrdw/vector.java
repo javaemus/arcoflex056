@@ -213,12 +213,12 @@ public class vector
 		return flicker_correction;
 	}
 	
-	void vector_set_intensity(float _intensity)
+	public static void vector_set_intensity(float _intensity)
 	{
 		intensity_correction = _intensity;
 	}
 	
-	float vector_get_intensity()
+	public static float vector_get_intensity()
 	{
 		return intensity_correction;
 	}
