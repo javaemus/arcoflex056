@@ -238,11 +238,12 @@ public class palette {
                         }
                         */
                         
-                        Machine.pens[3] = 3;
+                        /*Machine.pens[3] = 3;
                         Machine.pens[4] = 4;
                         
                         palette_set_color(3, 0x000000, 0x000000, 0x000000);
                         palette_set_color(4, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF);
+                        */
                         
 
 			break;

@@ -177,7 +177,7 @@ public class tilemapH {
         public int transparent_pen;
         public int[] fgmask=new int[4], bgmask=new int[4]; /* for TILEMAP_SPLIT */
 
-        public IntArray pPenToPixel = new IntArray(1024);
+        public IntArray[] pPenToPixel = new IntArray[8];
 
         public DrawTileHandlerPtr draw_tile;
 

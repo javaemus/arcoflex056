@@ -417,7 +417,7 @@ public class usrintrf {
     }
 
     public static void ui_drawbox(mame_bitmap bitmap, int leftx, int topy, int width, int height) {
-        System.out.println("ui_drawbox");
+        //System.out.println("ui_drawbox");
         int black, white;
 
         switch_ui_orientation();
@@ -441,8 +441,8 @@ public class usrintrf {
         black = Machine.uifont.colortable.read(0);
         white = Machine.uifont.colortable.read(1);
         
-        System.out.println("Black="+black);
-        System.out.println("White="+white);
+        //System.out.println("Black="+black);
+        //System.out.println("White="+white);
 
         plot_box.handler(bitmap, leftx, topy, width, 1, white);
         plot_box.handler(bitmap, leftx, topy + height - 1, width, 1, white);
@@ -1790,7 +1790,7 @@ public class usrintrf {
     }
 
     public static int showcopyright(mame_bitmap bitmap) {
-        System.out.println("showcopyright!!!!");
+        //System.out.println("showcopyright!!!!");
         int done;
         String buf = "";
         String buf2 = "";
@@ -1802,11 +1802,11 @@ public class usrintrf {
         buf += "\n\n";
         buf += ui_getstring(UI_copyright3);
         
-        System.out.println(buf);
+        //System.out.println(buf);
 
         erase_screen(bitmap);
         ui_displaymessagewindow(bitmap, buf);
-        System.out.println("next...");
+        //System.out.println("next...");
 
         setup_selected = -1;////
         done = 0;
@@ -1827,7 +1827,7 @@ public class usrintrf {
             }
         } while (done < 2);
         
-        System.out.println("go out");
+        //System.out.println("go out");
 
         setup_selected = 0;////
         erase_screen(bitmap);
@@ -1952,7 +1952,7 @@ public class usrintrf {
             }
         }
         
-        System.out.println(buf);
+        //System.out.println(buf);
 
         if (sel == -1 || sel == -2) {
             schedule_full_refresh();
@@ -2622,7 +2622,7 @@ public class usrintrf {
     static int menu_total;
 
     static void setup_menu_init() {
-        System.out.println("setup_menu_init");
+        //System.out.println("setup_menu_init");
         menu_total = 0;
 
         menu_item[menu_total] = ui_getstring(UI_inputgeneral);
@@ -3082,7 +3082,7 @@ public class usrintrf {
     static int onscrd_total_items;
 
     public static void onscrd_init() {
-        System.out.println("onscrd_init");
+        //System.out.println("onscrd_init");
         int item, ch;
 
         item = 0;
@@ -3476,7 +3476,7 @@ public class usrintrf {
     }
 
     public static void init_user_interface() {
-        System.out.println("init_user_interface");
+        //System.out.println("init_user_interface");
         snapno = 0;/* reset snapshot counter */
 
         setup_menu_init();
