@@ -421,18 +421,15 @@ public class tilemapC {
 
     public static blitmask_t pdt16 = new blitmask_t() {
         public void handler( UShortPtr dest, UShortPtr source, UBytePtr pMask, int mask, int value, int count, UBytePtr pri, int pcode ) {
-            //System.out.println("pdt16 "+mask+"="+value);
-            //System.out.println("pen "+PAL_GET(3));
             int i;
-            for( i=0; i<count; i++ )
+            for( i=0; i<count*2; i++ )
             {
-                    if( (pMask.read(i)&mask)==value )
+                    if( (pMask.read(i)&mask&0xffff)==(value&0xffff) )
                     {
                             dest.write(i, source.read(i));
                             pri.write(i, pri.read(i) | pcode);
                     }
             }
-            
         }
     };
     
@@ -747,7 +744,7 @@ public class tilemapC {
                 tilemap.transparency_data_row[i] = new UBytePtr();
 
             tilemap.pixmap = bitmap_alloc_depth( tilemap.cached_width, tilemap.cached_height, -16 );
-            tilemap.transparency_bitmap = bitmap_alloc_depth( tilemap.cached_width, tilemap.cached_height, -8 );
+            tilemap.transparency_bitmap = bitmap_alloc_depth( tilemap.cached_width, tilemap.cached_height, -16 );
 
 		if( tilemap.logical_rowscroll!=null && tilemap.cached_rowscroll!=null &&
 			tilemap.logical_colscroll!=null && tilemap.cached_colscroll!=null &&
@@ -967,27 +964,23 @@ public class tilemapC {
     {
         //System.out.println("update_tile_info");
             int x0;
-            int y0;
-            int memory_offset;
-            int flags;
+                int y0;
+                int memory_offset;
+                int flags;
+                
 
-/*TODO*///profiler_mark(PROFILER_TILEMAP_UPDATE);
+/*TODO*///        profiler_mark(PROFILER_TILEMAP_UPDATE);
 
-            memory_offset = tilemap.cached_indx_to_memory_offset[cached_indx];
-            tilemap.tile_get_info.handler(memory_offset );
-            flags = tile_info.flags;
-            flags = (flags&0xfc)|tilemap.logical_flip_to_cached_flip[flags&0x3];
-            x0 = tilemap.cached_tile_width*col;
-            y0 = tilemap.cached_tile_height*row;
-            
-            //System.out.println(tilemap);
-            //System.out.println(tilemap.transparency_data);
-            //System.out.println(tilemap.draw_tile);
-            
-            tilemap.transparency_data.write(cached_indx, tilemap.draw_tile.handler(tilemap,x0,y0,flags ));
-            //System.out.println("draw_tile.handler");
+                memory_offset = tilemap.cached_indx_to_memory_offset[cached_indx];
+                tilemap.tile_get_info.handler(memory_offset);
+                flags = tile_info.flags;
+                flags = (flags&0xfc)|tilemap.logical_flip_to_cached_flip[flags&0x3];
+                x0 = tilemap.cached_tile_width*col;
+                y0 = tilemap.cached_tile_height*row;
 
-/*TODO*///profiler_mark(PROFILER_END);
+                tilemap.transparency_data.write(cached_indx, tilemap.draw_tile.handler(tilemap,x0,y0,flags ));
+
+/*TODO*///        profiler_mark(PROFILER_END);
     }
 
 /*TODO*///struct mame_bitmap *tilemap_get_pixmap( struct tilemap * tilemap )
@@ -1026,18 +1019,18 @@ public class tilemapC {
 	{
             System.out.println("recalculate scroll");
 		int i;
-	
-		tilemap.scrollx_delta = (tilemap.attributes & TILEMAP_FLIPX )!=0?tilemap.dx_if_flipped:tilemap.dx;
-		tilemap.scrolly_delta = (tilemap.attributes & TILEMAP_FLIPY )!=0?tilemap.dy_if_flipped:tilemap.dy;
-	
-		for( i=0; i<tilemap.logical_scroll_rows; i++ )
-		{
-			tilemap_set_scrollx( tilemap, i, tilemap.logical_rowscroll[i] );
-		}
-		for( i=0; i<tilemap.logical_scroll_cols; i++ )
-		{
-			tilemap_set_scrolly( tilemap, i, tilemap.logical_colscroll[i] );
-		}
+
+                tilemap.scrollx_delta = (tilemap.attributes & TILEMAP_FLIPX )!=0?tilemap.dx_if_flipped:tilemap.dx;
+                tilemap.scrolly_delta = (tilemap.attributes & TILEMAP_FLIPY )!=0?tilemap.dy_if_flipped:tilemap.dy;
+
+                for( i=0; i<tilemap.logical_scroll_rows; i++ )
+                {
+                        tilemap_set_scrollx( tilemap, i, tilemap.logical_rowscroll[i] );
+                }
+                for( i=0; i<tilemap.logical_scroll_cols; i++ )
+                {
+                        tilemap_set_scrolly( tilemap, i, tilemap.logical_colscroll[i] );
+                }
 	}
 	
 	public static void tilemap_set_scrolldx( struct_tilemap tilemap, int dx, int dx_if_flipped )
@@ -1129,7 +1122,7 @@ public class tilemapC {
     
     /***********************************************************************************/
         
-        public static void tilemap_draw_new( mame_bitmap dest, struct_tilemap tilemap, int flags, int priority )
+        public static void tilemap_draw( mame_bitmap dest, struct_tilemap tilemap, int flags, int priority )
         {
                 int xpos,ypos,mask,value;
                 int rows, cols;
@@ -1170,7 +1163,7 @@ public class tilemapC {
                         }
                         else
                         {
-                                blit.screen_bitmap_pitch_line = (new UBytePtr(dest.line[1])).offset - (new UBytePtr(dest.line[0])).offset;
+                                blit.screen_bitmap_pitch_line = ((new UBytePtr(dest.line[1])).offset - (new UBytePtr(dest.line[0])).offset)*2;
                                 switch( dest.depth )
                                 {
                                 case 32:
@@ -1252,6 +1245,7 @@ public class tilemapC {
                                 {
                                         scrolly = scrolly % tilemap.cached_height;
                                 }
+                                
 
                                 blit.clip_left		= left;
                                 blit.clip_top		= top;
@@ -1399,285 +1393,6 @@ public class tilemapC {
 /*TODO*///        profiler_mark(PROFILER_END);
         }
 
-    public static void tilemap_draw(mame_bitmap dest, struct_tilemap tilemap, int/*UINT32*/ flags, int/*UINT32*/ priority) {
-        
-        int xpos,ypos,mask,value;
-        int rows, cols;
-        int[] rowscroll, colscroll;
-        int left, right, top, bottom;
-        
-/*TODO*///profiler_mark(PROFILER_TILEMAP_DRAW);
-	if( tilemap.enable != 0 )
-		{
-			/* scroll registers */
-			rows		= tilemap.cached_scroll_rows;
-			cols		= tilemap.cached_scroll_cols;
-			rowscroll	= tilemap.cached_rowscroll;
-			colscroll	= tilemap.cached_colscroll;
-	
-			/* clipping */
-			left		= tilemap.clip_left;
-			right		= tilemap.clip_right;
-			top		= tilemap.clip_top;
-			bottom		= tilemap.clip_bottom;
-	
-			/* tile priority */
-			mask		= TILE_FLAG_TILE_PRIORITY;
-			value		= TILE_FLAG_TILE_PRIORITY&flags;
-	
-			/* initialize defaults */
-			//memset( tile_info, 0x00, sizeof(tile_info) );
-                        tile_info = new struct_tile_info();
-	
-			/* priority_bitmap_pitch_row is tilemap-specific */
-			priority_bitmap_pitch_row = priority_bitmap_pitch_line*tilemap.cached_tile_height;
-	
-			blit.screen_bitmap = dest;
-			if( dest == null )
-			{
-				blit.draw_masked = (blitmask_t)pit;
-				blit.draw_opaque = (blitopaque_8_t)pio;
-			}
-			else
-			{
-				blit.screen_bitmap_pitch_line = (new UBytePtr(dest.line[1]).offset - new UBytePtr(dest.line[0]).offset)*2;
-                                //System.out.println("blit.screen_bitmap_pitch_line====="+blit.screen_bitmap_pitch_line);
-				switch( dest.depth )
-				{
-				/*TODO*///case 32:
-				/*TODO*///	if( flags&TILEMAP_ALPHA )
-				/*TODO*///	{
-				/*TODO*///		blit.draw_masked = (blitmask_t)pbt32;
-				/*TODO*///		blit.draw_opaque = (blitopaque_t)pbo32;
-				/*TODO*///	}
-				/*TODO*///	else
-				/*TODO*///	{
-				/*TODO*///		blit.draw_masked = (blitmask_t)pdt32;
-				/*TODO*///		blit.draw_opaque = (blitopaque_t)pdo32;
-				/*TODO*///	}
-				/*TODO*///	blit.screen_bitmap_pitch_line /= 4;
-				/*TODO*///	break;
-	
-				/*TODO*///case 15:
-				/*TODO*///	if( flags&TILEMAP_ALPHA )
-				/*TODO*///	{
-				/*TODO*///		blit.draw_masked = (blitmask_t)pbt15;
-				/*TODO*///		blit.draw_opaque = (blitopaque_t)pbo15;
-				/*TODO*///	}
-				/*TODO*///	else
-				/*TODO*///	{
-				/*TODO*///		blit.draw_masked = (blitmask_t)pdt15;
-				/*TODO*///		blit.draw_opaque = (blitopaque_t)pdo15;
-				/*TODO*///	}
-				/*TODO*///	blit.screen_bitmap_pitch_line /= 2;
-				/*TODO*///	break;
-	
-				case 16:
-					blit.draw_masked = (blitmask_t)pdt16;
-					blit.draw_opaque = (blitopaque_8_t)pdo16;
-					blit.screen_bitmap_pitch_line /= 2;
-                                        //blit.screen_bitmap_pitch_line++;
-					break;
-	
-				default:
-                                    System.out.println("OTROOOOOOOOOOOO");
-					//exit(1);
-					break;
-				}
-				blit.screen_bitmap_pitch_row = blit.screen_bitmap_pitch_line*tilemap.cached_tile_height;
-			} /* dest == bitmap */
-	
-			if( (tilemap.type==TILEMAP_OPAQUE || (flags&TILEMAP_IGNORE_TRANSPARENCY)!=0) ? false : true)
-			{
-				if(( flags&TILEMAP_BACK ) != 0)
-				{
-					mask	|= TILE_FLAG_BG_OPAQUE;
-					value	|= TILE_FLAG_BG_OPAQUE;
-				}
-				else
-				{
-					mask	|= TILE_FLAG_FG_OPAQUE;
-					value	|= TILE_FLAG_FG_OPAQUE;
-				}
-			}
-	
-			blit.tilemap_priority_code = priority;
-                        
-                        //System.out.println("rows="+rows+", cols="+cols);
-	
-			if( rows == 1 && cols == 1 )
-			{ /* XY scrolling playfield */
-				int scrollx = rowscroll[0];
-				int scrolly = colscroll[0];
-	
-				if( scrollx < 0 )
-				{
-					scrollx = tilemap.cached_width - (-scrollx) % tilemap.cached_width;
-				}
-				else
-				{
-					scrollx = scrollx % tilemap.cached_width;
-				}
-	
-				if( scrolly < 0 )
-				{
-					scrolly = tilemap.cached_height - (-scrolly) % tilemap.cached_height;
-				}
-				else
-				{
-					scrolly = scrolly % tilemap.cached_height;
-				}
-	
-		 		blit.clip_left		= left;
-		 		blit.clip_top		= top;
-		 		blit.clip_right		= right;
-		 		blit.clip_bottom	= bottom;
-	
-				for(
-					ypos = scrolly - tilemap.cached_height;
-					ypos < blit.clip_bottom;
-					ypos += tilemap.cached_height )
-				{
-					for(
-						xpos = scrollx - tilemap.cached_width;
-						xpos < blit.clip_right;
-						xpos += tilemap.cached_width )
-					{
-						tilemap.draw.handler(tilemap, xpos, ypos, mask, value );
-					}
-				}
-			}
-			else if( rows == 1 )
-			{ /* scrolling columns + horizontal scroll */
-				int col = 0;
-				int colwidth = tilemap.cached_width / cols;
-				int scrollx = rowscroll[0];
-	
-				if( scrollx < 0 )
-				{
-					scrollx = tilemap.cached_width - (-scrollx) % tilemap.cached_width;
-				}
-				else
-				{
-					scrollx = scrollx % tilemap.cached_width;
-				}
-	
-				blit.clip_top		= top;
-				blit.clip_bottom	= bottom;
-	
-				while( col < cols )
-				{
-					int cons	= 1;
-					int scrolly	= colscroll[col];
-	
-		 			/* count consecutive columns scrolled by the same amount */
-					if( scrolly != TILE_LINE_DISABLED )
-					{
-						while( col + cons < cols &&	colscroll[col + cons] == scrolly ) cons++;
-	
-						if( scrolly < 0 )
-						{
-							scrolly = tilemap.cached_height - (-scrolly) % tilemap.cached_height;
-						}
-						else
-						{
-							scrolly %= tilemap.cached_height;
-						}
-	
-						blit.clip_left = col * colwidth + scrollx;
-						if (blit.clip_left < left) blit.clip_left = left;
-						blit.clip_right = (col + cons) * colwidth + scrollx;
-						if (blit.clip_right > right) blit.clip_right = right;
-	
-						for(
-							ypos = scrolly - tilemap.cached_height;
-							ypos < blit.clip_bottom;
-							ypos += tilemap.cached_height )
-						{
-							tilemap.draw.handler(tilemap, scrollx, ypos, mask, value );
-						}
-	
-						blit.clip_left = col * colwidth + scrollx - tilemap.cached_width;
-						if (blit.clip_left < left) blit.clip_left = left;
-						blit.clip_right = (col + cons) * colwidth + scrollx - tilemap.cached_width;
-						if (blit.clip_right > right) blit.clip_right = right;
-	
-						for(
-							ypos = scrolly - tilemap.cached_height;
-							ypos < blit.clip_bottom;
-							ypos += tilemap.cached_height )
-						{
-							tilemap.draw.handler(tilemap, scrollx - tilemap.cached_width, ypos, mask, value );
-						}
-					}
-					col += cons;
-				}
-			}
-			else if( cols == 1 )
-			{ /* scrolling rows + vertical scroll */
-				int row = 0;
-				int rowheight = tilemap.cached_height / rows;
-				int scrolly = colscroll[0];
-				if( scrolly < 0 )
-				{
-					scrolly = tilemap.cached_height - (-scrolly) % tilemap.cached_height;
-				}
-				else
-				{
-					scrolly = scrolly % tilemap.cached_height;
-				}
-				blit.clip_left = left;
-				blit.clip_right = right;
-				while( row < rows )
-				{
-					int cons = 1;
-					int scrollx = rowscroll[row];
-					/* count consecutive rows scrolled by the same amount */
-					if( scrollx != TILE_LINE_DISABLED )
-					{
-						while( row + cons < rows &&	rowscroll[row + cons] == scrollx ) cons++;
-						if( scrollx < 0)
-						{
-							scrollx = tilemap.cached_width - (-scrollx) % tilemap.cached_width;
-						}
-						else
-						{
-							scrollx %= tilemap.cached_width;
-						}
-						blit.clip_top = row * rowheight + scrolly;
-						if (blit.clip_top < top) blit.clip_top = top;
-						blit.clip_bottom = (row + cons) * rowheight + scrolly;
-						if (blit.clip_bottom > bottom) blit.clip_bottom = bottom;
-						for(
-							xpos = scrollx - tilemap.cached_width;
-							xpos < blit.clip_right;
-							xpos += tilemap.cached_width )
-						{
-                                                    //System.out.println("Pintando1!");
-							tilemap.draw.handler(tilemap, xpos, scrolly, mask, value );
-						}
-						blit.clip_top = row * rowheight + scrolly - tilemap.cached_height;
-						if (blit.clip_top < top) blit.clip_top = top;
-						blit.clip_bottom = (row + cons) * rowheight + scrolly - tilemap.cached_height;
-						if (blit.clip_bottom > bottom) blit.clip_bottom = bottom;
-						for(
-							xpos = scrollx - tilemap.cached_width;
-							xpos < blit.clip_right;
-							xpos += tilemap.cached_width )
-						{
-                                                    //System.out.println("Pintando2!");
-							tilemap.draw.handler(tilemap, xpos, scrolly - tilemap.cached_height, mask, value );
-						}
-					}
-					row += cons;
-				}
-			}
-                        //dest=blit.screen_bitmap;
-		}
-	
-/*TODO*///profiler_mark(PROFILER_END);
-    }
-    /*TODO*///
 /*TODO*////* notes:
 /*TODO*///   - startx and starty MUST be UINT32 for calculations to work correctly
 /*TODO*///   - srcbitmap.width and height are assumed to be a power of 2 to speed up wraparound
@@ -2046,9 +1761,9 @@ public class tilemapC {
         }
     }
     
-    public static DrawHandlerPtr draw16BPP_new = new DrawHandlerPtr() {
+    public static DrawHandlerPtr draw16BPP = new DrawHandlerPtr() {
             public void handler(struct_tilemap tilemap, int xpos, int ypos, int mask, int value) {
-                int transPrev;
+                int transPrev = eWHOLLY_OPAQUE;
                 int transCur = eWHOLLY_OPAQUE;
                 UBytePtr pTrans;
                 int cached_indx;
@@ -2090,10 +1805,10 @@ public class tilemapC {
 
                 if( x1<x2 && y1<y2 ) /* do nothing if totally clipped */
                 {
-                        priority_bitmap_baseaddr = new UBytePtr((new UBytePtr(priority_bitmap.line[y1])), xpos);
+                        priority_bitmap_baseaddr = new UBytePtr(priority_bitmap.line[y1], xpos);
                         if( screen != null )
                         {
-                                dest_baseaddr = new UShortPtr((new UShortPtr(screen.line[y1])), xpos);
+                                dest_baseaddr = new UShortPtr(screen.line[y1], xpos);
                         }
 
                         /* convert screen coordinates to source tilemap coordinates */
@@ -2103,7 +1818,7 @@ public class tilemapC {
                         y2 -= ypos;
 
                         source_baseaddr = new UShortPtr(tilemap.pixmap.line[y1]);
-                        mask_baseaddr = tilemap.transparency_bitmap.line[y1];
+                        mask_baseaddr = new UBytePtr(tilemap.transparency_bitmap.line[y1]);
 
                         c1 = x1/tilemap.cached_tile_width; /* round down */
                         c2 = (x2+tilemap.cached_tile_width-1)/tilemap.cached_tile_width; /* round up */
@@ -2150,7 +1865,7 @@ public class tilemapC {
                                                 transCur = (((pTrans.read())&mask) == value)?eWHOLLY_OPAQUE:eWHOLLY_TRANSPARENT;
                                         }
                                         if (!L_Skip)
-                                            pTrans.inc( tilemap.cached_tile_width );
+                                            pTrans.offset += tilemap.cached_tile_width; //myoff
 
                                 //L_Skip:
                                         L_Skip = false;
@@ -2173,7 +1888,7 @@ public class tilemapC {
                                                                 i = y;
                                                                 for(;;)
                                                                 {
-                                                                        blit.draw_opaque.handler(new UShortPtr(dest0), new UShortPtr(source0), count, new UBytePtr(pmap0), tilemap_priority_code );
+                                                                        blit.draw_opaque.handler(dest0, source0, count, pmap0, tilemap_priority_code );
                                                                         if( ++i == y_next ) break;
 
                                                                     dest0.offset += blit.screen_bitmap_pitch_line;
@@ -2190,10 +1905,10 @@ public class tilemapC {
                                                                         blit.draw_masked.handler(dest0, source0, mask0, mask, value, count, pmap0, tilemap_priority_code );
                                                                         if( ++i == y_next ) break;
 
-                                                                        dest0.inc( blit.screen_bitmap_pitch_line );
-                                                                        source0.inc( tilemap.pixmap_pitch_line );
-                                                                        mask0.inc( tilemap.transparency_bitmap_pitch_line );
-                                                                        pmap0.inc( priority_bitmap_pitch_line );
+                                                                        dest0.offset += blit.screen_bitmap_pitch_line;
+                                                                        source0.offset += tilemap.pixmap_pitch_line ;
+                                                                        mask0.offset += tilemap.transparency_bitmap_pitch_line;
+                                                                        pmap0.offset += priority_bitmap_pitch_line;
                                                                 }
                                                         } /* transPrev == eMASKED */
                                                 } /* transPrev != eWHOLLY_TRANSPARENT */
@@ -2204,10 +1919,10 @@ public class tilemapC {
                                 }
                                 if( y_next==y2 ) break; /* we are done! */
 
-                                priority_bitmap_baseaddr = priority_bitmap_next;
-                                dest_baseaddr = dest_next;
-                                source_baseaddr = source_next;
-                                mask_baseaddr = mask_next;
+                                priority_bitmap_baseaddr = new UBytePtr(priority_bitmap_next);
+                                dest_baseaddr = new UShortPtr(dest_next);
+                                source_baseaddr = new UShortPtr(source_next);
+                                mask_baseaddr = new UBytePtr(mask_next);
                                 y = y_next;
                                 y_next += tilemap.cached_tile_height;
 
@@ -2217,213 +1932,17 @@ public class tilemapC {
                                 }
                                 else
                                 {
-                                        dest_next.inc( blit.screen_bitmap_pitch_row );
-                                        priority_bitmap_next.inc( priority_bitmap_pitch_row );
-                                        source_next.inc( tilemap.pixmap_pitch_row );
-                                        mask_next.inc( tilemap.transparency_bitmap_pitch_row );
+                                        dest_next.offset += blit.screen_bitmap_pitch_row ;
+                                        priority_bitmap_next.offset += priority_bitmap_pitch_row ;
+                                        source_next.offset += tilemap.pixmap_pitch_row ;
+                                        mask_next.offset += tilemap.transparency_bitmap_pitch_row ;
                                 }
                         } /* process next row */
                 } /* not totally clipped */
             }
         };
     
-    public static DrawHandlerPtr draw16BPP = new DrawHandlerPtr() {
-        public void handler(struct_tilemap tilemap, int xpos, int ypos, int mask, int value) {
-            //System.out.println("draw16BPP");
-            int transPrev = eWHOLLY_OPAQUE;
-            int transCur = eWHOLLY_OPAQUE;
-
-            UBytePtr pTrans;
-            int cached_indx;
-            mame_bitmap screen = blit.screen_bitmap;
-            int tilemap_priority_code = blit.tilemap_priority_code;
-            int x1 = xpos;
-            int y1 = ypos;
-            int x2 = xpos+tilemap.cached_width;
-            int y2 = ypos+tilemap.cached_height;
-            UShortPtr dest_baseaddr = null;
-            UShortPtr dest_next;
-            int dy;
-            int count;
-            UShortPtr source0;
-            UShortPtr dest0;
-            UBytePtr pmap0;
-            int i;
-            int row;
-            int x_start;
-            int x_end;
-            int column;
-            int c1; /* leftmost visible column in source tilemap */
-            int c2; /* rightmost visible column in source tilemap */
-            int y; /* current screen line to render */
-            int y_next;
-            UBytePtr priority_bitmap_baseaddr;
-            UBytePtr priority_bitmap_next;
-            UShortPtr source_baseaddr;
-            UShortPtr source_next;
-            UBytePtr mask0;
-            UBytePtr mask_baseaddr;
-            UBytePtr mask_next;
-
-            /* clip source coordinates */
-            if( x1<blit.clip_left ) x1 = blit.clip_left;
-            if( x2>blit.clip_right ) x2 = blit.clip_right;
-            if( y1<blit.clip_top ) y1 = blit.clip_top;
-            if( y2>blit.clip_bottom ) y2 = blit.clip_bottom;
-            
-            //System.out.println("Antes!");
-
-            if( x1<x2 && y1<y2 ) /* do nothing if totally clipped */
-            {
-                //System.out.println("Dentro!");
-                    priority_bitmap_baseaddr = new UBytePtr(priority_bitmap.line[y1], xpos );
-                    if( screen != null )
-                    {
-                            dest_baseaddr = new UShortPtr(screen.line[y1],  xpos);
-                            //System.out.println("xpos="+xpos);
-                    }
-
-                    /* convert screen coordinates to source tilemap coordinates */
-                    x1 -= xpos;
-                    y1 -= ypos;
-                    x2 -= xpos;
-                    y2 -= ypos;
-
-                    source_baseaddr = new UShortPtr(tilemap.pixmap.line[y1]);
-                    mask_baseaddr = new UBytePtr(tilemap.transparency_bitmap.line[y1]);
-
-                    c1 = x1/tilemap.cached_tile_width; /* round down */
-                    c2 = (x2+tilemap.cached_tile_width-1)/tilemap.cached_tile_width; /* round up */
-
-                    y = y1;
-                    y_next = tilemap.cached_tile_height*(y1/tilemap.cached_tile_height) + tilemap.cached_tile_height;
-                    if( y_next>y2 ) y_next = y2;
-
-                    dy = y_next-y;
-                    dest_next = new UShortPtr(dest_baseaddr, dy*blit.screen_bitmap_pitch_line);
-                    priority_bitmap_next = new UBytePtr(priority_bitmap_baseaddr, dy*priority_bitmap_pitch_line);
-                    source_next = new UShortPtr(source_baseaddr, dy*tilemap.pixmap_pitch_line);
-                    mask_next = new UBytePtr(mask_baseaddr, dy*tilemap.transparency_bitmap_pitch_line);
-                    for(;;)
-                    {
-                            row = y/tilemap.cached_tile_height;
-                            x_start = x1;
-
-                            transPrev = eWHOLLY_TRANSPARENT;
-                            pTrans = new UBytePtr(mask_baseaddr, x_start);
-
-                            cached_indx = row*tilemap.num_cached_cols + c1;
-                            for( column=c1; column<=c2; column++ )
-                            {
-                                    boolean L_Skip = false;
-                                    if( column == c2 )
-                                    {
-                                            transCur = eWHOLLY_TRANSPARENT;
-                                            L_Skip = true;
-                                    }
-
-                                    if((!L_Skip)&&( tilemap.transparency_data.read(cached_indx)==TILE_FLAG_DIRTY ))
-                                    {
-                                            update_tile_info( tilemap, cached_indx, column, row );
-                                    }
-
-                                    if((!L_Skip)&&( (tilemap.transparency_data.read(cached_indx)&mask)!=0 ))
-                                    {
-                                            transCur = eMASKED;
-                                    }
-                                    else if(!L_Skip)
-                                    {
-                                            transCur = (((pTrans.read())&mask) == value)?eWHOLLY_OPAQUE:eWHOLLY_TRANSPARENT;
-                                    }
-                                    if (!L_Skip)
-                                        pTrans.offset += tilemap.cached_tile_width ;
-                                    
-                                    L_Skip = false;
-
-                            //L_Skip:
-                                    if( transCur!=transPrev )
-                                    {
-                                            x_end = column*tilemap.cached_tile_width;
-                                            if( x_end<x1 ) x_end = x1;
-                                            if( x_end>x2 ) x_end = x2;
-
-                                            if( transPrev != eWHOLLY_TRANSPARENT )
-                                            {
-                                                    count = x_end - x_start + 1;
-                                                    source0 = new UShortPtr(source_baseaddr, x_start);
-                                                    dest0 = new UShortPtr(dest_baseaddr, x_start);
-                                                    pmap0 = new UBytePtr(priority_bitmap_baseaddr, x_start);
-
-                                                    if( transPrev == eWHOLLY_OPAQUE )
-                                                    {
-                                                        //System.out.println("OPAQUE!");
-                                                            i = y;
-                                                            for(;;)
-                                                            {
-                                                                    blit.draw_opaque.handler(new UShortPtr(dest0), new UShortPtr(source0), count, new UBytePtr(pmap0), tilemap_priority_code );
-                                                                    //memcpy(new UShortPtr(dest0), new UShortPtr(source0), count);
-                                                                    //memset(new UBytePtr(pmap0), tilemap_priority_code, count);
-                                                                    if( ++i == y_next ) break;
-
-                                                                    dest0.offset += blit.screen_bitmap_pitch_line;
-                                                                    source0.offset += tilemap.pixmap_pitch_line;
-                                                                    pmap0.offset += priority_bitmap_pitch_line;
-                                                            }
-                                                    } /* transPrev == eWHOLLY_OPAQUE */
-                                                    else /* transPrev == eMASKED */
-                                                    {
-                                                        //System.out.println("MASKED!");
-                                                            mask0 = new UBytePtr(mask_baseaddr, x_start);
-                                                            i = y;
-                                                            for(;;)
-                                                            {
-                                                                    //blit.draw_masked.handler(dest0, source0, mask0, mask, value, count, pmap0, tilemap_priority_code );
-                                                                    //blit.draw_masked.handler(new UShortPtr(dest0), new UShortPtr(source0), new UBytePtr(mask0), mask, value, count, new UBytePtr(pmap0), tilemap_priority_code );
-                                                                    //memcpybitmask8(new UShortPtr(dest0), new UShortPtr(source0), new UBytePtr(mask0), count);
-                                                                    //memsetbitmask8(new UBytePtr(pmap0), tilemap_priority_code, new UBytePtr(mask0), count);
-                                    
-                                                                    //if( ++i == y_next ) break;
-
-                                                                    blit.draw_masked.handler( new UShortPtr(dest0), new UShortPtr(source0), new UBytePtr(mask0), mask, value, count, new UBytePtr(pmap0), tilemap_priority_code );
-									if( ++i == y_next ) break;
-	
-									dest0.offset += blit.screen_bitmap_pitch_line;
-									source0.offset += tilemap.pixmap_pitch_line;
-									mask0.offset += tilemap.transparency_bitmap_pitch_line;
-									pmap0.offset += priority_bitmap_pitch_line;
-                                                            }
-                                                    } /* transPrev == eMASKED */
-                                            } /* transPrev != eWHOLLY_TRANSPARENT */
-                                            x_start = x_end;
-                                            transPrev = transCur;
-                                    }
-                                    cached_indx++;
-                            }
-                            if( y_next==y2 ) break; /* we are done! */
-	
-				priority_bitmap_baseaddr = new UBytePtr(priority_bitmap_next);
-				dest_baseaddr = new UShortPtr(dest_next);
-				source_baseaddr = new UShortPtr(source_next);
-				mask_baseaddr = new UBytePtr(mask_next);
-				y = y_next;
-				y_next += tilemap.cached_tile_height;
-	
-				if( y_next>=y2 )
-				{
-					y_next = y2;
-				}
-				else
-				{
-					dest_next.offset += blit.screen_bitmap_pitch_row;
-					priority_bitmap_next.offset += priority_bitmap_pitch_row;
-					source_next.offset += tilemap.pixmap_pitch_row;
-					mask_next.offset += tilemap.transparency_bitmap_pitch_row;
-				}
-                    } /* process next row */
-            } /* not totally clipped */
-        }
-    };
-        
+    
 /*TODO*///DECLARE( draw, (struct tilemap *tilemap, int xpos, int ypos, int mask, int value ),
 /*TODO*///{
 /*TODO*///	trans_t transPrev;
