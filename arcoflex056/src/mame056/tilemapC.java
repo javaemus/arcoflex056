@@ -422,9 +422,12 @@ public class tilemapC {
     public static blitmask_t pdt16 = new blitmask_t() {
         public void handler( UShortPtr dest, UShortPtr source, UBytePtr pMask, int mask, int value, int count, UBytePtr pri, int pcode ) {
             int i;
+
             for( i=0; i<count*2; i++ )
+
             {
-                    if( (pMask.read(i)&mask&0xffff)==(value&0xffff) )
+
+                    if( (pMask.read(i)&mask)==value )
                     {
                             dest.write(i, source.read(i));
                             pri.write(i, pri.read(i) | pcode);
