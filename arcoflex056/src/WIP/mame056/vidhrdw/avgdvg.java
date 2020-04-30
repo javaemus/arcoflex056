@@ -954,7 +954,7 @@ public class avgdvg
 		/* initialize the colorram */
 		for (i = 0; i < 16; i++){
 			colorram[i] = i & 0x07;
-                        //System.out.println("colorram["+i+"]="+colorram[i]);
+                        System.out.println("colorram["+i+"]="+colorram[i]);
                 }
                 colorram[1] = 7;
 	

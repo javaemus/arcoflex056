@@ -403,6 +403,7 @@ public class vector
 	
 	static void vector_draw_aa_pixel_15 (int x, int y, int col, int dirty)
 	{
+            //System.out.println("vector_draw_aa_pixel_15");
 		int dst;
 	
 		if (x < xmin || x >= xmax)
@@ -411,11 +412,11 @@ public class vector
 			return;
 	
 		//dst = ((UINT16 *)vecbitmap.line[y])[x];
-                dst = (vecbitmap.line[y]).read(x);
+                dst = (new UShortPtr(vecbitmap.line[y])).read(x);
 		//((UINT16 *)vecbitmap.line[y])[x] = LIMIT5(((col>>3) & 0x1f) + (dst & 0x1f))
-                (vecbitmap.line[y]).write(x, LIMIT5(((col>>3) & 0x1f) + (dst & 0x1f))
-			| (LIMIT5(((col >> 11) & 0x1f) + ((dst >> 5) & 0x1f)) << 5)
-			| (LIMIT5((col >> 19) + (dst >> 10)) << 10));
+                (new UShortPtr(vecbitmap.line[y])).write(x, (char) (LIMIT5(((col>>3) & 0x1f) + (dst & 0x1f))
+                        | (LIMIT5(((col >> 11) & 0x1f) + ((dst >> 5) & 0x1f)) << 5)
+                        | (LIMIT5((col >> 19) + (dst >> 10)) << 10)));
 	
 		if (p_index<MAX_PIXELS)
 		{
@@ -430,6 +431,7 @@ public class vector
 	
 	static void vector_draw_aa_pixel_32 (int x, int y, int col, int dirty)
 	{
+            System.out.println("vector_draw_aa_pixel_32");
 		int dst;
 	
 		if (x < xmin || x >= xmax)
@@ -438,11 +440,11 @@ public class vector
 			return;
 	
 		//dst = ((UINT32 *)vecbitmap.line[y])[x];
-                dst = (vecbitmap.line[y]).read(x);
+                dst = (new UShortPtr(vecbitmap.line[y])).read(x);
 		//((UINT32 *)vecbitmap.line[y])[x] = LIMIT8((col & 0xff) + (dst & 0xff))
-                (vecbitmap.line[y]).write(x, LIMIT8((col & 0xff) + (dst & 0xff))
-			| (LIMIT8(((col >> 8) & 0xff) + ((dst >> 8) & 0xff)) << 8)
-			| (LIMIT8((col >> 16) + (dst >> 16)) << 16));
+                (new UShortPtr(vecbitmap.line[y])).write(x, (char) (LIMIT8((col & 0xff) + (dst & 0xff))
+                        | (LIMIT8(((col >> 8) & 0xff) + ((dst >> 8) & 0xff)) << 8)
+                        | (LIMIT8((col >> 16) + (dst >> 16)) << 16)));
 	
 		if (p_index<MAX_PIXELS)
 		{

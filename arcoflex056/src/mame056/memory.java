@@ -2520,7 +2520,7 @@ public class memory {
 
             // HACK for NAMCOS1            
             /*if (base == null)
-                return;*/
+                base = new UBytePtr(kk);*/
             
             /* compute the adjusted base */
             OP_ROM = new UBytePtr(base, -rmemhandler8[entry].offset + (OP_ROM.offset - OP_RAM.offset));

@@ -255,6 +255,8 @@ import static WIP.mame056.drivers.circusc.*;
 import static WIP.mame056.drivers.ddrible.*;
 import static WIP.mame056.drivers.atetris.*;
 import static WIP.mame056.drivers.mrdo.*;
+import static WIP.mame056.drivers._1942.*;
+import static WIP.mame056.drivers.wc90.*;
 
 public class driver {
 
@@ -1868,9 +1870,9 @@ public class driver {
         /*TODO*///	driver_vulgusj,	/*  5/1984 (c) 1984 */
         driver_sonson, /*  7/1984 (c) 1984 */
         driver_sonsonj, /*  7/1984 (c) 1984 (Japan) */
-        /*TODO*///	driver_1942,		/* 12/1984 (c) 1984 */
-        /*TODO*///	driver_1942a,		/* 12/1984 (c) 1984 */
-        /*TODO*///	driver_1942b,		/* 12/1984 (c) 1984 */
+        driver_1942,		/* 12/1984 (c) 1984 */
+        driver_1942a,		/* 12/1984 (c) 1984 */
+        driver_1942b,		/* 12/1984 (c) 1984 */
         driver_exedexes, /*  2/1985 (c) 1985 */
         driver_savgbees, /*  2/1985 (c) 1985 + Memetron license */
         driver_commando, /*  5/1985 (c) 1985 (World) */
@@ -2801,8 +2803,8 @@ public class driver {
         /*TODO*///	driver_ryukendn,	/* 6215 - (c) 1989 Tecmo (Japan) */
         /*TODO*///	driver_tknight,	/* (c) 1989 Tecmo */
         /*TODO*///	driver_wildfang,	/* (c) 1989 Tecmo */
-        /*TODO*///	driver_wc90,		/* (c) 1989 Tecmo */
-        /*TODO*///	driver_wc90a,		/* (c) 1989 Tecmo */
+        driver_wc90,		/* (c) 1989 Tecmo */
+        driver_wc90a,		/* (c) 1989 Tecmo */
         /*TODO*///TESTdriver_wc90t,		/* (c) 1989 Tecmo */
         /*TODO*///	driver_wc90b,		/* bootleg */
         /*TODO*///	driver_fstarfrc,	/* (c) 1992 Tecmo */

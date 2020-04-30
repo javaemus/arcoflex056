@@ -673,7 +673,7 @@ public class namcos1
 			}
 	
 			/* renew pc base */
-	//		change_pc16(cpu_get_pc());
+			//change_pc16(cpu_get_pc());
 		} else {
 			chip &= 0x00ff;
 			chip |= ( data & 0xff ) << 8;
