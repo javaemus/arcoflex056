@@ -1901,7 +1901,7 @@ public class tilemapC {
                                                         } /* transPrev == eWHOLLY_OPAQUE */
                                                         else /* transPrev == eMASKED */
                                                         {
-                                                                mask0 = new UBytePtr(mask_baseaddr, x_start);
+                                                                mask0 = new UBytePtr(mask_baseaddr, x_start/2);
                                                                 i = y;
                                                                 for(;;)
                                                                 {
