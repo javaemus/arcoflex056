@@ -257,6 +257,8 @@ import static WIP.mame056.drivers.atetris.*;
 import static WIP.mame056.drivers.mrdo.*;
 import static WIP.mame056.drivers._1942.*;
 import static WIP.mame056.drivers.wc90.*;
+import static WIP.mame056.drivers.citycon.*;
+import static WIP.mame056.drivers.airbustr.*;
 
 public class driver {
 
@@ -3606,9 +3608,9 @@ public class driver {
         driver_exerionb, /* bootleg */
         /*TODO*///TESTdriver_formatz,	/* (c) 1984 Jaleco */
         /*TODO*///TESTdriver_aeroboto,	/* (c) 1984 Williams */
-        /*TODO*///	driver_citycon,	/* (c) 1985 Jaleco */
-        /*TODO*///	driver_citycona,	/* (c) 1985 Jaleco */
-        /*TODO*///	driver_cruisin,	/* (c) 1985 Jaleco/Kitkorp */
+        driver_citycon,	/* (c) 1985 Jaleco */
+        driver_citycona,	/* (c) 1985 Jaleco */
+        driver_cruisin,	/* (c) 1985 Jaleco/Kitkorp */
         driver_pinbo,		/* (c) 1984 Jaleco */
         driver_pinbos,	/* (c) 1985 Strike */
         driver_momoko, /* (c) 1986 Jaleco */
@@ -3765,8 +3767,8 @@ public class driver {
         /*TODO*///
         /*TODO*///	/* other Kaneko games */
         /*TODO*///	driver_galpanic,	/* (c) 1990 Kaneko */
-        /*TODO*///	driver_airbustr,	/* (c) 1990 Kaneko */
-        /*TODO*///
+        driver_airbustr,	/* (c) 1990 Kaneko */
+        
         /* Seta games */
         driver_hanaawas,	/* (c) SetaKikaku */
         /*TODO*///	driver_srmp2,		/* UB or UC?? (c) 1987 */
