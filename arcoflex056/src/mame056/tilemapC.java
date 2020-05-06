@@ -1168,7 +1168,7 @@ public class tilemapC {
                         }
                         else
                         {
-                                blit.screen_bitmap_pitch_line = ((new UBytePtr(dest.line[1])).offset - (new UBytePtr(dest.line[0])).offset);
+                                blit.screen_bitmap_pitch_line = ((new UBytePtr(dest.line[1])).offset - (new UBytePtr(dest.line[0])).offset)*2;
                                 switch( dest.depth )
                                 {
                                 case 32:
