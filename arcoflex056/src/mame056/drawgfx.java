@@ -233,7 +233,7 @@ public class drawgfx {
             if (false && gl.planes <= 4 && (gfx.width & 1) == 0) //if (gl.planes <= 4 && !(gfx.width & 1))
             {
                 gfx.flags |= GFX_PACKED;
-                gfx.line_modulo = gfx.width / 2;
+                gfx.line_modulo = gfx.width;
             } else {
                 gfx.line_modulo = gfx.width;
             }
@@ -398,8 +398,8 @@ public class drawgfx {
         dstmodulo -= srcwidth;
 
         while (srcheight != 0) {
-            end = dstdata.offset / 2 + srcwidth;
-            while (dstdata.offset / 2 < end) {
+            end = dstdata.offset + srcwidth;
+            while (dstdata.offset < end) {
                 int col;
 
                 col = srcdata.read(0);
@@ -429,8 +429,8 @@ public class drawgfx {
 
             while (srcheight != 0)
             {
-                    end = dstdata.offset / 2 + srcwidth;
-                    while (dstdata.offset / 2 < end)
+                    end = dstdata.offset + srcwidth;
+                    while (dstdata.offset < end)
                     {
                             int col;
 
@@ -5204,8 +5204,8 @@ public class drawgfx {
 
             while (dstheight != 0) {
 
-                end = dstdata.offset / 2 - dstwidth;
-                while ((srcdata.offset & 3) != 0 && dstdata.offset / 2 > end) /* longword align */ {
+                end = dstdata.offset - dstwidth;
+                while ((srcdata.offset & 3) != 0 && dstdata.offset > end) /* longword align */ {
                     int col;
 
                     col = srcdata.readinc();
@@ -5216,7 +5216,7 @@ public class drawgfx {
                 }
 
                 sd4 = new IntPtr(srcdata);
-                while (dstdata.offset / 2 >= end + 4) {
+                while (dstdata.offset >= end + 4) {
                     int col4;
 
                     dstdata.dec(4);
@@ -5240,7 +5240,7 @@ public class drawgfx {
                     sd4.base += 4;
                 }
                 srcdata.set(sd4.readCA(), sd4.getBase());
-                while (dstdata.offset / 2 > end) {
+                while (dstdata.offset > end) {
                     int col;
 
                     col = srcdata.readinc();
@@ -5262,8 +5262,8 @@ public class drawgfx {
             trans4 = transpen & tran_mask;
 
             while (dstheight != 0) {
-                end = dstdata.offset / 2 + dstwidth;
-                while (((long) srcdata.offset & 3) != 0 && dstdata.offset / 2 < end) /* longword align */ {
+                end = dstdata.offset + dstwidth;
+                while (((long) srcdata.offset & 3) != 0 && dstdata.offset < end) /* longword align */ {
                     int col;
 
                     col = srcdata.readinc();
@@ -5273,7 +5273,7 @@ public class drawgfx {
                     dstdata.inc();
                 }
                 sd4 = new IntPtr(srcdata);
-                while (dstdata.offset / 2 <= end - 4) {
+                while (dstdata.offset <= end - 4) {
                     int col4;
 
                     if ((col4 = sd4.read(0)) != trans4) {
@@ -5297,7 +5297,7 @@ public class drawgfx {
                     sd4.base += 4;
                 }
                 srcdata.set(sd4.readCA(), sd4.getBase());
-                while (dstdata.offset / 2 < end) {
+                while (dstdata.offset < end) {
                     int col;
 
                     col = srcdata.readinc();
@@ -5341,8 +5341,8 @@ public class drawgfx {
 
 		while (dstheight != 0)
 		{
-			end = dstdata.offset/2 - dstwidth;
-			while (((srcdata.read() & 3)!=0) && ((dstdata.offset / 2) > end))	/* longword align */
+			end = dstdata.offset - dstwidth;
+			while (((srcdata.read() & 3)!=0) && ((dstdata.offset) > end))	/* longword align */
 			{
 				int col;
 
@@ -5352,7 +5352,7 @@ public class drawgfx {
 				dstdata.dec();
 			}
 			sd4 = new UBytePtr(srcdata);
-			while (dstdata.offset/2 > end)
+			while (dstdata.offset > end)
 			{
 				int col;
 				int col4;
@@ -5373,7 +5373,7 @@ public class drawgfx {
                                     dstdata.write(1, (char) paldata.read(srcdata.read(col)));
 			}
 			srcdata = new UBytePtr(sd4);
-			while (dstdata.offset/2 > end)
+			while (dstdata.offset > end)
 			{
 				int col;
 
@@ -5395,8 +5395,8 @@ public class drawgfx {
 
 		while (dstheight != 0)
 		{
-			end = dstdata.offset / 2 + dstwidth;
-			while ((srcdata.read() & 3)!=0 && dstdata.offset/2 < end)	/* longword align */
+			end = dstdata.offset + dstwidth;
+			while ((srcdata.read() & 3)!=0 && dstdata.offset < end)	/* longword align */
 			{
 				int col;
 
@@ -5406,7 +5406,7 @@ public class drawgfx {
 				dstdata.inc();
 			}
 			sd4 = new UBytePtr(srcdata);
-			while (dstdata.offset/2 < end)
+			while (dstdata.offset < end)
 			{
 				int col;
 				int col4;
@@ -5427,7 +5427,7 @@ public class drawgfx {
 				dstdata.inc(4*1);
 			}
 			srcdata = new UBytePtr(sd4);
-			while (dstdata.offset/2 < end)
+			while (dstdata.offset < end)
 			{
 				int col;
 
@@ -6068,7 +6068,7 @@ public class drawgfx {
     public static void blockmove_NtoN_opaque_noremap16(UShortPtr srcdata, int srcwidth, int srcheight, int srcmodulo, UShortPtr dstdata, int dstmodulo) {
 
         while (srcheight != 0) {
-            System.arraycopy(srcdata.memory, (int) srcdata.offset, dstdata.memory, (int) dstdata.offset, srcwidth * 2);
+            System.arraycopy(srcdata.memory, (int) srcdata.offset, dstdata.memory, (int) dstdata.offset, srcwidth);
 
             srcdata.inc(srcmodulo);
             dstdata.inc(dstmodulo);
@@ -6124,8 +6124,8 @@ public class drawgfx {
 
 	while (srcheight != 0)
 	{
-		end = dstdata.offset/2 + srcwidth;
-		while (dstdata.offset/2 <= end - 8)
+		end = dstdata.offset + srcwidth;
+		while (dstdata.offset <= end - 8)
 		{
 			dstdata.write(0, (char) paldata[srcdata.read(0)]);
 			dstdata.write(1, (char) paldata[srcdata.read(1)]);
@@ -6138,7 +6138,7 @@ public class drawgfx {
 			dstdata.inc(8);
 			srcdata.inc(8);
 		}
-		while (dstdata.offset/2 < end){
+		while (dstdata.offset < end){
 			dstdata.write((char) paldata[srcdata.read(0)]);
                         dstdata.inc();
                         srcdata.inc();
@@ -6163,8 +6163,8 @@ public class drawgfx {
 
             while (srcheight != 0)
             {
-                    end = dstdata.offset/2 + srcwidth;
-                    while (dstdata.offset/2 <= end - 8)
+                    end = dstdata.offset + srcwidth;
+                    while (dstdata.offset <= end - 8)
                     {
                             srcdata.dec( 8 );
                             dstdata.write(0, (char) paldata[srcdata.read(8)]);
@@ -6177,7 +6177,7 @@ public class drawgfx {
                             dstdata.write(7, (char) paldata[srcdata.read(1)]);
                             dstdata.inc( 8 );
                     }
-                    while (dstdata.offset/2 < end){
+                    while (dstdata.offset < end){
                             dstdata.write((char) paldata[srcdata.read(srcdata.offset)]);
                             dstdata.inc();
                             srcdata.dec();
@@ -6235,8 +6235,8 @@ public class drawgfx {
 
 	while (srcheight != 0)
 	{
-		end = dstdata.offset/2 + srcwidth;
-		while (dstdata.offset/2 <= end - 8)
+		end = dstdata.offset + srcwidth;
+		while (dstdata.offset <= end - 8)
 		{
 			dstdata.write(0, (char) (dstdata.read(0)| srcdata.read(0) << srcshift));
 			dstdata.write(1, (char) (dstdata.read(1)| srcdata.read(1) << srcshift));
@@ -6249,7 +6249,7 @@ public class drawgfx {
 			dstdata.inc( 8 );
 			srcdata.inc( 8 );
 		}
-		while (dstdata.offset/2 < end){
+		while (dstdata.offset < end){
 			dstdata.write(0, (char) (dstdata.read(0) | (srcdata.read(0) << srcshift)));
                         dstdata.inc();
                         srcdata.inc();
@@ -6272,8 +6272,8 @@ public class drawgfx {
 
 	while (srcheight != 0)
 	{
-		end = dstdata.offset/2 + srcwidth;
-		while (dstdata.offset/2 <= end - 8)
+		end = dstdata.offset + srcwidth;
+		while (dstdata.offset <= end - 8)
 		{
 			srcdata.dec( 8 );
 			dstdata.write(0, (char) (dstdata.read(0)| srcdata.read(8) << srcshift));
@@ -6286,7 +6286,7 @@ public class drawgfx {
 			dstdata.write(7, (char) (dstdata.read(7)| srcdata.read(1) << srcshift));
 			dstdata.inc( 8 );
 		}
-		while (dstdata.offset/2 < end){
+		while (dstdata.offset < end){
 			dstdata.write(dstdata.offset, (char) (dstdata.read(0) | (srcdata.read(0)) << srcshift));
                         dstdata.inc();
                         srcdata.inc();
@@ -6932,10 +6932,10 @@ public class drawgfx {
         int sm = gfx.line_modulo;/* source modulo */
         int ls = sx - ox;/* left skip */
         int ts = sy - oy;/* top skip */
-        UShortPtr dd = new UShortPtr(dest.line[sy], sx * 2);/* dest data */
+        UShortPtr dd = new UShortPtr(dest.line[sy], sx);/* dest data */
         int dw = ex - sx + 1;/* dest width */
         int dh = ey - sy + 1;/* dest height */
-        int dm = (dest.line[1].offset / 2 - dest.line[0].offset / 2);/* dest modulo */
+        int dm = (dest.line[1].offset - dest.line[0].offset);/* dest modulo */
 
         IntArray paldata = null;
         if (gfx.colortable != null) {
@@ -7329,9 +7329,9 @@ public class drawgfx {
         UShortPtr sd = new UShortPtr(src.line[0]);/* source data */
         int sw = ex - sx + 1;/* source width */
         int sh = ey - sy + 1;/* source height */
-        int sm = src.line[1].offset / 2 - src.line[0].offset / 2;/* source modulo */
-        UShortPtr dd = new UShortPtr(dest.line[sy], sx * 2);/* dest data */
-        int dm = dest.line[1].offset / 2 - dest.line[0].offset / 2;/* dest modulo */
+        int sm = src.line[1].offset - src.line[0].offset;/* source modulo */
+        UShortPtr dd = new UShortPtr(dest.line[sy], sx);/* dest data */
+        int dm = dest.line[1].offset - dest.line[0].offset;/* dest modulo */
 
 
         if (flipx != 0) {
@@ -7884,7 +7884,7 @@ public class drawgfx {
 /*TODO*///		/* adjust in case we're oddly oriented */
 /*TODO*///		ADJUST_FOR_ORIENTATION(UINT16, Machine.orientation, bitmap, x, y);
 /*TODO*///
-            int dy = bitmap.line[1].offset / 2 - bitmap.line[0].offset / 2;
+            int dy = bitmap.line[1].offset - bitmap.line[0].offset;
             UBytePtr dst = new UBytePtr(bitmap.line[0], (y * dy + x) );
             //System.out.println("Tama: "+dst.memory.length);
             //System.out.println("offset: "+dst.offset);
@@ -8029,7 +8029,7 @@ public class drawgfx {
         } /* 16bpp destination */ else if (bitmap.depth == 15 || bitmap.depth == 16) {
             /* adjust in case we're oddly oriented */
             ADJUST_FOR_ORIENTATION(Machine.orientation, bitmap, x, y);
-            int dy = bitmap.line[1].offset / 2 - bitmap.line[0].offset / 2;
+            int dy = bitmap.line[1].offset - bitmap.line[0].offset;
             UShortPtr dst = new UShortPtr(bitmap.line[0], (y * dy + x) );
             int xadv = 1;
             if (Machine.orientation != 0) {
@@ -8053,7 +8053,7 @@ public class drawgfx {
                     }
                 }
                 /* can't lookup line because it may be negative! */
-                dst = new UShortPtr(bitmap.line[0], (dy * ty + tx) * 2);
+                dst = new UShortPtr(bitmap.line[0], (dy * ty + tx));
             }
 
             /* with pen lookups */
@@ -8661,8 +8661,8 @@ public class drawgfx {
             int end;
 
             while (dstheight != 0) {
-                end = dstdata.offset / 2 - dstwidth;
-                while (dstdata.offset / 2 >= end + 8) {
+                end = dstdata.offset - dstwidth;
+                while (dstdata.offset >= end + 8) {
                     dstdata.dec(8);
                     dstdata.write(8, (char) paldata.read(srcdata.read(0)));
                     dstdata.write(7, (char) paldata.read(srcdata.read(1)));
@@ -8674,7 +8674,7 @@ public class drawgfx {
                     dstdata.write(1, (char) paldata.read(srcdata.read(7)));
                     srcdata.inc(8);
                 }
-                while (dstdata.offset / 2 > end) {
+                while (dstdata.offset > end) {
                     dstdata.write(0, (char) paldata.read(srcdata.read(0)));
                     srcdata.inc();
                     dstdata.dec();
@@ -8688,8 +8688,8 @@ public class drawgfx {
             int end;//DATA_TYPE *end;
 
             while (dstheight != 0) {
-                end = dstdata.offset / 2 + dstwidth;
-                while (dstdata.offset / 2 <= end - 8) {
+                end = dstdata.offset + dstwidth;
+                while (dstdata.offset <= end - 8) {
                     dstdata.write(0, (char) paldata.read(srcdata.read(0)));
                     dstdata.write(1, (char) paldata.read(srcdata.read(1)));
                     dstdata.write(2, (char) paldata.read(srcdata.read(2)));
@@ -8701,7 +8701,7 @@ public class drawgfx {
                     srcdata.inc(8);
                     dstdata.inc(8);
                 }
-                while (dstdata.offset / 2 < end) {
+                while (dstdata.offset < end) {
                     dstdata.write(0, (char) paldata.read(srcdata.read(0)));
                     srcdata.inc();
                     dstdata.inc();
@@ -8737,8 +8737,8 @@ public class drawgfx {
             int end;
 
             while (dstheight != 0) {
-                end = dstdata.offset / 2 - dstwidth;
-                while (dstdata.offset / 2 > end) {
+                end = dstdata.offset - dstwidth;
+                while (dstdata.offset > end) {
                     if (colortable.read(srcdata.read()) != transcolor) {
                         dstdata.write(0, (char) paldata.read(srcdata.read()));
                     }
@@ -8754,8 +8754,8 @@ public class drawgfx {
             int end;
 //System.out.println("kkkkkkk="+transcolor);
             while (dstheight != 0) {
-                end = dstdata.offset / 2 + dstwidth;
-                while (dstdata.offset / 2 < end) {
+                end = dstdata.offset + dstwidth;
+                while (dstdata.offset < end) {
                     if (colortable.read(srcdata.read()) != transcolor) {
                         dstdata.write(0, (char) paldata.read(srcdata.read()));
                     }
@@ -8796,8 +8796,8 @@ public class drawgfx {
 
             while (dstheight != 0) {
 
-                end = dstdata.offset / 2 - dstwidth;
-                while (((long) srcdata.offset & 3) != 0 && dstdata.offset / 2 > end) /* longword align */ {
+                end = dstdata.offset - dstwidth;
+                while (((long) srcdata.offset & 3) != 0 && dstdata.offset > end) /* longword align */ {
                     int col;
 
                     col = srcdata.readinc();
@@ -8808,7 +8808,7 @@ public class drawgfx {
                 }
 
                 sd4 = new IntPtr(srcdata);
-                while (dstdata.offset / 2 >= end + 4) {
+                while (dstdata.offset >= end + 4) {
                     int col4;
 
                     dstdata.dec(4);
@@ -8832,7 +8832,7 @@ public class drawgfx {
                     sd4.base += 4;
                 }
                 srcdata.set(sd4.readCA(), sd4.getBase());
-                while (dstdata.offset / 2 > end) {
+                while (dstdata.offset > end) {
                     int col;
 
                     col = srcdata.readinc();
@@ -8854,8 +8854,8 @@ public class drawgfx {
             trans4 = transpen * 0x01010101;
 
             while (dstheight != 0) {
-                end = dstdata.offset / 2 + dstwidth;
-                while (((long) srcdata.offset & 3) != 0 && dstdata.offset / 2 < end) /* longword align */ {
+                end = dstdata.offset + dstwidth;
+                while (((long) srcdata.offset & 3) != 0 && dstdata.offset < end) /* longword align */ {
                     int col;
 
                     col = srcdata.readinc();
@@ -8865,7 +8865,7 @@ public class drawgfx {
                     dstdata.inc();
                 }
                 sd4 = new IntPtr(srcdata);
-                while (dstdata.offset / 2 <= end - 4) {
+                while (dstdata.offset <= end - 4) {
                     int col4;
 
                     if ((col4 = sd4.read(0)) != trans4) {
@@ -8889,7 +8889,7 @@ public class drawgfx {
                     sd4.base += 4;
                 }
                 srcdata.set(sd4.readCA(), sd4.getBase());
-                while (dstdata.offset / 2 < end) {
+                while (dstdata.offset < end) {
                     int col;
 
                     col = srcdata.readinc();
@@ -8913,8 +8913,8 @@ public class drawgfx {
         dstmodulo -= srcwidth;
 
         while (srcheight != 0) {
-            int end = dstdata.offset / 2 + srcwidth;
-            while (dstdata.offset / 2 <= end - 8) {
+            int end = dstdata.offset + srcwidth;
+            while (dstdata.offset <= end - 8) {
                 dstdata.write(0, (char) paldata[dstdata.read(0) | (srcdata.read(0) << srcshift)]);
                 dstdata.write(1, (char) paldata[dstdata.read(1) | (srcdata.read(1) << srcshift)]);
                 dstdata.write(2, (char) paldata[dstdata.read(2) | (srcdata.read(2) << srcshift)]);
@@ -8926,7 +8926,7 @@ public class drawgfx {
                 dstdata.inc(8);
                 srcdata.inc(8);
             }
-            while (dstdata.offset / 2 < end) {
+            while (dstdata.offset < end) {
                 //*dstdata = paldata[*dstdata | (*(srcdata++) << srcshift)];
                 dstdata.write((char) paldata[dstdata.read(0) | ((srcdata.read(0)) << srcshift)]);
                 srcdata.inc();
@@ -8966,7 +8966,7 @@ public class drawgfx {
 
 		sx = clip.min_x;
 		sy = clip.min_y;
-		ex = clip.max_x * 2;
+		ex = clip.max_x;
 		ey = clip.max_y;
 	}
 	else
@@ -8974,7 +8974,7 @@ public class drawgfx {
             System.out.println("B");
 		sx = 0;
 		sy = 0;
-		ex = (bitmap.width * 2 )-1;
+		ex = (bitmap.width )-1;
 		ey = (bitmap.height-1);
 	}
 
@@ -9006,8 +9006,8 @@ public class drawgfx {
 		starty -= incxy * w;
 
 		w = sx;
-		sx = (bitmap.width * 2)-1 - ex;
-		ex = (bitmap.width * 2)-1 - w;
+		sx = (bitmap.width)-1 - ex;
+		ex = (bitmap.width)-1 - w;
 	}
 
 	if ((Machine.orientation & ORIENTATION_FLIP_Y) != 0)
@@ -9039,7 +9039,7 @@ public class drawgfx {
 			/* startx is unsigned */
 			startx = ((startx) >> 16);
 
-			if (startx >= (srcbitmap.width * 2))
+			if (startx >= (srcbitmap.width))
 			{
 				sx += -startx;
 				startx = 0;
@@ -9054,11 +9054,11 @@ public class drawgfx {
 						x = sx;
 						cx = startx;
 						cy = starty >> 16;
-						dest = new UShortPtr(bitmap.line[sy], sx * 2 );
+						dest = new UShortPtr(bitmap.line[sy], sx );
 						if (priority != 0)
 						{
                                                     System.out.println("Priority!!!!");
-							UBytePtr pri = new UBytePtr(priority_bitmap.line[sy], sx * 2);
+							UBytePtr pri = new UBytePtr(priority_bitmap.line[sy], sx);
 							UShortPtr src = new UShortPtr(srcbitmap.line[cy]);
 
 							while (x <= ex && cx < (srcbitmap.width ))
@@ -9119,11 +9119,11 @@ public class drawgfx {
 						cx = startx;
 						cy = (starty >> 16)&0xFF;
                                                 //System.out.println(cy);
-						dest = new UShortPtr(bitmap.line[sy], sx * 2 );
+						dest = new UShortPtr(bitmap.line[sy], sx );
 						if (priority != 0)
 						{
                                                     System.out.println("Priority!!!!");
-							UBytePtr pri = new UBytePtr(priority_bitmap.line[sy], sx * 2);
+							UBytePtr pri = new UBytePtr(priority_bitmap.line[sy], sx);
 							UShortPtr src = new UShortPtr(srcbitmap.line[cy]);
 
 							while (x <= ex && cx < widthshifted)
@@ -9178,7 +9178,7 @@ public class drawgfx {
 				x = sx;
 				cx = startx;
 				cy = starty;
-				dest = new UShortPtr(bitmap.line[sy], sx * 2);
+				dest = new UShortPtr(bitmap.line[sy], sx);
 				if (priority != 0)
 				{
 					UBytePtr pri = new UBytePtr(priority_bitmap.line[sy], sx);
@@ -9229,7 +9229,7 @@ public class drawgfx {
 				x = sx;
 				cx = startx;
 				cy = starty;
-				dest = new UShortPtr(bitmap.line[sy], sx * 2 );
+				dest = new UShortPtr(bitmap.line[sy], sx );
 				if (priority != 0)
 				{
 					UBytePtr pri = new UBytePtr(priority_bitmap.line[sy], sx);
@@ -9356,8 +9356,8 @@ public class drawgfx {
 
 		while (dstheight != 0)
 		{
-			end = dstdata.offset / 2 + dstwidth;
-			while ((((srcdata.read()) & 3)!=0) && ((dstdata.offset / 2) < end))
+			end = dstdata.offset + dstwidth;
+			while ((((srcdata.read()) & 3)!=0) && ((dstdata.offset) < end))
 			{
 				int col;
 
@@ -9367,7 +9367,7 @@ public class drawgfx {
 				dstdata.inc(2);
 			}
 			sd4 = new IntPtr(srcdata);
-			while (dstdata.offset/2 <= end - 4)
+			while (dstdata.offset <= end - 4)
 			{
 				int col;
 				int col4;
@@ -9389,7 +9389,7 @@ public class drawgfx {
 				dstdata.inc(4);
 			}
 			srcdata = new UBytePtr(sd4.readCA());
-			while (dstdata.offset/2 < end)
+			while (dstdata.offset < end)
 			{
 				int col;
 

@@ -563,7 +563,7 @@ public class phoenix
 		/* basic machine hardware */
 		new MachineCPU[] {																			
 			new MachineCPU(	
-				CPU_8085A,												
+				CPU_Z80,												
 				11000000/4,	/* 2.75 MHz */								
 				phoenix_readmem,phoenix_writemem,null,null,						
 				ignore_interrupt,1										

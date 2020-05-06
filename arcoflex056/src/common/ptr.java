@@ -213,7 +213,7 @@ public class ptr {
      */
     public static class UShortPtr {
 
-        public int bsize = 2;
+        public int bsize = 1;
         public char[] memory;
         public int offset;
 
@@ -274,17 +274,20 @@ public class ptr {
         }
 
         public char read(int index) {
-            return (char) (((memory[offset + 1 + index * 2] << 8) & 0xFF) | (memory[offset + index * 2] & 0xFF));
+            //return (char) (((memory[offset + 1 + index * 2] << 8) & 0xFF) | (memory[offset + index * 2] & 0xFF));
+            return (char) (memory[offset + index]);
         }
 
         public void write(int index, char value) {
             
-            memory[offset + index * 2] = (char) (value & 0xFF);
-            memory[offset + index * 2 + 1] = (char) ((value >> 8) & 0xFF);
+            //memory[offset + index * 2] = (char) (value & 0xFF);
+            //memory[offset + index * 2 + 1] = (char) ((value >> 8) & 0xFF);
+            memory[offset + index] = (char) (value);
         }
         public void write(char value) {
-            memory[offset] = (char) (value & 0xFF);
-            memory[offset + 1] = (char) ((value >> 8) & 0xFF);
+            //memory[offset] = (char) (value & 0xFF);
+            //memory[offset + 1] = (char) ((value >> 8) & 0xFF);
+            memory[offset] = (char) (value);
         }
         public void inc() {
             offset += bsize;

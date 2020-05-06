@@ -353,7 +353,7 @@ public class vector
 			{
 				coords = pixel[i];
 				//((UINT16 *)vecbitmap.line[coords & 0xffff])[coords >> 16] = 0;
-                                (vecbitmap.line[coords & 0xffff]).write(coords >> 16, 0);
+                                (new UShortPtr(vecbitmap.line[coords & 0xffff])).write(coords >> 16, (char)0);
 			}
 		}
 		p_index=0;
@@ -403,7 +403,7 @@ public class vector
 	
 	static void vector_draw_aa_pixel_15 (int x, int y, int col, int dirty)
 	{
-            //System.out.println("vector_draw_aa_pixel_15");
+            //System.out.println("vector_draw_aa_pixel_15 x="+x+" y="+y+" color="+col);
 		int dst;
 	
 		if (x < xmin || x >= xmax)
@@ -477,6 +477,7 @@ public class vector
 		int x1=0,yy1=0;
 		int xx=0,yy=0;
 		int xy_swap=0;
+                //antialias = 1;
 	
 		/* [1] scale coordinates to display */
 	
@@ -562,6 +563,7 @@ public class vector
 				width = vec_mult(beam<<4,Tcosin(abs(sy)>>5));
 				if (beam_diameter_is_one == 0)
 					yy1-= width>>1; /* start back half the diameter */
+                                System.out.println("Draw line-> "+col);
 				for (;;)
 				{
 					dx = width;    /* init diameter of beam */
@@ -614,6 +616,9 @@ public class vector
 			sy = (yy1 <= y2) ? 1: -1;
 			cx = dx/2;
 			cy = dy/2;
+                        
+                        System.out.println("Draw line2-> "+col);
+                        //col = 0;
 	
 			if (dx>=dy)
 			{
@@ -660,13 +665,13 @@ public class vector
 	 */
 	public static void vector_add_point (int x, int y, int color, int intensity)
 	{
-		point _new;
+		//point _new;
 	
 		intensity *= intensity_correction;
 		if (intensity > 0xff)
 			intensity = 0xff;
 	
-		if ((flicker!=0) && (intensity > 0))
+		if (flicker!=0 && (intensity > 0))
 		{
 			intensity += (intensity * (0x80-(rand()&0xff)) * flicker)>>16;
 			if (intensity < 0)
@@ -674,19 +679,15 @@ public class vector
 			if (intensity > 0xff)
 				intensity = 0xff;
 		}
-		
+		//new = &new_list[new_index];
+                if (new_list[new_index] == null)
+                    new_list[new_index] = new point();
                 
-                if (new_list[new_index] == null) {
-                    //for (int i=0 ; i<new_index ; i++)
-                        new_list[new_index] = new point();
-                }
-                    
-                _new = new_list[new_index];
-		_new.x = x;
-		_new.y = y;
-		_new.col = color;
-		_new.intensity = intensity;
-		_new.status = VDIRTY; /* mark identical lines as clean later */
+		new_list[new_index].x = x;
+		new_list[new_index].y = y;
+		new_list[new_index].col = color;
+		new_list[new_index].intensity = intensity;
+		new_list[new_index].status = VDIRTY; /* mark identical lines as clean later */
 	
 		new_index++;
 		if (new_index >= MAX_POINTS)
@@ -701,14 +702,14 @@ public class vector
 	 */
 	public static void vector_add_clip (int x1, int yy1, int x2, int y2)
 	{
-		point _new;
+		//point _new;
 	
-		_new = new_list[new_index];
-		_new.x = x1;
-		_new.y = yy1;
-		_new.arg1 = x2;
-		_new.arg2 = y2;
-		_new.status = VCLIP;
+		//_new = new_list[new_index];
+		new_list[new_index].x = x1;
+		new_list[new_index].y = yy1;
+		new_list[new_index].arg1 = x2;
+		new_list[new_index].arg2 = y2;
+		new_list[new_index].status = VCLIP;
 	
 		new_index++;
 		if (new_index >= MAX_POINTS)
@@ -821,7 +822,7 @@ public class vector
 	{
 		int i, j, min_index, last_match = 0;
 		int coords;
-		point[] _new, old;
+		//point[] _new, old;
 		point newclip, oldclip;
 		int clips_match = 1;
                 
@@ -840,37 +841,37 @@ public class vector
                 oldclip = new point();
 	
 		/* Mark vectors which are not the same in both lists as dirty */
-		_new = new_list;
-		old = old_list;
+		//_new = new_list;
+		//old = old_list;
 	
 		for (i = min_index; i > 0; i--, oldPos++, newPos++)
 		{
 			/* If this is a clip, we need to determine if the clip regions still match */
-			if (old[oldPos].status == VCLIP || _new[newPos].status == VCLIP)
+			if (old_list[oldPos].status == VCLIP || new_list[newPos].status == VCLIP)
 			{
-				if (old[oldPos].status == VCLIP)
-					oldclip = old[oldPos];
-				if (_new[newPos].status == VCLIP)
-					newclip = _new[newPos];
+				if (old_list[oldPos].status == VCLIP)
+					oldclip = old_list[oldPos];
+				if (new_list[newPos].status == VCLIP)
+					newclip = new_list[newPos];
 				clips_match = (newclip.x == oldclip.x) && (newclip.y == oldclip.y) && (newclip.arg1 == oldclip.arg1) && (newclip.arg2 == oldclip.arg2)?1:0;
 				if (clips_match == 0)
 					last_match = 0;
 	
 				/* fall through to erase the old line if this is not a clip */
-				if (old[oldPos].status == VCLIP)
+				if (old_list[oldPos].status == VCLIP)
 					continue;
 			}
 	
 			/* If the clips match and the vectors match, update */
 			else if (
                                 (clips_match!=0) && 
-                                (_new[newPos].x == old[oldPos].x) && 
-                                (_new[newPos].y == old[oldPos].y) &&
-				(_new[newPos].col == old[oldPos].col) && (_new[newPos].intensity == old[oldPos].intensity))
+                                (new_list[newPos].x == old_list[oldPos].x) && 
+                                (new_list[newPos].y == old_list[oldPos].y) &&
+				(new_list[newPos].col == old_list[oldPos].col) && (new_list[newPos].intensity == old_list[oldPos].intensity))
 			{
 				if (last_match != 0)
 				{
-					_new[newPos].status = VCLEAN;
+					new_list[newPos].status = VCLEAN;
 					continue;
 				}
 				last_match = 1;
@@ -881,8 +882,8 @@ public class vector
 				last_match = 0;
 	
 			/* mark the pixels of the old vector dirty */
-			coords = pixel[old[oldPos].arg1];
-			for (j = (old[oldPos].arg2 - old[oldPos].arg1); j > 0; j--)
+			coords = pixel[old_list[oldPos].arg1];
+			for (j = (old_list[oldPos].arg2 - old_list[oldPos].arg1); j > 0; j--)
 			{
 				osd_mark_vector_dirty (coords >> 16, coords & 0x0000ffff);
 				coords++;
@@ -894,12 +895,12 @@ public class vector
 		for (i = (old_index-min_index); i > 0; i--, oldPos++)
 		{
 			/* skip old clips */
-			if (old[oldPos].status == VCLIP)
+			if (old_list[oldPos].status == VCLIP)
 				continue;
 	
 			/* mark the pixels of the old vector dirty */
-			coords = pixel[old[oldPos].arg1];
-			for (j = (old[oldPos].arg2 - old[oldPos].arg1); j > 0; j--)
+			coords = pixel[old_list[oldPos].arg1];
+			for (j = (old_list[oldPos].arg2 - old_list[oldPos].arg1); j > 0; j--)
 			{
 				osd_mark_vector_dirty (coords >> 16, coords & 0x0000ffff);
 				coords++;
@@ -911,7 +912,7 @@ public class vector
 	{
 		int i;
 		int temp_x, temp_y;
-		point[] _new;
+		//point[] _new;
                 int newPos = 0;
 	
 	
@@ -954,17 +955,17 @@ public class vector
 	
 		/* Draw ALL lines into the hidden map. Mark only those lines with */
 		/* new.dirty = 1 as dirty. Remember the pixel start/end indices  */
-		_new = new_list;
+		//_new = new_list;
 		for (i = 0; i < new_index; i++)
 		{
-			if (_new[newPos].status == VCLIP)
-				vector_set_clip (_new[newPos].x, _new[newPos].y, _new[newPos].arg1, _new[newPos].arg2);
+			if (new_list[newPos].status == VCLIP)
+				vector_set_clip (new_list[newPos].x, new_list[newPos].y, new_list[newPos].arg1, new_list[newPos].arg2);
 			else
 			{
-				_new[newPos].arg1 = p_index;
-				vector_draw_to (_new[newPos].x, _new[newPos].y, _new[newPos].col, Tgamma[_new[newPos].intensity], _new[newPos].status);
+				new_list[newPos].arg1 = p_index;
+				vector_draw_to (new_list[newPos].x, new_list[newPos].y, new_list[newPos].col, Tgamma[new_list[newPos].intensity], new_list[newPos].status);
 	
-				_new[newPos].arg2 = p_index;
+				new_list[newPos].arg2 = p_index;
 			}
 			newPos++;
 		}

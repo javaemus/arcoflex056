@@ -203,50 +203,52 @@ public class palette {
             
 		case DIRECT_15BIT:
 		{
-			char rgbpalette[] = { 0xff,0x00,0x00, 0x00,0xff,0x00, 0x00,0x00,0xff };
+			
+                    //char rgbpalette[] = { 0xff,0x00,0x00, 0x00,0xff,0x00, 0x00,0x00,0xff };
+                        //char[] rgbpalette = new char[16*3];
                         
-                        total_colors = 3;
+                        /*for (int f=0 ; f<16; f++){
+                            rgbpalette[3 * f + 0]=(char) (17*f);
+                            rgbpalette[3 * f + 1]=(char) (17*f);
+                            rgbpalette[3 * f + 2]=(char) (17*f);
+                        }*/
+                         // set_pal(colores,16);
+                    
+                    char rgbpalette[]={ 90,85,76,
+                                        118,118,118,
+                                        147,146,140,
+                                        54,45,1,
+                                        159,211,68};
 
-			//if (osd_allocate_colors(3,rgbpalette,direct_rgb_components,debug_palette,debug_pens))
-                        /*if (osd_allocate_colors(3,rgbpalette,direct_rgb_components) != 0)
-				return 1;
                         
-                        System.out.println("Continue...");
+                        //if (osd_allocate_colors(5,rgbpalette,direct_rgb_components) != 0)
+                        if (osd_allocate_colors(5,rgbpalette,null) != 0)
+                                return 1;
+                        
+                        System.out.println("TOTAL COLORS="+total_colors);
 
-			for (i = 0;i < total_colors;i++)
-				Machine.pens[i] =
-						(game_palette[3*i + 0] >> 3) * (direct_rgb_components[0] / 0x1f) +
-						(game_palette[3*i + 1] >> 3) * (direct_rgb_components[1] / 0x1f) +
-						(game_palette[3*i + 2] >> 3) * (direct_rgb_components[2] / 0x1f);
-                        
-                        */
-                        
-                        if (osd_allocate_colors(3, rgbpalette, direct_rgb_components) != 0) {
-                            return 1;
+                        /*for (i = 0;i < total_colors;i++)
+                                Machine.pens[i] =
+                                                (game_palette[3*i + 0] >> 3) * (direct_rgb_components[0] / 0x1f) +
+                                                (game_palette[3*i + 1] >> 3) * (direct_rgb_components[1] / 0x1f) +
+                                                (game_palette[3*i + 2] >> 3) * (direct_rgb_components[2] / 0x1f);*/
+                        for (i = 0; i < total_colors; i++) {
+                            Machine.pens[i] = i;
                         }
-
-                        for (i = 0;i < total_colors;i++)
-				Machine.pens[i] =
-						(game_palette[3*i + 0] >> 3) * (direct_rgb_components[0] / 0x1f) +
-						(game_palette[3*i + 1] >> 3) * (direct_rgb_components[1] / 0x1f) +
-						(game_palette[3*i + 2] >> 3) * (direct_rgb_components[2] / 0x1f);
 
                         /* refresh the palette to support shadows in PROM games */
-                        //Machine.drv.total_colors = 3;
                         /*for (i = 0; i < Machine.drv.total_colors; i++) {
-                            palette_set_color(i, rgbpalette[3 * i + 0], rgbpalette[3 * i + 1], rgbpalette[3 * i + 2]);
-                        }
-                        */
+                            palette_set_color(i, game_palette[3 * i + 0], game_palette[3 * i + 1], game_palette[3 * i + 2]);
+                        }*/
                         
-                        /*Machine.pens[3] = 3;
-                        Machine.pens[4] = 4;
+                        /*game_palette[0]=0;
+                        game_palette[1]=0;
+                        game_palette[2]=0;*/
                         
-                        palette_set_color(3, 0x000000, 0x000000, 0x000000);
-                        palette_set_color(4, 0xFFFFFF, 0xFFFFFF, 0xFFFFFF);
-                        */
                         
-
-			break;
+                        break;
+                        
+			
 		}
 /*TODO*///
 /*TODO*///		case DIRECT_32BIT:
@@ -287,6 +289,7 @@ public class palette {
 
     public static void palette_set_color_15_direct(int color,int red,int green,int blue)
     {
+        System.out.println("palette_set_color_15_direct");
             if (	actual_palette[3*color + 0] == red &&
                             actual_palette[3*color + 1] == green &&
                             actual_palette[3*color + 2] == blue)
@@ -335,6 +338,7 @@ public class palette {
 /*TODO*///				game_palette[3*color + 2] * (direct_rgb_components[2] / 0xff);
 /*TODO*///}
     public static void palette_set_color_16_palettized(int color, int/*UINT8*/ red, int/*UINT8*/ green, int/*UINT8*/ blue) {
+        //System.out.println("palette_set_color_16_palettized");
         if (actual_palette[3 * color + 0] == red
                 && actual_palette[3 * color + 1] == green
                 && actual_palette[3 * color + 2] == blue) {

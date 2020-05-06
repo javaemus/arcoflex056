@@ -53,6 +53,8 @@ import common.ptr.UBytePtr;
 import static mame056.common.memory_region;
 import static mame056.commonH.REGION_CPU1;
 import static mame056.mame.Machine;
+import mame056.palette;
+import static mame056.palette.game_palette;
 import static mame056.timerH.*;
 import static mame056.timer.*;
 
@@ -993,8 +995,7 @@ public class avgdvg
 	
 	public static VhConvertColorPromPtr avg_init_palette_white = new VhConvertColorPromPtr() {
             public void handler(char[] palette, char[] colortable, UBytePtr color_prom) {
-                avg_init_palette (VEC_PAL_WHITE, palette, colortable, color_prom);
-                
+                avg_init_palette (VEC_PAL_WHITE, palette, colortable, color_prom);                
             }
         };
 	

@@ -171,6 +171,8 @@ import static WIP.mame056.vidhrdw.avgdvg.*;
 import static WIP.mame056.vidhrdw.vector.*;
 import static mame056.vidhrdw.generic.*;
 import static arcadeflex056.fileio.*;
+import static mame056.sound.pokeyH.*;
+import static mame056.sound.pokey.*;
 
 
 public class asteroid
@@ -245,7 +247,7 @@ public class asteroid
 		new Memory_ReadAddress( 0x2000, 0x2007, asteroid_IN0_r ), /* IN0 */
 		new Memory_ReadAddress( 0x2400, 0x2407, asteroid_IN1_r ), /* IN1 */
 		new Memory_ReadAddress( 0x2800, 0x2803, asteroid_DSW1_r ), /* DSW1 */
-		/*TODO*///new Memory_ReadAddress( 0x2c00, 0x2c0f, pokey1_r ),
+/*TODO*///		new Memory_ReadAddress( 0x2c00, 0x2c0f, pokey1_r ),
 		new Memory_ReadAddress( 0x2c40, 0x2c7f, atari_vg_earom_r ),
 		new Memory_ReadAddress( 0x4000, 0x47ff, MRA_RAM ),
 		new Memory_ReadAddress( 0x4800, 0x57ff, MRA_ROM ), /* vector rom */
@@ -258,7 +260,7 @@ public class asteroid
 		new Memory_WriteAddress(MEMPORT_MARKER, MEMPORT_DIRECTION_WRITE | MEMPORT_TYPE_MEM | MEMPORT_WIDTH_8),
 		new Memory_WriteAddress( 0x0000, 0x03ff, MWA_RAM ),
 		new Memory_WriteAddress( 0x2405, 0x2405, astdelux_sounds_w ), /* thrust sound */
-		/*TODO*///new Memory_WriteAddress( 0x2c00, 0x2c0f, pokey1_w ),
+/*TODO*///		new Memory_WriteAddress( 0x2c00, 0x2c0f, pokey1_w ),
 		new Memory_WriteAddress( 0x3000, 0x3000, avgdvg_go_w ),
 		new Memory_WriteAddress( 0x3200, 0x323f, atari_vg_earom_w ),
 		new Memory_WriteAddress( 0x3400, 0x3400, watchdog_reset_w ),
@@ -292,10 +294,10 @@ public class asteroid
 		new Memory_WriteAddress(MEMPORT_MARKER, MEMPORT_DIRECTION_WRITE | MEMPORT_TYPE_MEM | MEMPORT_WIDTH_8),
 		new Memory_WriteAddress( 0x0000, 0x01ff, llander_zeropage_w, llander_zeropage ),
 		new Memory_WriteAddress( 0x3000, 0x3000, avgdvg_go_w ),
-		/*TODO*///new Memory_WriteAddress( 0x3200, 0x3200, llander_led_w ),
+/*TODO*///		new Memory_WriteAddress( 0x3200, 0x3200, llander_led_w ),
 		new Memory_WriteAddress( 0x3400, 0x3400, watchdog_reset_w ),
-		/*TODO*///new Memory_WriteAddress( 0x3c00, 0x3c00, llander_sounds_w ),
-		/*TODO*///new Memory_WriteAddress( 0x3e00, 0x3e00, llander_snd_reset_w ),
+/*TODO*///		new Memory_WriteAddress( 0x3c00, 0x3c00, llander_sounds_w ),
+/*TODO*///		new Memory_WriteAddress( 0x3e00, 0x3e00, llander_snd_reset_w ),
 		new Memory_WriteAddress( 0x4000, 0x47ff, MWA_RAM, vectorram, vectorram_size ),
 		new Memory_WriteAddress( 0x4800, 0x5fff, MWA_ROM ), /* vector rom */
 		new Memory_WriteAddress( 0x6000, 0x7fff, MWA_ROM ),
@@ -627,13 +629,14 @@ public class asteroid
 	
 		/* sound hardware */
 		0,0,0,0,
-		/*TODO*///new MachineSound[] {
-		/*TODO*///	new MachineSound(
-		/*TODO*///		SOUND_DISCRETE,
-		/*TODO*///		asteroid_sound_interface
-		/*TODO*///	)
-		/*TODO*///}
+/*TODO*///		new MachineSound[] {
+/*TODO*///			new MachineSound(
+/*TODO*///				SOUND_DISCRETE,
+/*TODO*///				asteroid_sound_interface
+/*TODO*///			)
+/*TODO*///		}
                 null
+                
 	);
 	
 	static MachineDriver machine_driver_asteroib = new MachineDriver
@@ -664,34 +667,35 @@ public class asteroid
 	
 		/* sound hardware */
 		0,0,0,0,
-		/*TODO*///new MachineSound[] {
-		/*TODO*///	new MachineSound(
-		/*TODO*///		SOUND_DISCRETE,
-		/*TODO*///		asteroid_sound_interface
-		/*TODO*///	)
-		/*TODO*///}
+/*TODO*///		new MachineSound[] {
+/*TODO*///			new MachineSound(
+/*TODO*///				SOUND_DISCRETE,
+/*TODO*///				asteroid_sound_interface
+/*TODO*///			)
+/*TODO*///		}
                 null
+                
 	);
 	
 	
 	
-	/*TODO*///static struct POKEYinterface pokey_interface =
-	/*TODO*///{
-	/*TODO*///	1,	/* 1 chip */
-	/*TODO*///	1500000,	/* 1.5 MHz??? */
-	/*TODO*///	{ 100 },
+	static POKEYinterface pokey_interface = new POKEYinterface
+	(
+		1,	/* 1 chip */
+		1500000,	/* 1.5 MHz??? */
+		new int[]{ 100 },
 		/* The 8 pot handlers */
-	/*TODO*///	{ 0 },
-	/*TODO*///	{ 0 },
-	/*TODO*///	{ 0 },
-	/*TODO*///	{ 0 },
-	/*TODO*///	{ 0 },
-	/*TODO*///	{ 0 },
-	/*TODO*///	{ 0 },
-	/*TODO*///	{ 0 },
+		new ReadHandlerPtr[]{ null },
+		new ReadHandlerPtr[]{ null },
+		new ReadHandlerPtr[]{ null },
+		new ReadHandlerPtr[]{ null },
+		new ReadHandlerPtr[]{ null },
+		new ReadHandlerPtr[]{ null },
+		new ReadHandlerPtr[]{ null },
+		new ReadHandlerPtr[]{ null },
 		/* The allpot handler */
-	/*TODO*///	{ input_port_3_r }
-	/*TODO*///};
+		new ReadHandlerPtr[]{ input_port_3_r }
+	);
 	
 	static MachineDriver machine_driver_astdelux = new MachineDriver
 	(

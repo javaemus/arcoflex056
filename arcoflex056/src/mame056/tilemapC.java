@@ -285,7 +285,7 @@ public class tilemapC {
             if( tilemap.memory_offset_to_cached_indx != null )
             {
                     /* cached to logical (get_tile_info) */
-                    tilemap.cached_indx_to_memory_offset = new int[ tilemap.num_tiles * 2 ];
+                    tilemap.cached_indx_to_memory_offset = new int[ tilemap.num_tiles ];
                     if( tilemap.cached_indx_to_memory_offset != null ) return 0; /* no error */
                     tilemap.memory_offset_to_cached_indx = null;
             }
@@ -388,7 +388,7 @@ public class tilemapC {
             //source.offset = 0;
             //System.out.println(count);
             //memcpy( dest,source,count*2  ); // size*2 ????
-            for( i=0; i<count*2; i++ )
+            for( i=0; i<count; i++ )
             {
                     dest.write(i, source.read(i));
                 
@@ -425,7 +425,7 @@ public class tilemapC {
         public void handler( UShortPtr dest, UShortPtr source, UBytePtr pMask, int mask, int value, int count, UBytePtr pri, int pcode ) {
             int i;
 
-            for( i=0; i<count*2; i++ )
+            for( i=0; i<count; i++ )
 
             {
 
@@ -662,7 +662,7 @@ public class tilemapC {
 
         //state_save_register_func_postload(tilemap_reset);
         tilemap_reset();
-        priority_bitmap = bitmap_alloc_depth( screen_width * 2, screen_height, -16 );
+        priority_bitmap = bitmap_alloc_depth( screen_width, screen_height, -16 );
         if( priority_bitmap != null )
         {
                 priority_bitmap_pitch_line = (new UBytePtr(priority_bitmap.line[1]).offset) - (new UBytePtr(priority_bitmap.line[0]).offset);
@@ -1168,7 +1168,7 @@ public class tilemapC {
                         }
                         else
                         {
-                                blit.screen_bitmap_pitch_line = ((new UBytePtr(dest.line[1])).offset - (new UBytePtr(dest.line[0])).offset)*2;
+                                blit.screen_bitmap_pitch_line = ((new UBytePtr(dest.line[1])).offset - (new UBytePtr(dest.line[0])).offset);
                                 switch( dest.depth )
                                 {
                                 case 32:
@@ -1893,7 +1893,7 @@ public class tilemapC {
                                                                 i = y;
                                                                 for(;;)
                                                                 {
-                                                                        blit.draw_opaque.handler(dest0, source0, count*2, pmap0, tilemap_priority_code );
+                                                                        blit.draw_opaque.handler(dest0, source0, count, pmap0, tilemap_priority_code );
                                                                         if( ++i == y_next ) break;
 
                                                                     dest0.offset += blit.screen_bitmap_pitch_line;
@@ -1903,11 +1903,11 @@ public class tilemapC {
                                                         } /* transPrev == eWHOLLY_OPAQUE */
                                                         else /* transPrev == eMASKED */
                                                         {
-                                                                mask0 = new UBytePtr(mask_baseaddr, x_start/2);
+                                                                mask0 = new UBytePtr(mask_baseaddr, x_start);
                                                                 i = y;
                                                                 for(;;)
                                                                 {
-                                                                        blit.draw_masked.handler(dest0, source0, mask0, mask, value, count*2, pmap0, tilemap_priority_code );
+                                                                        blit.draw_masked.handler(dest0, source0, mask0, mask, value, count, pmap0, tilemap_priority_code );
                                                                         if( ++i == y_next ) break;
 
                                                                         dest0.offset += blit.screen_bitmap_pitch_line;
@@ -2322,7 +2322,7 @@ public class tilemapC {
             }
             else
             {
-                    //pPenToPixel.offset = 0;
+                    pPenToPixel.offset = 0;
                     
                     for( ty=tile_height; ty!=0; ty-- )
                     {
@@ -3314,7 +3314,7 @@ public class tilemapC {
                 }
                 else
                 {
-                        //pPenToPixel.offset = 0;
+                        pPenToPixel.offset = 0;
                     
                         for( ty=tile_height; ty!=0; ty-- )
                         {

@@ -688,7 +688,7 @@ public class z8000 extends cpu_interface
 	                Z.op[2] = RDOP();
 	
 	            z8000_ICount[0] -= exec.cycles;
-                    System.out.println(Z.op[0]);
+                    //System.out.println(Z.op[0]);
                     exec.opcode.handler();
 
 	        }
