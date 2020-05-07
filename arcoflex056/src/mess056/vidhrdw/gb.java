@@ -65,11 +65,11 @@ public class gb
                             xindex = oam.read(1) - 8;
                             if ((oam.read(3) & 0x40) != 0)		   /* flip y ? */
                             {
-                                    data = gb_ram.read(VRAM + (oam.read(2) & tilemask) * 16 + (height - 1 - line + oam.read(0)) * 2);
+                                    data = gb_ram.read(VRAM + (oam.read(2) & tilemask) * 16 + (height - 1 - line + oam.read(0)) );
                             }
                             else
                             {
-                                    data = gb_ram.read(VRAM + (oam.read(2) & tilemask) * 16 + (line - oam.read(0)) * 2);
+                                    data = gb_ram.read(VRAM + (oam.read(2) & tilemask) * 16 + (line - oam.read(0)) );
                             }
 /*TODO*///    #ifndef LSB_FIRST
                             data = (data << 8) | (data >> 8);
@@ -298,11 +298,11 @@ public class gb
                             xindex = oam.read(1) - 8;
                             if ((oam.read(3) & 0x40) != 0)		   /* flip y ? */
                             {
-                                    data = gb_ram.read(VRAM + (oam.read(2) & tilemask) * 16 + (height - 1 - line + oam.read(0)) * 2) & 0xffff;
+                                    data = gb_ram.read(VRAM + (oam.read(2) & tilemask) * 16 + (height - 1 - line + oam.read(0)) ) & 0xffff;
                             }
                             else
                             {
-                                    data = gb_ram.read(VRAM + (oam.read(2) & tilemask) * 16 + (line - oam.read(0)) * 2) & 0xffff;
+                                    data = gb_ram.read(VRAM + (oam.read(2) & tilemask) * 16 + (line - oam.read(0)) ) & 0xffff;
                             }
 /*TODO*///    #ifndef LSB_FIRST
                             data = (data << 8) | (data >> 8);
@@ -624,11 +624,11 @@ public class gb
                             xindex = oam.read(1) - 8;
                             if ((oam.read(3) & 0x40) != 0)		   /* flip y ? */
                             {
-                                    data = GBC_VRAMMap[(oam.read(3) & 0x8)>>3].read((oam.read(2) & tilemask) * 16 + (height - 1 - line + oam.read(0) * 2)) & 0xffff;
+                                    data = GBC_VRAMMap[(oam.read(3) & 0x8)>>3].read((oam.read(2) & tilemask) * 16 + (height - 1 - line + oam.read(0) )) & 0xffff;
                             }
                             else
                             {
-                                    data = GBC_VRAMMap[(oam.read(3) & 0x8)>>3].read((oam.read(2) & tilemask) * 16 + (line - oam.read(0) * 2)) & 0xffff;
+                                    data = GBC_VRAMMap[(oam.read(3) & 0x8)>>3].read((oam.read(2) & tilemask) * 16 + (line - oam.read(0) )) & 0xffff;
                             }
 /*TODO*///    #ifndef LSB_FIRST
                             data = (data << 8) | (data >> 8);

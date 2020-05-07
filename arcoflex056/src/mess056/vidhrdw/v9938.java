@@ -899,8 +899,8 @@ public class v9938
 					}
 	
 				n = line - y; 
-                                //if ((_vdp.contReg[1] & 1)!=0) 
-                                //    n /= 2;
+                                if ((_vdp.contReg[1] & 1)!=0) 
+                                    n /= 2;
 				/* get colour */
 				c = v9938_vram_read (colourtbl + (((p&colourmask)*16) + n));
 	
@@ -909,6 +909,7 @@ public class v9938
 				if ((c & 0x40) != 0)
 				{
 					if (first_cc_seen == 0){
+                                            System.out.println("skip_first_cc_set");
 /*TODO*///						skip_first_cc_set();
                                                 goto_skip_first_cc_set = true;
                                                 break;
@@ -1224,30 +1225,30 @@ public class v9938
 			}
 	
 		if (double_lines != 0)
-			memcpy (ln2, ln, (512 + 32) );
+			memcpy (ln2, ln, (512 + 32) * 2);
 		}
 	
 	static void v9938_refresh_16 (mame_bitmap bmp, int line)
 		{
                     //System.out.println("v9938_refresh_16");
 		int i, double_lines;
-		UShortPtr col=new UShortPtr(256 * 2);
+		UShortPtr col=new UShortPtr(256);
 		UShortPtr ln, ln2 = null;
 	
 		double_lines = 0;
 	
 		if (_vdp.size == RENDER_HIGH)
 			{
-			//if ((_vdp.contReg[9] & 0x08)!=0)
+			if ((_vdp.contReg[9] & 0x08)!=0)
 				{
 				_vdp.size_now = RENDER_HIGH;
 			ln = new UShortPtr(bmp.line[line*2+((_vdp.statReg[2]>>1)&1)]);
 				}
-			//else
+			else
 				{
-			//	ln = new UShortPtr(bmp.line[line*2]);
-				//ln2 = new UShortPtr(bmp.line[line*2+1]);
-				//double_lines = 1;
+				ln = new UShortPtr(bmp.line[line*2]);
+				ln2 = new UShortPtr(bmp.line[line*2+1]);
+				double_lines = 1;
 				}
                         
 			}

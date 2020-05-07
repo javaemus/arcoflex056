@@ -259,6 +259,8 @@ import static WIP.mame056.drivers._1942.*;
 import static WIP.mame056.drivers.wc90.*;
 import static WIP.mame056.drivers.citycon.*;
 import static WIP.mame056.drivers.airbustr.*;
+import static WIP.mame056.drivers.timeplt.*;
+import static WIP.mame056.drivers.galivan.*;
 
 public class driver {
 
@@ -576,13 +578,13 @@ public class driver {
         /*TODO*///	driver_terracre,	/* (c) 1985 */
         /*TODO*///	driver_terracrb,	/* (c) 1985 */
         /*TODO*///	driver_terracra,	/* (c) 1985 */
-        /*TODO*///	driver_galivan,	/* (c) 1985 */
-        /*TODO*///	driver_galivan2,	/* (c) 1985 */
-        /*TODO*///	driver_dangar,	/* (c) 1986 */
-        /*TODO*///	driver_dangar2,	/* (c) 1986 */
-        /*TODO*///	driver_dangarb,	/* bootleg */
-        /*TODO*///	driver_ninjemak,	/* (c) 1986 (US?) */
-        /*TODO*///	driver_youma,		/* (c) 1986 (Japan) */
+        driver_galivan,	/* (c) 1985 */
+        driver_galivan2,	/* (c) 1985 */
+        driver_dangar,	/* (c) 1986 */
+        driver_dangar2,	/* (c) 1986 */
+        driver_dangarb,	/* bootleg */
+        driver_ninjemak,	/* (c) 1986 (US?) */
+        driver_youma,		/* (c) 1986 (Japan) */
         /*TODO*///	driver_terraf,	/* (c) 1987 */
         /*TODO*///	driver_terrafu,	/* (c) 1987 Nichibutsu USA */
         /*TODO*///	driver_kodure,	/* (c) 1987 (Japan) */
@@ -2817,11 +2819,11 @@ public class driver {
         driver_tutankst, /* GX350 (c) 1982 Stern */
         driver_junofrst, /* GX310 (c) 1983 Konami */
         driver_junofstg, /* GX310 (c) 1983 Konami + Gottlieb license */
-        /*TODO*///	/* Konami games */
-        /*TODO*///	driver_timeplt,	/* GX393 (c) 1982 */
-        /*TODO*///	driver_timepltc,	/* GX393 (c) 1982 + Centuri license*/
-        /*TODO*///	driver_spaceplt,	/* bootleg */
-        /*TODO*///	driver_psurge,	/* (c) 1988 unknown (NOT Konami) */
+        /* Konami games */
+        driver_timeplt,	/* GX393 (c) 1982 */
+        driver_timepltc,	/* GX393 (c) 1982 + Centuri license*/
+        driver_spaceplt,	/* bootleg */
+        driver_psurge,	/* (c) 1988 unknown (NOT Konami) */
         driver_megazone, /* GX319 (c) 1983 */
         driver_megaznik, /* GX319 (c) 1983 + Interlogic / Kosuka */
         /*TODO*///	driver_pandoras,	/* GX328 (c) 1984 + Interlogic */
