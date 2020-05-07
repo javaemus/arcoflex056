@@ -261,6 +261,7 @@ import static WIP.mame056.drivers.citycon.*;
 import static WIP.mame056.drivers.airbustr.*;
 import static WIP.mame056.drivers.timeplt.*;
 import static WIP.mame056.drivers.galivan.*;
+import static WIP.mame056.drivers.slapfght.*;
 
 public class driver {
 
@@ -1698,23 +1699,23 @@ public class driver {
         /*TODO*///	driver_pbobbl4u,	/* E49 (c) 1997 Taito Corporation (US) */
         /*TODO*///	driver_popnpop,	/* E51 (c) 1997 Taito Corporation (Japan) */
         /*TODO*///	driver_landmakr,	/* E61 (c) 1998 Taito Corporation (Japan) */
-        /*TODO*///
-        /*TODO*///	/* Toaplan games */
-        /*TODO*///	driver_perfrman,	/* (c) 1985 Data East Corporation (Japan) */
-        /*TODO*///	driver_perfrmau,	/* (c) 1985 Data East USA (US) */
-        /*TODO*///	driver_tigerh,	/* GX-551 [not a Konami board!] */
-        /*TODO*///	driver_tigerh2,	/* GX-551 [not a Konami board!] */
-        /*TODO*///	driver_tigerhj,	/* GX-551 [not a Konami board!] */
-        /*TODO*///	driver_tigerhb1,	/* bootleg but (c) 1985 Taito Corporation */
-        /*TODO*///	driver_tigerhb2,	/* bootleg but (c) 1985 Taito Corporation */
-        /*TODO*///	driver_slapfigh,	/* TP-??? */
-        /*TODO*///	driver_slapbtjp,	/* bootleg but (c) 1986 Taito Corporation */
-        /*TODO*///	driver_slapbtuk,	/* bootleg but (c) 1986 Taito Corporation */
-        /*TODO*///	driver_alcon,		/* TP-??? */
-        /*TODO*///	driver_getstar,
-        /*TODO*///	driver_getstarj,
-        /*TODO*///	driver_getstarb,	/* GX-006 bootleg but (c) 1986 Taito Corporation */
-        /*TODO*///
+        
+        /* Toaplan games */
+        driver_perfrman,	/* (c) 1985 Data East Corporation (Japan) */
+        driver_perfrmau,	/* (c) 1985 Data East USA (US) */
+        driver_tigerh,	/* GX-551 [not a Konami board!] */
+        driver_tigerh2,	/* GX-551 [not a Konami board!] */
+        driver_tigerhj,	/* GX-551 [not a Konami board!] */
+        driver_tigerhb1,	/* bootleg but (c) 1985 Taito Corporation */
+        driver_tigerhb2,	/* bootleg but (c) 1985 Taito Corporation */
+        driver_slapfigh,	/* TP-??? */
+        driver_slapbtjp,	/* bootleg but (c) 1986 Taito Corporation */
+        driver_slapbtuk,	/* bootleg but (c) 1986 Taito Corporation */
+        driver_alcon,		/* TP-??? */
+        driver_getstar,
+        driver_getstarj,
+        driver_getstarb,	/* GX-006 bootleg but (c) 1986 Taito Corporation */
+
         /*TODO*///	driver_fshark,	/* TP-007 (c) 1987 Taito Corporation (World) */
         /*TODO*///	driver_skyshark,	/* TP-007 (c) 1987 Taito America Corporation + Romstar license (US) */
         /*TODO*///	driver_hishouza,	/* TP-007 (c) 1987 Taito Corporation (Japan) */

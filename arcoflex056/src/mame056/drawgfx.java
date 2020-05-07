@@ -6982,6 +6982,7 @@ public class drawgfx {
                 } else {
                     if (pribuf != null) {
                         System.out.println("BLOCKMOVEPRI(8toN_opaque");
+                        blockmove_8toN_opaque16(sd, sw, sh, sm, ls, ts, flipx, flipy, dd, dw, dh, dm, paldata); /*TODO*///, pribuf,pri_mask);
                         //throw new UnsupportedOperationException("unsupported");
                         /*TODO*///						BLOCKMOVEPRI(8toN_opaque,(sd,sw,sh,sm,ls,ts,flipx,flipy,dd,dw,dh,dm,paldata,pribuf,pri_mask));
                     } else {
