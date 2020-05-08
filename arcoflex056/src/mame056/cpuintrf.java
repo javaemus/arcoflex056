@@ -34,6 +34,7 @@ import mame056.cpu.z80.z80_MSX;
 import mame056.cpu.m6502.m6510;
 import mame056.cpu.m6502.m65c02;
 import mame056.cpu.z80gb.z80gb;
+import mame056.cpu.hd6309.hd6309;
 
 public class cpuintrf {
 
@@ -235,7 +236,7 @@ public class cpuintrf {
                 new m6805(),//CPU0(M6805,    m6805,	 1,  0,1.00,M6805_IRQ_LINE,  8, 16,	  0,11,BE,1, 3	),
                 new m68705(),//	CPU0(M68705,   m68705,	 1,  0,1.00,M68705_IRQ_LINE, 8, 16,	  0,11,BE,1, 3	),
                 new HD63705(),//CPU0(HD63705,  hd63705,  8,  0,1.00,HD63705_INT_IRQ1,8, 16,	  0,16,BE,1, 3	),
-                new dummy_cpu(),/*TODO*///	CPU0(HD6309,   hd6309,	 2,  0,1.00,HD6309_IRQ_LINE, 8, 16,	  0,16,BE,1, 4	),
+                new hd6309(),// CPU0(HD6309,   hd6309,	 2,  0,1.00,HD6309_IRQ_LINE, 8, 16,	  0,16,BE,1, 4	),
                 new m6809(),//CPU0(M6809,    m6809,	 2,  0,1.00,M6809_IRQ_LINE,  8, 16,	  0,16,BE,1, 4	),
             new dummy_cpu(),//CPU0(KONAMI,   konami,	 2,  0,1.00,KONAMI_IRQ_LINE, 8, 16,	  0,16,BE,1, 4	),
             new dummy_cpu(),//CPU0(M68000,   m68000,	 8, -1,1.00,-1,			   16,24bew,  0,24,BE,2,10	),

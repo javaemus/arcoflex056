@@ -208,7 +208,7 @@ public class cpuexecH {
 /*TODO*///#define H6280_INT_IRQ1		0
 /*TODO*///#define H6280_INT_IRQ2		1
 /*TODO*///#define H6280_INT_NMI		INTERRUPT_NMI
-/*TODO*///#define HD63701_INT_NMI 	INTERRUPT_NMI
+    public static final int HD63701_INT_NMI = INTERRUPT_NMI;
     public static final int I8085_RST75 = I8085_RST75_LINE;
 /*TODO*///
 /*TODO*////* OBSOLETE OBSOLETE OBSOLETE OBSOLETE OBSOLETE OBSOLETE OBSOLETE OBSOLETE */

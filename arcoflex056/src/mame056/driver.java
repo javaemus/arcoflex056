@@ -262,6 +262,8 @@ import static WIP.mame056.drivers.airbustr.*;
 import static WIP.mame056.drivers.timeplt.*;
 import static WIP.mame056.drivers.galivan.*;
 import static WIP.mame056.drivers.slapfght.*;
+import static WIP.mame056.drivers.lwings.*;
+import static WIP.mame056.drivers.ddragon.*;
 
 public class driver {
 
@@ -1895,26 +1897,26 @@ public class driver {
         driver_gunsmrom, /* 11/1985 (c) 1985 + Romstar (US) */
         driver_gunsmoka, /* 11/1985 (c) 1985 (US) */
         driver_gunsmokj, /* 11/1985 (c) 1985 (Japan) */
-        /*TODO*///	driver_sectionz,	/* 12/1985 (c) 1985 */
-        /*TODO*///	driver_sctionza,	/* 12/1985 (c) 1985 */
-        /*TODO*///	driver_trojan,	/*  4/1986 (c) 1986 (US) */
-        /*TODO*///	driver_trojanr,	/*  4/1986 (c) 1986 + Romstar */
-        /*TODO*///	driver_trojanj,	/*  4/1986 (c) 1986 (Japan) */
-        /*TODO*///	driver_srumbler,	/*  9/1986 (c) 1986 */
-        /*TODO*///	driver_srumblr2,	/*  9/1986 (c) 1986 */
-        /*TODO*///	driver_rushcrsh,	/*  9/1986 (c) 1986 */
-        /*TODO*///	driver_lwings,	/* 11/1986 (c) 1986 */
-        /*TODO*///	driver_lwings2,	/* 11/1986 (c) 1986 */
-        /*TODO*///	driver_lwingsjp,	/* 11/1986 (c) 1986 */
+        driver_sectionz,	/* 12/1985 (c) 1985 */
+        driver_sctionza,	/* 12/1985 (c) 1985 */
+        driver_trojan,	/*  4/1986 (c) 1986 (US) */
+        driver_trojanr,	/*  4/1986 (c) 1986 + Romstar */
+        driver_trojanj,	/*  4/1986 (c) 1986 (Japan) */
+/*TODO*///        	driver_srumbler,	/*  9/1986 (c) 1986 */
+/*TODO*///        	driver_srumblr2,	/*  9/1986 (c) 1986 */
+/*TODO*///        	driver_rushcrsh,	/*  9/1986 (c) 1986 */
+        driver_lwings,	/* 11/1986 (c) 1986 */
+        driver_lwings2,	/* 11/1986 (c) 1986 */
+        driver_lwingsjp,	/* 11/1986 (c) 1986 */
         driver_sidearms, /* 12/1986 (c) 1986 (World) */
         driver_sidearmr, /* 12/1986 (c) 1986 + Romstar license (US) */
         driver_sidearjp, /* 12/1986 (c) 1986 (Japan) */
         driver_turtship, /* (c) 1988 Philco (NOT A CAPCOM GAME but runs on modified Sidearms hardware) */
         driver_dyger, /* (c) 1989 Philco (NOT A CAPCOM GAME but runs on modified Sidearms hardware) */
         driver_dygera, /* (c) 1989 Philco (NOT A CAPCOM GAME but runs on modified Sidearms hardware) */
-        /*TODO*///	driver_avengers,	/*  2/1987 (c) 1987 (US) */
-        /*TODO*///	driver_avenger2,	/*  2/1987 (c) 1987 (US) */
-        /*TODO*///	driver_buraiken,	/*  2/1987 (c) 1987 (Japan) */
+        driver_avengers,	/*  2/1987 (c) 1987 (US) */
+        driver_avenger2,	/*  2/1987 (c) 1987 (US) */
+        driver_buraiken,	/*  2/1987 (c) 1987 (Japan) */
         /*TODO*///	driver_bionicc,	/*  3/1987 (c) 1987 (US) */
         /*TODO*///	driver_bionicc2,	/*  3/1987 (c) 1987 (US) */
         /*TODO*///	driver_topsecrt,	/*  3/1987 (c) 1987 (Japan) */
@@ -3392,9 +3394,9 @@ public class driver {
         driver_battlane, /* -0215, -0216 (Data East part number) (c) 1986 + Taito license */
         driver_battlan2, /* -0215, -0216 (Data East part number) (c) 1986 + Taito license */
         driver_battlan3, /* -0215, -0216 (Data East part number) (c) 1986 + Taito license */
-        /*TODO*///	driver_ddragon,	/* TA-0021 (c) 1987 */
-        /*TODO*///	driver_ddragonu,	/* TA-0021 (c) 1987 Taito America */
-        /*TODO*///	driver_ddragonb,	/* bootleg */
+        driver_ddragon,	/* TA-0021 (c) 1987 */
+        driver_ddragonu,	/* TA-0021 (c) 1987 Taito America */
+        driver_ddragonb,	/* bootleg */
         /*TODO*///	driver_spdodgeb,	/* TA-0022 (c) 1987 */
         /*TODO*///	driver_nkdodgeb,	/* TA-0022 (c) 1987 (Japan) */
         /*TODO*///	driver_chinagat,	/* TA-0023 (c) 1988 Taito + Romstar license (US) */
@@ -3404,8 +3406,8 @@ public class driver {
         /*TODO*///	driver_wwfsstar,	/* TA-0024 (c) 1989 (US) */
         driver_vball, /* TA-0025 (c) 1988 */
         driver_vball2pj, /* TA-0025 (c) 1988 (Japan) */
-        /*TODO*///	driver_ddragon2,	/* TA-0026 (c) 1988 (World) */
-        /*TODO*///	driver_ddragn2u,	/* TA-0026 (c) 1988 (US) */
+        driver_ddragon2,	/* TA-0026 (c) 1988 (World) */
+        driver_ddragn2u,	/* TA-0026 (c) 1988 (US) */
         /*TODO*///	driver_ctribe,	/* TA-0028 (c) 1990 (US) */
         /*TODO*///	driver_ctribeb,	/* bootleg */
         /*TODO*///	driver_blockout,	/* TA-0029 (c) 1989 + California Dreams */
