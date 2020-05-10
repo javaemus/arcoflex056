@@ -3407,15 +3407,15 @@ public class m6800 extends cpu_interface {
     /* $a3 SUBD indexed -**** */
     public opcode subd_ix = new opcode() {
         public void handler() {
-            /*TODO*///UINT32 r, d;
-            /*TODO*///PAIR b;
-            /*TODO*///IDXWORD(b);
-            /*TODO*///d = D;
-            /*TODO*///r = d - b.d;
-            /*TODO*///CLR_NZVC;
-            /*TODO*///SET_FLAGS16(d, b.d, r);
-            /*TODO*///D = r;
-            throw new UnsupportedOperationException("Unsupported");
+            int r, d;
+            int b;
+            b = IDXWORD();
+            d = getDreg();
+            r = d - b;
+            CLR_NZVC();
+            SET_FLAGS16(d, b, r);
+            setDreg(r);
+            //throw new UnsupportedOperationException("Unsupported");
         }
     };
 
@@ -3613,15 +3613,15 @@ public class m6800 extends cpu_interface {
     /* $b3 SUBD extended -**** */
     public opcode subd_ex = new opcode() {
         public void handler() {
-            /*TODO*///UINT32 r, d;
-            /*TODO*///PAIR b;
-            /*TODO*///EXTWORD(b);
-            /*TODO*///d = D;
-            /*TODO*///r = d - b.d;
-            /*TODO*///CLR_NZVC;
-            /*TODO*///SET_FLAGS16(d, b.d, r);
-            /*TODO*///D = r;
-            throw new UnsupportedOperationException("Unsupported");
+            int r, d;
+            int b;
+            b = EXTWORD();
+            d = getDreg();
+            r = d - b;
+            CLR_NZVC();
+            SET_FLAGS16(d, b, r);
+            setDreg( r );
+            //throw new UnsupportedOperationException("Unsupported");
         }
     };
 

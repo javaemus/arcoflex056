@@ -1,8 +1,8 @@
 
 package mame056.cpu.hd6309;
 
-import static mame056.cpu.hd6309.hd6309.*;
-
+/*TODO*///import static mame056.cpu.hd6309.hd6309.*;
+import static mame056.cpu.m6809.m6809.*;
 
 public class _6309ops {
 
@@ -666,7 +666,7 @@ public class _6309ops {
     /* $2F BLE relative ----- */
     public static void ble()
     {
-    	BRANCH( (NXORV()!=0 || (CC()&CC_Z)!=0) );
+    	BRANCH( (NXORV()!=0 || (CC()&CC_Z)!=0)?1:0 );
     }
     
     /* $102F LBLE relative ----- */
@@ -1712,205 +1712,205 @@ public class _6309ops {
     /*TODO*///	fetch_effective_address();
     /*TODO*///	U = EA;
     /*TODO*///}
-    /*TODO*///
-    /*TODO*////* $34 PSHS inherent ----- */
-    /*TODO*///INLINE void pshs( void )
-    /*TODO*///{
-    /*TODO*///	UINT8 t;
-    /*TODO*///	t = IMMBYTE(t);
-    /*TODO*///	if( t&0x80 ) { PUSHWORD(pPC); hd6309_ICount -= 2; }
-    /*TODO*///	if( t&0x40 ) { PUSHWORD(pU);  hd6309_ICount -= 2; }
-    /*TODO*///	if( t&0x20 ) { PUSHWORD(pY);  hd6309_ICount -= 2; }
-    /*TODO*///	if( t&0x10 ) { PUSHWORD(pX);  hd6309_ICount -= 2; }
-    /*TODO*///	if( t&0x08 ) { PUSHBYTE(DP);  hd6309_ICount -= 1; }
-    /*TODO*///	if( t&0x04 ) { PUSHBYTE(B);   hd6309_ICount -= 1; }
-    /*TODO*///	if( t&0x02 ) { PUSHBYTE(A);   hd6309_ICount -= 1; }
-    /*TODO*///	if( t&0x01 ) { PUSHBYTE(CC);  hd6309_ICount -= 1; }
-    /*TODO*///}
-    /*TODO*///
-    /*TODO*////* $1038 PSHSW inherent ----- */
-    /*TODO*///INLINE void pshsw( void )
-    /*TODO*///{
-    /*TODO*///	PUSHWORD(pW);
-    /*TODO*///}
-    /*TODO*///
-    /*TODO*////* $103a PSHUW inherent ----- */
-    /*TODO*///INLINE void pshuw( void )
-    /*TODO*///{
-    /*TODO*///	PSHUWORD(pW);
-    /*TODO*///}
-    /*TODO*///
-    /*TODO*////* $35 PULS inherent ----- */
-    /*TODO*///INLINE void puls( void )
-    /*TODO*///{
-    /*TODO*///	UINT8 t;
-    /*TODO*///	t = IMMBYTE(t);
-    /*TODO*///	if( t&0x01 ) { PULLBYTE(CC); hd6309_ICount -= 1; }
-    /*TODO*///	if( t&0x02 ) { PULLBYTE(A);  hd6309_ICount -= 1; }
-    /*TODO*///	if( t&0x04 ) { PULLBYTE(B);  hd6309_ICount -= 1; }
-    /*TODO*///	if( t&0x08 ) { PULLBYTE(DP); hd6309_ICount -= 1; }
-    /*TODO*///	if( t&0x10 ) { PULLWORD(XD); hd6309_ICount -= 2; }
-    /*TODO*///	if( t&0x20 ) { PULLWORD(YD); hd6309_ICount -= 2; }
-    /*TODO*///	if( t&0x40 ) { PULLWORD(UD); hd6309_ICount -= 2; }
-    /*TODO*///	if( t&0x80 ) { PULLWORD(PCD); CHANGE_PC; hd6309_ICount -= 2; }
-    /*TODO*///
-    /*TODO*///	/* HJB 990225: moved check after all PULLs */
-    /*TODO*///	if( t&0x01 ) { CHECK_IRQ_LINES(); }
-    /*TODO*///}
-    /*TODO*///
-    /*TODO*////* $1039 PULSW inherent ----- */
-    /*TODO*///INLINE void pulsw( void )
-    /*TODO*///{
-    /*TODO*///	PULLWORD(W);
-    /*TODO*///}
-    /*TODO*///
-    /*TODO*////* $103b PULUW inherent ----- */
-    /*TODO*///INLINE void puluw( void )
-    /*TODO*///{
-    /*TODO*///	PULUWORD(W);
-    /*TODO*///}
-    /*TODO*///
-    /*TODO*////* $36 PSHU inherent ----- */
-    /*TODO*///INLINE void pshu( void )
-    /*TODO*///{
-    /*TODO*///	UINT8 t;
-    /*TODO*///	t = IMMBYTE(t);
-    /*TODO*///	if( t&0x80 ) { PSHUWORD(pPC); hd6309_ICount -= 2; }
-    /*TODO*///	if( t&0x40 ) { PSHUWORD(pS);  hd6309_ICount -= 2; }
-    /*TODO*///	if( t&0x20 ) { PSHUWORD(pY);  hd6309_ICount -= 2; }
-    /*TODO*///	if( t&0x10 ) { PSHUWORD(pX);  hd6309_ICount -= 2; }
-    /*TODO*///	if( t&0x08 ) { PSHUBYTE(DP);  hd6309_ICount -= 1; }
-    /*TODO*///	if( t&0x04 ) { PSHUBYTE(B);   hd6309_ICount -= 1; }
-    /*TODO*///	if( t&0x02 ) { PSHUBYTE(A);   hd6309_ICount -= 1; }
-    /*TODO*///	if( t&0x01 ) { PSHUBYTE(CC);  hd6309_ICount -= 1; }
-    /*TODO*///}
-    /*TODO*///
-    /*TODO*////* 37 PULU inherent ----- */
-    /*TODO*///INLINE void pulu( void )
-    /*TODO*///{
-    /*TODO*///	UINT8 t;
-    /*TODO*///	t = IMMBYTE(t);
-    /*TODO*///	if( t&0x01 ) { PULUBYTE(CC); hd6309_ICount -= 1; }
-    /*TODO*///	if( t&0x02 ) { PULUBYTE(A);  hd6309_ICount -= 1; }
-    /*TODO*///	if( t&0x04 ) { PULUBYTE(B);  hd6309_ICount -= 1; }
-    /*TODO*///	if( t&0x08 ) { PULUBYTE(DP); hd6309_ICount -= 1; }
-    /*TODO*///	if( t&0x10 ) { PULUWORD(XD); hd6309_ICount -= 2; }
-    /*TODO*///	if( t&0x20 ) { PULUWORD(YD); hd6309_ICount -= 2; }
-    /*TODO*///	if( t&0x40 ) { PULUWORD(SD); hd6309_ICount -= 2; }
-    /*TODO*///	if( t&0x80 ) { PULUWORD(PCD); CHANGE_PC; hd6309_ICount -= 2; }
-    /*TODO*///
-    /*TODO*///	/* HJB 990225: moved check after all PULLs */
-    /*TODO*///	if( t&0x01 ) { CHECK_IRQ_LINES(); }
-    /*TODO*///}
-    /*TODO*///
-    /*TODO*////* $38 ILLEGAL */
-    /*TODO*///
-    /*TODO*////* $39 RTS inherent ----- */
-    /*TODO*///INLINE void rts( void )
-    /*TODO*///{
-    /*TODO*///	PULLWORD(PCD);
-    /*TODO*///	CHANGE_PC;
-    /*TODO*///}
-    /*TODO*///
-    /*TODO*////* $3A ABX inherent ----- */
-    /*TODO*///INLINE void abx( void )
-    /*TODO*///{
-    /*TODO*///	X += B;
-    /*TODO*///}
-    /*TODO*///
-    /*TODO*////* $3B RTI inherent ##### */
-    /*TODO*///INLINE void rti( void )
-    /*TODO*///{
-    /*TODO*///	UINT8 t;
-    /*TODO*///	PULLBYTE(CC);
-    /*TODO*///	t = CC & CC_E;		/* HJB 990225: entire state saved? */
-    /*TODO*///	if(t)
-    /*TODO*///	{
-    /*TODO*///		hd6309_ICount -= 9;
-    /*TODO*///		PULLBYTE(A);
-    /*TODO*///		PULLBYTE(B);
-    /*TODO*///		if ( MD & MD_EM )
-    /*TODO*///		{
-    /*TODO*///			PULLBYTE(E);
-    /*TODO*///			PULLBYTE(F);
-    /*TODO*///			hd6309_ICount -= 2;
-    /*TODO*///		}
-    /*TODO*///		PULLBYTE(DP);
-    /*TODO*///		PULLWORD(XD);
-    /*TODO*///		PULLWORD(YD);
-    /*TODO*///		PULLWORD(UD);
-    /*TODO*///	}
-    /*TODO*///	PULLWORD(PCD);
-    /*TODO*///	CHANGE_PC;
-    /*TODO*///	CHECK_IRQ_LINES();	/* HJB 990116 */
-    /*TODO*///}
-    /*TODO*///
-    /*TODO*////* $3C CWAI inherent ----1 */
-    /*TODO*///INLINE void cwai( void )
-    /*TODO*///{
-    /*TODO*///	UINT8 t;
-    /*TODO*///	t = IMMBYTE(t);
-    /*TODO*///	CC &= t;
-    /*TODO*///	/*
-    /*TODO*///	 * CWAI stacks the entire machine state on the hardware stack,
-    /*TODO*///	 * then waits for an interrupt; when the interrupt is taken
-    /*TODO*///	 * later, the state is *not* saved again after CWAI.
-    /*TODO*///	 */
-    /*TODO*///	CC |= CC_E; 		/* HJB 990225: save entire state */
-    /*TODO*///	PUSHWORD(pPC);
-    /*TODO*///	PUSHWORD(pU);
-    /*TODO*///	PUSHWORD(pY);
-    /*TODO*///	PUSHWORD(pX);
-    /*TODO*///	PUSHBYTE(DP);
-    /*TODO*///	if ( MD & MD_EM )
-    /*TODO*///	{
-    /*TODO*///		PUSHBYTE(E);
-    /*TODO*///		PUSHBYTE(F);
-    /*TODO*///	}
-    /*TODO*///	PUSHBYTE(B);
-    /*TODO*///	PUSHBYTE(A);
-    /*TODO*///	PUSHBYTE(CC);
-    /*TODO*///	hd6309.int_state |= HD6309_CWAI;	 /* HJB 990228 */
-    /*TODO*///	CHECK_IRQ_LINES();	  /* HJB 990116 */
-    /*TODO*///	if( hd6309.int_state & HD6309_CWAI )
-    /*TODO*///		if( hd6309_ICount > 0 )
-    /*TODO*///			hd6309_ICount = 0;
-    /*TODO*///}
-    /*TODO*///
-    /*TODO*////* $3D MUL inherent --*-@ */
-    /*TODO*///INLINE void mul( void )
-    /*TODO*///{
-    /*TODO*///	UINT16 t;
-    /*TODO*///	t = A * B;
-    /*TODO*///	CLR_ZC; SET_Z16(t); if(t&0x80) SEC;
-    /*TODO*///	D = t;
-    /*TODO*///}
-    /*TODO*///
-    /*TODO*////* $3E ILLEGAL */
-    /*TODO*///
-    /*TODO*////* $3F SWI (SWI2 SWI3) absolute indirect ----- */
-    /*TODO*///INLINE void swi( void )
-    /*TODO*///{
-    /*TODO*///	CC |= CC_E; 			/* HJB 980225: save entire state */
-    /*TODO*///	PUSHWORD(pPC);
-    /*TODO*///	PUSHWORD(pU);
-    /*TODO*///	PUSHWORD(pY);
-    /*TODO*///	PUSHWORD(pX);
-    /*TODO*///	PUSHBYTE(DP);
-    /*TODO*///	if ( MD & MD_EM )
-    /*TODO*///	{
-    /*TODO*///		PUSHBYTE(F);
-    /*TODO*///		PUSHBYTE(E);
-    /*TODO*///		hd6309_ICount -= 2;
-    /*TODO*///	}
-    /*TODO*///	PUSHBYTE(B);
-    /*TODO*///	PUSHBYTE(A);
-    /*TODO*///	PUSHBYTE(CC);
-    /*TODO*///	CC |= CC_IF | CC_II;	/* inhibit FIRQ and IRQ */
-    /*TODO*///	PCD=RM16(0xfffa);
-    /*TODO*///	CHANGE_PC;
-    /*TODO*///}
-    /*TODO*///
+    
+    /* $34 PSHS inherent ----- */
+    public static void pshs()
+    {
+    	int t=0;
+    	t = IMMBYTE(t);
+    	if(( t&0x80 )!=0) { PUSHWORD(pPC()); hd6309_ICount[0] -= 2; }
+    	if(( t&0x40 )!=0) { PUSHWORD(pU());  hd6309_ICount[0] -= 2; }
+    	if(( t&0x20 )!=0) { PUSHWORD(pY());  hd6309_ICount[0] -= 2; }
+    	if(( t&0x10 )!=0) { PUSHWORD(pX());  hd6309_ICount[0] -= 2; }
+    	if(( t&0x08 )!=0) { PUSHBYTE(DP());  hd6309_ICount[0] -= 1; }
+    	if(( t&0x04 )!=0) { PUSHBYTE(B());   hd6309_ICount[0] -= 1; }
+    	if(( t&0x02 )!=0) { PUSHBYTE(A());   hd6309_ICount[0] -= 1; }
+    	if(( t&0x01 )!=0) { PUSHBYTE(CC());  hd6309_ICount[0] -= 1; }
+    }
+    
+    /* $1038 PSHSW inherent ----- */
+    public static void pshsw()
+    {
+    	PUSHWORD(pW());
+    }
+    
+    /* $103a PSHUW inherent ----- */
+    public static void pshuw()
+    {
+    	PSHUWORD(pW());
+    }
+    
+    /* $35 PULS inherent ----- */
+    public static void puls()
+    {
+    	int t=0;
+    	t = IMMBYTE(t);
+    	if(( t&0x01 ) != 0) { CC(PULLBYTE(CC())); hd6309_ICount[0] -= 1; }
+    	if(( t&0x02 ) != 0) { A(PULLBYTE(A()));  hd6309_ICount[0] -= 1; }
+    	if(( t&0x04 ) != 0) { B(PULLBYTE(B()));  hd6309_ICount[0] -= 1; }
+    	if(( t&0x08 ) != 0) { DP(PULLBYTE(DP())); hd6309_ICount[0] -= 1; }
+    	if(( t&0x10 ) != 0) { XD(PULLWORD(XD())); hd6309_ICount[0] -= 2; }
+    	if(( t&0x20 ) != 0) { YD(PULLWORD(YD())); hd6309_ICount[0] -= 2; }
+    	if(( t&0x40 ) != 0) { UD(PULLWORD(UD())); hd6309_ICount[0] -= 2; }
+    	if(( t&0x80 ) != 0) { PCD(PULLWORD(PCD())); CHANGE_PC(); hd6309_ICount[0] -= 2; }
+    
+    	/* HJB 990225: moved check after all PULLs */
+    	if(( t&0x01 ) != 0) { CHECK_IRQ_LINES(); }
+    }
+    
+    /* $1039 PULSW inherent ----- */
+    public static void pulsw()
+    {
+    	W(PULLWORD(W()));
+    }
+    
+    /* $103b PULUW inherent ----- */
+    public static void puluw()
+    {
+    	W(PULUWORD(W()));
+    }
+    
+    /* $36 PSHU inherent ----- */
+    public static void pshu()
+    {
+    	int t=0;
+    	t = IMMBYTE(t);
+    	if(( t&0x80 ) != 0) { PSHUWORD(pPC()); hd6309_ICount[0] -= 2; }
+    	if(( t&0x40 ) != 0) { PSHUWORD(pS());  hd6309_ICount[0] -= 2; }
+    	if(( t&0x20 ) != 0) { PSHUWORD(pY());  hd6309_ICount[0] -= 2; }
+    	if(( t&0x10 ) != 0) { PSHUWORD(pX());  hd6309_ICount[0] -= 2; }
+    	if(( t&0x08 ) != 0) { PSHUBYTE(DP());  hd6309_ICount[0] -= 1; }
+    	if(( t&0x04 ) != 0) { PSHUBYTE(B());   hd6309_ICount[0] -= 1; }
+    	if(( t&0x02 ) != 0) { PSHUBYTE(A());   hd6309_ICount[0] -= 1; }
+    	if(( t&0x01 ) != 0) { PSHUBYTE(CC());  hd6309_ICount[0] -= 1; }
+    }
+    
+    /* 37 PULU inherent ----- */
+    public static void pulu()
+    {
+    	int t=0;
+    	t = IMMBYTE(t);
+    	if(( t&0x01 ) != 0) { CC(PULUBYTE(CC())); hd6309_ICount[0] -= 1; }
+    	if(( t&0x02 ) != 0) { A(PULUBYTE(A()));  hd6309_ICount[0] -= 1; }
+    	if(( t&0x04 ) != 0) { B(PULUBYTE(B()));  hd6309_ICount[0] -= 1; }
+    	if(( t&0x08 ) != 0) { DP(PULUBYTE(DP())); hd6309_ICount[0] -= 1; }
+    	if(( t&0x10 ) != 0) { XD(PULUWORD(XD())); hd6309_ICount[0] -= 2; }
+    	if(( t&0x20 ) != 0) { YD(PULUWORD(YD())); hd6309_ICount[0] -= 2; }
+    	if(( t&0x40 ) != 0) { SD(PULUWORD(SD())); hd6309_ICount[0] -= 2; }
+    	if(( t&0x80 ) != 0) { PCD(PULUWORD(PCD())); CHANGE_PC(); hd6309_ICount[0] -= 2; }
+    
+    	/* HJB 990225: moved check after all PULLs */
+    	if(( t&0x01 ) != 0) { CHECK_IRQ_LINES(); }
+    }
+    
+    /* $38 ILLEGAL */
+    
+    /* $39 RTS inherent ----- */
+    public static void rts()
+    {
+    	PCD(PULLWORD(PCD()));
+    	CHANGE_PC();
+    }
+    
+    /* $3A ABX inherent ----- */
+    public static void abx()
+    {
+    	X( X() + B() );
+    }
+    
+    /* $3B RTI inherent ##### */
+    public static void rti()
+    {
+    	int t;
+    	CC(PULLBYTE(CC()));
+    	t = CC() & CC_E;		/* HJB 990225: entire state saved? */
+    	if(t != 0)
+    	{
+    		hd6309_ICount[0] -= 9;
+    		A(PULLBYTE(A()));
+    		B(PULLBYTE(B()));
+    		if (( MD() & MD_EM ) != 0)
+    		{
+    			E(PULLBYTE(E()));
+    			F(PULLBYTE(F()));
+    			hd6309_ICount[0] -= 2;
+    		}
+    		DP(PULLBYTE(DP()));
+    		XD(PULLWORD(XD()));
+    		YD(PULLWORD(YD()));
+    		UD(PULLWORD(UD()));
+    	}
+    	PCD(PULLWORD(PCD()));
+    	CHANGE_PC();
+    	CHECK_IRQ_LINES();	/* HJB 990116 */
+    }
+    
+    /* $3C CWAI inherent ----1 */
+    public static void cwai()
+    {
+    	int t=0;
+    	t = IMMBYTE(t);
+    	CC( CC() & t );
+    	/*
+    	 * CWAI stacks the entire machine state on the hardware stack,
+    	 * then waits for an interrupt; when the interrupt is taken
+    	 * later, the state is *not* saved again after CWAI.
+    	 */
+    	CC( CC() | CC_E ); 		/* HJB 990225: save entire state */
+    	PUSHWORD(pPC());
+    	PUSHWORD(pU());
+    	PUSHWORD(pY());
+    	PUSHWORD(pX());
+    	PUSHBYTE(DP());
+    	if (( MD() & MD_EM ) != 0)
+    	{
+    		PUSHBYTE(E());
+    		PUSHBYTE(F());
+    	}
+    	PUSHBYTE(B());
+    	PUSHBYTE(A());
+    	PUSHBYTE(CC());
+    	hd6309.int_state |= HD6309_CWAI;	 /* HJB 990228 */
+    	CHECK_IRQ_LINES();	  /* HJB 990116 */
+    	if(( hd6309.int_state & HD6309_CWAI ) != 0)
+    		if( hd6309_ICount[0] > 0 )
+    			hd6309_ICount[0] = 0;
+    }
+    
+    /* $3D MUL inherent --*-@ */
+    public static void mul()
+    {
+    	int t;
+    	t = A() * B();
+    	CLR_ZC(); SET_Z16(t); if((t&0x80)!=0) SEC();
+    	D( t );
+    }
+    
+    /* $3E ILLEGAL */
+    
+    /* $3F SWI (SWI2 SWI3) absolute indirect ----- */
+    public static void swi()
+    {
+    	CC( CC() | CC_E ); 			/* HJB 980225: save entire state */
+    	PUSHWORD(pPC());
+    	PUSHWORD(pU());
+    	PUSHWORD(pY());
+    	PUSHWORD(pX());
+    	PUSHBYTE(DP());
+    	if (( MD() & MD_EM ) != 0)
+    	{
+    		PUSHBYTE(F());
+    		PUSHBYTE(E());
+    		hd6309_ICount[0] -= 2;
+    	}
+    	PUSHBYTE(B());
+    	PUSHBYTE(A());
+    	PUSHBYTE(CC());
+    	CC( CC() | CC_IF | CC_II );	/* inhibit FIRQ and IRQ */
+    	PCD(RM16(0xfffa));
+    	CHANGE_PC();
+    }
+    
     /*TODO*////* $1130 BAND */
     /*TODO*///
     /*TODO*///#define decodePB_tReg(n)	((n)&3)
@@ -2062,29 +2062,29 @@ public class _6309ops {
     /*TODO*///	else
     /*TODO*///		WM( EAD, db & (~bitTable[decodePB_src(pb)]) );
     /*TODO*///}
-    /*TODO*///
-    /*TODO*////* $103F SWI2 absolute indirect ----- */
-    /*TODO*///INLINE void swi2( void )
-    /*TODO*///{
-    /*TODO*///	CC |= CC_E; 			/* HJB 980225: save entire state */
-    /*TODO*///	PUSHWORD(pPC);
-    /*TODO*///	PUSHWORD(pU);
-    /*TODO*///	PUSHWORD(pY);
-    /*TODO*///	PUSHWORD(pX);
-    /*TODO*///	PUSHBYTE(DP);
-    /*TODO*///	if ( MD & MD_EM )
-    /*TODO*///	{
-    /*TODO*///		PUSHBYTE(F);
-    /*TODO*///		PUSHBYTE(E);
-    /*TODO*///		hd6309_ICount -= 2;
-    /*TODO*///	}
-    /*TODO*///	PUSHBYTE(B);
-    /*TODO*///	PUSHBYTE(A);
-    /*TODO*///	PUSHBYTE(CC);
-    /*TODO*///	PCD = RM16(0xfff4);
-    /*TODO*///	CHANGE_PC;
-    /*TODO*///}
-    /*TODO*///
+    
+    /* $103F SWI2 absolute indirect ----- */
+    public static void swi2()
+    {
+    	CC( CC() | CC_E ); 			/* HJB 980225: save entire state */
+    	PUSHWORD(pPC());
+    	PUSHWORD(pU());
+    	PUSHWORD(pY());
+    	PUSHWORD(pX());
+    	PUSHBYTE(DP());
+    	if (( MD() & MD_EM ) != 0)
+    	{
+    		PUSHBYTE(F());
+    		PUSHBYTE(E());
+    		hd6309_ICount[0] -= 2;
+    	}
+    	PUSHBYTE(B());
+    	PUSHBYTE(A());
+    	PUSHBYTE(CC());
+    	PCD( RM16(0xfff4) );
+    	CHANGE_PC();
+    }
+    
     /*TODO*////* $113F SWI3 absolute indirect ----- */
     /*TODO*///INLINE void swi3( void )
     /*TODO*///{
@@ -2210,16 +2210,16 @@ public class _6309ops {
     /*TODO*///	CLR_NZV;
     /*TODO*///	SET_NZ8(A);
     /*TODO*///}
-    /*TODO*///
-    /*TODO*////* $4E ILLEGAL */
-    /*TODO*///
-    /*TODO*////* $4F CLRA inherent -0100 */
-    /*TODO*///INLINE void clra( void )
-    /*TODO*///{
-    /*TODO*///	A = 0;
-    /*TODO*///	CLR_NZVC; SEZ;
-    /*TODO*///}
-    /*TODO*///
+    
+    /* $4E ILLEGAL */
+    
+    /* $4F CLRA inherent -0100 */
+    public static void clra()
+    {
+    	A( 0 );
+    	CLR_NZVC(); SEZ();
+    }
+    
     /*TODO*///#ifdef macintosh
     /*TODO*///#pragma mark ____5x____
     /*TODO*///#endif
@@ -5838,12 +5838,12 @@ public class _6309ops {
     /*TODO*///	EXTENDED;
     /*TODO*///	WM16(EAD,&pS);
     /*TODO*///}
-    /*TODO*///
-    /*TODO*////* $10xx opcodes */
-    /*TODO*///INLINE void pref10( void )
+    
+    /* $10xx opcodes */
+    /*TODO*///public static void pref10()
     /*TODO*///{
-    /*TODO*///	UINT8 ireg2 = ROP(PCD);
-    /*TODO*///	PC++;
+    /*TODO*///	int ireg2 = ROP(PCD());
+    /*TODO*///	PC(PC()+1);
     /*TODO*///
     /*TODO*///#ifdef BIG_SWITCH
     /*TODO*///	switch( ireg2 )
