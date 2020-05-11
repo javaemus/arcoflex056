@@ -264,6 +264,7 @@ import static WIP.mame056.drivers.galivan.*;
 import static WIP.mame056.drivers.slapfght.*;
 import static WIP.mame056.drivers.lwings.*;
 import static WIP.mame056.drivers.ddragon.*;
+import static WIP.mame056.drivers.combatsc.*;
 
 public class driver {
 
@@ -2875,11 +2876,11 @@ public class driver {
         /*TODO*///	driver_contraj,	/* GX633 (c) 1987 (Japan) */
         /*TODO*///	driver_contrajb,	/* bootleg */
         /*TODO*///	driver_gryzor,	/* GX633 (c) 1987 */
-        /*TODO*///	driver_combasc,	/* GX611 (c) 1988 */
-        /*TODO*///	driver_combasct,	/* GX611 (c) 1987 */
-        /*TODO*///	driver_combascj,	/* GX611 (c) 1987 (Japan) */
-        /*TODO*///	driver_bootcamp,	/* GX611 (c) 1987 */
-        /*TODO*///	driver_combascb,	/* bootleg */
+        driver_combasc,	/* GX611 (c) 1988 */
+        driver_combasct,	/* GX611 (c) 1987 */
+        driver_combascj,	/* GX611 (c) 1987 (Japan) */
+        driver_bootcamp,	/* GX611 (c) 1987 */
+        driver_combascb,	/* bootleg */
         /*TODO*///	driver_rockrage,	/* GX620 (c) 1986 (World?) */
         /*TODO*///	driver_rockragj,	/* GX620 (c) 1986 (Japan) */
         /*TODO*///	driver_mx5000,	/* GX669 (c) 1987 */

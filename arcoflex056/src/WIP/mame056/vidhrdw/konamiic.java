@@ -1146,6 +1146,7 @@ public class konamiic
 		int i,num,inc,trans;
                 int[] offs = new int[5];
 		int is_flakatck = K007121_ctrlram[chip][0x06] & 0x04;	/* WRONG!!!! */
+                
 	
 	/*TODO*///#if 0
 	/*TODO*///usrintf_showmessage("%02x-%02x-%02x-%02x-%02x-%02x-%02x-%02x  %02x-%02x-%02x-%02x-%02x-%02x-%02x-%02x",
@@ -1197,10 +1198,11 @@ public class konamiic
 				inc = -inc;
 			}
 		}
-	
+                
+        
 		for (i = 0;i < num;i++)
 		{
-			int number = source.read(offs[0]);				/* sprite number */
+        		int number = source.read(offs[0]);				/* sprite number */
 			int sprite_bank = source.read(offs[1]) & 0x0f;	/* sprite bank */
 			int sx = source.read(offs[3]);					/* vertical position */
 			int sy = source.read(offs[2]);					/* horizontal position */

@@ -7103,7 +7103,7 @@ public class drawgfx {
                     if (pribuf != null) {
                         System.out.println("BLOCKMOVEPRI(8toN_transcolor,");
                         /*TODO*///						BLOCKMOVEPRI(8toN_transcolor,(sd,sw,sh,sm,ls,ts,flipx,flipy,dd,dw,dh,dm,paldata,pribuf,pri_mask,Machine.game_colortable + (paldata - Machine.remapped_colortable),transparent_color));
-                        
+                        blockmove_8toN_transcolor16(sd, sw, sh, sm, ls, ts, flipx, flipy, dd, dw, dh, dm, paldata, new UShortArray(Machine.game_colortable, (paldata.offset - Machine.remapped_colortable.offset)), transparent_color);
                     } else {
                         if ((gfx.flags & GFX_SWAPXY) != 0) {
                             throw new UnsupportedOperationException("Unsupported");//BLOCKMOVELU(8toN_transcolor,(sd,sw,sh,sm,ls,ts,flipx,flipy,dd,dw,dh,dm,paldata,Machine.game_colortable + (paldata - Machine.remapped_colortable),transparent_color));
