@@ -147,8 +147,8 @@ public class ddrible
 		if (fg_tilemap==null || bg_tilemap==null)
 			return 1;
 	
-		/*TODO*///tilemap_set_transparent_pen(fg_tilemap,0);
-                fg_tilemap.transparent_pen = 0;
+		tilemap_set_transparent_pen(fg_tilemap,0);
+                //fg_tilemap.transparent_pen = 0;
 	
 		return 0;
 	} };
@@ -205,9 +205,9 @@ public class ddrible
 	static void ddribble_draw_sprites( mame_bitmap bitmap, UBytePtr source, int lenght, int gfxset, int flipscreen )
 	{
 		GfxElement gfx = Machine.gfx[gfxset];
-		UBytePtr finish = new UBytePtr(source, lenght);
+		int finish = source.offset + lenght;
 	
-		while( source.offset < finish.offset )
+		while( source.offset < finish )
 		{
 			int number = source.read(0) | ((source.read(1) & 0x07) << 8);	/* sprite number */
 			int attr = source.read(4);								/* attributes */
@@ -243,7 +243,6 @@ public class ddrible
 			}
 	
 			{
-				
 				int x,y, ex, ey;
 	
 				for( y=0; y < height; y++ ){
@@ -273,10 +272,7 @@ public class ddrible
 	
 	public static VhUpdatePtr ddrible_vh_screenrefresh = new VhUpdatePtr() { public void handler(mame_bitmap bitmap,int full_refresh) 
 	{
-            //tilemap_update(ALL_TILEMAPS);
-            //tilemap_render(ALL_TILEMAPS);
-            
-		tilemap_set_flip(fg_tilemap, (ddribble_vregs[0][4] & 0x08)!=0 ? (TILEMAP_FLIPY | TILEMAP_FLIPX) : 0);
+                tilemap_set_flip(fg_tilemap, (ddribble_vregs[0][4] & 0x08)!=0 ? (TILEMAP_FLIPY | TILEMAP_FLIPX) : 0);
 		tilemap_set_flip(bg_tilemap, (ddribble_vregs[1][4] & 0x08)!=0 ? (TILEMAP_FLIPY | TILEMAP_FLIPX) : 0);
 	
 		/* set scroll registers */
@@ -286,9 +282,8 @@ public class ddrible
 		tilemap_set_scrolly(bg_tilemap,0,ddribble_vregs[1][0]);
 	
 		tilemap_draw(bitmap,bg_tilemap,0,0);
-                
-		//ddribble_draw_sprites(bitmap,ddrible_spriteram_1,0x07d,2,ddribble_vregs[0][4] & 0x08);
-		//ddribble_draw_sprites(bitmap,ddrible_spriteram_2,0x140,3,ddribble_vregs[1][4] & 0x08);
+		ddribble_draw_sprites(bitmap,new UBytePtr(ddrible_spriteram_1, 0),0x07d,2,ddribble_vregs[0][4] & 0x08);
+		ddribble_draw_sprites(bitmap,new UBytePtr(ddrible_spriteram_2, 0),0x140,3,ddribble_vregs[1][4] & 0x08);
 		tilemap_draw(bitmap,fg_tilemap,0,0);
                 
 	} };
