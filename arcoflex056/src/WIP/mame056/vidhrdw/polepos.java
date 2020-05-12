@@ -459,9 +459,9 @@ public class polepos
 			int color = sizmem.read(1) & 0x3f;
 	
 			if (vpos >= 128) color |= 0x40;
-			/*TODO*///drawgfxzoom(bitmap, gfx,
-			/*TODO*///		 code, color, hflip, 0, hpos, vpos,
-			/*TODO*///		 Machine.visible_area, TRANSPARENCY_COLOR, 0, hsize << 11, vsize << 11);
+			drawgfxzoom(bitmap, gfx,
+					 code, color, hflip, 0, hpos, vpos,
+					 Machine.visible_area, TRANSPARENCY_COLOR, 0, hsize << 11, vsize << 11);
 		}
 	}
 	

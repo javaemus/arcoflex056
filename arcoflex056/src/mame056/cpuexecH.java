@@ -4,6 +4,8 @@
 package mame056;
 
 import arcadeflex056.fucPtr.*;
+import static mame056.cpu.hd6309.hd6309H.HD6309_FIRQ_LINE;
+import static mame056.cpu.hd6309.hd6309H.HD6309_IRQ_LINE;
 
 import static mame056.cpuexec.*;
 import static mame056.cpuintrfH.*;
@@ -197,8 +199,8 @@ public class cpuexecH {
     public static final int M6809_INT_FIRQ = M6809_FIRQ_LINE;
     public static final int M6809_INT_NMI = INTERRUPT_NMI;
 
-    /*TODO*///#define HD6309_INT_IRQ		HD6309_IRQ_LINE
-/*TODO*///#define HD6309_INT_FIRQ		HD6309_FIRQ_LINE
+    public static final int HD6309_INT_IRQ = HD6309_IRQ_LINE;
+    public static final int HD6309_INT_FIRQ = HD6309_FIRQ_LINE;
 /*TODO*///#define HD63705_INT_IRQ		HD63705_INT_IRQ1
 /*TODO*///#define M68705_INT_IRQ		M68705_IRQ_LINE
 /*TODO*///#define KONAMI_INT_IRQ		KONAMI_IRQ_LINE

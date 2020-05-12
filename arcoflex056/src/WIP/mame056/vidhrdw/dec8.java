@@ -46,9 +46,6 @@ sprites.
  */ 
 package WIP.mame056.vidhrdw;
 
-import static WIP.mame056.drivers.ddrible.ddrible_int_enable_0;
-import static WIP.mame056.drivers.ddrible.ddrible_int_enable_1;
-
 import static arcadeflex056.fucPtr.*;
 import static common.ptr.*;
 import static mame056.tilemapH.*;

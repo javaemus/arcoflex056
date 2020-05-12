@@ -266,6 +266,9 @@ import static WIP.mame056.drivers.lwings.*;
 import static WIP.mame056.drivers.ddragon.*;
 import static WIP.mame056.drivers.combatsc.*;
 import static WIP.mame056.drivers.dec8.*;
+import static WIP.mame056.drivers.battlnts.*;
+import static WIP.mame056.drivers.bladestl.*;
+import static WIP.mame056.drivers.shangkid.*;
 
 public class driver {
 
@@ -2889,13 +2892,13 @@ public class driver {
         /*TODO*///	driver_fastlane,	/* GX752 (c) 1987 */
         /*TODO*///	driver_tricktrp,	/* GX771 (c) 1987 */
         /*TODO*///	driver_labyrunr,	/* GX771 (c) 1987 (Japan) */
-        /*TODO*///	driver_thehustl,	/* GX765 (c) 1987 (Japan) */
-        /*TODO*///	driver_thehustj,	/* GX765 (c) 1987 (Japan) */
-        /*TODO*///	driver_rackemup,	/* GX765 (c) 1987 */
-        /*TODO*///	driver_battlnts,	/* GX777 (c) 1987 */
-        /*TODO*///	driver_battlntj,	/* GX777 (c) 1987 (Japan) */
-        /*TODO*///	driver_bladestl,	/* GX797 (c) 1987 */
-        /*TODO*///	driver_bladstle,	/* GX797 (c) 1987 */
+        driver_thehustl,	/* GX765 (c) 1987 (Japan) */
+        driver_thehustj,	/* GX765 (c) 1987 (Japan) */
+        driver_rackemup,	/* GX765 (c) 1987 */
+        driver_battlnts,	/* GX777 (c) 1987 */
+        driver_battlntj,	/* GX777 (c) 1987 (Japan) */
+        driver_bladestl,	/* GX797 (c) 1987 */
+        driver_bladstle,	/* GX797 (c) 1987 */
         /*TODO*///	driver_hcastle,	/* GX768 (c) 1988 */
         /*TODO*///	driver_hcastlea,	/* GX768 (c) 1988 */
         /*TODO*///	driver_hcastlej,	/* GX768 (c) 1988 (Japan) */
@@ -4024,9 +4027,9 @@ public class driver {
         driver_royalmah,	/* (c) 1982 Falcon */
         /*TODO*///	driver_amspdwy,	/* no copyright notice, but (c) 1987 Enerdyne Technologies, Inc. */
         /*TODO*///	driver_amspdwya,	/* no copyright notice, but (c) 1987 Enerdyne Technologies, Inc. */
-        /*TODO*///	driver_dynamski,	/* (c) 1984 Taiyo */
-        /*TODO*///	driver_chinhero,	/* (c) 1984 Taiyo */
-        /*TODO*///	driver_shangkid,	/* (c) 1985 Taiyo + Data East license */
+        driver_dynamski,	/* (c) 1984 Taiyo */
+        driver_chinhero,	/* (c) 1984 Taiyo */
+        driver_shangkid,	/* (c) 1985 Taiyo + Data East license */
         /*TODO*///	driver_othldrby,	/* (c) 1995 Sunwise */
         /*TODO*///
         /*TODO*///
