@@ -520,17 +520,17 @@ public static final int TOP_MONITOR_ROWS =30;
 				sy = offs/2 / 32;
 	
 				drawgfx(tmpbitmap,Machine.gfx[0],
-						videoram.read(offs) + 256 * (videoram.read(offs + 1) & 0x03),
-						((videoram.read(offs + 1) & 0x7c) >> 2) + 64 * top_palette_bank,
-						videoram.read(offs + 1) & 0x80,0,
-						8*sx,8*sy - 8*(32-TOP_MONITOR_ROWS),
+						videoram.read(offs)+ 256 * (videoram.read(offs + 1)& 0x03),
+						((videoram.read(offs + 1)& 0x7c) >> 2) + 64 * top_palette_bank,
+						videoram.read(offs + 1)& 0x80,0,
+						8*sx,8*sy - 16,
 						topvisiblearea,TRANSPARENCY_NONE,0);
 			}
 		}
 	
 		for (offs = punchout_videoram2_size[0] - 2;offs >= 0;offs -= 2)
 		{
-			if (dirtybuffer2[offs]!=0 | dirtybuffer2[offs + 1]!=0)
+			if ((dirtybuffer2[offs] | dirtybuffer2[offs + 1]) !=0)
 			{
 				int sx,sy;
 	
@@ -545,14 +545,14 @@ public static final int TOP_MONITOR_ROWS =30;
 						punchout_videoram2.read(offs) + 256 * (punchout_videoram2.read(offs + 1) & 0x03),
 						((punchout_videoram2.read(offs + 1) & 0x7c) >> 2) + 64 * bottom_palette_bank,
 						punchout_videoram2.read(offs + 1) & 0x80,0,
-						8*sx,8*sy + 8*TOP_MONITOR_ROWS,
+						8*sx,8*sy + 8*TOP_MONITOR_ROWS - 16,
 						backgroundvisiblearea,TRANSPARENCY_NONE,0);
 			}
 		}
 	
 		for (offs = punchout_bigsprite1ram_size[0] - 4;offs >= 0;offs -= 4)
 		{
-			if (bs1dirtybuffer[offs]!=0 | bs1dirtybuffer[offs + 1]!=0 | bs1dirtybuffer[offs + 3]!=0)
+			if ((bs1dirtybuffer[offs] | bs1dirtybuffer[offs + 1] | bs1dirtybuffer[offs + 3]) != 0)
 			{
 				int sx,sy;
 	
@@ -575,7 +575,7 @@ public static final int TOP_MONITOR_ROWS =30;
 	
 		for (offs = punchout_bigsprite2ram_size[0] - 4;offs >= 0;offs -= 4)
 		{
-			if (bs2dirtybuffer[offs]!=0 | bs2dirtybuffer[offs + 1]!=0 | bs2dirtybuffer[offs + 3]!=0)
+			if ((bs2dirtybuffer[offs] | bs2dirtybuffer[offs + 1] | bs2dirtybuffer[offs + 3]) != 0)
 			{
 				int sx,sy;
 	
@@ -605,56 +605,57 @@ public static final int TOP_MONITOR_ROWS =30;
 			for (offs = 0;offs < TOP_MONITOR_ROWS;offs++)
 				scroll[offs] = 0;
 			for (offs = 0;offs < BOTTOM_MONITOR_ROWS;offs++)
-				scroll[TOP_MONITOR_ROWS + offs] = -(58 + punchout_scroll.read(2*offs) + 256 * (punchout_scroll.read(2*offs + 1) & 0x01));
+				scroll[TOP_MONITOR_ROWS + offs] = -(58 + punchout_scroll.read(2*(offs+2)) + 256 * (punchout_scroll.read(2*(offs+2) + 1) & 0x01));
 	
-			copyscrollbitmap(bitmap,tmpbitmap,TOP_MONITOR_ROWS + BOTTOM_MONITOR_ROWS,scroll,0,new int[]{0},Machine.visible_area,TRANSPARENCY_NONE,0);
+			copyscrollbitmap(bitmap,tmpbitmap,TOP_MONITOR_ROWS + BOTTOM_MONITOR_ROWS,scroll,0,null,Machine.visible_area,TRANSPARENCY_NONE,0);
 		}
 	
 		/* copy the two big sprites */
 		{
-			int sx,sy,zoom,height;
-	
+			int zoom;
 	
 			zoom = punchout_bigsprite1.read(0) + 256 * (punchout_bigsprite1.read(1) & 0x0f);
 			if (zoom != 0)
 			{
-				sx = 1024 - (punchout_bigsprite1.read(2) + 256 * (punchout_bigsprite1.read(3) & 0x0f)) / 4;
-				if (sx > 1024-127) sx -= 1024;
-				sx = sx * (0x1000 / 4) / zoom;	/* adjust x position basing on zoom */
-				sx -= 57;	/* adjustment to match the screen shots */
+				int sx,sy;
+				int startx,starty;
+				int incxx,incyy;
 	
-				sy = -punchout_bigsprite1.read(4) + 256 * (punchout_bigsprite1.read(5) & 1);
-				sy = sy * (0x1000 / 4) / zoom;	/* adjust y position basing on zoom */
+				sx = 4096 - (punchout_bigsprite1.read(2) + 256 * (punchout_bigsprite1.read(3) & 0x0f));
+				if (sx > 4096-4*127) sx -= 4096;
 	
-				/* when the sprite is reduced, it fits more than */
-				/* once in the screen, so if the first draw is */
-				/* offscreen the second can be visible */
-				height = 256 * (0x1000 / 4) / zoom;	/* height of the zoomed sprite */
-				if (sy <= -height+16) sy += 2*height;	/* if offscreen, try moving it lower */
+				sy = -(punchout_bigsprite1.read(4) + 256 * (punchout_bigsprite1.read(5) & 1));
+				if (sy <= -256 + zoom/0x40) sy += 512;
 	
-				sy += 3;	/* adjustment to match the screen shots */
-					/* have to be at least 3, using 2 creates a blank line at the bottom */
-					/* of the screen when you win the championship and jump around with */
-					/* the belt */
+				incxx = zoom << 6;
+				incyy = zoom << 6;
 	
-				if ((punchout_bigsprite1.read(7) & 1)!=0)	/* display in top monitor */
+				startx = -sx * 0x4000;
+				starty = -sy * 0x10000;
+				startx += 3740 * zoom;	/* adjustment to match the screen shots */
+				starty -= 178 * zoom;	/* and make the hall of fame picture nice */
+	
+				if ((punchout_bigsprite1.read(6) & 1) != 0)	/* flip x */
 				{
-					copyrozbitmap(bitmap,bs1tmpbitmap,
-						sx,sy + 8*(32-TOP_MONITOR_ROWS),
-						zoom << 6,0,0,zoom << 6,	/* zoom, no rotation */
-						0,	/* no wraparound */
-						topvisiblearea,TRANSPARENCY_COLOR,1024,
-                                                0x10000 * 0x1000 / 4 / zoom);
-                                    
+					startx = (bs1tmpbitmap.width << 16) - startx - 1;
+					incxx = -incxx;
 				}
-				if ((punchout_bigsprite1.read(7) & 2)!=0)	/* display in bottom monitor */
+	
+				if ((punchout_bigsprite1.read(7) & 1) != 0)	/* display in top monitor */
 				{
 					copyrozbitmap(bitmap,bs1tmpbitmap,
-						sx,sy - 0x200*TOP_MONITOR_ROWS * zoom,
-						zoom << 6,0,0,zoom << 6,	/* zoom, no rotation */
+						startx,starty + 0x200*(2) * zoom,
+						incxx,0,0,incyy,	/* zoom, no rotation */
+						0,	/* no wraparound */
+						topvisiblearea,TRANSPARENCY_COLOR,1024,0);
+				}
+				if ((punchout_bigsprite1.read(7) & 2) != 0)	/* display in bottom monitor */
+				{
+					copyrozbitmap(bitmap,bs1tmpbitmap,
+						startx,starty - 0x200*TOP_MONITOR_ROWS * zoom,
+						incxx,0,0,incyy,	/* zoom, no rotation */
 						0,	/* no wraparound */
 						bottomvisiblearea,TRANSPARENCY_COLOR,1024,0);
-                                    
 				}
 			}
 		}
@@ -671,7 +672,7 @@ public static final int TOP_MONITOR_ROWS =30;
 	
 			copybitmap(bitmap,bs2tmpbitmap,
 					punchout_bigsprite2.read(4) & 1,0,
-					sx,sy + 8*TOP_MONITOR_ROWS,
+					sx,sy + 8*TOP_MONITOR_ROWS - 16,
 					bottomvisiblearea,TRANSPARENCY_COLOR,1024);
 		}
 	} };
@@ -686,7 +687,7 @@ public static final int TOP_MONITOR_ROWS =30;
 		/* since last time and update it accordingly. */
 		for (offs = punchout_videoram2_size[0] - 2;offs >= 0;offs -= 2)
 		{
-			if (dirtybuffer2[offs]!=0 | dirtybuffer2[offs + 1]!=0)
+			if ((dirtybuffer2[offs] | dirtybuffer2[offs + 1]) != 0)
 			{
 				int sx,sy;
 	
@@ -706,7 +707,7 @@ public static final int TOP_MONITOR_ROWS =30;
 									8 * (punchout_videoram2.read(offs + 1) & 0x80),
 							((punchout_videoram2.read(offs + 1) & 0x7c) >> 2) + 64 * top_palette_bank,
 							0,0,
-							8*sx,8*sy - 8*(32-TOP_MONITOR_ROWS),
+							8*sx,8*sy - 16,
 							topvisiblearea,TRANSPARENCY_NONE,0);
 				}
 				else
@@ -715,14 +716,14 @@ public static final int TOP_MONITOR_ROWS =30;
 							punchout_videoram2.read(offs) + 256 * (punchout_videoram2.read(offs + 1) & 0x03),
 							128 + ((punchout_videoram2.read(offs + 1) & 0x7c) >> 2) + 64 * bottom_palette_bank,
 							punchout_videoram2.read(offs + 1) & 0x80,0,
-							8*sx,8*sy + 8*TOP_MONITOR_ROWS,
+							8*sx,8*sy + 8*TOP_MONITOR_ROWS - 16,
 							backgroundvisiblearea,TRANSPARENCY_NONE,0);
 			}
 		}
 	
 		for (offs = punchout_bigsprite1ram_size[0] - 4;offs >= 0;offs -= 4)
 		{
-			if (bs1dirtybuffer[offs]!=0 | bs1dirtybuffer[offs + 1]!=0 | bs1dirtybuffer[offs + 3]!=0)
+			if ((bs1dirtybuffer[offs] | bs1dirtybuffer[offs + 1] | bs1dirtybuffer[offs + 3]) != 0)
 			{
 				int sx,sy;
 	
@@ -750,7 +751,7 @@ public static final int TOP_MONITOR_ROWS =30;
 	
 		for (offs = punchout_bigsprite2ram_size[0] - 4;offs >= 0;offs -= 4)
 		{
-			if (bs2dirtybuffer[offs]!=0 | bs2dirtybuffer[offs + 1]!=0 | bs2dirtybuffer[offs + 3]!=0)
+			if ((bs2dirtybuffer[offs] | bs2dirtybuffer[offs + 1] | bs2dirtybuffer[offs + 3]) != 0)
 			{
 				int sx,sy;
 	
@@ -778,48 +779,50 @@ public static final int TOP_MONITOR_ROWS =30;
 	
 		/* copy the two big sprites */
 		{
-			int sx,sy,zoom,height;
-	
+			int zoom;
 	
 			zoom = punchout_bigsprite1.read(0) + 256 * (punchout_bigsprite1.read(1) & 0x0f);
 			if (zoom != 0)
 			{
-				sx = 1024 - (punchout_bigsprite1.read(2) + 256 * (punchout_bigsprite1.read(3) & 0x0f)) / 4;
-				if (sx > 1024-127) sx -= 1024;
-				sx = sx * (0x1000 / 4) / zoom;	/* adjust x position basing on zoom */
-				sx -= 57;	/* adjustment to match the screen shots */
+				int sx,sy;
+				int startx,starty;
+				int incxx,incyy;
 	
-				sy = -punchout_bigsprite1.read(4) + 256 * (punchout_bigsprite1.read(5) & 1);
-				sy = sy * (0x1000 / 4) / zoom;	/* adjust y position basing on zoom */
+				sx = 4096 - (punchout_bigsprite1.read(2) + 256 * (punchout_bigsprite1.read(3) & 0x0f));
+				if (sx > 4096-4*127) sx -= 4096;
 	
-				/* when the sprite is reduced, it fits more than */
-				/* once in the screen, so if the first draw is */
-				/* offscreen the second can be visible */
-				height = 256 * (0x1000 / 4) / zoom;	/* height of the zoomed sprite */
-				if (sy <= -height+16) sy += 2*height;	/* if offscreen, try moving it lower */
+				sy = -(punchout_bigsprite1.read(4) + 256 * (punchout_bigsprite1.read(5) & 1));
+				if (sy <= -256 + zoom/0x40) sy += 512;
 	
-				sy += 3;	/* adjustment to match the screen shots */
-					/* have to be at least 3, using 2 creates a blank line at the bottom */
-					/* of the screen when you win the championship and jump around with */
-					/* the belt */
+				incxx = zoom << 6;
+				incyy = zoom << 6;
 	
-				if ((punchout_bigsprite1.read(7) & 1)!=0)	/* display in top monitor */
+				startx = -sx * 0x4000;
+				starty = -sy * 0x10000;
+				startx += 3740 * zoom;	/* adjustment to match the screen shots */
+				starty -= 178 * zoom;	/* and make the hall of fame picture nice */
+	
+				if ((punchout_bigsprite1.read(6) & 1) != 0)	/* flip x */
 				{
-				/*	copybitmapzoom(bitmap,bs1tmpbitmap,
-							punchout_bigsprite1.read(6) & 1,0,
-							sx,sy - 8*(32-TOP_MONITOR_ROWS),
-							topvisiblearea,TRANSPARENCY_COLOR,1024,
-							0x10000 * 0x1000 / 4 / zoom,0x10000 * 0x1000 / 4 / zoom);
-                                  */  
+					startx = (bs1tmpbitmap.width << 16) - startx - 1;
+					incxx = -incxx;
 				}
-				if ((punchout_bigsprite1.read(7) & 2)!=0)	/* display in bottom monitor */
+	
+				if ((punchout_bigsprite1.read(7) & 1) != 0)	/* display in top monitor */
 				{
-				/*	copybitmapzoom(bitmap,bs1tmpbitmap,
-							punchout_bigsprite1.read(6) & 1,0,
-							sx,sy + 8*TOP_MONITOR_ROWS,
-							bottomvisiblearea,TRANSPARENCY_COLOR,1024,
-							0x10000 * 0x1000 / 4 / zoom,0x10000 * 0x1000 / 4 / zoom);
-                                  */  
+					copyrozbitmap(bitmap,bs1tmpbitmap,
+						startx,starty + 0x200*(2) * zoom,
+						incxx,0,0,incyy,	/* zoom, no rotation */
+						0,	/* no wraparound */
+						topvisiblearea,TRANSPARENCY_COLOR,1024,0);
+				}
+				if ((punchout_bigsprite1.read(7) & 2) != 0)	/* display in bottom monitor */
+				{
+					copyrozbitmap(bitmap,bs1tmpbitmap,
+						startx,starty - 0x200*TOP_MONITOR_ROWS * zoom,
+						incxx,0,0,incyy,	/* zoom, no rotation */
+						0,	/* no wraparound */
+						bottomvisiblearea,TRANSPARENCY_COLOR,1024,0);
 				}
 			}
 		}
@@ -836,7 +839,7 @@ public static final int TOP_MONITOR_ROWS =30;
 	
 			copybitmap(bitmap,bs2tmpbitmap,
 					punchout_bigsprite2.read(4) & 1,0,
-					sx,sy + 8*TOP_MONITOR_ROWS,
+					sx,sy + 8*TOP_MONITOR_ROWS - 16,
 					bottomvisiblearea,TRANSPARENCY_COLOR,1024);
 		}
 	
@@ -854,10 +857,10 @@ public static final int TOP_MONITOR_ROWS =30;
 			sy = offs/2 / 32;
 	
 			drawgfx(bitmap,Machine.gfx[1],
-					videoram.read(offs) + 256 * (videoram.read(offs + 1) & 0x07),
-					((videoram.read(offs + 1) & 0xf8) >> 3) + 32 * bottom_palette_bank,
-					videoram.read(offs + 1) & 0x80,0,
-					8*sx,8*sy + 8*TOP_MONITOR_ROWS,
+					videoram.read(offs)+ 256 * (videoram.read(offs + 1)& 0x07),
+					((videoram.read(offs + 1)& 0xf8) >> 3) + 32 * bottom_palette_bank,
+					videoram.read(offs + 1)& 0x80,0,
+					8*sx,8*sy + 8*TOP_MONITOR_ROWS - 16,
 					backgroundvisiblearea,TRANSPARENCY_PEN,7);
 		}
 	} };

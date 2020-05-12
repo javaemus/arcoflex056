@@ -9118,7 +9118,7 @@ public class drawgfx {
 					{
 						x = sx;
 						cx = startx;
-						cy = (starty >> 16)&0xFF;
+						cy = (starty >> 16)&0xFFFF;
                                                 //System.out.println(cy);
 						dest = new UShortPtr(bitmap.line[sy], sx );
 						if (priority != 0)
@@ -9129,7 +9129,7 @@ public class drawgfx {
 
 							while (x <= ex && cx < widthshifted)
 							{
-								int c = src.read(cx >> 16);
+								int c = src.read((cx >> 16)&0xFF);
 
 								if (c != transparent_color)
 								{
@@ -9145,7 +9145,13 @@ public class drawgfx {
 						}
 						else
 						{
-                                                    //System.out.println("P3!!!!");
+                                                    /*System.out.println("P3!!!!");
+                                                    System.out.println("cy="+cy);
+                                                    System.out.println(srcbitmap);
+                                                    System.out.println(srcbitmap.line);
+                                                    System.out.println(srcbitmap.line[cy]);*/
+                                                    
+                                                    if (srcbitmap.line[cy] != null){
 							UShortPtr src = new UShortPtr(srcbitmap.line[cy] );
 
 							while (x <= ex && cx < widthshifted)
@@ -9160,6 +9166,7 @@ public class drawgfx {
 								x++;
 								dest.inc();
 							}
+                                                    }
 						}
 					}
 					starty += incyy;
@@ -9186,7 +9193,7 @@ public class drawgfx {
 
 					while (x <= ex)
 					{
-						int c = (new UShortPtr(srcbitmap.line[(cy >> 16) & ymask])).read((cx >> 16) & xmask);
+						int c = (new UShortPtr(srcbitmap.line[((cy >> 16)&0xFF) & ymask])).read(((cx >> 16)&0xFF) & xmask);
 
 						if (c != transparent_color)
 						{
@@ -9206,7 +9213,7 @@ public class drawgfx {
                                     System.out.println("P5!!!!");
 					while (x <= ex)
 					{
-						int c = (new UShortPtr(srcbitmap.line[(cy >> 16) & ymask])).read((cx >> 16) & xmask);
+						int c = (new UShortPtr(srcbitmap.line[((cy >> 16)&0xFF) & ymask])).read(((cx >> 16)&0xFF) & xmask);
 
 						if (c != transparent_color)
 							dest.write((char) c);
@@ -9240,7 +9247,7 @@ public class drawgfx {
                                             System.out.println("P7!!!!");
 						if (cx < widthshifted && cy < heightshifted)
 						{
-							int c = (new UShortPtr(srcbitmap.line[cy >> 16])).read(cx >> 16);
+							int c = (new UShortPtr(srcbitmap.line[(cy >> 16)&0xFF])).read((cx >> 16)&0xFF);
 
 							if (c != transparent_color)
 							{
@@ -9263,7 +9270,7 @@ public class drawgfx {
 					{
 						if (cx < widthshifted && cy < heightshifted)
 						{
-							int c = (new UShortPtr(srcbitmap.line[cy >> 16])).read(cx >> 16);
+							int c = (new UShortPtr(srcbitmap.line[(cy >> 16)&0xFF])).read((cx >> 16)&0xFF);
 
 							if (c != transparent_color)
 								dest.write((char) c);
