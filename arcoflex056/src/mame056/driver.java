@@ -269,6 +269,7 @@ import static WIP.mame056.drivers.dec8.*;
 import static WIP.mame056.drivers.battlnts.*;
 import static WIP.mame056.drivers.bladestl.*;
 import static WIP.mame056.drivers.shangkid.*;
+import static WIP.mame056.drivers.fastlane.*;
 
 public class driver {
 
@@ -2889,7 +2890,7 @@ public class driver {
         /*TODO*///	driver_rockragj,	/* GX620 (c) 1986 (Japan) */
         /*TODO*///	driver_mx5000,	/* GX669 (c) 1987 */
         /*TODO*///	driver_flkatck,	/* GX669 (c) 1987 (Japan) */
-        /*TODO*///	driver_fastlane,	/* GX752 (c) 1987 */
+        driver_fastlane,	/* GX752 (c) 1987 */
         /*TODO*///	driver_tricktrp,	/* GX771 (c) 1987 */
         /*TODO*///	driver_labyrunr,	/* GX771 (c) 1987 (Japan) */
         driver_thehustl,	/* GX765 (c) 1987 (Japan) */

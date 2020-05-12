@@ -1066,7 +1066,7 @@ public class konamiic
 	}
 	
 	
-	static int[][] K007121_ctrlram = new int[MAX_K007121][8];
+	public static int[][] K007121_ctrlram = new int[MAX_K007121][8];
 	static int[] K007121_flipscreen = new int[MAX_K007121];
 	
 	

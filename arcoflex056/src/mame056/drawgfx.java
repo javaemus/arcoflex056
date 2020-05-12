@@ -1520,7 +1520,7 @@ public class drawgfx {
                     rectangle clip,int transparency,int transparent_color,int priority)
     {
             /*TODO*///profiler_mark(PROFILER_COPYBITMAP);
-        System.out.println("copyrozbitmap--");
+        //System.out.println("copyrozbitmap--");
 
             /* cheat, the core doesn't support TRANSPARENCY_NONE yet */
             if (transparency == TRANSPARENCY_NONE)
@@ -8944,7 +8944,7 @@ public class drawgfx {
 		int startx, int starty,int incxx,int incxy,int incyx,int incyy,int wraparound,
 		rectangle clip, int transparency, int transparent_color, int priority)
     {
-        System.out.println("copyroz");
+        //System.out.println("copyroz");
 	int cx;
 	int cy;
 	int x;
@@ -8961,7 +8961,7 @@ public class drawgfx {
 
 	if (clip != null)
 	{
-            System.out.println("A");
+            //System.out.println("A");
 		startx += clip.min_x * incxx + clip.min_y * incyx;
 		starty += clip.min_x * incxy + clip.min_y * incyy;
 
@@ -8972,7 +8972,7 @@ public class drawgfx {
 	}
 	else
 	{
-            System.out.println("B");
+            //System.out.println("B");
 		sx = 0;
 		sy = 0;
 		ex = (bitmap.width )-1;
@@ -8982,7 +8982,7 @@ public class drawgfx {
 
 	if ((Machine.orientation & ORIENTATION_SWAP_XY) != 0)
 	{
-            System.out.println("C");
+            //System.out.println("C");
 		int t;
 
 		t = startx; startx = starty; starty = t;
@@ -8997,7 +8997,7 @@ public class drawgfx {
 
 	if ((Machine.orientation & ORIENTATION_FLIP_X) != 0)
 	{
-            System.out.println("D");
+            //System.out.println("D");
 		int w = ex - sx;
 
 		incxy = -incxy;
@@ -9013,7 +9013,7 @@ public class drawgfx {
 
 	if ((Machine.orientation & ORIENTATION_FLIP_Y) != 0)
 	{
-            System.out.println("E");
+            //System.out.println("E");
 		int h = ey - sy;
 
 		incxy = -incxy;
@@ -9029,12 +9029,12 @@ public class drawgfx {
 
 	if (incxy == 0 && incyx == 0 && wraparound==0)
 	{
-            System.out.println("F");
+            //System.out.println("F");
 		/* optimized loop for the not rotated case */
 
 		if (incxx == 0x10000)
 		{
-                    System.out.println("G");
+                    //System.out.println("G");
 			/* optimized loop for the not zoomed case */
 
 			/* startx is unsigned */
@@ -9058,7 +9058,7 @@ public class drawgfx {
 						dest = new UShortPtr(bitmap.line[sy], sx );
 						if (priority != 0)
 						{
-                                                    System.out.println("Priority!!!!");
+                                                    //System.out.println("Priority!!!!");
 							UBytePtr pri = new UBytePtr(priority_bitmap.line[sy], sx);
 							UShortPtr src = new UShortPtr(srcbitmap.line[cy]);
 
@@ -9080,7 +9080,7 @@ public class drawgfx {
 						}
 						else
 						{
-                                                    System.out.println("P1!!!!");
+                                                    //System.out.println("P1!!!!");
 							UShortPtr src = new UShortPtr(srcbitmap.line[cy]);
 
 							while (x <= ex && cx < (srcbitmap.width) )
@@ -9103,7 +9103,7 @@ public class drawgfx {
 		}
 		else
 		{
-                    System.out.println("P2!!!!");
+                    //System.out.println("P2!!!!");
 			while (startx >= widthshifted && sx <= ex)
 			{
 				startx += incxx;
@@ -9123,7 +9123,7 @@ public class drawgfx {
 						dest = new UShortPtr(bitmap.line[sy], sx );
 						if (priority != 0)
 						{
-                                                    System.out.println("Priority!!!!");
+                                                    //System.out.println("Priority!!!!");
 							UBytePtr pri = new UBytePtr(priority_bitmap.line[sy], sx);
 							UShortPtr src = new UShortPtr(srcbitmap.line[cy]);
 
@@ -9179,7 +9179,7 @@ public class drawgfx {
 	{
 		if (wraparound != 0)
 		{
-                    System.out.println("P4!!!!");
+                    //System.out.println("P4!!!!");
 			/* plot with wraparound */
 			while (sy <= ey)
 			{
@@ -9210,7 +9210,7 @@ public class drawgfx {
 				}
 				else
 				{
-                                    System.out.println("P5!!!!");
+                                    //System.out.println("P5!!!!");
 					while (x <= ex)
 					{
 						int c = (new UShortPtr(srcbitmap.line[((cy >> 16)&0xFF) & ymask])).read(((cx >> 16)&0xFF) & xmask);
@@ -9231,7 +9231,7 @@ public class drawgfx {
 		}
 		else
 		{
-                    System.out.println("P6!!!!");
+                    //System.out.println("P6!!!!");
 			while (sy <= ey)
 			{
 				x = sx;
@@ -9244,7 +9244,7 @@ public class drawgfx {
 
 					while (x <= ex)
 					{
-                                            System.out.println("P7!!!!");
+                                            //System.out.println("P7!!!!");
 						if (cx < widthshifted && cy < heightshifted)
 						{
 							int c = (new UShortPtr(srcbitmap.line[(cy >> 16)&0xFF])).read((cx >> 16)&0xFF);
@@ -9265,7 +9265,7 @@ public class drawgfx {
 				}
 				else
 				{
-                                    System.out.println("P8!!!!");
+                                    //System.out.println("P8!!!!");
 					while (x <= ex)
 					{
 						if (cx < widthshifted && cy < heightshifted)
