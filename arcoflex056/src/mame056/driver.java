@@ -272,6 +272,8 @@ import static WIP.mame056.drivers.shangkid.*;
 import static WIP.mame056.drivers.fastlane.*;
 import static WIP.mame056.drivers.mainevt.*;
 import static WIP.mame056.drivers.chinagat.*;
+import static WIP.mame056.drivers.rockrage.*;
+import static WIP.mame056.drivers.labyrunr.*;
 
 public class driver {
 
@@ -2888,13 +2890,13 @@ public class driver {
         driver_combascj,	/* GX611 (c) 1987 (Japan) */
         driver_bootcamp,	/* GX611 (c) 1987 */
         driver_combascb,	/* bootleg */
-        /*TODO*///	driver_rockrage,	/* GX620 (c) 1986 (World?) */
-        /*TODO*///	driver_rockragj,	/* GX620 (c) 1986 (Japan) */
+        driver_rockrage,	/* GX620 (c) 1986 (World?) */
+        driver_rockragj,	/* GX620 (c) 1986 (Japan) */
         /*TODO*///	driver_mx5000,	/* GX669 (c) 1987 */
         /*TODO*///	driver_flkatck,	/* GX669 (c) 1987 (Japan) */
         driver_fastlane,	/* GX752 (c) 1987 */
-        /*TODO*///	driver_tricktrp,	/* GX771 (c) 1987 */
-        /*TODO*///	driver_labyrunr,	/* GX771 (c) 1987 (Japan) */
+        driver_tricktrp,	/* GX771 (c) 1987 */
+        driver_labyrunr,	/* GX771 (c) 1987 (Japan) */
         driver_thehustl,	/* GX765 (c) 1987 (Japan) */
         driver_thehustj,	/* GX765 (c) 1987 (Japan) */
         driver_rackemup,	/* GX765 (c) 1987 */
