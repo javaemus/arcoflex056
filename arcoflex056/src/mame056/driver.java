@@ -270,6 +270,8 @@ import static WIP.mame056.drivers.battlnts.*;
 import static WIP.mame056.drivers.bladestl.*;
 import static WIP.mame056.drivers.shangkid.*;
 import static WIP.mame056.drivers.fastlane.*;
+import static WIP.mame056.drivers.mainevt.*;
+import static WIP.mame056.drivers.chinagat.*;
 
 public class driver {
 
@@ -2910,12 +2912,12 @@ public class driver {
         /*TODO*///	driver_scontraj,	/* GX775 (c) 1988 (Japan) */
         /*TODO*///	driver_thunderx,	/* GX873 (c) 1988 */
         /*TODO*///	driver_thnderxj,	/* GX873 (c) 1988 (Japan) */
-        /*TODO*///	driver_mainevt,	/* GX799 (c) 1988 */
-        /*TODO*///	driver_mainevt2,	/* GX799 (c) 1988 */
-        /*TODO*///	driver_ringohja,	/* GX799 (c) 1988 (Japan) */
-        /*TODO*///	driver_devstors,	/* GX890 (c) 1988 */
-        /*TODO*///	driver_devstor2,	/* GX890 (c) 1988 */
-        /*TODO*///	driver_devstor3,	/* GX890 (c) 1988 */
+        driver_mainevt,         /* GX799 (c) 1988 */
+        driver_mainevt2,	/* GX799 (c) 1988 */
+        driver_ringohja,	/* GX799 (c) 1988 (Japan) */
+        driver_devstors,	/* GX890 (c) 1988 */
+        driver_devstor2,	/* GX890 (c) 1988 */
+        driver_devstor3,	/* GX890 (c) 1988 */
         /*TODO*///	driver_garuka,	/* GX890 (c) 1988 (Japan) */
         /*TODO*///	driver_88games,	/* GX861 (c) 1988 */
         /*TODO*///	driver_konami88,	/* GX861 (c) 1988 */
@@ -3405,10 +3407,10 @@ public class driver {
         driver_ddragonb,	/* bootleg */
         /*TODO*///	driver_spdodgeb,	/* TA-0022 (c) 1987 */
         /*TODO*///	driver_nkdodgeb,	/* TA-0022 (c) 1987 (Japan) */
-        /*TODO*///	driver_chinagat,	/* TA-0023 (c) 1988 Taito + Romstar license (US) */
-        /*TODO*///	driver_saiyugou,	/* TA-0023 (c) 1988 (Japan) */
-        /*TODO*///	driver_saiyugb1,	/* bootleg */
-        /*TODO*///	driver_saiyugb2,	/* bootleg */
+        driver_chinagat,	/* TA-0023 (c) 1988 Taito + Romstar license (US) */
+        driver_saiyugou,	/* TA-0023 (c) 1988 (Japan) */
+        driver_saiyugb1,	/* bootleg */
+        driver_saiyugb2,	/* bootleg */
         /*TODO*///	driver_wwfsstar,	/* TA-0024 (c) 1989 (US) */
         driver_vball, /* TA-0025 (c) 1988 */
         driver_vball2pj, /* TA-0025 (c) 1988 (Japan) */

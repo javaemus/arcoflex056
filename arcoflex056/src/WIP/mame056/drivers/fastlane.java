@@ -36,6 +36,8 @@ import static mame056.sound._2203intfH.*;
 import static mame056.sound.vlm5030.*;
 import static mame056.sound.vlm5030H.*;
 import static mame056.sound.streams.*;
+import static mame056.sound.k007232.*;
+import static mame056.sound.k007232H.*;
 import static WIP.mame056.vidhrdw.fastlane.*;
 import static WIP.mame056.vidhrdw.konamiic.*;
 import static mame056.sound.MSM5205.*;
@@ -49,6 +51,7 @@ import static mame056.sound._3812intf.*;
 import static mame056.sound._3812intfH.*;
 import static common.libc.cstring.*;
 import static mame056.mame.Machine;
+import static mame056.sound.mixerH.*;
 
 public class fastlane
 {
@@ -89,7 +92,7 @@ public class fastlane
 	
 		/* bit 4: bank # for the 007232 (chip 2) */
 		RAM = new UBytePtr(memory_region(REGION_SOUND2));
-/*TODO*///		K007232_bankswitch(1,new UBytePtr(RAM, 0x40000*((data & 0x10) >> 4)), new UBytePtr(RAM, 0x40000*((data & 0x10) >> 4)));
+		K007232_bankswitch(1,new UBytePtr(RAM, 0x40000*((data & 0x10) >> 4)), new UBytePtr(RAM, 0x40000*((data & 0x10) >> 4)));
 	
 		/* other bits seems to be unused */
 	} };
@@ -99,21 +102,21 @@ public class fastlane
 	
 	public static ReadHandlerPtr fastlane_K007232_read_port_0_r  = new ReadHandlerPtr() { public int handler(int offset)
 	{
-/*TODO*///		return K007232_read_port_0_r(offset ^ 1);
-            return 0;
+		return K007232_read_port_0_r.handler(offset ^ 1);
+
 	} };
 	public static WriteHandlerPtr fastlane_K007232_write_port_0_w = new WriteHandlerPtr() {public void handler(int offset, int data)
 	{
-/*TODO*///		K007232_write_port_0_w(offset ^ 1, data);
+		K007232_write_port_0_w.handler(offset ^ 1, data);
 	} };
 	public static ReadHandlerPtr fastlane_K007232_read_port_1_r  = new ReadHandlerPtr() { public int handler(int offset)
 	{
-/*TODO*///		return K007232_read_port_1_r(offset ^ 1);
-            return 0;
+		return K007232_read_port_1_r.handler(offset ^ 1);
+
 	} };
 	public static WriteHandlerPtr fastlane_K007232_write_port_1_w = new WriteHandlerPtr() {public void handler(int offset, int data)
 	{
-/*TODO*///		K007232_write_port_1_w(offset ^ 1, data);
+		K007232_write_port_1_w.handler(offset ^ 1, data);
 	} };
 	
 	
@@ -287,26 +290,28 @@ public class fastlane
 	
 	***************************************************************************/
 	
-	static void volume_callback0(int v)
-	{
-/*TODO*///		K007232_set_volume(0,0,(v >> 4) * 0x11,0);
-/*TODO*///		K007232_set_volume(0,1,0,(v & 0x0f) * 0x11);
-	}
+	static WriteYmHandlerPtr volume_callback0 = new WriteYmHandlerPtr() {
+            public void handler(int v) {                
+		K007232_set_volume(0,0,(v >> 4) * 0x11,0);
+		K007232_set_volume(0,1,0,(v & 0x0f) * 0x11);
+            }
+        };
 	
-	static void volume_callback1(int v)
-	{
-/*TODO*///		K007232_set_volume(1,0,(v >> 4) * 0x11,0);
-/*TODO*///		K007232_set_volume(1,1,0,(v & 0x0f) * 0x11);
-	}
+	static WriteYmHandlerPtr volume_callback1 = new WriteYmHandlerPtr() {
+            public void handler(int v) {
+		K007232_set_volume(1,0,(v >> 4) * 0x11,0);
+		K007232_set_volume(1,1,0,(v & 0x0f) * 0x11);
+            }
+        };
 	
-/*TODO*///	static struct K007232_interface k007232_interface =
-/*TODO*///	{
-/*TODO*///		2,			/* number of chips */
-/*TODO*///		{ REGION_SOUND1, REGION_SOUND2 },	/* memory regions */
-/*TODO*///		{ K007232_VOL(50,MIXER_PAN_CENTER,50,MIXER_PAN_CENTER),
-/*TODO*///				K007232_VOL(50,MIXER_PAN_LEFT,50,MIXER_PAN_RIGHT) },	/* volume */
-/*TODO*///		{ volume_callback0,  volume_callback1 } /* external port callback */
-/*TODO*///	};
+	static K007232_interface k007232_interface = new K007232_interface
+	(
+		2,			/* number of chips */
+		new int[]{ REGION_SOUND1, REGION_SOUND2 },	/* memory regions */
+		new int[]{ K007232_VOL(50,MIXER_PAN_CENTER,50,MIXER_PAN_CENTER),
+				K007232_VOL(50,MIXER_PAN_LEFT,50,MIXER_PAN_RIGHT) },	/* volume */
+		new WriteYmHandlerPtr[]{ volume_callback0,  volume_callback1 } /* external port callback */
+	);
 	
 	static MachineDriver machine_driver_fastlane = new MachineDriver
 	(
@@ -337,13 +342,13 @@ public class fastlane
 	
 		/* sound hardware */
 		0,0,0,0,
-/*TODO*///		new MachineSound[] {
-/*TODO*///			new MachineSound(
-/*TODO*///				SOUND_K007232,
-/*TODO*///				k007232_interface
-/*TODO*///			)
-/*TODO*///		}
-                null
+		new MachineSound[] {
+			new MachineSound(
+				SOUND_K007232,
+				k007232_interface
+			)
+		}
+                
 	);
 	
 	

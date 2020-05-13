@@ -45,6 +45,7 @@ import WIP.mame056.sound.astrocde;
 import mame056.sound.saa1099;
 import mame056.sound.k051649;
 import mame056.sound.upd7759;
+import mame056.sound.k007232;
 
 // MESS Sound Chips
 import mess056.sound.speaker;
@@ -542,18 +543,6 @@ public class sndintrf {
                 new adpcm(),
                 new oki6295(),
                 new MSM5205(),
-                /*TODO*///#endif
-                /*TODO*///#if (HAS_UPD7759)
-                /*TODO*///    {
-                /*TODO*///		SOUND_UPD7759,
-                /*TODO*///		"uPD7759",
-                /*TODO*///		0,
-                /*TODO*///		UPD7759_clock,
-                /*TODO*///		UPD7759_sh_start,
-                /*TODO*///		UPD7759_sh_stop,
-                /*TODO*///		0,
-                /*TODO*///		0
-                /*TODO*///	},
                 new upd7759(),
                 new hc55516(),
                 /*TODO*///#endif
@@ -581,7 +570,7 @@ public class sndintrf {
                 /*TODO*///		0,
                 /*TODO*///		0
                 /*TODO*///	},
-                new Dummy_snd(),
+                new k007232(),
                 /*TODO*///#endif
                 /*TODO*///#if (HAS_K051649)
                 /*TODO*///    {

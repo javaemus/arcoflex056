@@ -66,6 +66,25 @@ public class drawgfxH {
         
         return 0;
     };
+    
+    public static int STEP16(int offset, int START, int STEP){
+        switch (offset){
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+                return STEP8(offset, START,STEP);
+                
+            case 4:
+            case 5:
+            case 6:
+            case 7:
+                return STEP8(offset, (START)+8*(STEP),STEP);                
+        }
+        
+        return 0;
+    };
+    
 /*TODO*///#define STEP16(START,STEP) STEP8(START,STEP),STEP8((START)+8*(STEP),STEP)
 /*TODO*///
 /*TODO*///
