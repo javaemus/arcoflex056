@@ -274,6 +274,7 @@ import static WIP.mame056.drivers.mainevt.*;
 import static WIP.mame056.drivers.chinagat.*;
 import static WIP.mame056.drivers.rockrage.*;
 import static WIP.mame056.drivers.labyrunr.*;
+import static WIP.mame056.drivers.flkatck.*;
 
 public class driver {
 
@@ -2892,8 +2893,8 @@ public class driver {
         driver_combascb,	/* bootleg */
         driver_rockrage,	/* GX620 (c) 1986 (World?) */
         driver_rockragj,	/* GX620 (c) 1986 (Japan) */
-        /*TODO*///	driver_mx5000,	/* GX669 (c) 1987 */
-        /*TODO*///	driver_flkatck,	/* GX669 (c) 1987 (Japan) */
+        driver_mx5000,	/* GX669 (c) 1987 */
+        driver_flkatck,	/* GX669 (c) 1987 (Japan) */
         driver_fastlane,	/* GX752 (c) 1987 */
         driver_tricktrp,	/* GX771 (c) 1987 */
         driver_labyrunr,	/* GX771 (c) 1987 (Japan) */

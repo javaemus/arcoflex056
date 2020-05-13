@@ -5,19 +5,41 @@
 package mame056.cpu.m68000;
 
 import static arcadeflex056.fucPtr.*;
-import static mame056.cpu.m68000.asmintf.m68k_ICount;
+import static mame056.cpu.m68000.m68kmame.m68k_ICount;
 
 public class m68000H
 {
-	
-	public static enum M68K_enum
-	{
-		/* NOTE: M68K_SP fetches the current SP, be it USP, ISP, or MSP */
-		M68K_PC, M68K_SP, M68K_ISP, M68K_USP, M68K_MSP, M68K_SR, M68K_VBR,
-		M68K_SFC, M68K_DFC, M68K_CACR, M68K_CAAR, M68K_PREF_ADDR, M68K_PREF_DATA,
-		M68K_D0, M68K_D1, M68K_D2, M68K_D3, M68K_D4, M68K_D5, M68K_D6, M68K_D7,
-		M68K_A0, M68K_A1, M68K_A2, M68K_A3, M68K_A4, M68K_A5, M68K_A6, M68K_A7
-	};
+
+	/* NOTE: M68K_SP fetches the current SP, be it USP, ISP, or MSP */
+	public static final int M68K_PC         = 1;
+        public static final int M68K_SP         = 2;
+        public static final int M68K_ISP        = 3;
+        public static final int M68K_USP        = 4;
+        public static final int M68K_MSP        = 5;
+        public static final int M68K_SR         = 6;
+        public static final int M68K_VBR        = 7;
+	public static final int M68K_SFC        = 8;
+        public static final int M68K_DFC        = 9;
+        public static final int M68K_CACR       = 10;
+        public static final int M68K_CAAR       = 11;
+        public static final int M68K_PREF_ADDR  = 12;
+        public static final int M68K_PREF_DATA  = 13;
+	public static final int M68K_D0         = 14;
+        public static final int M68K_D1         = 15;
+        public static final int M68K_D2         = 16;
+        public static final int M68K_D3         = 17;
+        public static final int M68K_D4         = 18;
+        public static final int M68K_D5         = 20;
+        public static final int M68K_D6         = 21;
+        public static final int M68K_D7         = 22;
+	public static final int M68K_A0         = 23;
+        public static final int M68K_A1         = 24;
+        public static final int M68K_A2         = 25;
+        public static final int M68K_A3         = 26;
+        public static final int M68K_A4         = 27;
+        public static final int M68K_A5         = 28;
+        public static final int M68K_A6         = 29;
+        public static final int M68K_A7         = 30;
 	
 	
 	/* Redirect memory calls */

@@ -18,7 +18,7 @@ public class asmintf
 /*TODO*///	
 /*TODO*///	#ifdef A68K0
 /*TODO*///	#ifdef A68K2
-	public static int[] m68k_ICount = new int[1];
+/*TODO*///	public static int[] m68k_ICount = new int[1];
 /*TODO*///	struct m68k_memory_interface m68k_memory_intf;
 /*TODO*///	#endif
 /*TODO*///	#endif
