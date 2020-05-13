@@ -275,6 +275,7 @@ import static WIP.mame056.drivers.chinagat.*;
 import static WIP.mame056.drivers.rockrage.*;
 import static WIP.mame056.drivers.labyrunr.*;
 import static WIP.mame056.drivers.flkatck.*;
+import static WIP.mame056.drivers.spy.*;
 
 public class driver {
 
@@ -2930,7 +2931,7 @@ public class driver {
         /*TODO*///	driver_crimfght,	/* GX821 (c) 1989 (US) */
         /*TODO*///	driver_crimfgt2,	/* GX821 (c) 1989 (World) */
         /*TODO*///	driver_crimfgtj,	/* GX821 (c) 1989 (Japan) */
-        /*TODO*///	driver_spy,		/* GX857 (c) 1989 (US) */
+        driver_spy,		/* GX857 (c) 1989 (US) */
         /*TODO*///	driver_bottom9,	/* GX891 (c) 1989 */
         /*TODO*///	driver_bottom9n,	/* GX891 (c) 1989 */
         /*TODO*///	driver_mstadium,	/* GX891 (c) 1989 (Japan) */
