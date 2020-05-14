@@ -277,6 +277,8 @@ import static WIP.mame056.drivers.labyrunr.*;
 import static WIP.mame056.drivers.flkatck.*;
 import static WIP.mame056.drivers.spy.*;
 import static WIP.mame056.drivers.contra.*;
+import static WIP.mame056.drivers.firetrap.*;
+import static WIP.mame056.drivers.blktiger.*;
 
 public class driver {
 
@@ -1934,10 +1936,10 @@ public class driver {
         /*TODO*///	driver_bionicc2,	/*  3/1987 (c) 1987 (US) */
         /*TODO*///	driver_topsecrt,	/*  3/1987 (c) 1987 (Japan) */
 
-        /*TODO*///	driver_blktiger,	/*  8/1987 (c) 1987 (US) */
-        /*TODO*///	driver_bktigerb,	/* bootleg */
-        /*TODO*///	driver_blkdrgon,	/*  8/1987 (c) 1987 (Japan) */
-        /*TODO*///	driver_blkdrgnb,	/* bootleg, hacked to say Black Tiger */
+        driver_blktiger,	/*  8/1987 (c) 1987 (US) */
+        driver_bktigerb,	/* bootleg */
+        driver_blkdrgon,	/*  8/1987 (c) 1987 (Japan) */
+        driver_blkdrgnb,	/* bootleg, hacked to say Black Tiger */
         /*TODO*///	driver_sf1,		/*  8/1987 (c) 1987 (World) */
         /*TODO*///	driver_sf1us,		/*  8/1987 (c) 1987 (US) */
         /*TODO*///	driver_sf1jp,		/*  8/1987 (c) 1987 (Japan) */
@@ -2665,8 +2667,8 @@ public class driver {
         driver_karatedo, /* (c) 1984 Data East Corporation (Japan) */
         driver_kchampvs, /* (c) 1984 Data East USA (US) */
         driver_karatevs, /* (c) 1984 Data East Corporation (Japan) */
-        /*TODO*///	driver_firetrap,	/* (c) 1986 */
-        /*TODO*///	driver_firetpbl,	/* bootleg */
+        driver_firetrap,	/* (c) 1986 */
+        driver_firetpbl,	/* bootleg */
         driver_brkthru, /* (c) 1986 Data East USA (US) */
         driver_brkthruj, /* (c) 1986 Data East Corporation (Japan) */
         driver_darwin, /* (c) 1986 Data East Corporation (Japan) */
