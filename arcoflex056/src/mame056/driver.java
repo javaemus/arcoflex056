@@ -280,6 +280,8 @@ import static WIP.mame056.drivers.contra.*;
 import static WIP.mame056.drivers.firetrap.*;
 import static WIP.mame056.drivers.blktiger.*;
 import static WIP.mame056.drivers.gundealr.*;
+import static WIP.mame056.drivers.clshroad.*;
+import static WIP.mame056.drivers.cbasebal.*;
 
 public class driver {
 
@@ -587,7 +589,7 @@ public class driver {
         driver_wiping, /* (c) 1982 */
         driver_rugrats, /* (c) 1983 */
         /*TODO*///TESTdriver_firebatl,	/* (c) 1984 Taito */
-        /*TODO*///	driver_clshroad,	/* (c) 1986 Woodplace Inc. */
+        driver_clshroad,	/* (c) 1986 Woodplace Inc. */
         /*TODO*///TESTdriver_tubep,		/* (c) 1984 + Fujitek */
         /*TODO*///TESTdriver_rjammer,	/* (c) 1984 + Alice */
         /*TODO*///	driver_magmax,	/* (c) 1985 */
@@ -2227,7 +2229,7 @@ public class driver {
         driver_pangb,		/* bootleg */
         driver_bbros,		/* (c) 1989 Capcom (US) not listed on Capcom's site */
         driver_pompingw,	/* (c) 1989 Mitchell (Japan) */
-        /*TODO*///driver_cbasebal,	/* 10/1989 (c) 1989 Capcom (Japan) (different hardware) */
+        driver_cbasebal,	/* 10/1989 (c) 1989 Capcom (Japan) (different hardware) */
         driver_cworld,	/* 11/1989 (QUIZ 1) (c) 1989 Capcom */
         driver_hatena,	/* 28/02/1990 (QUIZ 2) (c) 1990 Capcom (Japan) */
         driver_spang,		/* 14/09/1990 (c) 1990 Mitchell (World) */

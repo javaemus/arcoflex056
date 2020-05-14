@@ -178,6 +178,7 @@ public class drawgfx {
 
                 dp = new UBytePtr(gfx.gfxdata, num * gfx.char_modulo + (gfx.height - 1) * gfx.line_modulo);
                 y = gfx.height;
+                
                 while (--y >= 0) {
                     int offs2 = offs + yoffset[y];
 
