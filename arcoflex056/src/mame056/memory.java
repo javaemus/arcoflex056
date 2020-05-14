@@ -2486,8 +2486,11 @@ public class memory {
     /*TODO*///
     public static setopbase cpu_setOPbase16 = new setopbase() {
         public void handler(int pc) {
+            //System.out.println("cpu_setOPbase16");
             UBytePtr base = null;
             int entry;
+            
+            //System.out.println("opbasefunc="+opbasefunc);
 
             /* allow overrides */
             if (opbasefunc != null) {
@@ -2500,23 +2503,31 @@ public class memory {
             /* perform the lookup */
             pc &= mem_amask;
             entry = readmem_lookup.read(LEVEL1_INDEX(pc, 16, 0));
+            //System.out.println("entry="+entry);
             if (entry >= SUBTABLE_BASE) {
                 entry = readmem_lookup.read(LEVEL2_INDEX(entry, pc, 16, 0));
             }
             opcode_entry = entry;
+            //System.out.println("opcode_entry="+opcode_entry);
             
             /* RAM/ROM/RAMROM */
-            if (entry >= STATIC_RAM && entry <= STATIC_RAMROM) {
-                base = new UBytePtr(cpu_bankbase[STATIC_RAM]);
-            } /* banked memory */ else if (entry >= STATIC_BANK1 && entry <= STATIC_RAM) {
-                if (cpu_bankbase[entry] != null){
+            if (entry >= STATIC_RAM && entry <= STATIC_RAMROM)
+			base = new UBytePtr(cpu_bankbase[STATIC_RAM]);
+									
+            /* banked memory */
+            else if (entry >= STATIC_BANK1 && entry <= STATIC_RAM) {
+                    if (cpu_bankbase[entry]==null)
+                        cpu_bankbase[entry]=new UBytePtr(1024 * 1024);
                     base = new UBytePtr(cpu_bankbase[entry]);
-                }
+
             } /* other memory -- could be very slow! */ else {
                 logerror("cpu #%d (PC=%08X): warning - op-code execute on mapped I/O\n", cpu_getactivecpu(), activecpu_get_pc());
+                
                 /*base = memory_find_base(cpu_getactivecpu(), pc);*/
                 return;
             }
+            
+            //System.out.println(base);
 
             // HACK for NAMCOS1            
             /*if (base == null)

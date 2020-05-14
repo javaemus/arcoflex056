@@ -276,6 +276,7 @@ import static WIP.mame056.drivers.rockrage.*;
 import static WIP.mame056.drivers.labyrunr.*;
 import static WIP.mame056.drivers.flkatck.*;
 import static WIP.mame056.drivers.spy.*;
+import static WIP.mame056.drivers.contra.*;
 
 public class driver {
 
@@ -2882,11 +2883,11 @@ public class driver {
         driver_jackalj, /* GX631 (c) 1986 (Japan) */
         driver_topgunbl, /* bootleg */
         driver_ddribble,	/* GX690 (c) 1986 */
-        /*TODO*///	driver_contra,	/* GX633 (c) 1987 */
-        /*TODO*///	driver_contrab,	/* bootleg */
-        /*TODO*///	driver_contraj,	/* GX633 (c) 1987 (Japan) */
-        /*TODO*///	driver_contrajb,	/* bootleg */
-        /*TODO*///	driver_gryzor,	/* GX633 (c) 1987 */
+        driver_contra,	/* GX633 (c) 1987 */
+        driver_contrab,	/* bootleg */
+        driver_contraj,	/* GX633 (c) 1987 (Japan) */
+        driver_contrajb,	/* bootleg */
+        driver_gryzor,	/* GX633 (c) 1987 */
         driver_combasc,	/* GX611 (c) 1988 */
         driver_combasct,	/* GX611 (c) 1987 */
         driver_combascj,	/* GX611 (c) 1987 (Japan) */

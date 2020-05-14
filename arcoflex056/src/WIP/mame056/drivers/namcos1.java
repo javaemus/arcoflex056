@@ -686,7 +686,7 @@ public class namcos1
 	
 		/* sound hardware */
 		SOUND_SUPPORTS_STEREO,0,0,0,
-		/*new MachineSound[] {
+		new MachineSound[] {
 			new MachineSound(
 				SOUND_YM2151,
 				ym2151_interface
@@ -699,9 +699,8 @@ public class namcos1
 				SOUND_DAC,
 				dac_interface
 			)
-		},*/
-                null,
-	
+		},
+            
 		nvram_handler
 	);
 	
