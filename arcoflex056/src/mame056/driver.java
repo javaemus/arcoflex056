@@ -279,6 +279,7 @@ import static WIP.mame056.drivers.spy.*;
 import static WIP.mame056.drivers.contra.*;
 import static WIP.mame056.drivers.firetrap.*;
 import static WIP.mame056.drivers.blktiger.*;
+import static WIP.mame056.drivers.gundealr.*;
 
 public class driver {
 
@@ -3888,13 +3889,13 @@ public class driver {
         /*TODO*///TESTdriver_brickzn3,
         /*TODO*///	driver_bssoccer,	/* (c) 1996 SunA */
         /*TODO*///	driver_uballoon,	/* (c) 1996 SunA */
-        /*TODO*///
-        /*TODO*///	/* Dooyong games */
-        /*TODO*///	driver_gundealr,	/* (c) 1990 Dooyong */
-        /*TODO*///	driver_gundeala,	/* (c) Dooyong */
-        /*TODO*///	driver_gundealt,	/* (c) 1990 Tecmo */
-        /*TODO*///	driver_yamyam,	/* (c) 1990 Dooyong */
-        /*TODO*///	driver_wiseguy,	/* (c) 1990 Dooyong */
+        
+        /* Dooyong games */
+        driver_gundealr,	/* (c) 1990 Dooyong */
+        driver_gundeala,	/* (c) Dooyong */
+        driver_gundealt,	/* (c) 1990 Tecmo */
+        driver_yamyam,	/* (c) 1990 Dooyong */
+        driver_wiseguy,	/* (c) 1990 Dooyong */
         driver_lastday, /* (c) 1990 Dooyong */
         driver_lastdaya, /* (c) 1990 Dooyong */
         driver_gulfstrm, /* (c) 1991 Dooyong */
