@@ -699,8 +699,6 @@ public class punchout
 		new GfxDecodeInfo( -1 ) /* end of array */
 	};
 	
-	
-	
 	static NESinterface nes_interface = new NESinterface
         (
 		1,

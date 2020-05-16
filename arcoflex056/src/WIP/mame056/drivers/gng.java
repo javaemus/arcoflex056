@@ -435,8 +435,6 @@ public class gng
 		new GfxDecodeInfo( -1 ) /* end of array */
 	};
 	
-	
-	
 	static YM2203interface ym2203_interface = new YM2203interface
 	(
 		2,			/* 2 chips */

@@ -57,7 +57,6 @@ public class gng
 				gng_fgvideoram.read(tile_index) + ((attr & 0xc0) << 2),
 				attr & 0x0f,
 				TILE_FLIPYX((attr & 0x30) >> 4));
-                //tile_info.flags = TILE_FLIPYX((attr & 0x30) >> 4);
             }
         };
 	
@@ -69,8 +68,6 @@ public class gng
 				gng_bgvideoram.read(tile_index) + ((attr & 0xc0) << 2),
 				attr & 0x07,
 				TILE_FLIPYX((attr & 0x30) >> 4) | TILE_SPLIT((attr & 0x08) >> 3));
-                //tile_info.flags = TILE_FLIPYX((attr & 0x30) >> 4) | TILE_SPLIT((attr & 0x08) >> 3);
-                tile_info.priority = (attr & 0x80) >> 7;
             }
         };
 	
@@ -90,8 +87,11 @@ public class gng
 			return 1;
 	
 		tilemap_set_transparent_pen(fg_tilemap,3);
-                
-                return 0;
+	
+		tilemap_set_transmask(bg_tilemap,0,0xff,0x00); /* split type 0 is totally transparent in front half */
+		tilemap_set_transmask(bg_tilemap,1,0x41,0xbe); /* split type 1 has pens 0 and 6 transparent in front half */
+	
+		return 0;
 	} };
 	
 	
