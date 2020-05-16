@@ -35,7 +35,7 @@ import static mame056.timerH.*;
 import static mame056.timer.*;
 
 import static WIP.mame056.drivers.leland.leland_dac_control;
-//import static WIP.mame056.sndhrdw.leland.*;
+import static WIP.mame056.sndhrdw.leland.*;
 
 public class leland
 {
@@ -294,10 +294,10 @@ public class leland
 		for (i = next_update_scanline; i < scanline; i++)
 		{
 			if ((leland_dac_control & 0x01)==0){
-/*TODO*///				leland_dac_update(0, leland_video_ram[i * 256 + 160]);
+				leland_dac_update(0, leland_video_ram.read(i * 256 + 160));
                         }
 			if ((leland_dac_control & 0x02)==0){
-/*TODO*///				leland_dac_update(1, leland_video_ram[i * 256 + 161]);
+				leland_dac_update(1, leland_video_ram.read(i * 256 + 161));
                         }
 		}
 	

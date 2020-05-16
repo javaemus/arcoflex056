@@ -4,6 +4,10 @@
  */ 
 package mame056.cpu.m68000;
 
+import static mame056.cpuintrfH.*;
+import static mame056.memory.*;
+import static mame056.memoryH.*;
+
 public class m68kmame
 {
 	
@@ -219,11 +223,136 @@ public class m68kmame
 /*TODO*///	struct m68k_memory_interface m68k_memory_intf;
 /*TODO*///	
 /*TODO*///	#endif // A68K2
-/*TODO*///	
-/*TODO*///	/****************************************************************************
-/*TODO*///	 * 68000 section
-/*TODO*///	 ****************************************************************************/
-/*TODO*///	
+	
+	/****************************************************************************
+	 * 68000 section
+	 ****************************************************************************/
+	public static class m68000 extends cpu_interface {
+            
+            public m68000(){
+                cpu_num = CPU_M68000;
+                num_irqs = 8;
+                default_vector = -1;
+                overclock = 1.0;
+                //no_int = MC68000_INT_NONE;
+                irq_int = -1;
+                //nmi_int = -1;
+                address_shift = 0;
+                address_bits = 24;
+                endianess = CPU_IS_BE;
+                align_unit = 2;
+                max_inst_len = 10;
+                //abits1 = ABITS1_24;
+                //abits2 = ABITS2_24;
+                //abitsmin = ABITS_MIN_24;
+                icount = m68k_ICount;
+                m68k_ICount[0] = 0;
+            }
+
+        @Override
+        public void init() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void reset(Object param) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void exit() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public int execute(int cycles) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public Object init_context() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public Object get_context() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void set_context(Object reg) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public int[] get_cycle_table(int which) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void set_cycle_table(int which, int[] new_table) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public int get_reg(int regnum) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void set_reg(int regnum, int val) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void set_irq_line(int irqline, int linestate) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void set_irq_callback(irqcallbacksPtr callback) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public String cpu_info(Object context, int regnum) {
+            return m68000_info(context, regnum);
+        }
+
+        @Override
+        public String cpu_dasm(String buffer, int pc) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public int memory_read(int offset) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void memory_write(int offset, int data) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public int internal_read(int offset) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void internal_write(int offset, int data) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public void set_op_base(int pc) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
+        @Override
+        public int mem_address_bits_of_cpu() {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
 /*TODO*///	#ifndef A68K0
 /*TODO*///	
 /*TODO*///	static UINT8 m68000_reg_layout[] = {
@@ -384,19 +513,19 @@ public class m68kmame
 /*TODO*///	{
 /*TODO*///		m68k_set_int_ack_callback(callback);
 /*TODO*///	}
-/*TODO*///	
-/*TODO*///	
-/*TODO*///	const char *m68000_info(void *context, int regnum)
-/*TODO*///	{
+	
+	
+	public String m68000_info(Object context, int regnum)
+	{
 /*TODO*///		static char buffer[32][47+1];
 /*TODO*///		static int which = 0;
 /*TODO*///		int sr;
 /*TODO*///	
 /*TODO*///		which = (which+1) % 32;
 /*TODO*///		buffer[which][0] = '\0';
-/*TODO*///	
-/*TODO*///		switch( regnum )
-/*TODO*///		{
+	
+		switch( regnum )
+		{
 /*TODO*///			case CPU_INFO_REG+M68K_PC:	sprintf(buffer[which], "PC :%08X", m68k_get_reg(context, M68K_REG_PC)); break;
 /*TODO*///			case CPU_INFO_REG+M68K_SR:  sprintf(buffer[which], "SR :%04X", m68k_get_reg(context, M68K_REG_SR)); break;
 /*TODO*///			case CPU_INFO_REG+M68K_SP:  sprintf(buffer[which], "SP :%08X", m68k_get_reg(context, M68K_REG_SP)); break;
@@ -440,16 +569,17 @@ public class m68kmame
 /*TODO*///					sr & 0x0002 ? 'V':'.',
 /*TODO*///					sr & 0x0001 ? 'C':'.');
 /*TODO*///				break;
-/*TODO*///			case CPU_INFO_NAME: return "68000";
-/*TODO*///			case CPU_INFO_FAMILY: return "Motorola 68K";
-/*TODO*///			case CPU_INFO_VERSION: return "3.2";
-/*TODO*///			case CPU_INFO_FILE: return __FILE__;
-/*TODO*///			case CPU_INFO_CREDITS: return "Copyright 1999-2000 Karl Stenerud. All rights reserved. (2.1 fixes HJB)";
+			case CPU_INFO_NAME: return "68000";
+			case CPU_INFO_FAMILY: return "Motorola 68K";
+			case CPU_INFO_VERSION: return "3.2";
+			case CPU_INFO_FILE: return "m68kmame.java";
+			case CPU_INFO_CREDITS: return "Copyright 1999-2000 Karl Stenerud. All rights reserved. (2.1 fixes HJB)";
 /*TODO*///			case CPU_INFO_REG_LAYOUT: return (const char*)m68000_reg_layout;
 /*TODO*///			case CPU_INFO_WIN_LAYOUT: return (const char*)m68000_win_layout;
-/*TODO*///		}
+		}
 /*TODO*///		return buffer[which];
-/*TODO*///	}
+                        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	}
 /*TODO*///	
 /*TODO*///	unsigned m68000_dasm(char *buffer, unsigned pc)
 /*TODO*///	{
@@ -463,6 +593,9 @@ public class m68kmame
 /*TODO*///	}
 /*TODO*///	
 /*TODO*///	
+
+        
+        }
 /*TODO*///	/****************************************************************************
 /*TODO*///	 * M68010 section
 /*TODO*///	 ****************************************************************************/

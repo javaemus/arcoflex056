@@ -282,6 +282,8 @@ import static WIP.mame056.drivers.blktiger.*;
 import static WIP.mame056.drivers.gundealr.*;
 import static WIP.mame056.drivers.clshroad.*;
 import static WIP.mame056.drivers.cbasebal.*;
+import static WIP.mame056.drivers.taito_l.*;
+import static WIP.mame056.drivers.omegaf.*;
 
 public class driver {
 
@@ -1521,26 +1523,27 @@ public class driver {
         driver_tnzsb, /* bootleg but Taito Corporation Japan (World) (new logo) */
         driver_tnzs2, /* B53?(c) 1988 Taito Corporation Japan (World) (old logo) */
         driver_insectx, /* B97 (c) 1989 Taito Corporation Japan (World) */
-        /*TODO*///	/* Taito L-System games */
-        /*TODO*///	driver_raimais,	/* B36 (c) 1988 Taito Corporation (Japan) */
-        /*TODO*///	driver_kurikint,	/* B42 (c) 1988 Taito Corporation Japan (World) */
-        /*TODO*///	driver_kurikinu,	/* B42 (c) 1988 Taito America Corporation (US) */
-        /*TODO*///	driver_kurikinj,	/* B42 (c) 1988 Taito Corporation (Japan) */
-        /*TODO*///	driver_kurikina,	/* B42 (c) 1988 Taito Corporation Japan (World) */
-        /*TODO*///	driver_fhawk,		/* B70 (c) 1988 Taito Corporation (Japan) */
-        /*TODO*///	driver_plotting,	/* B96 (c) 1989 Taito Corporation Japan (World) */
-        /*TODO*///	driver_champwr,	/* C01 (c) 1989 Taito Corporation Japan (World) */
-        /*TODO*///	driver_champwru,	/* C01 (c) 1989 Taito America Corporation (US) */
-        /*TODO*///	driver_champwrj,	/* C01 (c) 1989 Taito Corporation (Japan) */
-        /*TODO*///	driver_puzznic,	/* C20 (c) 1989 Taito Corporation (Japan) */
-        /*TODO*///	driver_horshoes,	/* C47 (c) 1990 Taito America Corporation (US) */
-        /*TODO*///	driver_palamed,	/* C63 (c) 1990 Taito Corporation (Japan) */
-        /*TODO*///	driver_cachat,	/* ??? (c) 1993 Taito Corporation (Japan) */
-        /*TODO*///	driver_tubeit,	/* ??? no copyright message */
-        /*TODO*///	driver_cubybop,	/* ??? no copyright message */
-        /*TODO*///	driver_plgirls,	/* (c) 1992 Hot-B. */
-        /*TODO*///	driver_plgirls2,	/* (c) 1993 Hot-B. */
-        /*TODO*///
+        
+        /* Taito L-System games */
+        driver_raimais,	/* B36 (c) 1988 Taito Corporation (Japan) */
+        driver_kurikint,	/* B42 (c) 1988 Taito Corporation Japan (World) */
+        driver_kurikinu,	/* B42 (c) 1988 Taito America Corporation (US) */
+        driver_kurikinj,	/* B42 (c) 1988 Taito Corporation (Japan) */
+        driver_kurikina,	/* B42 (c) 1988 Taito Corporation Japan (World) */
+        driver_fhawk,		/* B70 (c) 1988 Taito Corporation (Japan) */
+        driver_plotting,	/* B96 (c) 1989 Taito Corporation Japan (World) */
+        driver_champwr,	/* C01 (c) 1989 Taito Corporation Japan (World) */
+        driver_champwru,	/* C01 (c) 1989 Taito America Corporation (US) */
+        driver_champwrj,	/* C01 (c) 1989 Taito Corporation (Japan) */
+        driver_puzznic,	/* C20 (c) 1989 Taito Corporation (Japan) */
+        driver_horshoes,	/* C47 (c) 1990 Taito America Corporation (US) */
+        driver_palamed,	/* C63 (c) 1990 Taito Corporation (Japan) */
+        driver_cachat,	/* ??? (c) 1993 Taito Corporation (Japan) */
+        driver_tubeit,	/* ??? no copyright message */
+        driver_cubybop,	/* ??? no copyright message */
+        driver_plgirls,	/* (c) 1992 Hot-B. */
+        driver_plgirls2,	/* (c) 1993 Hot-B. */
+        
         /*TODO*///	/* Taito H-System games */
         /*TODO*///	driver_syvalion,	/* B51 (c) 1988 Taito Corporation (Japan) */
         /*TODO*///	driver_recordbr,	/* B56 (c) 1988 Taito Corporation Japan (World) */
@@ -3464,11 +3467,11 @@ public class driver {
         driver_rdaction, /* UPL-87003?(c) 1987 + World Games license */
         driver_mnight, /* UPL-????? (c) 1987 distributed by Kawakus */
         driver_arkarea, /* UPL-87007 (c) [1988?] */
-        /*TODO*///	driver_robokid,	/* UPL-88013 (c) 1988 */
-        /*TODO*///	driver_robokidj,	/* UPL-88013 (c) 1988 */
-        /*TODO*///	driver_omegaf,	/* UPL-89016 (c) 1989 */
-        /*TODO*///	driver_omegafs,	/* UPL-89016 (c) 1989 */
-        /*TODO*///
+        driver_robokid,	/* UPL-88013 (c) 1988 */
+        driver_robokidj,	/* UPL-88013 (c) 1988 */
+        driver_omegaf,	/* UPL-89016 (c) 1989 */
+        driver_omegafs,	/* UPL-89016 (c) 1989 */
+        
         /*TODO*///	/* UPL/NMK/Banpresto games */
         /*TODO*///TESTdriver_urashima,	/* UPL-89052 */
         /*TODO*///TESTdriver_tharrier,	/* UPL-89053 (c) 1989 UPL + American Sammy license */

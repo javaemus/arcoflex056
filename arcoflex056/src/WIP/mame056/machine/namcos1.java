@@ -643,7 +643,10 @@ public class namcos1
 			chip |= ( data & 0xff );
 	
 			/* for BANK handlers , memory direct and OP-code base */
-			cpu_setbank(bank+1,namcos1_bank_element[chip].bank_pointer);
+                        if (namcos1_bank_element[chip].bank_pointer != null)
+                            cpu_setbank(bank+1,new UBytePtr(namcos1_bank_element[chip].bank_pointer));
+                        else
+                            cpu_setbank(bank+1,namcos1_bank_element[chip].bank_pointer);
 	
 			/* Addition OFFSET for stub handlers */
 			offs = namcos1_bank_element[chip].bank_offset;
@@ -822,7 +825,10 @@ public class namcos1
 			namcos1_bank_element[i].bank_handler_r = hr;
 			namcos1_bank_element[i].bank_handler_w = hw;
 			namcos1_bank_element[i].bank_offset    = offset;
-			namcos1_bank_element[i].bank_pointer   = pointer;
+                        if (pointer!=null)
+                            namcos1_bank_element[i].bank_pointer   = new UBytePtr(pointer);
+                        else
+                            namcos1_bank_element[i].bank_pointer   = pointer;
 			offset	+= 0x2000;
 			if(pointer != null) pointer.inc(0x2000);
 		}
@@ -851,7 +857,7 @@ public class namcos1
 			namcos1_install_bank(i,i,unknown_r,unknown_w,0,null);
 	
 		/* RAM 6 banks - palette */
-		namcos1_install_bank(0x170,0x172,namcos1_paletteram_r,namcos1_paletteram_w,0,s1ram);
+		namcos1_install_bank(0x170,0x172,namcos1_paletteram_r,namcos1_paletteram_w,0,new UBytePtr(s1ram));
 		/* RAM 6 banks - work ram */
 		namcos1_install_bank(0x173,0x173,null,null,0,new UBytePtr(s1ram,0x6000));
 		/* RAM 5 banks - videoram */
@@ -861,7 +867,7 @@ public class namcos1
 		/* RAM 7 banks - display control, playfields, sprites */
 		namcos1_install_bank(0x17e,0x17e,null,namcos1_videocontrol_w,0,new UBytePtr(s1ram,0x8000));
 		/* RAM 1 shared ram, PSG device */
-		namcos1_install_bank(0x17f,0x17f,soundram_r,soundram_w,0,namco_wavedata);
+		namcos1_install_bank(0x17f,0x17f,soundram_r,soundram_w,0,new UBytePtr(namco_wavedata));
 		/* RAM 3 banks */
 		namcos1_install_bank(0x180,0x183,null,null,0,new UBytePtr(s1ram,0xc000));
 		/* PRG0 */
@@ -982,7 +988,7 @@ public class namcos1
 					if(flag_ptr>0x5140 && flag_ptr<0x5400)
 					{
 						sound_spinlock_pc	= addr+3;
-						sound_spinlock_ram	= install_mem_read_handler(2,flag_ptr,flag_ptr,namcos1_sound_spinlock_r);
+						sound_spinlock_ram	= new UBytePtr(install_mem_read_handler(2,flag_ptr,flag_ptr,namcos1_sound_spinlock_r));
 						logerror("Set sound cpu spinlock : pc=%04x , addr = %04x\n",sound_spinlock_pc,flag_ptr);
 						break;
 					}

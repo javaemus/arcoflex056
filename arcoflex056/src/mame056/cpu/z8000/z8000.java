@@ -180,7 +180,7 @@ public class z8000 extends cpu_interface
 
     @Override
     public int mem_address_bits_of_cpu() {
-        return 16;
+        return 32;
     }
     
     
@@ -662,6 +662,7 @@ public class z8000 extends cpu_interface
 	
 	public int z8000_execute(int cycles)
 	{
+            System.out.println("z8000_execute");
 	    z8000_ICount[0] = cycles;
 	
 	    do
