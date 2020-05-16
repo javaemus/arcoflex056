@@ -284,6 +284,7 @@ import static WIP.mame056.drivers.clshroad.*;
 import static WIP.mame056.drivers.cbasebal.*;
 import static WIP.mame056.drivers.taito_l.*;
 import static WIP.mame056.drivers.omegaf.*;
+import static WIP.mame056.drivers.xevious.*;
 
 public class driver {
 
@@ -751,10 +752,10 @@ public class driver {
         driver_galagab2, /* bootleg */
         driver_galaga84, /* hack */
         driver_nebulbee, /* hack */
-        /*TODO*///	driver_xevious,	/* (c) 1982 */
-        /*TODO*///	driver_xeviousa,	/* (c) 1982 + Atari license */
-        /*TODO*///	driver_xevios,	/* bootleg */
-        /*TODO*///	driver_sxevious,	/* (c) 1984 */
+        driver_xevious,	/* (c) 1982 */
+        driver_xeviousa,	/* (c) 1982 + Atari license */
+        driver_xevios,	/* bootleg */
+        driver_sxevious,	/* (c) 1984 */
         driver_superpac, /* (c) 1982 */
         driver_superpcm, /* (c) 1982 Midway */
         driver_pacnpal, /* (c) 1983 */
