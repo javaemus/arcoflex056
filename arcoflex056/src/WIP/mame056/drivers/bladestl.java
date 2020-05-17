@@ -132,7 +132,7 @@ public class bladestl
 	
 	public static WriteHandlerPtr bladestl_port_A_w = new WriteHandlerPtr() {public void handler(int offset, int data){
 		/* bits 0-4 = uPD7759 sample number (chip 0) */
-		//UPD7759_message_w( 0, data);
+/*TODO*///		UPD7759_message_w( 0, data);
 		//if (data)
 		//	logerror("%04x: (port A) write %02x\n",cpu_get_pc(), data);
 	} };

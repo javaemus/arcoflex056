@@ -8941,7 +8941,7 @@ public class drawgfx {
         }
     }
 
-    private static void copyrozbitmap_core16(mame_bitmap bitmap, mame_bitmap srcbitmap,
+    public static void copyrozbitmap_core16(mame_bitmap bitmap, mame_bitmap srcbitmap,
 		int startx, int starty,int incxx,int incxy,int incyx,int incyy,int wraparound,
 		rectangle clip, int transparency, int transparent_color, int priority)
     {

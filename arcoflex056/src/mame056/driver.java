@@ -285,6 +285,9 @@ import static WIP.mame056.drivers.cbasebal.*;
 import static WIP.mame056.drivers.taito_l.*;
 import static WIP.mame056.drivers.omegaf.*;
 import static WIP.mame056.drivers.xevious.*;
+import static WIP.mame056.drivers.simpsons.*;
+import static WIP.mame056.drivers._88games.*;
+import static WIP.mame056.drivers.lkage.*;
 
 public class driver {
 
@@ -1416,10 +1419,10 @@ public class driver {
         driver_bking2, /* AD6 (c) 1983 Taito Corporation */
         /*TODO*///TESTdriver_josvolly,	/* ??? (c) 1983 Taito Corporation */
         driver_gsword, /* ??? (c) 1984 Taito Corporation */
-        /*TODO*///	driver_lkage,		/* A54 (c) 1984 Taito Corporation */
-        /*TODO*///	driver_lkageb,	/* bootleg */
-        /*TODO*///	driver_lkageb2,	/* bootleg */
-        /*TODO*///	driver_lkageb3,	/* bootleg */
+        driver_lkage,		/* A54 (c) 1984 Taito Corporation */
+        driver_lkageb,	/* bootleg */
+        driver_lkageb2,	/* bootleg */
+        driver_lkageb3,	/* bootleg */
         driver_retofinv, /* A37 (c) 1985 Taito Corporation */
         driver_retofin1, /* bootleg */
         driver_retofin2, /* bootleg */
@@ -2933,9 +2936,9 @@ public class driver {
         driver_devstor2,	/* GX890 (c) 1988 */
         driver_devstor3,	/* GX890 (c) 1988 */
         /*TODO*///	driver_garuka,	/* GX890 (c) 1988 (Japan) */
-        /*TODO*///	driver_88games,	/* GX861 (c) 1988 */
-        /*TODO*///	driver_konami88,	/* GX861 (c) 1988 */
-        /*TODO*///	driver_hypsptsp,	/* GX861 (c) 1988 (Japan) */
+        driver_88games,	/* GX861 (c) 1988 */
+        driver_konami88,	/* GX861 (c) 1988 */
+        driver_hypsptsp,	/* GX861 (c) 1988 (Japan) */
         /*TODO*///	driver_gbusters,	/* GX878 (c) 1988 */
         /*TODO*///	driver_crazycop,	/* GX878 (c) 1988 (Japan) */
         /*TODO*///	driver_crimfght,	/* GX821 (c) 1989 (US) */
@@ -2955,9 +2958,9 @@ public class driver {
         /*TODO*///	driver_parodius,	/* GX955 (c) 1990 (Japan) */
         /*TODO*///	driver_rollerg,	/* GX999 (c) 1991 (US) */
         /*TODO*///	driver_rollergj,	/* GX999 (c) 1991 (Japan) */
-        /*TODO*///	driver_simpsons,	/* GX072 (c) 1991 */
-        /*TODO*///	driver_simpsn2p,	/* GX072 (c) 1991 */
-        /*TODO*///	driver_simps2pj,	/* GX072 (c) 1991 (Japan) */
+        driver_simpsons,	/* GX072 (c) 1991 */
+        driver_simpsn2p,	/* GX072 (c) 1991 */
+        driver_simps2pj,	/* GX072 (c) 1991 (Japan) */
         /*TODO*///	driver_vendetta,	/* GX081 (c) 1991 (US) */
         /*TODO*///	driver_vendetar,	/* GX081 (c) 1991 (US) */
         /*TODO*///	driver_vendetas,	/* GX081 (c) 1991 (Asia) */

@@ -10,6 +10,7 @@ import static common.subArrays.*;
 import static java.lang.Math.abs;
 import static mame056.common.*;
 import static mame056.commonH.*;
+import static mame056.drawgfx.copyrozbitmap_core16;
 import static mame056.drawgfxH.*;
 import static mame056.driverH.*;
 import static mame056.mame.*;
@@ -988,31 +989,32 @@ public class tilemapC {
 /*TODO*///        profiler_mark(PROFILER_END);
     }
 
-/*TODO*///struct mame_bitmap *tilemap_get_pixmap( struct tilemap * tilemap )
-/*TODO*///{
-/*TODO*///	UINT32 cached_indx = 0;
-/*TODO*///	UINT32 row,col;
-/*TODO*///
-/*TODO*///profiler_mark(PROFILER_TILEMAP_DRAW);
-/*TODO*///	memset( &tile_info, 0x00, sizeof(tile_info) ); /* initialize defaults */
-/*TODO*///
-/*TODO*///	/* walk over cached rows/cols (better to walk screen coords) */
-/*TODO*///	for( row=0; row<tilemap.num_cached_rows; row++ )
-/*TODO*///	{
-/*TODO*///		for( col=0; col<tilemap.num_cached_cols; col++ )
-/*TODO*///		{
-/*TODO*///			if( tilemap.transparency_data[cached_indx] == TILE_FLAG_DIRTY )
-/*TODO*///			{
-/*TODO*///				update_tile_info( tilemap, cached_indx, col, row );
-/*TODO*///			}
-/*TODO*///			cached_indx++;
-/*TODO*///		} /* next col */
-/*TODO*///	} /* next row */
-/*TODO*///
-/*TODO*///profiler_mark(PROFILER_END);
-/*TODO*///	return tilemap.pixmap;
-/*TODO*///}
-/*TODO*///
+    public static mame_bitmap tilemap_get_pixmap( struct_tilemap tilemap )
+    {
+            int cached_indx = 0;
+            int row,col;
+
+    /*TODO*///profiler_mark(PROFILER_TILEMAP_DRAW);
+            //memset( tile_info, 0x00, sizeof(tile_info) ); /* initialize defaults */
+            tile_info = new struct_tile_info();
+
+            /* walk over cached rows/cols (better to walk screen coords) */
+            for( row=0; row<tilemap.num_cached_rows; row++ )
+            {
+                    for( col=0; col<tilemap.num_cached_cols; col++ )
+                    {
+                            if( tilemap.transparency_data.read(cached_indx) == TILE_FLAG_DIRTY )
+                            {
+                                    update_tile_info( tilemap, cached_indx, col, row );
+                            }
+                            cached_indx++;
+                    } /* next col */
+            } /* next row */
+
+    /*TODO*///profiler_mark(PROFILER_END);
+            return tilemap.pixmap;
+    }
+
 /*TODO*///struct mame_bitmap *tilemap_get_transparency_bitmap( struct tilemap * tilemap )
 /*TODO*///{
 /*TODO*///	return tilemap.transparency_bitmap;
@@ -1398,61 +1400,62 @@ public class tilemapC {
 /*TODO*///        profiler_mark(PROFILER_END);
         }
 
-/*TODO*////* notes:
-/*TODO*///   - startx and starty MUST be UINT32 for calculations to work correctly
-/*TODO*///   - srcbitmap.width and height are assumed to be a power of 2 to speed up wraparound
-/*TODO*///   */
-/*TODO*///void tilemap_draw_roz(struct mame_bitmap *dest,struct tilemap *tilemap,
-/*TODO*///		UINT32 startx,UINT32 starty,int incxx,int incxy,int incyx,int incyy,
-/*TODO*///		int wraparound,
-/*TODO*///		UINT32 flags, UINT32 priority )
-/*TODO*///{
-/*TODO*///	int mask,value;
-/*TODO*///
+/* notes:
+   - startx and starty MUST be UINT32 for calculations to work correctly
+   - srcbitmap.width and height are assumed to be a power of 2 to speed up wraparound
+   */
+public static void tilemap_draw_roz(mame_bitmap dest,struct_tilemap tilemap,
+		int startx,int starty,int incxx,int incxy,int incyx,int incyy,
+		int wraparound,
+		int flags, int priority )
+{
+	int mask,value;
+
 /*TODO*///profiler_mark(PROFILER_TILEMAP_DRAW_ROZ);
-/*TODO*///	if( tilemap.enable )
-/*TODO*///	{
-/*TODO*///		/* tile priority */
-/*TODO*///		mask		= TILE_FLAG_TILE_PRIORITY;
-/*TODO*///		value		= TILE_FLAG_TILE_PRIORITY&flags;
-/*TODO*///
-/*TODO*///		tilemap_get_pixmap( tilemap ); /* force update */
-/*TODO*///
-/*TODO*///		if( !(tilemap.type==TILEMAP_OPAQUE || (flags&TILEMAP_IGNORE_TRANSPARENCY)) )
-/*TODO*///		{
-/*TODO*///			if( flags&TILEMAP_BACK )
-/*TODO*///			{
-/*TODO*///				mask	|= TILE_FLAG_BG_OPAQUE;
-/*TODO*///				value	|= TILE_FLAG_BG_OPAQUE;
-/*TODO*///			}
-/*TODO*///			else
-/*TODO*///			{
-/*TODO*///				mask	|= TILE_FLAG_FG_OPAQUE;
-/*TODO*///				value	|= TILE_FLAG_FG_OPAQUE;
-/*TODO*///			}
-/*TODO*///		}
-/*TODO*///
-/*TODO*///		switch( dest.depth )
-/*TODO*///		{
-/*TODO*///
-/*TODO*///		case 32:
+	if( tilemap.enable != 0 )
+	{
+		/* tile priority */
+		mask		= TILE_FLAG_TILE_PRIORITY;
+		value		= TILE_FLAG_TILE_PRIORITY&flags;
+
+		mame_bitmap mb = tilemap_get_pixmap( tilemap ); /* force update */
+
+		if( !(tilemap.type==TILEMAP_OPAQUE || (flags&TILEMAP_IGNORE_TRANSPARENCY)!=0) )
+		{
+			if(( flags&TILEMAP_BACK ) != 0)
+			{
+				mask	|= TILE_FLAG_BG_OPAQUE;
+				value	|= TILE_FLAG_BG_OPAQUE;
+			}
+			else
+			{
+				mask	|= TILE_FLAG_FG_OPAQUE;
+				value	|= TILE_FLAG_FG_OPAQUE;
+			}
+		}
+
+		switch( dest.depth )
+		{
+
+		case 32:
 /*TODO*///			copyrozbitmap_core32BPP(dest,tilemap,startx,starty,incxx,incxy,incyx,incyy,
 /*TODO*///				wraparound,&tilemap.logical_clip,mask,value,priority);
-/*TODO*///			break;
-/*TODO*///
-/*TODO*///		case 15:
-/*TODO*///		case 16:
-/*TODO*///			copyrozbitmap_core16BPP(dest,tilemap,startx,starty,incxx,incxy,incyx,incyy,
-/*TODO*///				wraparound,&tilemap.logical_clip,mask,value,priority);
-/*TODO*///			break;
-/*TODO*///
-/*TODO*///		default:
-/*TODO*///			exit(1);
-/*TODO*///		}
-/*TODO*///	} /* tilemap.enable */
+			break;
+
+		case 15:
+		case 16:
+			copyrozbitmap_core16(dest,mb,startx,starty,incxx,incxy,incyx,incyy,
+				wraparound,tilemap.logical_clip,mask,value,priority);
+			break;
+
+		default:
+//			exit(1);
+                    System.out.println("EXIT!!!! (FATAL)");
+		}
+	} /* tilemap.enable */
 /*TODO*///profiler_mark(PROFILER_END);
-/*TODO*///}
-/*TODO*///
+}
+
 /*TODO*////***********************************************************************************/
 /*TODO*///
 /*TODO*///#endif // !DECLARE && !TRANSP

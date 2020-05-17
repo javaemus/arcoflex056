@@ -142,6 +142,7 @@ public class upd7759 extends snd_interface
         public upd7759(){
             this.sound_num = SOUND_UPD7759;
             this.name = "uPD7759";
+            
         }
 	
 	public static class UPD7759sample
@@ -251,6 +252,7 @@ public class upd7759 extends snd_interface
 
         @Override
         public int start(MachineSound msound) {
+            System.out.println("Starting SOUND_UPD7759");
             return UPD7759_sh_start(msound);
         }
 
@@ -359,8 +361,9 @@ public class upd7759 extends snd_interface
 	
 	static int UPD7759_sh_start (MachineSound msound)
 	{
+            System.out.println("UPD7759_sh_start");
 		int i;
-		UPD7759_interface intf = (UPD7759_interface) msound.sound_interface;
+		upd7759_intf = (UPD7759_interface) msound.sound_interface;
 	
 		if( Machine.sample_rate == 0 )
 			return 0;
@@ -369,8 +372,7 @@ public class upd7759 extends snd_interface
 		ComputeTables ();
 	
 	    /* copy the interface pointer to a global */
-		upd7759_intf = intf;
-		base_rate = intf.clock_rate / CLOCK_DIVIDER;
+		base_rate = upd7759_intf.clock_rate / CLOCK_DIVIDER;
 	
 		memset(upd7759_bank_base, 0, upd7759_bank_base.length);
 	
@@ -384,7 +386,7 @@ public class upd7759 extends snd_interface
 	
 	
 /*TODO*///		memset(updadpcm,0,updadpcm.length);
-		for (i = 0; i < intf.num; i++)
+		for (i = 0; i < upd7759_intf.num; i++)
 		{
 			String name="";
                         
@@ -397,7 +399,7 @@ public class upd7759 extends snd_interface
 	
 			name = sprintf("uPD7759 #%d",i);
 	
-			channel[i] = stream_init(name,intf.volume[i],emulation_rate,i,UPD7759_update);
+			channel[i] = stream_init(name,upd7759_intf.volume[i],emulation_rate,i,UPD7759_update);
 		}
 		return 0;
 	}
@@ -533,7 +535,7 @@ public class upd7759 extends snd_interface
 	 here from an external source (eg. Z80 NMI code).
 	 *************************************************************/
 	
-	static void UPD7759_message_w (int num, int data)
+	public static void UPD7759_message_w (int num, int data)
 	{
 		//UPD7759voice voice = updadpcm[num];
 	
