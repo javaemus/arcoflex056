@@ -13,6 +13,7 @@ import static mame056.cpuintrfH.*;
 import static mame056.cpu.m6502.m6502H.*;
 import static mame056.cpu.m6809.m6809H.*;
 import static mame056.cpu.i8085.i8085H.*;
+import static mame056.cpu.konami.konamiH.*;
 
 public class cpuexecH {
 
@@ -203,8 +204,8 @@ public class cpuexecH {
     public static final int HD6309_INT_FIRQ = HD6309_FIRQ_LINE;
 /*TODO*///#define HD63705_INT_IRQ		HD63705_INT_IRQ1
 /*TODO*///#define M68705_INT_IRQ		M68705_IRQ_LINE
-/*TODO*///#define KONAMI_INT_IRQ		KONAMI_IRQ_LINE
-/*TODO*///#define KONAMI_INT_FIRQ		KONAMI_FIRQ_LINE
+    public static final int KONAMI_INT_IRQ = KONAMI_IRQ_LINE;
+    public static final int KONAMI_INT_FIRQ = KONAMI_FIRQ_LINE;
     public static final int I8035_EXT_INT   = 0;
 /*TODO*///#define I8039_EXT_INT		0
 /*TODO*///#define H6280_INT_IRQ1		0
