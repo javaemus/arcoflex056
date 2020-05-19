@@ -36,19 +36,19 @@ public class konamiH
 	/****************************************************************************/
 	public static void KONAMI_WRMEM(int Addr, int Value){ cpu_writemem16(Addr,Value); }
 	
-/*TODO*///	/****************************************************************************/
-/*TODO*///	/* Z80_RDOP() is identical to Z80_RDMEM() except it is used for reading     */
-/*TODO*///	/* opcodes. In case of system with memory mapped I/O, this function can be  */
-/*TODO*///	/* used to greatly speed up emulation                                       */
-/*TODO*///	/****************************************************************************/
+	/****************************************************************************/
+	/* Z80_RDOP() is identical to Z80_RDMEM() except it is used for reading     */
+	/* opcodes. In case of system with memory mapped I/O, this function can be  */
+	/* used to greatly speed up emulation                                       */
+	/****************************************************************************/
 	public static int KONAMI_RDOP(int Addr){ return cpu_readop(Addr); }
-/*TODO*///	
-/*TODO*///	/****************************************************************************/
-/*TODO*///	/* Z80_RDOP_ARG() is identical to Z80_RDOP() except it is used for reading  */
-/*TODO*///	/* opcode arguments. This difference can be used to support systems that    */
-/*TODO*///	/* use different encoding mechanisms for opcodes and opcode arguments       */
-/*TODO*///	/****************************************************************************/
-/*TODO*///	#define KONAMI_RDOP_ARG(Addr) ((unsigned)cpu_readop_arg(Addr))
-/*TODO*///	
+	
+	/****************************************************************************/
+	/* Z80_RDOP_ARG() is identical to Z80_RDOP() except it is used for reading  */
+	/* opcode arguments. This difference can be used to support systems that    */
+	/* use different encoding mechanisms for opcodes and opcode arguments       */
+	/****************************************************************************/
+	public static int KONAMI_RDOP_ARG(int Addr){ return cpu_readop_arg(Addr); }
+	
 	
 }

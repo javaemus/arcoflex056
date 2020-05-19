@@ -267,13 +267,13 @@ public class konami extends cpu_interface {
 /*TODO*///		UINT8	nmi_state;
 /*TODO*///	} konami_Regs;
 	
-/*TODO*///	/* flag bits in the cc register */
-/*TODO*///	#define CC_C    0x01        /* Carry */
-/*TODO*///	#define CC_V    0x02        /* Overflow */
-/*TODO*///	#define CC_Z    0x04        /* Zero */
-/*TODO*///	#define CC_N    0x08        /* Negative */
+	/* flag bits in the cc register */
+        public static final int CC_C    = 0x01;        /* Carry */
+        public static final int CC_V    = 0x02;        /* Overflow */
+        public static final int CC_Z    = 0x04;        /* Zero */
+        public static final int CC_N    = 0x08;        /* Negative */
 	public static final int CC_II   = 0x10;        /* Inhibit IRQ */
-/*TODO*///	#define CC_H    0x20        /* Half (auxiliary) carry */
+        public static final int CC_H    = 0x20;        /* Half (auxiliary) carry */
 	public static final int CC_IF   = 0x40;        /* Inhibit FIRQ */
         public static final int CC_E    = 0x80;        /* entire state pushed */
 	
@@ -286,7 +286,8 @@ public class konami extends cpu_interface {
         public static void pPC(int val){ konami.pc = val; }
 	public static int pU(){ return konami.u; }
         public static void pU(int val){ konami.u = val; }
-/*TODO*///	#define pS		konami.s
+	public static int pS(){ return konami.s; }
+        public static void pS(int val){ konami.s = val; }
 	public static int pX(){ return konami.x; }
         public static void pX(int val){ konami.x = val; }
 	public static int pY(){ return konami.y; }
@@ -301,17 +302,20 @@ public class konami extends cpu_interface {
         public static void PCD(int val){ konami.pc = val; }
         public static int U(){ return konami.u & 0xFF; }
         public static void U(int val){ konami.u |= val & 0xFF; }
-/*TODO*///	#define UD		konami.u.d
+	public static int UD(){ return konami.u; }
+        public static void UD(int val){ konami.u = val; }
 	public static int S(){ return konami.s & 0xFF; }
         public static void S(int val){ konami.s |= val & 0xFF; }
 	public static int SD(){ return konami.s; }
         public static void SD(int val){ konami.s = val; }
 	public static int X(){ return konami.x & 0xFF; }
         public static void X(int val){ konami.x |= val & 0xFF; }
-/*TODO*///	#define XD		konami.x.d
+	public static int XD(){ return konami.x; }
+        public static void XD(int val){ konami.x = val; }
         public static int Y(){ return konami.y & 0xFF; }
         public static void Y(int val){ konami.y |= val & 0xFF; }
-/*TODO*///	#define YD		konami.y.d
+        public static int YD(){ return konami.y; }
+        public static void YD(int val){ konami.y = val; }
 /*TODO*///	#define D   	konami.d.w.l
         public static int A(){ return ((konami.d & 0xFF00)>>8); }
         public static void A(int val){ konami.d |= (val<<8); }
@@ -398,12 +402,16 @@ public class konami extends cpu_interface {
 	public static int RM(int Addr){ return KONAMI_RDMEM(Addr); }
 	public static void WM(int Addr, int Value){ KONAMI_WRMEM(Addr,Value); }
 	public static int ROP(int Addr){ return KONAMI_RDOP(Addr); }
-/*TODO*///	#define ROP_ARG(Addr)		KONAMI_RDOP_ARG(Addr)
+	public static int ROP_ARG(int Addr){ return KONAMI_RDOP_ARG(Addr); }
 /*TODO*///	
 /*TODO*///	#define SIGNED(a)	(UINT16)(INT16)(INT8)(a)
 /*TODO*///	
 /*TODO*///	/* macros to access memory */
-/*TODO*///	#define IMMBYTE(b)	{ b = ROP_ARG(PCD); PC++; }
+        public static int IMMBYTE()	{ 
+            int reg = ROP_ARG(PCD());
+            PC(PC()+1);
+            return reg; 
+        }
 /*TODO*///	#define IMMWORD(w)	{ w.d = (ROP_ARG(PCD)<<8) | ROP_ARG(PCD+1); PC += 2; }
 
 	public static void PUSHBYTE(int b){ S(S()-1); WM(SD(),b); }
@@ -411,31 +419,31 @@ public class konami extends cpu_interface {
 	public static void PULLBYTE(int b){ b=KONAMI_RDMEM(SD()); S(S()+1); }
 	public static void PULLWORD(int w){ w=KONAMI_RDMEM(SD())<<8; S(S()+1); w|=KONAMI_RDMEM(SD()); S(S()+1); }
 
-/*TODO*///	#define PSHUBYTE(b) --U; WM(UD,b);
-/*TODO*///	#define PSHUWORD(w) --U; WM(UD,w.b.l); --U; WM(UD,w.b.h)
-/*TODO*///	#define PULUBYTE(b) b=KONAMI_RDMEM(UD); U++
-/*TODO*///	#define PULUWORD(w) w=KONAMI_RDMEM(UD)<<8; U++; w|=KONAMI_RDMEM(UD); U++
-/*TODO*///	
-/*TODO*///	#define CLR_HNZVC	CC&=~(CC_H|CC_N|CC_Z|CC_V|CC_C)
-/*TODO*///	#define CLR_NZV 	CC&=~(CC_N|CC_Z|CC_V)
+        public static void PSHUBYTE(int b){ U(U()-1); WM(UD(),b); }
+	public static void PSHUWORD(int w){ U(U()-1); WM(UD(),w&0xff); U(U()-1); WM(UD(),(w>>8)&0xFF); }
+        public static void PULUBYTE(int b){ b=KONAMI_RDMEM(UD()); U(U()+1); }
+        public static void PULUWORD(int w){ w=KONAMI_RDMEM(UD())<<8; U(U()+1); w|=KONAMI_RDMEM(UD()); U(U()+1); }
+
+        public static void CLR_HNZVC(){	CC( CC() & ~(CC_H|CC_N|CC_Z|CC_V|CC_C)); }
+	public static void CLR_NZV(){ 	CC( CC() & ~(CC_N|CC_Z|CC_V)); }
 /*TODO*///	#define CLR_HNZC	CC&=~(CC_H|CC_N|CC_Z|CC_C)
 /*TODO*///	#define CLR_NZVC	CC&=~(CC_N|CC_Z|CC_V|CC_C)
 /*TODO*///	#define CLR_Z		CC&=~(CC_Z)
 /*TODO*///	#define CLR_NZC 	CC&=~(CC_N|CC_Z|CC_C)
 /*TODO*///	#define CLR_ZC		CC&=~(CC_Z|CC_C)
-/*TODO*///	
-/*TODO*///	/* macros for CC -- CC bits affected should be reset before calling */
-/*TODO*///	#define SET_Z(a)		if (a == 0)SEZ
-/*TODO*///	#define SET_Z8(a)		SET_Z((UINT8)a)
+
+	/* macros for CC -- CC bits affected should be reset before calling */
+        public static void SET_Z(int a){ if (a == 0)SEZ(); }
+        public static void SET_Z8(int a){ SET_Z(a); }
 /*TODO*///	#define SET_Z16(a)		SET_Z((UINT16)a)
-/*TODO*///	#define SET_N8(a)		CC|=((a&0x80)>>4)
+        public static void SET_N8(int a){ CC( CC() |((a&0x80)>>4) ); }
 /*TODO*///	#define SET_N16(a)		CC|=((a&0x8000)>>12)
-/*TODO*///	#define SET_H(a,b,r)	CC|=(((a^b^r)&0x10)<<1)
-/*TODO*///	#define SET_C8(a)		CC|=((a&0x100)>>8)
+	public static void SET_H(int a, int b, int r){ CC( CC() | (((a^b^r)&0x10)<<1)); }
+	public static void SET_C8(int a){ CC( CC() | ((a&0x100)>>8)); }
 /*TODO*///	#define SET_C16(a)		CC|=((a&0x10000)>>16)
-/*TODO*///	#define SET_V8(a,b,r)	CC|=(((a^b^r^(r>>1))&0x80)>>6)
+        public static void SET_V8(int a, int b, int r){	CC( CC() | (((a^b^r^(r>>1))&0x80)>>6)); }
 /*TODO*///	#define SET_V16(a,b,r)	CC|=(((a^b^r^(r>>1))&0x8000)>>14)
-/*TODO*///	
+
 /*TODO*///	static UINT8 flags8i[256]=	 /* increment */
 /*TODO*///	{
 /*TODO*///	CC_Z,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
@@ -476,11 +484,11 @@ public class konami extends cpu_interface {
 /*TODO*///	};
 /*TODO*///	#define SET_FLAGS8I(a)		{CC|=flags8i[(a)&0xff];}
 /*TODO*///	#define SET_FLAGS8D(a)		{CC|=flags8d[(a)&0xff];}
-/*TODO*///	
-/*TODO*///	/* combos */
-/*TODO*///	#define SET_NZ8(a)			{SET_N8(a);SET_Z(a);}
+	
+	/* combos */
+        public static void SET_NZ8(int a){ SET_N8(a);SET_Z(a); }
 /*TODO*///	#define SET_NZ16(a)			{SET_N16(a);SET_Z(a);}
-/*TODO*///	#define SET_FLAGS8(a,b,r)	{SET_N8(r);SET_Z8(r);SET_V8(a,b,r);SET_C8(r);}
+        public static void SET_FLAGS8(int a, int b, int r){ SET_N8(r);SET_Z8(r);SET_V8(a,b,r);SET_C8(r);}
 /*TODO*///	#define SET_FLAGS16(a,b,r)	{SET_N16(r);SET_Z16(r);SET_V16(a,b,r);SET_C16(r);}
 /*TODO*///	
 /*TODO*///	/* macros for addressing modes (postbytes have their own code) */
@@ -492,7 +500,7 @@ public class konami extends cpu_interface {
 /*TODO*///	/* macros to set status flags */
 /*TODO*///	#define SEC CC|=CC_C
 /*TODO*///	#define CLC CC&=~CC_C
-/*TODO*///	#define SEZ CC|=CC_Z
+        public static void SEZ(){ CC( CC() | CC_Z ); }
 /*TODO*///	#define CLZ CC&=~CC_Z
 /*TODO*///	#define SEN CC|=CC_N
 /*TODO*///	#define CLN CC&=~CC_N

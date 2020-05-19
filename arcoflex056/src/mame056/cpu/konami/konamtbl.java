@@ -17,8 +17,8 @@ public class konamtbl {
     
     static opcode[] konami_main = {
 	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* 00 */
-/*TODO*///	opcode2,opcode2,opcode2,opcode2,pshs   ,pshu   ,puls   ,pulu   ,
-/*TODO*///	lda_im ,ldb_im ,opcode2,opcode2,adda_im,addb_im,opcode2,opcode2,	/* 10 */
+	opcode2,opcode2,opcode2,opcode2,pshs   ,pshu   ,puls   ,pulu   ,
+	lda_im ,ldb_im ,opcode2,opcode2,adda_im,addb_im,opcode2,opcode2,	/* 10 */
 /*TODO*///	adca_im,adcb_im,opcode2,opcode2,suba_im,subb_im,opcode2,opcode2,
 /*TODO*///	sbca_im,sbcb_im,opcode2,opcode2,anda_im,andb_im,opcode2,opcode2,	/* 20 */
 /*TODO*///	bita_im,bitb_im,opcode2,opcode2,eora_im,eorb_im,opcode2,opcode2,
@@ -27,7 +27,7 @@ public class konamtbl {
 /*TODO*///	ldd_im ,opcode2,ldx_im ,opcode2,ldy_im ,opcode2,ldu_im ,opcode2,	/* 40 */
 /*TODO*///	lds_im ,opcode2,cmpd_im,opcode2,cmpx_im,opcode2,cmpy_im,opcode2,
 /*TODO*///	cmpu_im,opcode2,cmps_im,opcode2,addd_im,opcode2,subd_im,opcode2,	/* 50 */
-/*TODO*///	opcode2,opcode2,opcode2,opcode2,opcode2,illegal,illegal,illegal,
+	opcode2,opcode2,opcode2,opcode2,opcode2,illegal,illegal,illegal,
 /*TODO*///	bra    ,bhi    ,bcc    ,bne    ,bvc    ,bpl    ,bge    ,bgt    ,	/* 60 */
 /*TODO*///	lbra   ,lbhi   ,lbcc   ,lbne   ,lbvc   ,lbpl   ,lbge   ,lbgt   ,
 /*TODO*///	brn    ,bls    ,bcs    ,beq    ,bvs    ,bmi    ,blt    ,ble    ,	/* 70 */

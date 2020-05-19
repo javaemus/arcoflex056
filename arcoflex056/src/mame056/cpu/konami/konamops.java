@@ -4,6 +4,7 @@
 package mame056.cpu.konami;
 
 import static arcadeflex056.osdepend.logerror;
+import static mame056.memoryH.*;
 import static mame056.cpu.konami.konamtbl.*;
 import static mame056.cpu.konami.konami.*;
 
@@ -543,73 +544,78 @@ public class konamops {
 /*TODO*///	{
 /*TODO*///		U = EA;
 /*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $34 PSHS inherent ----- */
-/*TODO*///	INLINE void pshs( void )
-/*TODO*///	{
-/*TODO*///		UINT8 t;
-/*TODO*///		IMMBYTE(t);
-/*TODO*///		if( t&0x80 ) { PUSHWORD(pPC); konami_ICount -= 2; }
-/*TODO*///		if( t&0x40 ) { PUSHWORD(pU);  konami_ICount -= 2; }
-/*TODO*///		if( t&0x20 ) { PUSHWORD(pY);  konami_ICount -= 2; }
-/*TODO*///		if( t&0x10 ) { PUSHWORD(pX);  konami_ICount -= 2; }
-/*TODO*///		if( t&0x08 ) { PUSHBYTE(DP);  konami_ICount -= 1; }
-/*TODO*///		if( t&0x04 ) { PUSHBYTE(B);   konami_ICount -= 1; }
-/*TODO*///		if( t&0x02 ) { PUSHBYTE(A);   konami_ICount -= 1; }
-/*TODO*///		if( t&0x01 ) { PUSHBYTE(CC);  konami_ICount -= 1; }
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* 35 PULS inherent ----- */
-/*TODO*///	INLINE void puls( void )
-/*TODO*///	{
-/*TODO*///		UINT8 t;
-/*TODO*///		IMMBYTE(t);
-/*TODO*///		if( t&0x01 ) { PULLBYTE(CC); konami_ICount -= 1; }
-/*TODO*///		if( t&0x02 ) { PULLBYTE(A);  konami_ICount -= 1; }
-/*TODO*///		if( t&0x04 ) { PULLBYTE(B);  konami_ICount -= 1; }
-/*TODO*///		if( t&0x08 ) { PULLBYTE(DP); konami_ICount -= 1; }
-/*TODO*///		if( t&0x10 ) { PULLWORD(XD); konami_ICount -= 2; }
-/*TODO*///		if( t&0x20 ) { PULLWORD(YD); konami_ICount -= 2; }
-/*TODO*///		if( t&0x40 ) { PULLWORD(UD); konami_ICount -= 2; }
-/*TODO*///		if( t&0x80 ) { PULLWORD(PCD); change_pc16(PCD); konami_ICount -= 2; }
-/*TODO*///
-/*TODO*///		/* check after all PULLs */
-/*TODO*///		if( t&0x01 ) { CHECK_IRQ_LINES; }
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $36 PSHU inherent ----- */
-/*TODO*///	INLINE void pshu( void )
-/*TODO*///	{
-/*TODO*///		UINT8 t;
-/*TODO*///		IMMBYTE(t);
-/*TODO*///		if( t&0x80 ) { PSHUWORD(pPC); konami_ICount -= 2; }
-/*TODO*///		if( t&0x40 ) { PSHUWORD(pS);  konami_ICount -= 2; }
-/*TODO*///		if( t&0x20 ) { PSHUWORD(pY);  konami_ICount -= 2; }
-/*TODO*///		if( t&0x10 ) { PSHUWORD(pX);  konami_ICount -= 2; }
-/*TODO*///		if( t&0x08 ) { PSHUBYTE(DP);  konami_ICount -= 1; }
-/*TODO*///		if( t&0x04 ) { PSHUBYTE(B);   konami_ICount -= 1; }
-/*TODO*///		if( t&0x02 ) { PSHUBYTE(A);   konami_ICount -= 1; }
-/*TODO*///		if( t&0x01 ) { PSHUBYTE(CC);  konami_ICount -= 1; }
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* 37 PULU inherent ----- */
-/*TODO*///	INLINE void pulu( void )
-/*TODO*///	{
-/*TODO*///		UINT8 t;
-/*TODO*///		IMMBYTE(t);
-/*TODO*///		if( t&0x01 ) { PULUBYTE(CC); konami_ICount -= 1; }
-/*TODO*///		if( t&0x02 ) { PULUBYTE(A);  konami_ICount -= 1; }
-/*TODO*///		if( t&0x04 ) { PULUBYTE(B);  konami_ICount -= 1; }
-/*TODO*///		if( t&0x08 ) { PULUBYTE(DP); konami_ICount -= 1; }
-/*TODO*///		if( t&0x10 ) { PULUWORD(XD); konami_ICount -= 2; }
-/*TODO*///		if( t&0x20 ) { PULUWORD(YD); konami_ICount -= 2; }
-/*TODO*///		if( t&0x40 ) { PULUWORD(SD); konami_ICount -= 2; }
-/*TODO*///		if( t&0x80 ) { PULUWORD(PCD); change_pc16(PCD); konami_ICount -= 2; }
-/*TODO*///
-/*TODO*///		/* check after all PULLs */
-/*TODO*///		if( t&0x01 ) { CHECK_IRQ_LINES; }
-/*TODO*///	}
-/*TODO*///
+
+	/* $34 PSHS inherent ----- */
+	public static opcode pshs = new opcode() {
+            public void handler() {
+            
+		int t;
+		t = IMMBYTE();
+		if(( t&0x80 ) != 0) { PUSHWORD(pPC()); konami_ICount[0] -= 2; }
+		if(( t&0x40 ) != 0) { PUSHWORD(pU());  konami_ICount[0] -= 2; }
+		if(( t&0x20 ) != 0) { PUSHWORD(pY());  konami_ICount[0] -= 2; }
+		if(( t&0x10 ) != 0) { PUSHWORD(pX());  konami_ICount[0] -= 2; }
+		if(( t&0x08 ) != 0) { PUSHBYTE(DP());  konami_ICount[0] -= 1; }
+		if(( t&0x04 ) != 0) { PUSHBYTE(B());   konami_ICount[0] -= 1; }
+		if(( t&0x02 ) != 0) { PUSHBYTE(A());   konami_ICount[0] -= 1; }
+		if(( t&0x01 ) != 0) { PUSHBYTE(CC());  konami_ICount[0] -= 1; }
+            }
+        };
+
+	/* 35 PULS inherent ----- */
+	public static opcode puls = new opcode() {
+            public void handler() {
+		int t;
+		t = IMMBYTE();
+		if(( t&0x01 ) != 0) { PULLBYTE(CC()); konami_ICount[0] -= 1; }
+		if(( t&0x02 ) != 0) { PULLBYTE(A());  konami_ICount[0] -= 1; }
+		if(( t&0x04 ) != 0) { PULLBYTE(B());  konami_ICount[0] -= 1; }
+		if(( t&0x08 ) != 0) { PULLBYTE(DP()); konami_ICount[0] -= 1; }
+		if(( t&0x10 ) != 0) { PULLWORD(XD()); konami_ICount[0] -= 2; }
+		if(( t&0x20 ) != 0) { PULLWORD(YD()); konami_ICount[0] -= 2; }
+		if(( t&0x40 ) != 0) { PULLWORD(UD()); konami_ICount[0] -= 2; }
+		if(( t&0x80 ) != 0) { PULLWORD(PCD()); change_pc16(PCD()); konami_ICount[0] -= 2; }
+
+		/* check after all PULLs */
+		if(( t&0x01 ) != 0) { CHECK_IRQ_LINES(); }
+            }
+        };
+
+	/* $36 PSHU inherent ----- */
+	public static opcode pshu = new opcode() {
+            public void handler() {
+            	int t;
+		t = IMMBYTE();
+		if(( t&0x80 ) != 0) { PSHUWORD(pPC()); konami_ICount[0] -= 2; }
+		if(( t&0x40 ) != 0) { PSHUWORD(pS());  konami_ICount[0] -= 2; }
+		if(( t&0x20 ) != 0) { PSHUWORD(pY());  konami_ICount[0] -= 2; }
+		if(( t&0x10 ) != 0) { PSHUWORD(pX());  konami_ICount[0] -= 2; }
+		if(( t&0x08 ) != 0) { PSHUBYTE(DP());  konami_ICount[0] -= 1; }
+		if(( t&0x04 ) != 0) { PSHUBYTE(B());   konami_ICount[0] -= 1; }
+		if(( t&0x02 ) != 0) { PSHUBYTE(A());   konami_ICount[0] -= 1; }
+		if(( t&0x01 ) != 0) { PSHUBYTE(CC());  konami_ICount[0] -= 1; }
+            }
+        };
+
+	/* 37 PULU inherent ----- */
+	public static opcode pulu = new opcode() {
+            public void handler() {
+		int t;
+		t = IMMBYTE();
+		if(( t&0x01 ) != 0) { PULUBYTE(CC()); konami_ICount[0] -= 1; }
+		if(( t&0x02 ) != 0) { PULUBYTE(A());  konami_ICount[0] -= 1; }
+		if(( t&0x04 ) != 0) { PULUBYTE(B());  konami_ICount[0] -= 1; }
+		if(( t&0x08 ) != 0) { PULUBYTE(DP()); konami_ICount[0] -= 1; }
+		if(( t&0x10 ) != 0) { PULUWORD(XD()); konami_ICount[0] -= 2; }
+		if(( t&0x20 ) != 0) { PULUWORD(YD()); konami_ICount[0] -= 2; }
+		if(( t&0x40 ) != 0) { PULUWORD(SD()); konami_ICount[0] -= 2; }
+		if(( t&0x80 ) != 0) { PULUWORD(PCD()); change_pc16(PCD()); konami_ICount[0] -= 2; }
+
+		/* check after all PULLs */
+		if(( t&0x01 ) != 0) { CHECK_IRQ_LINES(); }
+            }
+        };
+
 /*TODO*///	/* $38 ILLEGAL */
 /*TODO*///
 /*TODO*///	/* $39 RTS inherent ----- */
@@ -1302,15 +1308,16 @@ public class konamops {
 /*TODO*///		CLR_NZV;
 /*TODO*///		SET_NZ8(r);
 /*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $86 LDA immediate -**0- */
-/*TODO*///	INLINE void lda_im( void )
-/*TODO*///	{
-/*TODO*///		IMMBYTE(A);
-/*TODO*///		CLR_NZV;
-/*TODO*///		SET_NZ8(A);
-/*TODO*///	}
-/*TODO*///
+
+	/* $86 LDA immediate -**0- */
+	public static opcode lda_im = new opcode() {
+            public void handler() {            
+		A(IMMBYTE());
+		CLR_NZV();
+		SET_NZ8(A());
+            }
+        };
+
 /*TODO*///	/* is this a legal instruction? */
 /*TODO*///	/* $87 STA immediate -**0- */
 /*TODO*///	INLINE void sta_im( void )
@@ -1352,19 +1359,20 @@ public class konamops {
 /*TODO*///		CLR_NZV;
 /*TODO*///		SET_NZ8(A);
 /*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $8B ADDA immediate ***** */
-/*TODO*///	INLINE void adda_im( void )
-/*TODO*///	{
-/*TODO*///		UINT16 t,r;
-/*TODO*///		IMMBYTE(t);
-/*TODO*///		r = A + t;
-/*TODO*///		CLR_HNZVC;
-/*TODO*///		SET_FLAGS8(A,t,r);
-/*TODO*///		SET_H(A,t,r);
-/*TODO*///		A = r;
-/*TODO*///	}
-/*TODO*///
+
+	/* $8B ADDA immediate ***** */
+	public static opcode adda_im = new opcode() {
+            public void handler() {            
+		int t,r;
+		t = IMMBYTE();
+		r = A() + t;
+		CLR_HNZVC();
+		SET_FLAGS8(A(),t,r);
+		SET_H(A(),t,r);
+		A(r);
+            }
+        };
+
 /*TODO*///	/* $8C CMPX (CMPY CMPS) immediate -**** */
 /*TODO*///	INLINE void cmpx_im( void )
 /*TODO*///	{
@@ -2202,15 +2210,16 @@ public class konamops {
 /*TODO*///		CLR_NZV;
 /*TODO*///		SET_NZ8(r);
 /*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $c6 LDB immediate -**0- */
-/*TODO*///	INLINE void ldb_im( void )
-/*TODO*///	{
-/*TODO*///		IMMBYTE(B);
-/*TODO*///		CLR_NZV;
-/*TODO*///		SET_NZ8(B);
-/*TODO*///	}
-/*TODO*///
+
+	/* $c6 LDB immediate -**0- */
+	public static opcode ldb_im = new opcode() {
+            public void handler() {            
+		B( IMMBYTE() );
+		CLR_NZV();
+		SET_NZ8(B());
+            }
+        };
+
 /*TODO*///	/* is this a legal instruction? */
 /*TODO*///	/* $c7 STB immediate -**0- */
 /*TODO*///	INLINE void stb_im( void )
@@ -2252,19 +2261,20 @@ public class konamops {
 /*TODO*///		CLR_NZV;
 /*TODO*///		SET_NZ8(B);
 /*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $cB ADDB immediate ***** */
-/*TODO*///	INLINE void addb_im( void )
-/*TODO*///	{
-/*TODO*///		UINT16 t,r;
-/*TODO*///		IMMBYTE(t);
-/*TODO*///		r = B + t;
-/*TODO*///		CLR_HNZVC;
-/*TODO*///		SET_FLAGS8(B,t,r);
-/*TODO*///		SET_H(B,t,r);
-/*TODO*///		B = r;
-/*TODO*///	}
-/*TODO*///
+
+	/* $cB ADDB immediate ***** */
+	public static opcode addb_im = new opcode() {
+            public void handler() {            
+		int t,r;
+		t = IMMBYTE();
+		r = B() + t;
+		CLR_HNZVC();
+		SET_FLAGS8(B(),t,r);
+		SET_H(B(),t,r);
+		B( r );
+            }
+        };
+
 /*TODO*///	/* $cC LDD immediate -**0- */
 /*TODO*///	INLINE void ldd_im( void )
 /*TODO*///	{
@@ -3736,8 +3746,9 @@ public class konamops {
 /*TODO*///		}
 /*TODO*///	}
 /*TODO*///
-/*TODO*///	INLINE void opcode2( void )
-/*TODO*///	{
+	public static opcode opcode2 = new opcode() {
+            public void handler() {
+                System.out.println("opcode2 NOT DEFINED!!!!");
 /*TODO*///		UINT8 ireg2 = ROP_ARG(PCD);
 /*TODO*///		PC++;
 /*TODO*///
@@ -4435,5 +4446,7 @@ public class konamops {
 /*TODO*///			EAD = 0;
 /*TODO*///		}
 /*TODO*///		(*konami_indexed[konami.ireg])();
+            }
+        };
     
 }
