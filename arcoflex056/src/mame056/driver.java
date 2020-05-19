@@ -289,6 +289,7 @@ import static WIP.mame056.drivers.simpsons.*;
 import static WIP.mame056.drivers._88games.*;
 import static WIP.mame056.drivers.lkage.*;
 import static WIP.mame056.drivers.amspdwy.*;
+import static WIP.mame056.drivers.vastar.*;
 
 public class driver {
 
@@ -3745,11 +3746,11 @@ public class driver {
         driver_bounty, /* (c) 1982 Orca */
         driver_espial, /* (c) 1983 Thunderbolt, Orca logo is hidden in title screen */
         driver_espiale, /* (c) 1983 Thunderbolt, Orca logo is hidden in title screen */
-        /*TODO*///	/* Vastar was made by Orca, but when it was finished, Orca had already bankrupted. */
-        /*TODO*///	/* So they sold this game as "Made by Sesame Japan" because they couldn't use */
-        /*TODO*///	/* the name "Orca" */
-        /*TODO*///	driver_vastar,	/* (c) 1983 Sesame Japan */
-        /*TODO*///	driver_vastar2,	/* (c) 1983 Sesame Japan */
+        /* Vastar was made by Orca, but when it was finished, Orca had already bankrupted. */
+        /* So they sold this game as "Made by Sesame Japan" because they couldn't use */
+        /* the name "Orca" */
+        driver_vastar,	/* (c) 1983 Sesame Japan */
+        driver_vastar2,	/* (c) 1983 Sesame Japan */
         /*TODO*////*
         /*TODO*///   other Orca games:
         /*TODO*///   82 Battle Cross                         Kit 2P
