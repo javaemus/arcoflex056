@@ -50,8 +50,8 @@ public class konamtbl {
 	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal
     };
 
-/*TODO*///static void (*konami_indexed[0x100])(void) = {
-/*TODO*///	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* 00 */
+    static opcode[] konami_indexed = {
+	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* 00 */
 /*TODO*///	leax   ,leay   ,leau   ,leas   ,illegal,illegal,illegal,illegal,
 /*TODO*///	illegal,illegal,lda_ix ,ldb_ix ,illegal,illegal,adda_ix,addb_ix,	/* 10 */
 /*TODO*///	illegal,illegal,adca_ix,adcb_ix,illegal,illegal,suba_ix,subb_ix,
@@ -77,17 +77,17 @@ public class konamtbl {
 /*TODO*///	illegal,lsrd_ix,illegal,rord_ix,illegal,asrd_ix,illegal,asld_ix,
 /*TODO*///	illegal,rold_ix,illegal,clrw_ix,illegal,negw_ix,illegal,incw_ix,	/* c0 */
 /*TODO*///	illegal,decw_ix,illegal,tstw_ix,illegal,illegal,illegal,illegal,
-/*TODO*///	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* d0 */
-/*TODO*///	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,
-/*TODO*///	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* e0 */
-/*TODO*///	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,
-/*TODO*///	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* f0 */
-/*TODO*///	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal
-/*TODO*///};
-/*TODO*///
-/*TODO*///static void (*konami_direct[0x100])(void) = {
-/*TODO*///	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* 00 */
-/*TODO*///	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,
+	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* d0 */
+	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,
+	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* e0 */
+	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,
+	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* f0 */
+	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal
+    };
+
+    static opcode[] konami_direct = {
+	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* 00 */
+	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,
 /*TODO*///	illegal,illegal,lda_di ,ldb_di ,illegal,illegal,adda_di,addb_di,	/* 10 */
 /*TODO*///	illegal,illegal,adca_di,adcb_di,illegal,illegal,suba_di,subb_di,
 /*TODO*///	illegal,illegal,sbca_di,sbcb_di,illegal,illegal,anda_di,andb_di,	/* 20 */
@@ -112,17 +112,17 @@ public class konamtbl {
 /*TODO*///	illegal,lsrd_di,illegal,rord_di,illegal,asrd_di,illegal,asld_di,
 /*TODO*///	illegal,rold_di,illegal,clrw_di,illegal,negw_di,illegal,incw_di,	/* c0 */
 /*TODO*///	illegal,decw_di,illegal,tstw_di,illegal,illegal,illegal,illegal,
-/*TODO*///	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* d0 */
-/*TODO*///	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,
-/*TODO*///	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* e0 */
-/*TODO*///	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,
-/*TODO*///	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* f0 */
-/*TODO*///	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal
-/*TODO*///};
-/*TODO*///
-/*TODO*///static void (*konami_extended[0x100])(void) = {
-/*TODO*///	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* 00 */
-/*TODO*///	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,
+	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* d0 */
+	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,
+	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* e0 */
+	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,
+	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* f0 */
+	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal
+    };
+
+    static opcode[] konami_extended = {
+	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* 00 */
+	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,
 /*TODO*///	illegal,illegal,lda_ex ,ldb_ex ,illegal,illegal,adda_ex,addb_ex,	/* 10 */
 /*TODO*///	illegal,illegal,adca_ex,adcb_ex,illegal,illegal,suba_ex,subb_ex,
 /*TODO*///	illegal,illegal,sbca_ex,sbcb_ex,illegal,illegal,anda_ex,andb_ex,	/* 20 */
@@ -147,12 +147,12 @@ public class konamtbl {
 /*TODO*///	illegal,lsrd_ex,illegal,rord_ex,illegal,asrd_ex,illegal,asld_ex,
 /*TODO*///	illegal,rold_ex,illegal,clrw_ex,illegal,negw_ex,illegal,incw_ex,	/* c0 */
 /*TODO*///	illegal,decw_ex,illegal,tstw_ex,illegal,illegal,illegal,illegal,
-/*TODO*///	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* d0 */
-/*TODO*///	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,
-/*TODO*///	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* e0 */
-/*TODO*///	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,
-/*TODO*///	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* f0 */
-/*TODO*///	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal
-/*TODO*///};
+	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* d0 */
+	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,
+	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* e0 */
+	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,
+	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* f0 */
+	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal
+    };
 
 }

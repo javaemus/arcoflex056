@@ -82,7 +82,7 @@ public class konami extends cpu_interface {
 
     @Override
     public void set_irq_callback(irqcallbacksPtr callback) {
-        konami.irq_callback = callback;
+        konami_set_irq_callback(callback);
     }
 
     @Override
@@ -759,13 +759,13 @@ public class konami extends cpu_interface {
 		}
 	}
 	
-/*TODO*///	/****************************************************************************
-/*TODO*///	 * Set IRQ vector callback
-/*TODO*///	 ****************************************************************************/
-/*TODO*///	void konami_set_irq_callback(int (*callback)(int irqline))
-/*TODO*///	{
-/*TODO*///		konami.irq_callback = callback;
-/*TODO*///	}
+	/****************************************************************************
+	 * Set IRQ vector callback
+	 ****************************************************************************/
+	public static void konami_set_irq_callback(irqcallbacksPtr callback)
+	{
+		konami.irq_callback = callback;
+	}
 /*TODO*///	#if 0
 /*TODO*///	/****************************************************************************
 /*TODO*///	 * Save CPU state

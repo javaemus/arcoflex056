@@ -288,6 +288,7 @@ import static WIP.mame056.drivers.xevious.*;
 import static WIP.mame056.drivers.simpsons.*;
 import static WIP.mame056.drivers._88games.*;
 import static WIP.mame056.drivers.lkage.*;
+import static WIP.mame056.drivers.amspdwy.*;
 
 public class driver {
 
@@ -4045,8 +4046,8 @@ public class driver {
 
         driver_mermaid,	/* (c) 1982 Rock-ola */
         driver_royalmah,	/* (c) 1982 Falcon */
-        /*TODO*///	driver_amspdwy,	/* no copyright notice, but (c) 1987 Enerdyne Technologies, Inc. */
-        /*TODO*///	driver_amspdwya,	/* no copyright notice, but (c) 1987 Enerdyne Technologies, Inc. */
+        driver_amspdwy,	/* no copyright notice, but (c) 1987 Enerdyne Technologies, Inc. */
+        driver_amspdwya,	/* no copyright notice, but (c) 1987 Enerdyne Technologies, Inc. */
         driver_dynamski,	/* (c) 1984 Taiyo */
         driver_chinhero,	/* (c) 1984 Taiyo */
         driver_shangkid,	/* (c) 1985 Taiyo + Data East license */

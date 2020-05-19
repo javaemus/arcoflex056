@@ -53,24 +53,24 @@ public class gbH
         public static void IFLAGS(int val){ gb_ram.memory[0xFF0F] = (char) (val & 0xff); }
         public static int ISWITCH(){ return  gb_ram.memory[0xFFFF]; } /* Switches to enable/disable interrupts 	 */
         public static void ISWITCH(int val){ gb_ram.memory[0xFFFF] = (char) (val & 0xff); }
-        public static int LCDCONT(){ return  gb_ram.memory[0xFF40]; } /* LCD control register						 */
+        public static int LCDCONT(){ return  gb_ram.read(0xFF40); } /* LCD control register						 */
         public static int LCDSTAT(){ return  gb_ram.memory[0xFF41]; } /* LCD status register						 */
         public static void LCDSTAT(int val){ gb_ram.memory[0xFF41] = (char) (val & 0xff); } 
         public static int SCROLLY(){ return  gb_ram.memory[0xFF42] & 0xF; } /* Starting Y position of the background 	 */
         public static void SCROLLY(int val){ gb_ram.memory[0xFF42] = (char) (val & 0xff); }
         public static int SCROLLX(){ return  gb_ram.memory[0xFF43] & 0xF; } /* Starting X position of the background 	 */
         public static void SCROLLX(int val){ gb_ram.memory[0xFF43] = (char) (val & 0xff); }
-        public static int CURLINE(){ return  gb_ram.memory[0xFF44]; } /* Current screen line being scanned 		 */
-        public static void CURLINE(int val){ gb_ram.memory[0xFF44] = (char) (val & 0xff); }
+        public static int CURLINE(){ return  gb_ram.read(0xFF44); } /* Current screen line being scanned 		 */
+        public static void CURLINE(int val){ gb_ram.write(0xFF44, (char) (val & 0xff)); }
         public static int CMPLINE(){ return  gb_ram.memory[0xFF45]; } /* Gen. int. when scan reaches this line 	 */
         public static void CMPLINE(int val){ gb_ram.memory[0xFF45] = (char) (val & 0xff); }
         public static int BGRDPAL(){ return  gb_ram.memory[0xFF47]; } /* Background palette						 */
         public static int SPR0PAL(){ return  gb_ram.memory[0xFF48]; } /* Sprite palette #0 						 */
         public static int SPR1PAL(){ return  gb_ram.memory[0xFF49]; } /* Sprite palette #1 						 */
-        public static int WNDPOSY(){ return  gb_ram.memory[0xFF4A]; } /* Window Y position 						 */
-        public static void WNDPOSY(int val){ gb_ram.memory[0xFF4A] = (char) (val & 0xff); }
-        public static int WNDPOSX(){ return  gb_ram.memory[0xFF4B]; } /* Window X position 						 */
-        public static void WNDPOSX(int val){ gb_ram.memory[0xFF4B] = (char) (val & 0xff); }
+        public static int WNDPOSY(){ return  gb_ram.read(0xFF4A); } /* Window Y position 						 */
+        public static void WNDPOSY(int val){ gb_ram.write(0xFF4A, (char) (val & 0xff)); }
+        public static int WNDPOSX(){ return  gb_ram.read(0xFF4B); } /* Window X position 						 */
+        public static void WNDPOSX(int val){ gb_ram.write(0xFF4B, (char) (val & 0xff)); }
 
         public static int OAM  = 0xFE00;
         public static int VRAM = 0x8000;
