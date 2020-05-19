@@ -425,9 +425,9 @@ public class konami extends cpu_interface {
         public static void PULUWORD(int w){ w=KONAMI_RDMEM(UD())<<8; U(U()+1); w|=KONAMI_RDMEM(UD()); U(U()+1); }
 
         public static void CLR_HNZVC(){	CC( CC() & ~(CC_H|CC_N|CC_Z|CC_V|CC_C)); }
-	public static void CLR_NZV(){ 	CC( CC() & ~(CC_N|CC_Z|CC_V)); }
+	public static void CLR_NZV(){ CC( CC() & ~(CC_N|CC_Z|CC_V)); }
 /*TODO*///	#define CLR_HNZC	CC&=~(CC_H|CC_N|CC_Z|CC_C)
-/*TODO*///	#define CLR_NZVC	CC&=~(CC_N|CC_Z|CC_V|CC_C)
+        public static void CLR_NZVC(){ CC( CC() & ~(CC_N|CC_Z|CC_V|CC_C)); }
 /*TODO*///	#define CLR_Z		CC&=~(CC_Z)
 /*TODO*///	#define CLR_NZC 	CC&=~(CC_N|CC_Z|CC_C)
 /*TODO*///	#define CLR_ZC		CC&=~(CC_Z|CC_C)

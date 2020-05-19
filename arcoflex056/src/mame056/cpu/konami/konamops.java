@@ -1219,18 +1219,19 @@ public class konamops {
 /*TODO*///	#ifdef macintosh
 /*TODO*///	#pragma mark ____8x____
 /*TODO*///	#endif
-/*TODO*///
-/*TODO*///	/* $80 SUBA immediate ?**** */
-/*TODO*///	INLINE void suba_im( void )
-/*TODO*///	{
-/*TODO*///		UINT16 t,r;
-/*TODO*///		IMMBYTE(t);
-/*TODO*///		r = A - t;
-/*TODO*///		CLR_NZVC;
-/*TODO*///		SET_FLAGS8(A,t,r);
-/*TODO*///		A = r;
-/*TODO*///	}
-/*TODO*///
+
+	/* $80 SUBA immediate ?**** */
+	public static opcode suba_im = new opcode() {
+            public void handler() {            
+		int t,r;
+		t = IMMBYTE();
+		r = A() - t;
+		CLR_NZVC();
+		SET_FLAGS8(A(),t,r);
+		A( r );
+            }
+        };
+
 /*TODO*///	/* $81 CMPA immediate ?**** */
 /*TODO*///	INLINE void cmpa_im( void )
 /*TODO*///	{
@@ -1240,18 +1241,19 @@ public class konamops {
 /*TODO*///		CLR_NZVC;
 /*TODO*///		SET_FLAGS8(A,t,r);
 /*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $82 SBCA immediate ?**** */
-/*TODO*///	INLINE void sbca_im( void )
-/*TODO*///	{
-/*TODO*///		UINT16	  t,r;
-/*TODO*///		IMMBYTE(t);
-/*TODO*///		r = A - t - (CC & CC_C);
-/*TODO*///		CLR_NZVC;
-/*TODO*///		SET_FLAGS8(A,t,r);
-/*TODO*///		A = r;
-/*TODO*///	}
-/*TODO*///
+
+	/* $82 SBCA immediate ?**** */
+	public static opcode sbca_im = new opcode() {
+            public void handler() {            
+		int	  t,r;
+		t = IMMBYTE();
+		r = A() - t - (CC() & CC_C);
+		CLR_NZVC();
+		SET_FLAGS8(A(),t,r);
+		A( r );
+            }
+        };
+
 /*TODO*///	/* $83 SUBD (CMPD CMPU) immediate -**** */
 /*TODO*///	INLINE void subd_im( void )
 /*TODO*///	{
@@ -1288,26 +1290,28 @@ public class konamops {
 /*TODO*///		CLR_NZVC;
 /*TODO*///		SET_FLAGS16(d,b.d,r);
 /*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $84 ANDA immediate -**0- */
-/*TODO*///	INLINE void anda_im( void )
-/*TODO*///	{
-/*TODO*///		UINT8 t;
-/*TODO*///		IMMBYTE(t);
-/*TODO*///		A &= t;
-/*TODO*///		CLR_NZV;
-/*TODO*///		SET_NZ8(A);
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $85 BITA immediate -**0- */
-/*TODO*///	INLINE void bita_im( void )
-/*TODO*///	{
-/*TODO*///		UINT8 t,r;
-/*TODO*///		IMMBYTE(t);
-/*TODO*///		r = A & t;
-/*TODO*///		CLR_NZV;
-/*TODO*///		SET_NZ8(r);
-/*TODO*///	}
+
+	/* $84 ANDA immediate -**0- */
+	public static opcode anda_im = new opcode() {
+            public void handler() {            
+		int t;
+		t = IMMBYTE();
+		A( A() & t );
+		CLR_NZV();
+		SET_NZ8(A());
+            }
+        };
+
+	/* $85 BITA immediate -**0- */
+	public static opcode bita_im = new opcode() {
+            public void handler() {
+		int t,r;
+		t = IMMBYTE();
+		r = A() & t;
+		CLR_NZV();
+		SET_NZ8(r);
+            }
+        };
 
 	/* $86 LDA immediate -**0- */
 	public static opcode lda_im = new opcode() {
@@ -1327,29 +1331,31 @@ public class konamops {
 /*TODO*///		IMM8;
 /*TODO*///		WM(EAD,A);
 /*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $88 EORA immediate -**0- */
-/*TODO*///	INLINE void eora_im( void )
-/*TODO*///	{
-/*TODO*///		UINT8 t;
-/*TODO*///		IMMBYTE(t);
-/*TODO*///		A ^= t;
-/*TODO*///		CLR_NZV;
-/*TODO*///		SET_NZ8(A);
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $89 ADCA immediate ***** */
-/*TODO*///	INLINE void adca_im( void )
-/*TODO*///	{
-/*TODO*///		UINT16 t,r;
-/*TODO*///		IMMBYTE(t);
-/*TODO*///		r = A + t + (CC & CC_C);
-/*TODO*///		CLR_HNZVC;
-/*TODO*///		SET_FLAGS8(A,t,r);
-/*TODO*///		SET_H(A,t,r);
-/*TODO*///		A = r;
-/*TODO*///	}
-/*TODO*///
+
+	/* $88 EORA immediate -**0- */
+	public static opcode eora_im = new opcode() {
+            public void handler() { 
+		int t;
+		t = IMMBYTE();
+		A( A() ^ t );
+		CLR_NZV();
+		SET_NZ8(A());
+            }
+        };
+
+	/* $89 ADCA immediate ***** */
+	public static opcode adca_im = new opcode() {
+            public void handler() {            
+		int t,r;
+		t = IMMBYTE();
+		r = A() + t + (CC() & CC_C);
+		CLR_HNZVC();
+		SET_FLAGS8(A(),t,r);
+		SET_H(A(),t,r);
+		A( r );
+            }
+        };
+
 /*TODO*///	/* $8A ORA immediate -**0- */
 /*TODO*///	INLINE void ora_im( void )
 /*TODO*///	{
@@ -2146,18 +2152,19 @@ public class konamops {
 /*TODO*///	#ifdef macintosh
 /*TODO*///	#pragma mark ____Cx____
 /*TODO*///	#endif
-/*TODO*///
-/*TODO*///	/* $c0 SUBB immediate ?**** */
-/*TODO*///	INLINE void subb_im( void )
-/*TODO*///	{
-/*TODO*///		UINT16	  t,r;
-/*TODO*///		IMMBYTE(t);
-/*TODO*///		r = B - t;
-/*TODO*///		CLR_NZVC;
-/*TODO*///		SET_FLAGS8(B,t,r);
-/*TODO*///		B = r;
-/*TODO*///	}
-/*TODO*///
+
+	/* $c0 SUBB immediate ?**** */
+	public static opcode subb_im = new opcode() {
+            public void handler() {            
+		int	  t,r;
+		t = IMMBYTE();
+		r = B() - t;
+		CLR_NZVC();
+		SET_FLAGS8(B(),t,r);
+		B( r );
+            }
+        };
+
 /*TODO*///	/* $c1 CMPB immediate ?**** */
 /*TODO*///	INLINE void cmpb_im( void )
 /*TODO*///	{
@@ -2166,18 +2173,19 @@ public class konamops {
 /*TODO*///		r = B - t;
 /*TODO*///		CLR_NZVC; SET_FLAGS8(B,t,r);
 /*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $c2 SBCB immediate ?**** */
-/*TODO*///	INLINE void sbcb_im( void )
-/*TODO*///	{
-/*TODO*///		UINT16	  t,r;
-/*TODO*///		IMMBYTE(t);
-/*TODO*///		r = B - t - (CC & CC_C);
-/*TODO*///		CLR_NZVC;
-/*TODO*///		SET_FLAGS8(B,t,r);
-/*TODO*///		B = r;
-/*TODO*///	}
-/*TODO*///
+
+	/* $c2 SBCB immediate ?**** */
+	public static opcode sbcb_im = new opcode() {
+            public void handler() {            
+		int	  t,r;
+		t = IMMBYTE();
+		r = B() - t - (CC() & CC_C);
+		CLR_NZVC();
+		SET_FLAGS8(B(),t,r);
+		B( r );
+            }
+        };
+
 /*TODO*///	/* $c3 ADDD immediate -**** */
 /*TODO*///	INLINE void addd_im( void )
 /*TODO*///	{
@@ -2190,26 +2198,28 @@ public class konamops {
 /*TODO*///		SET_FLAGS16(d,b.d,r);
 /*TODO*///		D = r;
 /*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $c4 ANDB immediate -**0- */
-/*TODO*///	INLINE void andb_im( void )
-/*TODO*///	{
-/*TODO*///		UINT8 t;
-/*TODO*///		IMMBYTE(t);
-/*TODO*///		B &= t;
-/*TODO*///		CLR_NZV;
-/*TODO*///		SET_NZ8(B);
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $c5 BITB immediate -**0- */
-/*TODO*///	INLINE void bitb_im( void )
-/*TODO*///	{
-/*TODO*///		UINT8 t,r;
-/*TODO*///		IMMBYTE(t);
-/*TODO*///		r = B & t;
-/*TODO*///		CLR_NZV;
-/*TODO*///		SET_NZ8(r);
-/*TODO*///	}
+
+	/* $c4 ANDB immediate -**0- */
+	public static opcode andb_im = new opcode() {
+            public void handler() {            
+		int t;
+		t = IMMBYTE();
+		B (B() & t);
+		CLR_NZV();
+		SET_NZ8(B());
+            }
+        };
+
+	/* $c5 BITB immediate -**0- */
+	public static opcode bitb_im = new opcode() {
+            public void handler() {
+		int t,r;
+		t = IMMBYTE();
+		r = B() & t;
+		CLR_NZV();
+		SET_NZ8(r);
+            }
+        };
 
 	/* $c6 LDB immediate -**0- */
 	public static opcode ldb_im = new opcode() {
@@ -2229,29 +2239,31 @@ public class konamops {
 /*TODO*///		IMM8;
 /*TODO*///		WM(EAD,B);
 /*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $c8 EORB immediate -**0- */
-/*TODO*///	INLINE void eorb_im( void )
-/*TODO*///	{
-/*TODO*///		UINT8 t;
-/*TODO*///		IMMBYTE(t);
-/*TODO*///		B ^= t;
-/*TODO*///		CLR_NZV;
-/*TODO*///		SET_NZ8(B);
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $c9 ADCB immediate ***** */
-/*TODO*///	INLINE void adcb_im( void )
-/*TODO*///	{
-/*TODO*///		UINT16 t,r;
-/*TODO*///		IMMBYTE(t);
-/*TODO*///		r = B + t + (CC & CC_C);
-/*TODO*///		CLR_HNZVC;
-/*TODO*///		SET_FLAGS8(B,t,r);
-/*TODO*///		SET_H(B,t,r);
-/*TODO*///		B = r;
-/*TODO*///	}
-/*TODO*///
+
+	/* $c8 EORB immediate -**0- */
+	public static opcode eorb_im = new opcode() {
+            public void handler() { 
+		int t;
+		t = IMMBYTE();
+		B( B() ^ t );
+		CLR_NZV();
+		SET_NZ8(B());
+            }
+        };
+
+	/* $c9 ADCB immediate ***** */
+	public static opcode adcb_im = new opcode() {
+            public void handler() {            
+		int t,r;
+		t = IMMBYTE();
+		r = B() + t + (CC() & CC_C);
+		CLR_HNZVC();
+		SET_FLAGS8(B(),t,r);
+		SET_H(B(),t,r);
+		B( r );
+            }
+        };
+
 /*TODO*///	/* $cA ORB immediate -**0- */
 /*TODO*///	INLINE void orb_im( void )
 /*TODO*///	{

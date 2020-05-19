@@ -19,9 +19,9 @@ public class konamtbl {
 	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* 00 */
 	opcode2,opcode2,opcode2,opcode2,pshs   ,pshu   ,puls   ,pulu   ,
 	lda_im ,ldb_im ,opcode2,opcode2,adda_im,addb_im,opcode2,opcode2,	/* 10 */
-/*TODO*///	adca_im,adcb_im,opcode2,opcode2,suba_im,subb_im,opcode2,opcode2,
-/*TODO*///	sbca_im,sbcb_im,opcode2,opcode2,anda_im,andb_im,opcode2,opcode2,	/* 20 */
-/*TODO*///	bita_im,bitb_im,opcode2,opcode2,eora_im,eorb_im,opcode2,opcode2,
+	adca_im,adcb_im,opcode2,opcode2,suba_im,subb_im,opcode2,opcode2,
+	sbca_im,sbcb_im,opcode2,opcode2,anda_im,andb_im,opcode2,opcode2,	/* 20 */
+	bita_im,bitb_im,opcode2,opcode2,eora_im,eorb_im,opcode2,opcode2,
 /*TODO*///	ora_im ,orb_im ,opcode2,opcode2,cmpa_im,cmpb_im,opcode2,opcode2,	/* 30 */
 /*TODO*///	setline_im,opcode2,opcode2,opcode2,andcc,orcc  ,exg    ,tfr    ,
 /*TODO*///	ldd_im ,opcode2,ldx_im ,opcode2,ldy_im ,opcode2,ldu_im ,opcode2,	/* 40 */
