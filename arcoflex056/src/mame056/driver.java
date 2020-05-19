@@ -290,6 +290,7 @@ import static WIP.mame056.drivers._88games.*;
 import static WIP.mame056.drivers.lkage.*;
 import static WIP.mame056.drivers.amspdwy.*;
 import static WIP.mame056.drivers.vastar.*;
+import static WIP.mame056.drivers.spdodgeb.*;
 
 public class driver {
 
@@ -3424,8 +3425,8 @@ public class driver {
         driver_ddragon,	/* TA-0021 (c) 1987 */
         driver_ddragonu,	/* TA-0021 (c) 1987 Taito America */
         driver_ddragonb,	/* bootleg */
-        /*TODO*///	driver_spdodgeb,	/* TA-0022 (c) 1987 */
-        /*TODO*///	driver_nkdodgeb,	/* TA-0022 (c) 1987 (Japan) */
+        driver_spdodgeb,	/* TA-0022 (c) 1987 */
+        driver_nkdodgeb,	/* TA-0022 (c) 1987 (Japan) */
         driver_chinagat,	/* TA-0023 (c) 1988 Taito + Romstar license (US) */
         driver_saiyugou,	/* TA-0023 (c) 1988 (Japan) */
         driver_saiyugb1,	/* bootleg */
