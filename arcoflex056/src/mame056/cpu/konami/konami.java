@@ -333,7 +333,9 @@ public class konami extends cpu_interface {
 	
         public static int ea;         /* effective address */
         public static int EA(){ return	ea & 0xFF; }
+        public static void EA(int val){ ea |= (val & 0xFF); }
         public static int EAD(){ return ea; }
+        public static void EAD(int val){ ea = val; }
 
 	public static int KONAMI_CWAI		= 8;	/* set when CWAI is waiting for an interrupt */
 	public static int KONAMI_SYNC		= 16;	/* set when SYNC is waiting for an interrupt */
@@ -433,9 +435,9 @@ public class konami extends cpu_interface {
 
         public static void CLR_HNZVC(){	CC( CC() & ~(CC_H|CC_N|CC_Z|CC_V|CC_C)); }
 	public static void CLR_NZV(){ CC( CC() & ~(CC_N|CC_Z|CC_V)); }
-/*TODO*///	#define CLR_HNZC	CC&=~(CC_H|CC_N|CC_Z|CC_C)
+        public static void CLR_HNZC(){ CC( CC() & ~(CC_H|CC_N|CC_Z|CC_C)); }
         public static void CLR_NZVC(){ CC( CC() & ~(CC_N|CC_Z|CC_V|CC_C)); }
-/*TODO*///	#define CLR_Z		CC&=~(CC_Z)
+        public static void CLR_Z(){ CC(CC() & ~(CC_Z)); }
         public static void CLR_NZC(){ CC( CC() & ~(CC_N|CC_Z|CC_C) ); }
         public static void CLR_ZC(){ CC( CC() & ~(CC_Z|CC_C)); }
 
@@ -501,7 +503,7 @@ public class konami extends cpu_interface {
         public static void SET_FLAGS16(int a, int b, int r){ SET_N16(r);SET_Z16(r);SET_V16(a,b,r);SET_C16(r); }
 
 /*TODO*///	/* macros for addressing modes (postbytes have their own code) */
-/*TODO*///	#define DIRECT	EAD = DPD; IMMBYTE(ea.b.l)
+        public static void DIRECT(){ EAD( DPD() ); ea |= IMMBYTE()&0xFF; }
 /*TODO*///	#define IMM8	EAD = PCD; PC++
 /*TODO*///	#define IMM16	EAD = PCD; PC+=2
 /*TODO*///	#define EXTENDED IMMWORD(ea)
@@ -520,7 +522,7 @@ public class konami extends cpu_interface {
 /*TODO*///	
 /*TODO*///	/* macros for convenience */
 /*TODO*///	#define DIRBYTE(b) DIRECT; b=RM(EAD)
-/*TODO*///	#define DIRWORD(w) DIRECT; w.d=RM16(EAD)
+        public static int DIRWORD(){ int w=0; DIRECT(); w=RM16(EAD()); return w; }
 /*TODO*///	#define EXTBYTE(b) EXTENDED; b=RM(EAD)
 /*TODO*///	#define EXTWORD(w) EXTENDED; w.d=RM16(EAD)
 	

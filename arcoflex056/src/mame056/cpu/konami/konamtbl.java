@@ -52,31 +52,31 @@ public class konamtbl {
 
     static opcode[] konami_indexed = {
 	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* 00 */
-/*TODO*///	leax   ,leay   ,leau   ,leas   ,illegal,illegal,illegal,illegal,
-/*TODO*///	illegal,illegal,lda_ix ,ldb_ix ,illegal,illegal,adda_ix,addb_ix,	/* 10 */
-/*TODO*///	illegal,illegal,adca_ix,adcb_ix,illegal,illegal,suba_ix,subb_ix,
-/*TODO*///	illegal,illegal,sbca_ix,sbcb_ix,illegal,illegal,anda_ix,andb_ix,	/* 20 */
-/*TODO*///	illegal,illegal,bita_ix,bitb_ix,illegal,illegal,eora_ix,eorb_ix,
-/*TODO*///	illegal,illegal,ora_ix ,orb_ix ,illegal,illegal,cmpa_ix,cmpb_ix,	/* 30 */
-/*TODO*///	illegal,setline_ix,sta_ix,stb_ix,illegal,illegal,illegal,illegal,
-/*TODO*///	illegal,ldd_ix ,illegal,ldx_ix ,illegal,ldy_ix ,illegal,ldu_ix ,	/* 40 */
-/*TODO*///	illegal,lds_ix ,illegal,cmpd_ix,illegal,cmpx_ix,illegal,cmpy_ix,
-/*TODO*///	illegal,cmpu_ix,illegal,cmps_ix,illegal,addd_ix,illegal,subd_ix,	/* 50 */
-/*TODO*///	std_ix ,stx_ix ,sty_ix ,stu_ix ,sts_ix ,illegal,illegal,illegal,
-/*TODO*///	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* 60 */
-/*TODO*///	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,
-/*TODO*///	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* 70 */
-/*TODO*///	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,
-/*TODO*///	illegal,illegal,clr_ix ,illegal,illegal,com_ix ,illegal,illegal,	/* 80 */
-/*TODO*///	neg_ix ,illegal,illegal,inc_ix ,illegal,illegal,dec_ix ,illegal,
-/*TODO*///	illegal,illegal,tst_ix ,illegal,illegal,lsr_ix ,illegal,illegal,	/* 90 */
-/*TODO*///	ror_ix ,illegal,illegal,asr_ix ,illegal,illegal,asl_ix ,illegal,
-/*TODO*///	illegal,illegal,rol_ix ,lsrw_ix,rorw_ix,asrw_ix,aslw_ix,rolw_ix,	/* a0 */
-/*TODO*///	jmp_ix ,jsr_ix ,illegal,illegal,illegal,illegal,illegal,illegal,
-/*TODO*///	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* b0 */
-/*TODO*///	illegal,lsrd_ix,illegal,rord_ix,illegal,asrd_ix,illegal,asld_ix,
-/*TODO*///	illegal,rold_ix,illegal,clrw_ix,illegal,negw_ix,illegal,incw_ix,	/* c0 */
-/*TODO*///	illegal,decw_ix,illegal,tstw_ix,illegal,illegal,illegal,illegal,
+	leax   ,leay   ,leau   ,leas   ,illegal,illegal,illegal,illegal,
+	illegal,illegal,lda_ix ,ldb_ix ,illegal,illegal,adda_ix,addb_ix,	/* 10 */
+	illegal,illegal,adca_ix,adcb_ix,illegal,illegal,suba_ix,subb_ix,
+	illegal,illegal,sbca_ix,sbcb_ix,illegal,illegal,anda_ix,andb_ix,	/* 20 */
+	illegal,illegal,bita_ix,bitb_ix,illegal,illegal,eora_ix,eorb_ix,
+	illegal,illegal,ora_ix ,orb_ix ,illegal,illegal,cmpa_ix,cmpb_ix,	/* 30 */
+	illegal,setline_ix,sta_ix,stb_ix,illegal,illegal,illegal,illegal,
+	illegal,ldd_ix ,illegal,ldx_ix ,illegal,ldy_ix ,illegal,ldu_ix ,	/* 40 */
+	illegal,lds_ix ,illegal,cmpd_ix,illegal,cmpx_ix,illegal,cmpy_ix,
+	illegal,cmpu_ix,illegal,cmps_ix,illegal,addd_ix,illegal,subd_ix,	/* 50 */
+	std_ix ,stx_ix ,sty_ix ,stu_ix ,sts_ix ,illegal,illegal,illegal,
+	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* 60 */
+	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,
+	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* 70 */
+	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,
+	illegal,illegal,clr_ix ,illegal,illegal,com_ix ,illegal,illegal,	/* 80 */
+	neg_ix ,illegal,illegal,inc_ix ,illegal,illegal,dec_ix ,illegal,
+	illegal,illegal,tst_ix ,illegal,illegal,lsr_ix ,illegal,illegal,	/* 90 */
+	ror_ix ,illegal,illegal,asr_ix ,illegal,illegal,asl_ix ,illegal,
+	illegal,illegal,rol_ix ,lsrw_ix,rorw_ix,asrw_ix,aslw_ix,rolw_ix,	/* a0 */
+	jmp_ix ,jsr_ix ,illegal,illegal,illegal,illegal,illegal,illegal,
+	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* b0 */
+	illegal,lsrd_ix,illegal,rord_ix,illegal,asrd_ix,illegal,asld_ix,
+	illegal,rold_ix,illegal,clrw_ix,illegal,negw_ix,illegal,incw_ix,	/* c0 */
+	illegal,decw_ix,illegal,tstw_ix,illegal,illegal,illegal,illegal,
 	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* d0 */
 	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,
 	illegal,illegal,illegal,illegal,illegal,illegal,illegal,illegal,	/* e0 */
