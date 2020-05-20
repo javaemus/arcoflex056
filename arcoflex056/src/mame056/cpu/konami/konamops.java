@@ -4604,7 +4604,7 @@ public class konamops {
 			logerror("KONAMI: Unknown/Invalid postbyte at PC = %04x\n", PC() -1 );
 			EAD( 0 );
 		}
-                System.out.println("konami_indexed NOT IMPLEMENTED!!!!");
+                
 		(konami_indexed[konami.ireg]).handler();
             }
         };

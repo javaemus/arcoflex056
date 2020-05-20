@@ -78,6 +78,7 @@ public class konami extends cpu_interface {
 
     @Override
     public void set_irq_line(int irqline, int linestate) {
+        System.out.println("set_irq_line: "+irqline+", "+linestate);
         konami_set_irq_line(irqline, linestate);
     }
 
@@ -183,19 +184,16 @@ public class konami extends cpu_interface {
         cpu_num = CPU_KONAMI;
         num_irqs = 2;
         default_vector = 0;
-        overclock = 1.0;
-        //no_int = KONAMI_INT_NONE;
-        irq_int = IRQ_LINE_NMI;
-        //nmi_int = KONAMI_INT_NMI;
+       
+        overclock = 1.00;
+        irq_int = KONAMI_IRQ_LINE;
+        databus_width = 8;
+        pgm_memory_base = 0;
         address_shift = 0;
         address_bits = 16;
-        databus_width = 8;
         endianess = CPU_IS_BE;
         align_unit = 1;
         max_inst_len = 4;
-        //abits1 = ABITS1_16;
-        //abits2 = ABITS2_16;
-        //abitsmin = ABITS_MIN_16;
 
         icount = konami_ICount;
         konami_ICount[0] = 50000;
