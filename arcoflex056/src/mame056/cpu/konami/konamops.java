@@ -172,21 +172,19 @@ public class konamops {
 /*TODO*///		CLR_NZVC;
 /*TODO*///		SEZ;
 /*TODO*///	}
-/*TODO*///
-/*TODO*///	#ifdef macintosh
-/*TODO*///	#pragma mark ____1x____
-/*TODO*///	#endif
-/*TODO*///
-/*TODO*///	/* $10 FLAG */
-/*TODO*///
-/*TODO*///	/* $11 FLAG */
-/*TODO*///
-/*TODO*///	/* $12 NOP inherent ----- */
-/*TODO*///	INLINE void nop( void )
-/*TODO*///	{
-/*TODO*///		;
-/*TODO*///	}
-/*TODO*///
+
+	
+	/* $10 FLAG */
+
+	/* $11 FLAG */
+
+	/* $12 NOP inherent ----- */
+	public static opcode nop = new opcode() {
+            public void handler() {
+                ;
+            }
+        };
+	
 /*TODO*///	/* $13 SYNC inherent ----- */
 /*TODO*///	INLINE void sync( void )
 /*TODO*///	{
@@ -200,49 +198,52 @@ public class konamops {
 /*TODO*///		if( (konami.int_state & KONAMI_SYNC) && konami_ICount > 0 )
 /*TODO*///			konami_ICount = 0;
 /*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $14 ILLEGAL */
-/*TODO*///
-/*TODO*///	/* $15 ILLEGAL */
-/*TODO*///
-/*TODO*///	/* $16 LBRA relative ----- */
-/*TODO*///	INLINE void lbra( void )
-/*TODO*///	{
-/*TODO*///		IMMWORD(ea);
-/*TODO*///		PC += EA;
-/*TODO*///		change_pc16(PCD);
-/*TODO*///
-/*TODO*///		/* EHC 980508 speed up busy loop */
-/*TODO*///		if( EA == 0xfffd && konami_ICount > 0 )
-/*TODO*///			konami_ICount = 0;
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $17 LBSR relative ----- */
-/*TODO*///	INLINE void lbsr( void )
-/*TODO*///	{
-/*TODO*///		IMMWORD(ea);
-/*TODO*///		PUSHWORD(pPC);
-/*TODO*///		PC += EA;
-/*TODO*///		change_pc16(PCD);
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $18 ILLEGAL */
-/*TODO*///
+
+	/* $14 ILLEGAL */
+
+	/* $15 ILLEGAL */
+
+	/* $16 LBRA relative ----- */
+	public static opcode lbra = new opcode() {
+            public void handler() {
+		ea = IMMWORD();
+		PC( PC() + EA() );
+		change_pc16(PCD());
+
+		/* EHC 980508 speed up busy loop */
+		if( EA() == 0xfffd && konami_ICount[0] > 0 )
+			konami_ICount[0] = 0;
+            }
+        };
+
+	/* $17 LBSR relative ----- */
+	public static opcode lbsr = new opcode() {
+            public void handler() {
+		ea = IMMWORD();
+		PUSHWORD(pPC());
+		PC( PC() + EA() );
+		change_pc16(PCD());
+            }
+        };
+
+	/* $18 ILLEGAL */
+
 /*TODO*///	#if 1
-/*TODO*///	/* $19 DAA inherent (A) -**0* */
-/*TODO*///	INLINE void daa( void )
-/*TODO*///	{
-/*TODO*///		UINT8 msn, lsn;
-/*TODO*///		UINT16 t, cf = 0;
-/*TODO*///		msn = A & 0xf0; lsn = A & 0x0f;
-/*TODO*///		if( lsn>0x09 || CC & CC_H) cf |= 0x06;
-/*TODO*///		if( msn>0x80 && lsn>0x09 ) cf |= 0x60;
-/*TODO*///		if( msn>0x90 || CC & CC_C) cf |= 0x60;
-/*TODO*///		t = cf + A;
-/*TODO*///		CLR_NZV; /* keep carry from previous operation */
-/*TODO*///		SET_NZ8((UINT8)t); SET_C8(t);
-/*TODO*///		A = t;
-/*TODO*///	}
+	/* $19 DAA inherent (A) -**0* */
+	public static opcode daa = new opcode() {
+            public void handler() {
+		int msn, lsn;
+		int t, cf = 0;
+		msn = A() & 0xf0; lsn = A() & 0x0f;
+		if( lsn>0x09 || (CC() & CC_H)!=0) cf |= 0x06;
+		if( msn>0x80 && lsn>0x09 ) cf |= 0x60;
+		if( msn>0x90 || (CC() & CC_C)!=0) cf |= 0x60;
+		t = cf + A();
+		CLR_NZV(); /* keep carry from previous operation */
+		SET_NZ8(t&0xFF); SET_C8(t);
+		A( t );
+            }
+        };
 /*TODO*///	#else
 /*TODO*///	/* $19 DAA inherent (A) -**0* */
 /*TODO*///	INLINE void daa( void )
@@ -257,265 +258,295 @@ public class konamops {
 /*TODO*///		A = t;
 /*TODO*///	}
 /*TODO*///	#endif
-/*TODO*///
-/*TODO*///	/* $1A ORCC immediate ##### */
-/*TODO*///	INLINE void orcc( void )
-/*TODO*///	{
-/*TODO*///		UINT8 t;
-/*TODO*///		IMMBYTE(t);
-/*TODO*///		CC |= t;
-/*TODO*///		CHECK_IRQ_LINES;
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $1B ILLEGAL */
-/*TODO*///
-/*TODO*///	/* $1C ANDCC immediate ##### */
-/*TODO*///	INLINE void andcc( void )
-/*TODO*///	{
-/*TODO*///		UINT8 t;
-/*TODO*///		IMMBYTE(t);
-/*TODO*///		CC &= t;
-/*TODO*///		CHECK_IRQ_LINES;
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $1D SEX inherent -**0- */
-/*TODO*///	INLINE void sex( void )
-/*TODO*///	{
-/*TODO*///		UINT16 t;
-/*TODO*///		t = SIGNED(B);
-/*TODO*///		D = t;
-/*TODO*///		CLR_NZV;
-/*TODO*///		SET_NZ16(t);
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $1E EXG inherent ----- */
-/*TODO*///	INLINE void exg( void )
-/*TODO*///	{
-/*TODO*///		UINT16 t1 = 0, t2 = 0;
-/*TODO*///		UINT8 tb;
-/*TODO*///
-/*TODO*///		IMMBYTE(tb);
-/*TODO*///
-/*TODO*///		GETREG( t1, tb >> 4 );
-/*TODO*///		GETREG( t2, tb & 0x0f );
-/*TODO*///
-/*TODO*///		SETREG( t2, tb >> 4 );
-/*TODO*///		SETREG( t1, tb & 0x0f );
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $1F TFR inherent ----- */
-/*TODO*///	INLINE void tfr( void )
-/*TODO*///	{
-/*TODO*///		UINT8 tb;
-/*TODO*///		UINT16 t = 0;
-/*TODO*///
-/*TODO*///		IMMBYTE(tb);
-/*TODO*///
-/*TODO*///		GETREG( t, tb & 0x0f );
-/*TODO*///		SETREG( t, ( tb >> 4 ) & 0x07 );
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	#ifdef macintosh
-/*TODO*///	#pragma mark ____2x____
-/*TODO*///	#endif
-/*TODO*///
-/*TODO*///	/* $20 BRA relative ----- */
-/*TODO*///	INLINE void bra( void )
-/*TODO*///	{
-/*TODO*///		UINT8 t;
-/*TODO*///		IMMBYTE(t);
-/*TODO*///		PC += SIGNED(t);
-/*TODO*///		change_pc16(PCD);
-/*TODO*///		/* JB 970823 - speed up busy loops */
-/*TODO*///		if( t == 0xfe && konami_ICount > 0 )
-/*TODO*///			konami_ICount = 0;
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $21 BRN relative ----- */
-/*TODO*///	INLINE void brn( void )
-/*TODO*///	{
-/*TODO*///		UINT8 t;
-/*TODO*///		IMMBYTE(t);
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $1021 LBRN relative ----- */
-/*TODO*///	INLINE void lbrn( void )
-/*TODO*///	{
-/*TODO*///		IMMWORD(ea);
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $22 BHI relative ----- */
-/*TODO*///	INLINE void bhi( void )
-/*TODO*///	{
-/*TODO*///		BRANCH( !(CC & (CC_Z|CC_C)) );
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $1022 LBHI relative ----- */
-/*TODO*///	INLINE void lbhi( void )
-/*TODO*///	{
-/*TODO*///		LBRANCH( !(CC & (CC_Z|CC_C)) );
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $23 BLS relative ----- */
-/*TODO*///	INLINE void bls( void )
-/*TODO*///	{
-/*TODO*///		BRANCH( (CC & (CC_Z|CC_C)) );
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $1023 LBLS relative ----- */
-/*TODO*///	INLINE void lbls( void )
-/*TODO*///	{
-/*TODO*///		LBRANCH( (CC&(CC_Z|CC_C)) );
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $24 BCC relative ----- */
-/*TODO*///	INLINE void bcc( void )
-/*TODO*///	{
-/*TODO*///		BRANCH( !(CC&CC_C) );
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $1024 LBCC relative ----- */
-/*TODO*///	INLINE void lbcc( void )
-/*TODO*///	{
-/*TODO*///		LBRANCH( !(CC&CC_C) );
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $25 BCS relative ----- */
-/*TODO*///	INLINE void bcs( void )
-/*TODO*///	{
-/*TODO*///		BRANCH( (CC&CC_C) );
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $1025 LBCS relative ----- */
-/*TODO*///	INLINE void lbcs( void )
-/*TODO*///	{
-/*TODO*///		LBRANCH( (CC&CC_C) );
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $26 BNE relative ----- */
-/*TODO*///	INLINE void bne( void )
-/*TODO*///	{
-/*TODO*///		BRANCH( !(CC&CC_Z) );
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $1026 LBNE relative ----- */
-/*TODO*///	INLINE void lbne( void )
-/*TODO*///	{
-/*TODO*///		LBRANCH( !(CC&CC_Z) );
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $27 BEQ relative ----- */
-/*TODO*///	INLINE void beq( void )
-/*TODO*///	{
-/*TODO*///		BRANCH( (CC&CC_Z) );
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $1027 LBEQ relative ----- */
-/*TODO*///	INLINE void lbeq( void )
-/*TODO*///	{
-/*TODO*///		LBRANCH( (CC&CC_Z) );
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $28 BVC relative ----- */
-/*TODO*///	INLINE void bvc( void )
-/*TODO*///	{
-/*TODO*///		BRANCH( !(CC&CC_V) );
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $1028 LBVC relative ----- */
-/*TODO*///	INLINE void lbvc( void )
-/*TODO*///	{
-/*TODO*///		LBRANCH( !(CC&CC_V) );
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $29 BVS relative ----- */
-/*TODO*///	INLINE void bvs( void )
-/*TODO*///	{
-/*TODO*///		BRANCH( (CC&CC_V) );
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $1029 LBVS relative ----- */
-/*TODO*///	INLINE void lbvs( void )
-/*TODO*///	{
-/*TODO*///		LBRANCH( (CC&CC_V) );
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $2A BPL relative ----- */
-/*TODO*///	INLINE void bpl( void )
-/*TODO*///	{
-/*TODO*///		BRANCH( !(CC&CC_N) );
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $102A LBPL relative ----- */
-/*TODO*///	INLINE void lbpl( void )
-/*TODO*///	{
-/*TODO*///		LBRANCH( !(CC&CC_N) );
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $2B BMI relative ----- */
-/*TODO*///	INLINE void bmi( void )
-/*TODO*///	{
-/*TODO*///		BRANCH( (CC&CC_N) );
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $102B LBMI relative ----- */
-/*TODO*///	INLINE void lbmi( void )
-/*TODO*///	{
-/*TODO*///		LBRANCH( (CC&CC_N) );
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $2C BGE relative ----- */
-/*TODO*///	INLINE void bge( void )
-/*TODO*///	{
-/*TODO*///		BRANCH( !NXORV );
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $102C LBGE relative ----- */
-/*TODO*///	INLINE void lbge( void )
-/*TODO*///	{
-/*TODO*///		LBRANCH( !NXORV );
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $2D BLT relative ----- */
-/*TODO*///	INLINE void blt( void )
-/*TODO*///	{
-/*TODO*///		BRANCH( NXORV );
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $102D LBLT relative ----- */
-/*TODO*///	INLINE void lblt( void )
-/*TODO*///	{
-/*TODO*///		LBRANCH( NXORV );
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $2E BGT relative ----- */
-/*TODO*///	INLINE void bgt( void )
-/*TODO*///	{
-/*TODO*///		BRANCH( !(NXORV || (CC&CC_Z)) );
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $102E LBGT relative ----- */
-/*TODO*///	INLINE void lbgt( void )
-/*TODO*///	{
-/*TODO*///		LBRANCH( !(NXORV || (CC&CC_Z)) );
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $2F BLE relative ----- */
-/*TODO*///	INLINE void ble( void )
-/*TODO*///	{
-/*TODO*///		BRANCH( (NXORV || (CC&CC_Z)) );
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $102F LBLE relative ----- */
-/*TODO*///	INLINE void lble( void )
-/*TODO*///	{
-/*TODO*///		LBRANCH( (NXORV || (CC&CC_Z)) );
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	#ifdef macintosh
-/*TODO*///	#pragma mark ____3x____
-/*TODO*///	#endif
-/*TODO*///
+
+	/* $1A ORCC immediate ##### */
+	public static opcode orcc = new opcode() {
+            public void handler() {
+		int t;
+		t = IMMBYTE();
+		CC( CC() | t );
+		CHECK_IRQ_LINES();
+            }
+        };
+
+	/* $1B ILLEGAL */
+
+	/* $1C ANDCC immediate ##### */
+	public static opcode andcc = new opcode() {
+            public void handler() {            
+		int t;
+		t = IMMBYTE();
+		CC( CC() & t );
+		CHECK_IRQ_LINES();
+            }
+        };
+
+	/* $1D SEX inherent -**0- */
+	public static opcode sex = new opcode() {
+            public void handler() {
+		int t;
+		t = SIGNED(B());
+		D( t );
+		CLR_NZV();
+		SET_NZ16(t);
+            }
+        };
+
+	/* $1E EXG inherent ----- */
+	public static opcode exg = new opcode() {
+            public void handler() {
+		int t1 = 0, t2 = 0;
+		int tb;
+
+		tb = IMMBYTE();
+
+		t1 = GETREG( tb >> 4 );
+		t2 = GETREG( tb & 0x0f );
+
+		SETREG( t2, tb >> 4 );
+		SETREG( t1, tb & 0x0f );
+            }
+        };
+
+	/* $1F TFR inherent ----- */
+	public static opcode tfr = new opcode() {
+            public void handler() {
+		int tb;
+		int t = 0;
+
+		tb = IMMBYTE();
+
+		t = GETREG( tb & 0x0f );
+		SETREG( t, ( tb >> 4 ) & 0x07 );
+            }
+        };
+
+
+	/* $20 BRA relative ----- */
+	public static opcode bra = new opcode() {
+            public void handler() {
+		int t;
+		t = IMMBYTE();
+		PC( PC() + SIGNED(t) );
+		change_pc16(PCD());
+		/* JB 970823 - speed up busy loops */
+		if( t == 0xfe && konami_ICount[0] > 0 )
+			konami_ICount[0] = 0;
+            }
+        };
+
+	/* $21 BRN relative ----- */
+	public static opcode brn = new opcode() {
+            public void handler() {
+		int t;
+		t = IMMBYTE();
+            }
+        };
+
+	/* $1021 LBRN relative ----- */
+	public static opcode lbrn = new opcode() {
+            public void handler() {
+		ea = IMMWORD();
+            }
+        };
+
+	/* $22 BHI relative ----- */
+	public static opcode bhi = new opcode() {
+            public void handler() {            
+		BRANCH( (CC() & (CC_Z|CC_C)) == 0 );
+            }
+        };
+
+	/* $1022 LBHI relative ----- */
+	public static opcode lbhi = new opcode() {
+            public void handler() {
+		LBRANCH( (CC() & (CC_Z|CC_C)) == 0 );
+            }
+        };
+
+	/* $23 BLS relative ----- */
+	public static opcode bls = new opcode() {
+            public void handler() {
+		BRANCH( (CC() & (CC_Z|CC_C)) != 0 );
+            }
+        };
+
+	/* $1023 LBLS relative ----- */
+	public static opcode lbls = new opcode() {
+            public void handler() {
+		LBRANCH( (CC()&(CC_Z|CC_C)) != 0 );
+            }
+        };
+
+	/* $24 BCC relative ----- */
+	public static opcode bcc = new opcode() {
+            public void handler() {
+		BRANCH( (CC()&CC_C) == 0 );
+            }
+        };
+
+	/* $1024 LBCC relative ----- */
+	public static opcode lbcc = new opcode() {
+            public void handler() {
+		LBRANCH( (CC()&CC_C) == 0 );
+            }
+        };
+
+	/* $25 BCS relative ----- */
+	public static opcode bcs = new opcode() {
+            public void handler() {
+		BRANCH( (CC()&CC_C) != 0 );
+            }
+        };
+
+	/* $1025 LBCS relative ----- */
+	public static opcode lbcs = new opcode() {
+            public void handler() {
+		LBRANCH( (CC()&CC_C) != 0 );
+            }
+        };
+
+	/* $26 BNE relative ----- */
+	public static opcode bne = new opcode() {
+            public void handler() {
+		BRANCH( (CC()&CC_Z) == 0 );
+            }
+        };
+
+	/* $1026 LBNE relative ----- */
+	public static opcode lbne = new opcode() {
+            public void handler() {
+		LBRANCH( (CC()&CC_Z) == 0 );
+            }
+        };
+
+	/* $27 BEQ relative ----- */
+	public static opcode beq = new opcode() {
+            public void handler() {
+		BRANCH( (CC()&CC_Z) != 0 );
+            }
+        };
+
+	/* $1027 LBEQ relative ----- */
+	public static opcode lbeq = new opcode() {
+            public void handler() {
+		LBRANCH( (CC()&CC_Z) != 0 );
+            }
+        };
+
+	/* $28 BVC relative ----- */
+	public static opcode bvc = new opcode() {
+            public void handler() {
+		BRANCH( (CC()&CC_V) == 0 );
+            }
+        };
+
+	/* $1028 LBVC relative ----- */
+	public static opcode lbvc = new opcode() {
+            public void handler() {
+		LBRANCH( (CC()&CC_V) == 0 );
+            }
+        };
+
+	/* $29 BVS relative ----- */
+	public static opcode bvs = new opcode() {
+            public void handler() {
+		BRANCH( (CC()&CC_V)!=0 );
+            }
+        };
+
+	/* $1029 LBVS relative ----- */
+	public static opcode lbvs = new opcode() {
+            public void handler() {
+		LBRANCH( (CC()&CC_V) != 0 );
+            }
+        };
+
+	/* $2A BPL relative ----- */
+	public static opcode bpl = new opcode() {
+            public void handler() {
+		BRANCH( (CC()&CC_N) == 0 );
+            }
+        };
+
+	/* $102A LBPL relative ----- */
+	public static opcode lbpl = new opcode() {
+            public void handler() {
+		LBRANCH( (CC()&CC_N) == 0 );
+            }
+        };
+
+	/* $2B BMI relative ----- */
+	public static opcode bmi = new opcode() {
+            public void handler() {
+		BRANCH( (CC()&CC_N) != 0 );
+            }
+        };
+
+	/* $102B LBMI relative ----- */
+	public static opcode lbmi = new opcode() {
+            public void handler() {
+		LBRANCH( (CC()&CC_N) != 0 );
+            }
+        };
+
+	/* $2C BGE relative ----- */
+	public static opcode bge = new opcode() {
+            public void handler() {
+		BRANCH( NXORV() == 0 );
+            }
+        };
+
+	/* $102C LBGE relative ----- */
+	public static opcode lbge = new opcode() {
+            public void handler() {
+		LBRANCH( NXORV()==0 );
+            }
+        };
+
+	/* $2D BLT relative ----- */
+	public static opcode blt = new opcode() {
+            public void handler() {
+		BRANCH( NXORV()!=0 );
+            }
+        };
+
+	/* $102D LBLT relative ----- */
+	public static opcode lblt = new opcode() {
+            public void handler() {
+		LBRANCH( NXORV() != 0 );
+            }
+        };
+
+	/* $2E BGT relative ----- */
+	public static opcode bgt = new opcode() {
+            public void handler() {
+		BRANCH( (NXORV()!=0 || (CC()&CC_Z)!=0) == false);
+            }
+        };
+
+	/* $102E LBGT relative ----- */
+	public static opcode lbgt = new opcode() {
+            public void handler() {
+		LBRANCH( !(NXORV()!=0 || (CC()&CC_Z)!=0) );
+            }
+        };
+
+	/* $2F BLE relative ----- */
+	public static opcode ble = new opcode() {
+            public void handler() {
+		BRANCH( (NXORV()!=0 || (CC()&CC_Z)!=0) );
+            }
+        };
+
+	/* $102F LBLE relative ----- */
+	public static opcode lble = new opcode() {
+            public void handler() {
+		LBRANCH( (NXORV()!=0 || (CC()&CC_Z)!=0) );
+            }
+        };
+
+
 /*TODO*///	/* $30 LEAX indexed --*-- */
 /*TODO*///	INLINE void leax( void )
 /*TODO*///	{
@@ -616,40 +647,43 @@ public class konamops {
             }
         };
 
-/*TODO*///	/* $38 ILLEGAL */
-/*TODO*///
-/*TODO*///	/* $39 RTS inherent ----- */
-/*TODO*///	INLINE void rts( void )
-/*TODO*///	{
-/*TODO*///		PULLWORD(PCD);
-/*TODO*///		change_pc16(PCD);
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $3A ABX inherent ----- */
-/*TODO*///	INLINE void abx( void )
-/*TODO*///	{
-/*TODO*///		X += B;
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $3B RTI inherent ##### */
-/*TODO*///	INLINE void rti( void )
-/*TODO*///	{
-/*TODO*///		PULLBYTE(CC);
-/*TODO*///		if( CC & CC_E ) /* entire state saved? */
-/*TODO*///		{
-/*TODO*///			konami_ICount -= 9;
-/*TODO*///			PULLBYTE(A);
-/*TODO*///			PULLBYTE(B);
-/*TODO*///			PULLBYTE(DP);
-/*TODO*///			PULLWORD(XD);
-/*TODO*///			PULLWORD(YD);
-/*TODO*///			PULLWORD(UD);
-/*TODO*///		}
-/*TODO*///		PULLWORD(PCD);
-/*TODO*///		change_pc16(PCD);
-/*TODO*///		CHECK_IRQ_LINES;
-/*TODO*///	}
-/*TODO*///
+	/* $38 ILLEGAL */
+
+	/* $39 RTS inherent ----- */
+	public static opcode rts = new opcode() {
+            public void handler() {
+		PULLWORD(PCD());
+		change_pc16(PCD());
+            }
+        };
+
+	/* $3A ABX inherent ----- */
+	public static opcode abx = new opcode() {
+            public void handler() {
+		X( X() + B() );
+            }
+        };
+
+	/* $3B RTI inherent ##### */
+	public static opcode rti = new opcode() {
+            public void handler() {            
+		PULLBYTE(CC());
+		if(( CC() & CC_E ) != 0) /* entire state saved? */
+		{
+			konami_ICount[0] -= 9;
+			PULLBYTE(A());
+			PULLBYTE(B());
+			PULLBYTE(DP());
+			PULLWORD(XD());
+			PULLWORD(YD());
+			PULLWORD(UD());
+		}
+		PULLWORD(PCD());
+		change_pc16(PCD());
+		CHECK_IRQ_LINES();
+            }
+        };
+
 /*TODO*///	/* $3C CWAI inherent ----1 */
 /*TODO*///	INLINE void cwai( void )
 /*TODO*///	{
@@ -675,16 +709,17 @@ public class konamops {
 /*TODO*///		if( (konami.int_state & KONAMI_CWAI) && konami_ICount > 0 )
 /*TODO*///			konami_ICount = 0;
 /*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $3D MUL inherent --*-@ */
-/*TODO*///	INLINE void mul( void )
-/*TODO*///	{
-/*TODO*///		UINT16 t;
-/*TODO*///		t = A * B;
-/*TODO*///		CLR_ZC; SET_Z16(t); if(t&0x80) SEC;
-/*TODO*///		D = t;
-/*TODO*///	}
-/*TODO*///
+
+	/* $3D MUL inherent --*-@ */
+	public static opcode mul = new opcode() {
+            public void handler() {
+		int t;
+		t = A() * B();
+		CLR_ZC(); SET_Z16(t); if((t&0x80)!=0) SEC();
+		D( t );
+            }
+        };
+
 /*TODO*///	/* $3E ILLEGAL */
 /*TODO*///
 /*TODO*///	/* $3F SWI (SWI2 SWI3) absolute indirect ----- */
@@ -739,231 +774,253 @@ public class konamops {
 /*TODO*///	#ifdef macintosh
 /*TODO*///	#pragma mark ____4x____
 /*TODO*///	#endif
-/*TODO*///
-/*TODO*///	/* $40 NEGA inherent ?**** */
-/*TODO*///	INLINE void nega( void )
-/*TODO*///	{
-/*TODO*///		UINT16 r;
-/*TODO*///		r = -A;
-/*TODO*///		CLR_NZVC;
-/*TODO*///		SET_FLAGS8(0,A,r);
-/*TODO*///		A = r;
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $41 ILLEGAL */
-/*TODO*///
-/*TODO*///	/* $42 ILLEGAL */
-/*TODO*///
-/*TODO*///	/* $43 COMA inherent -**01 */
-/*TODO*///	INLINE void coma( void )
-/*TODO*///	{
-/*TODO*///		A = ~A;
-/*TODO*///		CLR_NZV;
-/*TODO*///		SET_NZ8(A);
-/*TODO*///		SEC;
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $44 LSRA inherent -0*-* */
-/*TODO*///	INLINE void lsra( void )
-/*TODO*///	{
-/*TODO*///		CLR_NZC;
-/*TODO*///		CC |= (A & CC_C);
-/*TODO*///		A >>= 1;
-/*TODO*///		SET_Z8(A);
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $45 ILLEGAL */
-/*TODO*///
-/*TODO*///	/* $46 RORA inherent -**-* */
-/*TODO*///	INLINE void rora( void )
-/*TODO*///	{
-/*TODO*///		UINT8 r;
-/*TODO*///		r = (CC & CC_C) << 7;
-/*TODO*///		CLR_NZC;
-/*TODO*///		CC |= (A & CC_C);
-/*TODO*///		r |= A >> 1;
-/*TODO*///		SET_NZ8(r);
-/*TODO*///		A = r;
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $47 ASRA inherent ?**-* */
-/*TODO*///	INLINE void asra( void )
-/*TODO*///	{
-/*TODO*///		CLR_NZC;
-/*TODO*///		CC |= (A & CC_C);
-/*TODO*///		A = (A & 0x80) | (A >> 1);
-/*TODO*///		SET_NZ8(A);
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $48 ASLA inherent ?**** */
-/*TODO*///	INLINE void asla( void )
-/*TODO*///	{
-/*TODO*///		UINT16 r;
-/*TODO*///		r = A << 1;
-/*TODO*///		CLR_NZVC;
-/*TODO*///		SET_FLAGS8(A,A,r);
-/*TODO*///		A = r;
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $49 ROLA inherent -**** */
-/*TODO*///	INLINE void rola( void )
-/*TODO*///	{
-/*TODO*///		UINT16 t,r;
-/*TODO*///		t = A;
-/*TODO*///		r = (CC & CC_C) | (t<<1);
-/*TODO*///		CLR_NZVC; SET_FLAGS8(t,t,r);
-/*TODO*///		A = r;
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $4A DECA inherent -***- */
-/*TODO*///	INLINE void deca( void )
-/*TODO*///	{
-/*TODO*///		--A;
-/*TODO*///		CLR_NZV;
-/*TODO*///		SET_FLAGS8D(A);
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $4B ILLEGAL */
-/*TODO*///
-/*TODO*///	/* $4C INCA inherent -***- */
-/*TODO*///	INLINE void inca( void )
-/*TODO*///	{
-/*TODO*///		++A;
-/*TODO*///		CLR_NZV;
-/*TODO*///		SET_FLAGS8I(A);
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $4D TSTA inherent -**0- */
-/*TODO*///	INLINE void tsta( void )
-/*TODO*///	{
-/*TODO*///		CLR_NZV;
-/*TODO*///		SET_NZ8(A);
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $4E ILLEGAL */
-/*TODO*///
-/*TODO*///	/* $4F CLRA inherent -0100 */
-/*TODO*///	INLINE void clra( void )
-/*TODO*///	{
-/*TODO*///		A = 0;
-/*TODO*///		CLR_NZVC; SEZ;
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	#ifdef macintosh
-/*TODO*///	#pragma mark ____5x____
-/*TODO*///	#endif
-/*TODO*///
-/*TODO*///	/* $50 NEGB inherent ?**** */
-/*TODO*///	INLINE void negb( void )
-/*TODO*///	{
-/*TODO*///		UINT16 r;
-/*TODO*///		r = -B;
-/*TODO*///		CLR_NZVC;
-/*TODO*///		SET_FLAGS8(0,B,r);
-/*TODO*///		B = r;
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $51 ILLEGAL */
-/*TODO*///
-/*TODO*///	/* $52 ILLEGAL */
-/*TODO*///
-/*TODO*///	/* $53 COMB inherent -**01 */
-/*TODO*///	INLINE void comb( void )
-/*TODO*///	{
-/*TODO*///		B = ~B;
-/*TODO*///		CLR_NZV;
-/*TODO*///		SET_NZ8(B);
-/*TODO*///		SEC;
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $54 LSRB inherent -0*-* */
-/*TODO*///	INLINE void lsrb( void )
-/*TODO*///	{
-/*TODO*///		CLR_NZC;
-/*TODO*///		CC |= (B & CC_C);
-/*TODO*///		B >>= 1;
-/*TODO*///		SET_Z8(B);
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $55 ILLEGAL */
-/*TODO*///
-/*TODO*///	/* $56 RORB inherent -**-* */
-/*TODO*///	INLINE void rorb( void )
-/*TODO*///	{
-/*TODO*///		UINT8 r;
-/*TODO*///		r = (CC & CC_C) << 7;
-/*TODO*///		CLR_NZC;
-/*TODO*///		CC |= (B & CC_C);
-/*TODO*///		r |= B >> 1;
-/*TODO*///		SET_NZ8(r);
-/*TODO*///		B = r;
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $57 ASRB inherent ?**-* */
-/*TODO*///	INLINE void asrb( void )
-/*TODO*///	{
-/*TODO*///		CLR_NZC;
-/*TODO*///		CC |= (B & CC_C);
-/*TODO*///		B= (B & 0x80) | (B >> 1);
-/*TODO*///		SET_NZ8(B);
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $58 ASLB inherent ?**** */
-/*TODO*///	INLINE void aslb( void )
-/*TODO*///	{
-/*TODO*///		UINT16 r;
-/*TODO*///		r = B << 1;
-/*TODO*///		CLR_NZVC;
-/*TODO*///		SET_FLAGS8(B,B,r);
-/*TODO*///		B = r;
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $59 ROLB inherent -**** */
-/*TODO*///	INLINE void rolb( void )
-/*TODO*///	{
-/*TODO*///		UINT16 t,r;
-/*TODO*///		t = B;
-/*TODO*///		r = CC & CC_C;
-/*TODO*///		r |= t << 1;
-/*TODO*///		CLR_NZVC;
-/*TODO*///		SET_FLAGS8(t,t,r);
-/*TODO*///		B = r;
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $5A DECB inherent -***- */
-/*TODO*///	INLINE void decb( void )
-/*TODO*///	{
-/*TODO*///		--B;
-/*TODO*///		CLR_NZV;
-/*TODO*///		SET_FLAGS8D(B);
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $5B ILLEGAL */
-/*TODO*///
-/*TODO*///	/* $5C INCB inherent -***- */
-/*TODO*///	INLINE void incb( void )
-/*TODO*///	{
-/*TODO*///		++B;
-/*TODO*///		CLR_NZV;
-/*TODO*///		SET_FLAGS8I(B);
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $5D TSTB inherent -**0- */
-/*TODO*///	INLINE void tstb( void )
-/*TODO*///	{
-/*TODO*///		CLR_NZV;
-/*TODO*///		SET_NZ8(B);
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $5E ILLEGAL */
-/*TODO*///
-/*TODO*///	/* $5F CLRB inherent -0100 */
-/*TODO*///	INLINE void clrb( void )
-/*TODO*///	{
-/*TODO*///		B = 0;
-/*TODO*///		CLR_NZVC; SEZ;
-/*TODO*///	}
-/*TODO*///
+
+	/* $40 NEGA inherent ?**** */
+	public static opcode nega = new opcode() {
+            public void handler() {
+		int r;
+		r = -A();
+		CLR_NZVC();
+		SET_FLAGS8(0,A(),r);
+		A( r );
+            }
+        };
+
+	/* $41 ILLEGAL */
+
+	/* $42 ILLEGAL */
+
+	/* $43 COMA inherent -**01 */
+	public static opcode coma = new opcode() {
+            public void handler() {            
+		A( ~A());
+		CLR_NZV();
+		SET_NZ8(A());
+		SEC();
+            }
+        };
+
+	/* $44 LSRA inherent -0*-* */
+	public static opcode lsra = new opcode() {
+            public void handler() {
+		CLR_NZC();
+		CC( CC() | (A() & CC_C) );
+		A( A() >> 1 );
+		SET_Z8(A());
+            }
+        };
+
+	/* $45 ILLEGAL */
+
+	/* $46 RORA inherent -**-* */
+	public static opcode rora = new opcode() {
+            public void handler() {
+		int r;
+		r = (CC() & CC_C) << 7;
+		CLR_NZC();
+		CC( CC() | (A() & CC_C) );
+		r |= A() >> 1;
+		SET_NZ8(r);
+		A( r );
+            }
+        };
+
+	/* $47 ASRA inherent ?**-* */
+	public static opcode asra = new opcode() {
+            public void handler() {
+		CLR_NZC();
+		CC( CC() | (A() & CC_C) );
+		A( (A() & 0x80) | (A() >> 1) );
+		SET_NZ8(A());
+            }
+        };
+
+	/* $48 ASLA inherent ?**** */
+	public static opcode asla = new opcode() {
+            public void handler() {
+		int r;
+		r = A() << 1;
+		CLR_NZVC();
+		SET_FLAGS8(A(),A(),r);
+		A( r );
+            }
+        };
+
+	/* $49 ROLA inherent -**** */
+	public static opcode rola = new opcode() {
+            public void handler() {
+		int t,r;
+		t = A();
+		r = (CC() & CC_C) | (t<<1);
+		CLR_NZVC();
+                SET_FLAGS8(t,t,r);
+		A( r );
+            }
+        };
+
+	/* $4A DECA inherent -***- */
+	public static opcode deca = new opcode() {
+            public void handler() {
+		A(A()-1);
+		CLR_NZV();
+		SET_FLAGS8D(A());
+            }
+        };
+
+	/* $4B ILLEGAL */
+
+	/* $4C INCA inherent -***- */
+	public static opcode inca = new opcode() {
+            public void handler() {
+		A(A()+1);
+		CLR_NZV();
+		SET_FLAGS8I(A());
+            }
+        };
+
+	/* $4D TSTA inherent -**0- */
+	public static opcode tsta = new opcode() {
+            public void handler() {
+		CLR_NZV();
+		SET_NZ8(A());
+            }
+        };
+
+	/* $4E ILLEGAL */
+
+	/* $4F CLRA inherent -0100 */
+	public static opcode clra = new opcode() {
+            public void handler() {            
+		A( 0 );
+		CLR_NZVC();
+                SEZ();
+            }
+        };
+
+
+	/* $50 NEGB inherent ?**** */
+	public static opcode negb = new opcode() {
+            public void handler() {
+		int r;
+		r = -B();
+		CLR_NZVC();
+		SET_FLAGS8(0,B(),r);
+		B( r );
+            }
+        };
+
+	/* $51 ILLEGAL */
+
+	/* $52 ILLEGAL */
+
+	/* $53 COMB inherent -**01 */
+	public static opcode comb = new opcode() {
+            public void handler() {
+		B( ~B() );
+		CLR_NZV();
+		SET_NZ8(B());
+		SEC();
+            }
+        };
+
+	/* $54 LSRB inherent -0*-* */
+	public static opcode lsrb = new opcode() {
+            public void handler() {
+		CLR_NZC();
+		CC( CC() | (B() & CC_C) );
+		B( B() >> 1 );
+		SET_Z8(B());
+            }
+        };
+
+	/* $55 ILLEGAL */
+
+	/* $56 RORB inherent -**-* */
+	public static opcode rorb = new opcode() {
+            public void handler() {
+		int r;
+		r = (CC() & CC_C) << 7;
+		CLR_NZC();
+		CC( CC() | (B() & CC_C) );
+		r |= B() >> 1;
+		SET_NZ8(r);
+		B( r );
+            }
+        };
+
+	/* $57 ASRB inherent ?**-* */
+	public static opcode asrb = new opcode() {
+            public void handler() {
+		CLR_NZC();
+		CC( CC() | (B() & CC_C) );
+		B( (B() & 0x80) | (B() >> 1) );
+		SET_NZ8(B());
+            }
+        };
+
+	/* $58 ASLB inherent ?**** */
+	public static opcode aslb = new opcode() {
+            public void handler() {
+		int r;
+		r = B() << 1;
+		CLR_NZVC();
+		SET_FLAGS8(B(),B(),r);
+		B( r );
+            }
+        };
+
+	/* $59 ROLB inherent -**** */
+	public static opcode rolb = new opcode() {
+            public void handler() {
+		int t,r;
+		t = B();
+		r = CC() & CC_C;
+		r |= t << 1;
+		CLR_NZVC();
+		SET_FLAGS8(t,t,r);
+		B( r );
+            }
+        };
+
+	/* $5A DECB inherent -***- */
+	public static opcode decb = new opcode() {
+            public void handler() {
+		B(B()-1);
+		CLR_NZV();
+		SET_FLAGS8D(B());
+            }
+        };
+
+	/* $5B ILLEGAL */
+
+	/* $5C INCB inherent -***- */
+	public static opcode incb = new opcode() {
+            public void handler() {
+		B(B()+1);
+		CLR_NZV();
+		SET_FLAGS8I(B());
+            }
+        };
+
+	/* $5D TSTB inherent -**0- */
+	public static opcode tstb = new opcode() {
+            public void handler() {
+		CLR_NZV();
+		SET_NZ8(B());
+            }
+        };
+
+	/* $5E ILLEGAL */
+
+	/* $5F CLRB inherent -0100 */
+	public static opcode clrb = new opcode() {
+            public void handler() {            
+		B( 0 );
+		CLR_NZVC();
+                SEZ();
+            }
+        };
+
 /*TODO*///	#ifdef macintosh
 /*TODO*///	#pragma mark ____6x____
 /*TODO*///	#endif
@@ -1232,15 +1289,16 @@ public class konamops {
             }
         };
 
-/*TODO*///	/* $81 CMPA immediate ?**** */
-/*TODO*///	INLINE void cmpa_im( void )
-/*TODO*///	{
-/*TODO*///		UINT16	  t,r;
-/*TODO*///		IMMBYTE(t);
-/*TODO*///		r = A - t;
-/*TODO*///		CLR_NZVC;
-/*TODO*///		SET_FLAGS8(A,t,r);
-/*TODO*///	}
+	/* $81 CMPA immediate ?**** */
+	public static opcode cmpa_im = new opcode() {
+            public void handler() { 
+		int	  t,r;
+		t = IMMBYTE();
+		r = A() - t;
+		CLR_NZVC();
+		SET_FLAGS8(A(),t,r);
+            }
+        };
 
 	/* $82 SBCA immediate ?**** */
 	public static opcode sbca_im = new opcode() {
@@ -1254,42 +1312,45 @@ public class konamops {
             }
         };
 
-/*TODO*///	/* $83 SUBD (CMPD CMPU) immediate -**** */
-/*TODO*///	INLINE void subd_im( void )
-/*TODO*///	{
-/*TODO*///		UINT32 r,d;
-/*TODO*///		PAIR b;
-/*TODO*///		IMMWORD(b);
-/*TODO*///		d = D;
-/*TODO*///		r = d - b.d;
-/*TODO*///		CLR_NZVC;
-/*TODO*///		SET_FLAGS16(d,b.d,r);
-/*TODO*///		D = r;
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $1083 CMPD immediate -**** */
-/*TODO*///	INLINE void cmpd_im( void )
-/*TODO*///	{
-/*TODO*///		UINT32 r,d;
-/*TODO*///		PAIR b;
-/*TODO*///		IMMWORD(b);
-/*TODO*///		d = D;
-/*TODO*///		r = d - b.d;
-/*TODO*///		CLR_NZVC;
-/*TODO*///		SET_FLAGS16(d,b.d,r);
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $1183 CMPU immediate -**** */
-/*TODO*///	INLINE void cmpu_im( void )
-/*TODO*///	{
-/*TODO*///		UINT32 r, d;
-/*TODO*///		PAIR b;
-/*TODO*///		IMMWORD(b);
-/*TODO*///		d = U;
-/*TODO*///		r = d - b.d;
-/*TODO*///		CLR_NZVC;
-/*TODO*///		SET_FLAGS16(d,b.d,r);
-/*TODO*///	}
+	/* $83 SUBD (CMPD CMPU) immediate -**** */
+	public static opcode subd_im = new opcode() {
+            public void handler() { 
+		int r,d;
+		int b;
+		b = IMMWORD();
+		d = D();
+		r = d - b;
+		CLR_NZVC();
+		SET_FLAGS16(d,b,r);
+		D( r );
+            }
+        };
+
+	/* $1083 CMPD immediate -**** */
+	public static opcode cmpd_im = new opcode() {
+            public void handler() { 
+		int r,d;
+		int b;
+		b = IMMWORD();
+		d = D();
+		r = d - b;
+		CLR_NZVC();
+		SET_FLAGS16(d,b,r);
+            }
+        };
+
+	/* $1183 CMPU immediate -**** */
+	public static opcode cmpu_im = new opcode() {
+            public void handler() { 
+		int r, d;
+		int b;
+		b = IMMWORD();
+		d = U();
+		r = d - b;
+		CLR_NZVC();
+		SET_FLAGS16(d,b,r);
+            }
+        };
 
 	/* $84 ANDA immediate -**0- */
 	public static opcode anda_im = new opcode() {
@@ -1356,15 +1417,16 @@ public class konamops {
             }
         };
 
-/*TODO*///	/* $8A ORA immediate -**0- */
-/*TODO*///	INLINE void ora_im( void )
-/*TODO*///	{
-/*TODO*///		UINT8 t;
-/*TODO*///		IMMBYTE(t);
-/*TODO*///		A |= t;
-/*TODO*///		CLR_NZV;
-/*TODO*///		SET_NZ8(A);
-/*TODO*///	}
+	/* $8A ORA immediate -**0- */
+	public static opcode ora_im = new opcode() {
+            public void handler() { 
+		int t;
+		t = IMMBYTE();
+		A( A() | t );
+		CLR_NZV();
+		SET_NZ8(A());
+            }
+        };
 
 	/* $8B ADDA immediate ***** */
 	public static opcode adda_im = new opcode() {
@@ -1379,68 +1441,74 @@ public class konamops {
             }
         };
 
-/*TODO*///	/* $8C CMPX (CMPY CMPS) immediate -**** */
-/*TODO*///	INLINE void cmpx_im( void )
-/*TODO*///	{
-/*TODO*///		UINT32 r,d;
-/*TODO*///		PAIR b;
-/*TODO*///		IMMWORD(b);
-/*TODO*///		d = X;
-/*TODO*///		r = d - b.d;
-/*TODO*///		CLR_NZVC;
-/*TODO*///		SET_FLAGS16(d,b.d,r);
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $108C CMPY immediate -**** */
-/*TODO*///	INLINE void cmpy_im( void )
-/*TODO*///	{
-/*TODO*///		UINT32 r,d;
-/*TODO*///		PAIR b;
-/*TODO*///		IMMWORD(b);
-/*TODO*///		d = Y;
-/*TODO*///		r = d - b.d;
-/*TODO*///		CLR_NZVC;
-/*TODO*///		SET_FLAGS16(d,b.d,r);
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $118C CMPS immediate -**** */
-/*TODO*///	INLINE void cmps_im( void )
-/*TODO*///	{
-/*TODO*///		UINT32 r,d;
-/*TODO*///		PAIR b;
-/*TODO*///		IMMWORD(b);
-/*TODO*///		d = S;
-/*TODO*///		r = d - b.d;
-/*TODO*///		CLR_NZVC;
-/*TODO*///		SET_FLAGS16(d,b.d,r);
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $8D BSR ----- */
-/*TODO*///	INLINE void bsr( void )
-/*TODO*///	{
-/*TODO*///		UINT8 t;
-/*TODO*///		IMMBYTE(t);
-/*TODO*///		PUSHWORD(pPC);
-/*TODO*///		PC += SIGNED(t);
-/*TODO*///		change_pc16(PCD);
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $8E LDX (LDY) immediate -**0- */
-/*TODO*///	INLINE void ldx_im( void )
-/*TODO*///	{
-/*TODO*///		IMMWORD(pX);
-/*TODO*///		CLR_NZV;
-/*TODO*///		SET_NZ16(X);
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $108E LDY immediate -**0- */
-/*TODO*///	INLINE void ldy_im( void )
-/*TODO*///	{
-/*TODO*///		IMMWORD(pY);
-/*TODO*///		CLR_NZV;
-/*TODO*///		SET_NZ16(Y);
-/*TODO*///	}
-/*TODO*///
+	/* $8C CMPX (CMPY CMPS) immediate -**** */
+	public static opcode cmpx_im = new opcode() {
+            public void handler() {  
+		int r,d;
+		int b;
+		b = IMMWORD();
+		d = X();
+		r = d - b;
+		CLR_NZVC();
+		SET_FLAGS16(d,b,r);
+            }
+        };
+
+	/* $108C CMPY immediate -**** */
+	public static opcode cmpy_im = new opcode() {
+            public void handler() { 
+		int r,d;
+		int b;
+		b = IMMWORD();
+		d = Y();
+		r = d - b;
+		CLR_NZVC();
+		SET_FLAGS16(d,b,r);
+            }
+        };
+
+	/* $118C CMPS immediate -**** */
+	public static opcode cmps_im = new opcode() {
+            public void handler() { 
+		int r,d;
+		int b;
+		b = IMMWORD();
+		d = S();
+		r = d - b;
+		CLR_NZVC();
+		SET_FLAGS16(d,b,r);
+            }
+        };
+
+	/* $8D BSR ----- */
+	public static opcode bsr = new opcode() {
+            public void handler() { 
+		int t;
+		t = IMMBYTE();
+		PUSHWORD(pPC());
+		PC( PC() + SIGNED(t) );
+		change_pc16(PCD());
+            }
+        };
+
+	/* $8E LDX (LDY) immediate -**0- */
+	public static opcode ldx_im = new opcode() {
+            public void handler() {            
+		pX(IMMWORD());
+		CLR_NZV();
+		SET_NZ16(X());
+            }
+        };
+
+	/* $108E LDY immediate -**0- */
+	public static opcode ldy_im = new opcode() {
+            public void handler() {
+		pY(IMMWORD());
+		CLR_NZV();
+		SET_NZ16(Y());
+            }
+        };
+
 /*TODO*///	/* is this a legal instruction? */
 /*TODO*///	/* $8F STX (STY) immediate -**0- */
 /*TODO*///	INLINE void stx_im( void )
@@ -2165,14 +2233,16 @@ public class konamops {
             }
         };
 
-/*TODO*///	/* $c1 CMPB immediate ?**** */
-/*TODO*///	INLINE void cmpb_im( void )
-/*TODO*///	{
-/*TODO*///		UINT16	  t,r;
-/*TODO*///		IMMBYTE(t);
-/*TODO*///		r = B - t;
-/*TODO*///		CLR_NZVC; SET_FLAGS8(B,t,r);
-/*TODO*///	}
+	/* $c1 CMPB immediate ?**** */
+	public static opcode cmpb_im = new opcode() {
+            public void handler() { 
+		int	  t,r;
+		t = IMMBYTE();
+		r = B() - t;
+		CLR_NZVC();
+                SET_FLAGS8(B(),t,r);
+            }
+        };
 
 	/* $c2 SBCB immediate ?**** */
 	public static opcode sbcb_im = new opcode() {
@@ -2186,18 +2256,19 @@ public class konamops {
             }
         };
 
-/*TODO*///	/* $c3 ADDD immediate -**** */
-/*TODO*///	INLINE void addd_im( void )
-/*TODO*///	{
-/*TODO*///		UINT32 r,d;
-/*TODO*///		PAIR b;
-/*TODO*///		IMMWORD(b);
-/*TODO*///		d = D;
-/*TODO*///		r = d + b.d;
-/*TODO*///		CLR_NZVC;
-/*TODO*///		SET_FLAGS16(d,b.d,r);
-/*TODO*///		D = r;
-/*TODO*///	}
+	/* $c3 ADDD immediate -**** */
+	public static opcode addd_im = new opcode() {
+            public void handler() { 
+		int r,d;
+		int b;
+		b = IMMWORD();
+		d = D();
+		r = d + b;
+		CLR_NZVC();
+		SET_FLAGS16(d,b,r);
+		D( r );
+            }
+        };
 
 	/* $c4 ANDB immediate -**0- */
 	public static opcode andb_im = new opcode() {
@@ -2264,15 +2335,16 @@ public class konamops {
             }
         };
 
-/*TODO*///	/* $cA ORB immediate -**0- */
-/*TODO*///	INLINE void orb_im( void )
-/*TODO*///	{
-/*TODO*///		UINT8 t;
-/*TODO*///		IMMBYTE(t);
-/*TODO*///		B |= t;
-/*TODO*///		CLR_NZV;
-/*TODO*///		SET_NZ8(B);
-/*TODO*///	}
+	/* $cA ORB immediate -**0- */
+	public static opcode orb_im = new opcode() {
+            public void handler() { 
+		int t;
+		t = IMMBYTE();
+		B( B() | t );
+		CLR_NZV();
+		SET_NZ8(B());
+            }
+        };
 
 	/* $cB ADDB immediate ***** */
 	public static opcode addb_im = new opcode() {
@@ -2287,14 +2359,15 @@ public class konamops {
             }
         };
 
-/*TODO*///	/* $cC LDD immediate -**0- */
-/*TODO*///	INLINE void ldd_im( void )
-/*TODO*///	{
-/*TODO*///		IMMWORD(pD);
-/*TODO*///		CLR_NZV;
-/*TODO*///		SET_NZ16(D);
-/*TODO*///	}
-/*TODO*///
+	/* $cC LDD immediate -**0- */
+	public static opcode ldd_im = new opcode() {
+            public void handler() { 
+		pD(IMMWORD());
+		CLR_NZV();
+		SET_NZ16(D());
+            }
+        };
+
 /*TODO*///	/* is this a legal instruction? */
 /*TODO*///	/* $cD STD immediate -**0- */
 /*TODO*///	INLINE void std_im( void )
@@ -2304,24 +2377,26 @@ public class konamops {
 /*TODO*///		IMM16;
 /*TODO*///		WM16(EAD,&pD);
 /*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $cE LDU (LDS) immediate -**0- */
-/*TODO*///	INLINE void ldu_im( void )
-/*TODO*///	{
-/*TODO*///		IMMWORD(pU);
-/*TODO*///		CLR_NZV;
-/*TODO*///		SET_NZ16(U);
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* $10cE LDS immediate -**0- */
-/*TODO*///	INLINE void lds_im( void )
-/*TODO*///	{
-/*TODO*///		IMMWORD(pS);
-/*TODO*///		CLR_NZV;
-/*TODO*///		SET_NZ16(S);
-/*TODO*///		konami.int_state |= KONAMI_LDS;
-/*TODO*///	}
-/*TODO*///
+
+	/* $cE LDU (LDS) immediate -**0- */
+	public static opcode ldu_im = new opcode() {
+            public void handler() {
+		pU(IMMWORD());
+		CLR_NZV();
+		SET_NZ16(U());
+            }
+        };
+
+	/* $10cE LDS immediate -**0- */
+	public static opcode lds_im = new opcode() {
+            public void handler() {
+		pS(IMMWORD());
+		CLR_NZV();
+		SET_NZ16(S());
+		konami.int_state |= KONAMI_LDS;
+            }
+        };
+
 /*TODO*///	/* is this a legal instruction? */
 /*TODO*///	/* $cF STU (STS) immediate -**0- */
 /*TODO*///	INLINE void stu_im( void )
@@ -2877,16 +2952,17 @@ public class konamops {
 /*TODO*///		EXTENDED;
 /*TODO*///		WM16(EAD,&pS);
 /*TODO*///	}
-/*TODO*///
-/*TODO*///	INLINE void setline_im( void )
-/*TODO*///	{
-/*TODO*///		UINT8 t;
-/*TODO*///		IMMBYTE(t);
-/*TODO*///
-/*TODO*///		if ( konami_cpu_setlines_callback )
-/*TODO*///			(*konami_cpu_setlines_callback)( t );
-/*TODO*///	}
-/*TODO*///
+
+	public static opcode setline_im = new opcode() {
+            public void handler() {            
+		int t;
+		t = IMMBYTE();
+
+		if ( konami_cpu_setlines_callback != null )
+			(konami_cpu_setlines_callback).handler(t );
+            }
+        };
+
 /*TODO*///	INLINE void setline_ix( void )
 /*TODO*///	{
 /*TODO*///		UINT8 t;
@@ -2913,39 +2989,42 @@ public class konamops {
 /*TODO*///		if ( konami_cpu_setlines_callback )
 /*TODO*///			(*konami_cpu_setlines_callback)( t );
 /*TODO*///	}
-/*TODO*///
-/*TODO*///	INLINE void bmove( void )
-/*TODO*///	{
-/*TODO*///		UINT8	t;
-/*TODO*///
-/*TODO*///		while( U != 0 ) {
-/*TODO*///			t = RM(Y);
-/*TODO*///			WM(X,t);
-/*TODO*///			Y++;
-/*TODO*///			X++;
-/*TODO*///			U--;
-/*TODO*///			konami_ICount -= 2;
-/*TODO*///		}
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	INLINE void move( void )
-/*TODO*///	{
-/*TODO*///		UINT8	t;
-/*TODO*///
-/*TODO*///		t = RM(Y);
-/*TODO*///		WM(X,t);
-/*TODO*///		Y++;
-/*TODO*///		X++;
-/*TODO*///		U--;
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* CLRD inherent -0100 */
-/*TODO*///	INLINE void clrd( void )
-/*TODO*///	{
-/*TODO*///		D = 0;
-/*TODO*///		CLR_NZVC; SEZ;
-/*TODO*///	}
-/*TODO*///
+
+	public static opcode bmove = new opcode() {
+            public void handler() {
+		int	t;
+
+		while( U() != 0 ) {
+			t = RM(Y());
+			WM(X(),t);
+			Y(Y()+1);
+			X(X()+1);
+			U(U()-1);
+			konami_ICount[0] -= 2;
+		}
+            }
+        };
+
+	public static opcode move = new opcode() {
+            public void handler() {
+		int	t;
+
+		t = RM(Y());
+		WM(X(),t);
+		Y(Y()+1);
+		X(X()+1);
+		U(U()-1);
+            }
+        };
+
+	/* CLRD inherent -0100 */
+	public static opcode clrd = new opcode() {
+            public void handler() {
+		D( 0 );
+		CLR_NZVC(); SEZ();
+            }
+        };
+
 /*TODO*///	/* CLRW indexed -0100 */
 /*TODO*///	INLINE void clrw_ix( void )
 /*TODO*///	{
@@ -2975,171 +3054,183 @@ public class konamops {
 /*TODO*///		WM16(EAD,&t);
 /*TODO*///		CLR_NZVC; SEZ;
 /*TODO*///	}
-/*TODO*///
-/*TODO*///	/* LSRD immediate -0*-* */
-/*TODO*///	INLINE void lsrd( void )
-/*TODO*///	{
-/*TODO*///		UINT8 t;
-/*TODO*///
-/*TODO*///		IMMBYTE( t );
-/*TODO*///
-/*TODO*///		while ( t-- ) {
-/*TODO*///			CLR_NZC;
-/*TODO*///			CC |= (D & CC_C);
-/*TODO*///			D >>= 1;
-/*TODO*///			SET_Z16(D);
-/*TODO*///		}
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* RORD immediate -**-* */
-/*TODO*///	INLINE void rord( void )
-/*TODO*///	{
-/*TODO*///		UINT16 r;
-/*TODO*///		UINT8  t;
-/*TODO*///
-/*TODO*///		IMMBYTE(t);
-/*TODO*///
-/*TODO*///		while ( t-- ) {
-/*TODO*///			r = (CC & CC_C) << 15;
-/*TODO*///			CLR_NZC;
-/*TODO*///			CC |= (D & CC_C);
-/*TODO*///			r |= D >> 1;
-/*TODO*///			SET_NZ16(r);
-/*TODO*///			D = r;
-/*TODO*///		}
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* ASRD immediate ?**-* */
-/*TODO*///	INLINE void asrd( void )
-/*TODO*///	{
-/*TODO*///		UINT8 t;
-/*TODO*///
-/*TODO*///		IMMBYTE(t);
-/*TODO*///
-/*TODO*///		while ( t-- ) {
-/*TODO*///			CLR_NZC;
-/*TODO*///			CC |= (D & CC_C);
-/*TODO*///			D = (D & 0x8000) | (D >> 1);
-/*TODO*///			SET_NZ16(D);
-/*TODO*///		}
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* ASLD immediate ?**** */
-/*TODO*///	INLINE void asld( void )
-/*TODO*///	{
-/*TODO*///		UINT32	r;
-/*TODO*///		UINT8	t;
-/*TODO*///
-/*TODO*///		IMMBYTE( t );
-/*TODO*///
-/*TODO*///		while ( t-- ) {
-/*TODO*///			r = D << 1;
-/*TODO*///			CLR_NZVC;
-/*TODO*///			SET_FLAGS16(D,D,r);
-/*TODO*///			D = r;
-/*TODO*///		}
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* ROLD immediate -**-* */
-/*TODO*///	INLINE void rold( void )
-/*TODO*///	{
-/*TODO*///		UINT16 r;
-/*TODO*///		UINT8  t;
-/*TODO*///
-/*TODO*///		IMMBYTE(t);
-/*TODO*///
-/*TODO*///		while ( t-- ) {
-/*TODO*///			CLR_NZC;
-/*TODO*///			if ( D & 0x8000 ) SEC;
-/*TODO*///			r = CC & CC_C;
-/*TODO*///			r |= D << 1;
-/*TODO*///			SET_NZ16(r);
-/*TODO*///			D = r;
-/*TODO*///		}
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* DECB,JNZ relative ----- */
-/*TODO*///	INLINE void decbjnz( void )
-/*TODO*///	{
-/*TODO*///		--B;
-/*TODO*///		CLR_NZV;
-/*TODO*///		SET_FLAGS8D(B);
-/*TODO*///		BRANCH( !(CC&CC_Z) );
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* DECX,JNZ relative ----- */
-/*TODO*///	INLINE void decxjnz( void )
-/*TODO*///	{
-/*TODO*///		--X;
-/*TODO*///		CLR_NZV;
-/*TODO*///		SET_NZ16(X);	/* should affect V as well? */
-/*TODO*///		BRANCH( !(CC&CC_Z) );
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	INLINE void bset( void )
-/*TODO*///	{
-/*TODO*///		UINT8	t;
-/*TODO*///
-/*TODO*///		while( U != 0 ) {
-/*TODO*///			t = A;
-/*TODO*///			WM(XD,t);
-/*TODO*///			X++;
-/*TODO*///			U--;
-/*TODO*///			konami_ICount -= 2;
-/*TODO*///		}
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	INLINE void bset2( void )
-/*TODO*///	{
-/*TODO*///		while( U != 0 ) {
-/*TODO*///			WM16(XD,&pD);
-/*TODO*///			X += 2;
-/*TODO*///			U--;
-/*TODO*///			konami_ICount -= 3;
-/*TODO*///		}
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* LMUL inherent --*-@ */
-/*TODO*///	INLINE void lmul( void )
-/*TODO*///	{
-/*TODO*///		UINT32 t;
-/*TODO*///		t = X * Y;
-/*TODO*///		X = (t >> 16);
-/*TODO*///		Y = (t & 0xffff);
-/*TODO*///		CLR_ZC; SET_Z(t); if( t & 0x8000 ) SEC;
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* DIVX inherent --*-@ */
-/*TODO*///	INLINE void divx( void )
-/*TODO*///	{
-/*TODO*///		UINT16 t;
-/*TODO*///		UINT8 r;
-/*TODO*///		if ( B != 0 )
-/*TODO*///		{
-/*TODO*///			t = X / B;
-/*TODO*///			r = X % B;
-/*TODO*///		}
-/*TODO*///		else
-/*TODO*///		{
-/*TODO*///			/* ?? */
-/*TODO*///			t = 0;
-/*TODO*///			r = 0;
-/*TODO*///		}
-/*TODO*///		CLR_ZC; SET_Z16(t); if ( t & 0x80 ) SEC;
-/*TODO*///		X = t;
-/*TODO*///		B = r;
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* INCD inherent -***- */
-/*TODO*///	INLINE void incd( void )
-/*TODO*///	{
-/*TODO*///		UINT32 r;
-/*TODO*///		r = D + 1;
-/*TODO*///		CLR_NZV;
-/*TODO*///		SET_FLAGS16(D,D,r);
-/*TODO*///		D = r;
-/*TODO*///	}
-/*TODO*///
+
+	/* LSRD immediate -0*-* */
+	public static opcode lsrd = new opcode() {
+            public void handler() {
+		int t;
+
+		t = IMMBYTE();
+
+		while ( t-- != 0 ) {
+			CLR_NZC();
+			CC( CC() | (D() & CC_C) );
+			D( D() >> 1 );
+			SET_Z16(D());
+		}
+            }
+        };
+
+	/* RORD immediate -**-* */
+	public static opcode rord = new opcode() {
+            public void handler() {
+		int r;
+		int  t;
+
+		t = IMMBYTE();
+
+		while ( t-- != 0 ) {
+			r = (CC() & CC_C) << 15;
+			CLR_NZC();
+			CC( CC() | (D() & CC_C) );
+			r |= D() >> 1;
+			SET_NZ16(r);
+			D( r );
+		}
+            }
+        };
+
+	/* ASRD immediate ?**-* */
+	public static opcode asrd = new opcode() {
+            public void handler() {
+		int t;
+
+		t = IMMBYTE();
+
+		while ( t-- != 0 ) {
+			CLR_NZC();
+			CC( CC() | (D() & CC_C) );
+			D( (D() & 0x8000) | (D() >> 1) );
+			SET_NZ16(D());
+		}
+            }
+        };
+
+	/* ASLD immediate ?**** */
+	public static opcode asld = new opcode() {
+            public void handler() {
+		int	r;
+		int	t;
+
+		t = IMMBYTE();
+
+		while ( t-- != 0 ) {
+			r = D() << 1;
+			CLR_NZVC();
+			SET_FLAGS16(D(),D(),r);
+			D( r );
+		}
+            }
+        };
+
+	/* ROLD immediate -**-* */
+	public static opcode rold = new opcode() {
+            public void handler() { 
+		int r;
+		int  t;
+
+		t = IMMBYTE();
+
+		while ( t-- != 0 ) {
+			CLR_NZC();
+			if (( D() & 0x8000 ) != 0) SEC();
+			r = CC() & CC_C;
+			r |= D() << 1;
+			SET_NZ16(r);
+			D( r );
+		}
+            }
+        };
+
+	/* DECB,JNZ relative ----- */
+	public static opcode decbjnz = new opcode() {
+            public void handler() {            
+		B(B()-1);
+		CLR_NZV();
+		SET_FLAGS8D(B());
+		BRANCH( (CC()&CC_Z)==0 );
+            }
+        };
+
+	/* DECX,JNZ relative ----- */
+	public static opcode decxjnz = new opcode() {
+            public void handler() { 
+		X(X()-1);
+		CLR_NZV();
+		SET_NZ16(X());	/* should affect V as well? */
+		BRANCH( (CC()&CC_Z)==0 );
+            }
+        };
+
+	public static opcode bset = new opcode() {
+            public void handler() { 
+		int	t;
+
+		while( U() != 0 ) {
+			t = A();
+			WM(XD(),t);
+			X(X()+1);
+			U(U()-1);
+			konami_ICount[0] -= 2;
+		}
+            }
+        };
+
+	public static opcode bset2 = new opcode() {
+            public void handler() { 
+		while( U() != 0 ) {
+			WM16(XD(),pD());
+			X( X() + 2 );
+			U(U()-1);
+			konami_ICount[0] -= 3;
+		}
+            }
+        };
+
+	/* LMUL inherent --*-@ */
+	public static opcode lmul = new opcode() {
+            public void handler() { 
+		int t;
+		t = X() * Y();
+		X( (t >> 16) );
+		Y( (t & 0xffff) );
+		CLR_ZC(); SET_Z(t); if(( t & 0x8000 )!=0) SEC();
+            }
+        };
+
+	/* DIVX inherent --*-@ */
+	public static opcode divx = new opcode() {
+            public void handler() { 
+		int t;
+		int r;
+		if ( B() != 0 )
+		{
+			t = X() / B();
+			r = X() % B();
+		}
+		else
+		{
+			/* ?? */
+			t = 0;
+			r = 0;
+		}
+		CLR_ZC(); SET_Z16(t); if (( t & 0x80 )!=0) SEC();
+		X( t );
+		B( r );
+            }
+        };
+
+	/* INCD inherent -***- */
+	public static opcode incd = new opcode() {
+            public void handler() {
+		int r;
+		r = D() + 1;
+		CLR_NZV();
+		SET_FLAGS16(D(),D(),r);
+		D( r );
+            }
+        };
+
 /*TODO*///	/* INCW direct -***- */
 /*TODO*///	INLINE void incw_di( void )
 /*TODO*///	{
@@ -3174,17 +3265,18 @@ public class konamops {
 /*TODO*///		CLR_NZV; SET_FLAGS16(t.d,t.d,r.d);
 /*TODO*///		WM16(EAD,&r);
 /*TODO*///	}
-/*TODO*///
-/*TODO*///	/* DECD inherent -***- */
-/*TODO*///	INLINE void decd( void )
-/*TODO*///	{
-/*TODO*///		UINT32 r;
-/*TODO*///		r = D - 1;
-/*TODO*///		CLR_NZV;
-/*TODO*///		SET_FLAGS16(D,D,r);
-/*TODO*///		D = r;
-/*TODO*///	}
-/*TODO*///
+
+	/* DECD inherent -***- */
+	public static opcode decd = new opcode() {
+            public void handler() {
+		int r;
+		r = D() - 1;
+		CLR_NZV();
+		SET_FLAGS16(D(),D(),r);
+		D( r );
+            }
+        };
+
 /*TODO*///	/* DECW direct -***- */
 /*TODO*///	INLINE void decw_di( void )
 /*TODO*///	{
@@ -3218,14 +3310,15 @@ public class konamops {
 /*TODO*///		CLR_NZV; SET_FLAGS16(t.d,t.d,r.d);
 /*TODO*///		WM16(EAD,&r);
 /*TODO*///	}
-/*TODO*///
-/*TODO*///	/* TSTD inherent -**0- */
-/*TODO*///	INLINE void tstd( void )
-/*TODO*///	{
-/*TODO*///		CLR_NZV;
-/*TODO*///		SET_NZ16(D);
-/*TODO*///	}
-/*TODO*///
+
+	/* TSTD inherent -**0- */
+	public static opcode tstd = new opcode() {
+            public void handler() {
+		CLR_NZV();
+		SET_NZ16(D());
+            }
+        };
+
 /*TODO*///	/* TSTW direct -**0- */
 /*TODO*///	INLINE void tstw_di( void )
 /*TODO*///	{
@@ -3429,17 +3522,18 @@ public class konamops {
 /*TODO*///		SET_FLAGS16(t.d,t.d,r.d);
 /*TODO*///		WM16(EAD,&r);
 /*TODO*///	}
-/*TODO*///
-/*TODO*///	/* NEGD inherent ?**** */
-/*TODO*///	INLINE void negd( void )
-/*TODO*///	{
-/*TODO*///		UINT32 r;
-/*TODO*///		r = -D;
-/*TODO*///		CLR_NZVC;
-/*TODO*///		SET_FLAGS16(0,D,r);
-/*TODO*///		D = r;
-/*TODO*///	}
-/*TODO*///
+
+	/* NEGD inherent ?**** */
+	public static opcode negd = new opcode() {
+            public void handler() {
+		int r;
+		r = -D();
+		CLR_NZVC();
+		SET_FLAGS16(0,D(),r);
+		D( r );
+            }
+        };
+
 /*TODO*///	/* NEGW direct ?**** */
 /*TODO*///	INLINE void negw_di( void )
 /*TODO*///	{
@@ -3472,46 +3566,49 @@ public class konamops {
 /*TODO*///		SET_FLAGS16(0,t.d,r.d);
 /*TODO*///		WM16(EAD,&r);
 /*TODO*///	}
-/*TODO*///
-/*TODO*///	/* ABSA inherent ?**** */
-/*TODO*///	INLINE void absa( void )
-/*TODO*///	{
-/*TODO*///		UINT16 r;
-/*TODO*///		if (A & 0x80)
-/*TODO*///			r = -A;
-/*TODO*///		else
-/*TODO*///			r = A;
-/*TODO*///		CLR_NZVC;
-/*TODO*///		SET_FLAGS8(0,A,r);
-/*TODO*///		A = r;
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* ABSB inherent ?**** */
-/*TODO*///	INLINE void absb( void )
-/*TODO*///	{
-/*TODO*///		UINT16 r;
-/*TODO*///		if (B & 0x80)
-/*TODO*///			r = -B;
-/*TODO*///		else
-/*TODO*///			r = B;
-/*TODO*///		CLR_NZVC;
-/*TODO*///		SET_FLAGS8(0,B,r);
-/*TODO*///		B = r;
-/*TODO*///	}
-/*TODO*///
-/*TODO*///	/* ABSD inherent ?**** */
-/*TODO*///	INLINE void absd( void )
-/*TODO*///	{
-/*TODO*///		UINT32 r;
-/*TODO*///		if (D & 0x8000)
-/*TODO*///			r = -D;
-/*TODO*///		else
-/*TODO*///			r = D;
-/*TODO*///		CLR_NZVC;
-/*TODO*///		SET_FLAGS16(0,D,r);
-/*TODO*///		D = r;
-/*TODO*///	}
-/*TODO*///
+
+	/* ABSA inherent ?**** */
+	public static opcode absa = new opcode() {
+            public void handler() {
+		int r;
+		if ((A() & 0x80) != 0)
+			r = -A();
+		else
+			r = A();
+		CLR_NZVC();
+		SET_FLAGS8(0,A(),r);
+		A( r );
+            }
+        };
+
+	/* ABSB inherent ?**** */
+	public static opcode absb = new opcode() {
+            public void handler() {
+		int r;
+		if ((B() & 0x80) != 0)
+			r = -B();
+		else
+			r = B();
+		CLR_NZVC();
+		SET_FLAGS8(0,B(),r);
+		B( r );
+            }
+        };
+
+	/* ABSD inherent ?**** */
+	public static opcode absd = new opcode() {
+            public void handler() {
+		int r;
+		if ((D() & 0x8000) != 0)
+			r = -D();
+		else
+			r = D();
+		CLR_NZVC();
+		SET_FLAGS16(0,D(),r);
+		D( r );
+            }
+        };
+
 /*TODO*///	/* LSRD direct -0*-* */
 /*TODO*///	INLINE void lsrd_di( void )
 /*TODO*///	{

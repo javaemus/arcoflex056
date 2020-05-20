@@ -5,6 +5,7 @@
 package mame056.cpu.konami;
 
 import static common.libc.cstdio.*;
+import static arcadeflex056.osdepend.logerror;
 import static mame056.cpuintrfH.*;
 import static mame056.memory.*;
 import static mame056.memoryH.*;
@@ -292,7 +293,8 @@ public class konami extends cpu_interface {
         public static void pX(int val){ konami.x = val; }
 	public static int pY(){ return konami.y; }
         public static void pY(int val){ konami.y = val; }
-/*TODO*///	#define pD		konami.d
+	public static int pD(){ return konami.d; }
+        public static void pD(int val){ konami.d = val; }
 	
 	public static int PPC(){ return konami.ppc & 0xFF; }
         public static void PPC(int val){ konami.ppc |= val & 0xFF; };
@@ -316,7 +318,8 @@ public class konami extends cpu_interface {
         public static void Y(int val){ konami.y |= val & 0xFF; }
         public static int YD(){ return konami.y; }
         public static void YD(int val){ konami.y = val; }
-/*TODO*///	#define D   	konami.d.w.l
+        public static int D(){ return konami.d; }           // CHECK THIS!!!!!!
+        public static void D(int val){ konami.d = val; }    // CHECK THIS!!!!!!
         public static int A(){ return ((konami.d & 0xFF00)>>8); }
         public static void A(int val){ konami.d |= (val<<8); }
         public static int B() { return konami.d & 0xFF; }
@@ -328,9 +331,9 @@ public class konami extends cpu_interface {
 	public static int CC() { return konami.cc; }
         public static void CC(int val) { konami.cc = val; }
 	
-/*TODO*///	static PAIR ea;         /* effective address */
-/*TODO*///	#define EA	ea.w.l
-/*TODO*///	#define EAD ea.d
+        public static int ea;         /* effective address */
+        public static int EA(){ return	ea & 0xFF; }
+        public static int EAD(){ return ea; }
 
 	public static int KONAMI_CWAI		= 8;	/* set when CWAI is waiting for an interrupt */
 	public static int KONAMI_SYNC		= 16;	/* set when SYNC is waiting for an interrupt */
@@ -403,16 +406,20 @@ public class konami extends cpu_interface {
 	public static void WM(int Addr, int Value){ KONAMI_WRMEM(Addr,Value); }
 	public static int ROP(int Addr){ return KONAMI_RDOP(Addr); }
 	public static int ROP_ARG(int Addr){ return KONAMI_RDOP_ARG(Addr); }
-/*TODO*///	
-/*TODO*///	#define SIGNED(a)	(UINT16)(INT16)(INT8)(a)
-/*TODO*///	
+	
+        public static int SIGNED(int a){ return a & 0xFFFF;}
+
 /*TODO*///	/* macros to access memory */
         public static int IMMBYTE()	{ 
             int reg = ROP_ARG(PCD());
             PC(PC()+1);
             return reg; 
         }
-/*TODO*///	#define IMMWORD(w)	{ w.d = (ROP_ARG(PCD)<<8) | ROP_ARG(PCD+1); PC += 2; }
+        public static int IMMWORD()	{ 
+            int reg = (ROP_ARG(PCD())<<8) | ROP_ARG(PCD()+1);
+            PC(PC()+2);
+            return reg;        
+        }
 
 	public static void PUSHBYTE(int b){ S(S()-1); WM(SD(),b); }
 	public static void PUSHWORD(int w){ S(S()-1); WM(SD(),w&0xFF); S(S()-1); WM(SD(),(w>>8)&0xFF); }
@@ -429,68 +436,70 @@ public class konami extends cpu_interface {
 /*TODO*///	#define CLR_HNZC	CC&=~(CC_H|CC_N|CC_Z|CC_C)
         public static void CLR_NZVC(){ CC( CC() & ~(CC_N|CC_Z|CC_V|CC_C)); }
 /*TODO*///	#define CLR_Z		CC&=~(CC_Z)
-/*TODO*///	#define CLR_NZC 	CC&=~(CC_N|CC_Z|CC_C)
-/*TODO*///	#define CLR_ZC		CC&=~(CC_Z|CC_C)
+        public static void CLR_NZC(){ CC( CC() & ~(CC_N|CC_Z|CC_C) ); }
+        public static void CLR_ZC(){ CC( CC() & ~(CC_Z|CC_C)); }
 
 	/* macros for CC -- CC bits affected should be reset before calling */
         public static void SET_Z(int a){ if (a == 0)SEZ(); }
         public static void SET_Z8(int a){ SET_Z(a); }
-/*TODO*///	#define SET_Z16(a)		SET_Z((UINT16)a)
+        public static void SET_Z16(int a){ SET_Z(a); }
         public static void SET_N8(int a){ CC( CC() |((a&0x80)>>4) ); }
-/*TODO*///	#define SET_N16(a)		CC|=((a&0x8000)>>12)
+        public static void SET_N16(int a){ CC( CC() | ((a&0x8000)>>12)) ; }
 	public static void SET_H(int a, int b, int r){ CC( CC() | (((a^b^r)&0x10)<<1)); }
 	public static void SET_C8(int a){ CC( CC() | ((a&0x100)>>8)); }
-/*TODO*///	#define SET_C16(a)		CC|=((a&0x10000)>>16)
+        public static void SET_C16(int a){ CC( CC() | ((a&0x10000)>>16)); }
         public static void SET_V8(int a, int b, int r){	CC( CC() | (((a^b^r^(r>>1))&0x80)>>6)); }
-/*TODO*///	#define SET_V16(a,b,r)	CC|=(((a^b^r^(r>>1))&0x8000)>>14)
+        public static void SET_V16(int a, int b, int r){ CC( CC() | (((a^b^r^(r>>1))&0x8000)>>14)); }
 
-/*TODO*///	static UINT8 flags8i[256]=	 /* increment */
-/*TODO*///	{
-/*TODO*///	CC_Z,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-/*TODO*///	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-/*TODO*///	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-/*TODO*///	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-/*TODO*///	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-/*TODO*///	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-/*TODO*///	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-/*TODO*///	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-/*TODO*///	CC_N|CC_V,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
-/*TODO*///	CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
-/*TODO*///	CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
-/*TODO*///	CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
-/*TODO*///	CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
-/*TODO*///	CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
-/*TODO*///	CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
-/*TODO*///	CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N
-/*TODO*///	};
-/*TODO*///	static UINT8 flags8d[256]= /* decrement */
-/*TODO*///	{
-/*TODO*///	CC_Z,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-/*TODO*///	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-/*TODO*///	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-/*TODO*///	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-/*TODO*///	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-/*TODO*///	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-/*TODO*///	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
-/*TODO*///	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,CC_V,
-/*TODO*///	CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
-/*TODO*///	CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
-/*TODO*///	CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
-/*TODO*///	CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
-/*TODO*///	CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
-/*TODO*///	CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
-/*TODO*///	CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
-/*TODO*///	CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N
-/*TODO*///	};
-/*TODO*///	#define SET_FLAGS8I(a)		{CC|=flags8i[(a)&0xff];}
-/*TODO*///	#define SET_FLAGS8D(a)		{CC|=flags8d[(a)&0xff];}
+	static int flags8i[]=	 /* increment */
+	{
+	CC_Z,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	CC_N|CC_V,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
+	CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
+	CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
+	CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
+	CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
+	CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
+	CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
+	CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N
+	};
+        
+	static int flags8d[]= /* decrement */
+	{
+	CC_Z,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
+	0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,CC_V,
+	CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
+	CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
+	CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
+	CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
+	CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
+	CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
+	CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,
+	CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N,CC_N
+	};
+        
+        public static void SET_FLAGS8I(int a){ CC( CC() | flags8i[(a)&0xff] ); }
+        public static void SET_FLAGS8D(int a){ CC( CC() | flags8d[(a)&0xff] ); }
 	
 	/* combos */
         public static void SET_NZ8(int a){ SET_N8(a);SET_Z(a); }
-/*TODO*///	#define SET_NZ16(a)			{SET_N16(a);SET_Z(a);}
+        public static void SET_NZ16(int a){ SET_N16(a);SET_Z(a); }
         public static void SET_FLAGS8(int a, int b, int r){ SET_N8(r);SET_Z8(r);SET_V8(a,b,r);SET_C8(r);}
-/*TODO*///	#define SET_FLAGS16(a,b,r)	{SET_N16(r);SET_Z16(r);SET_V16(a,b,r);SET_C16(r);}
-/*TODO*///	
+        public static void SET_FLAGS16(int a, int b, int r){ SET_N16(r);SET_Z16(r);SET_V16(a,b,r);SET_C16(r); }
+
 /*TODO*///	/* macros for addressing modes (postbytes have their own code) */
 /*TODO*///	#define DIRECT	EAD = DPD; IMMBYTE(ea.b.l)
 /*TODO*///	#define IMM8	EAD = PCD; PC++
@@ -498,7 +507,7 @@ public class konami extends cpu_interface {
 /*TODO*///	#define EXTENDED IMMWORD(ea)
 /*TODO*///	
 /*TODO*///	/* macros to set status flags */
-/*TODO*///	#define SEC CC|=CC_C
+        public static void SEC(){ CC( CC() | CC_C ); }
 /*TODO*///	#define CLC CC&=~CC_C
         public static void SEZ(){ CC( CC() | CC_Z ); }
 /*TODO*///	#define CLZ CC&=~CC_Z
@@ -514,53 +523,59 @@ public class konami extends cpu_interface {
 /*TODO*///	#define DIRWORD(w) DIRECT; w.d=RM16(EAD)
 /*TODO*///	#define EXTBYTE(b) EXTENDED; b=RM(EAD)
 /*TODO*///	#define EXTWORD(w) EXTENDED; w.d=RM16(EAD)
-/*TODO*///	
-/*TODO*///	/* macros for branch instructions */
-/*TODO*///	#define BRANCH(f) { 					\
-/*TODO*///		UINT8 t;							\
-/*TODO*///		IMMBYTE(t); 						\
-/*TODO*///		if( f ) 							\
-/*TODO*///		{									\
-/*TODO*///			PC += SIGNED(t);				\
-/*TODO*///			change_pc16(PC);	/* TS 971002 */ \
-/*TODO*///		}									\
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	#define LBRANCH(f) {                    \
-/*TODO*///		PAIR t; 							\
-/*TODO*///		IMMWORD(t); 						\
-/*TODO*///		if( f ) 							\
-/*TODO*///		{									\
-/*TODO*///			konami_ICount -= 1;				\
-/*TODO*///			PC += t.w.l;					\
-/*TODO*///			change_pc16(PC);	/* TS 971002 */ \
-/*TODO*///		}									\
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	#define NXORV  ((CC&CC_N)^((CC&CC_V)<<2))
-/*TODO*///	
-/*TODO*///	/* macros for setting/getting registers in TFR/EXG instructions */
-/*TODO*///	#define GETREG(val,reg) 				\
-/*TODO*///		switch(reg) {						\
-/*TODO*///		case 0: val = A;	break;			\
-/*TODO*///		case 1: val = B; 	break; 			\
-/*TODO*///		case 2: val = X; 	break;			\
-/*TODO*///		case 3: val = Y;	break; 			\
-/*TODO*///		case 4: val = S; 	break; /* ? */	\
-/*TODO*///		case 5: val = U;	break;			\
-/*TODO*///		default: val = 0xff; logerror("Unknown TFR/EXG idx at PC:%04x\n", PC ); break; \
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	#define SETREG(val,reg) 				\
-/*TODO*///		switch(reg) {						\
-/*TODO*///		case 0: A = val;	break;			\
-/*TODO*///		case 1: B = val;	break;			\
-/*TODO*///		case 2: X = val; 	break;			\
-/*TODO*///		case 3: Y = val;	break;			\
-/*TODO*///		case 4: S = val;	break; /* ? */	\
-/*TODO*///		case 5: U = val; 	break;			\
-/*TODO*///		default: logerror("Unknown TFR/EXG idx at PC:%04x\n", PC ); break; \
-/*TODO*///	}
+	
+	/* macros for branch instructions */
+	public static void BRANCH(boolean f) {
+		int t;
+		t = IMMBYTE();
+		if( f )
+		{
+			PC( PC() + SIGNED(t) );
+			change_pc16(PC());	/* TS 971002 */
+		}
+	}
+	
+        public static void LBRANCH(boolean f) {
+		int t;
+		t = IMMWORD();
+		if( f )
+		{
+			konami_ICount[0] -= 1;
+			PC( PC() + t&0xFF );
+			change_pc16(PC());	/* TS 971002 */
+		}
+	}
+	
+        public static int NXORV(){ return ((CC()&CC_N)^((CC()&CC_V)<<2)); }
+	
+	/* macros for setting/getting registers in TFR/EXG instructions */
+	public static int GETREG(int reg){
+                int val = 0;
+		
+                switch(reg) {						
+                    case 0: val = A();	break;			
+                    case 1: val = B(); 	break; 			
+                    case 2: val = X(); 	break;			
+                    case 3: val = Y();	break; 			
+                    case 4: val = S(); 	break; /* ? */	
+                    case 5: val = U();	break;			
+                    default: val = 0xff; logerror("Unknown TFR/EXG idx at PC:%04xn", PC() ); break;
+                }
+                
+                return val;
+	}
+	
+	public static void SETREG(int val, int reg){
+		switch(reg) {						
+                    case 0: A(val);	break;			
+                    case 1: B(val);	break;			
+                    case 2: X(val); 	break;			
+                    case 3: Y(val); 	break;			
+                    case 4: S(val); 	break;			/* ? */	
+                    case 5: U(val); 	break;			
+                    default: logerror("Unknown TFR/EXG idx at PC:%04xn", PC() ); break; 
+                }
+        }
 	
 	/* opcode timings */
 	static int cycles1[] =
@@ -590,11 +605,11 @@ public class konami extends cpu_interface {
 		return result | RM((Addr+1)&0xffff);
 	}
 	
-/*TODO*///	INLINE void WM16( UINT32 Addr, PAIR *p )
-/*TODO*///	{
-/*TODO*///		WM( Addr, p->b.h );
-/*TODO*///		WM( (Addr+1)&0xffff, p->b.l );
-/*TODO*///	}
+        public static void WM16( int Addr, int p )
+	{
+		WM( Addr, (p>>8)&0xFF );
+		WM( (Addr+1)&0xffff, p&0xFF );
+	}
 	
 	/****************************************************************************
 	 * Get all registers in given buffer
