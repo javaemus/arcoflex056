@@ -46,6 +46,7 @@ import mame056.sound.saa1099;
 import mame056.sound.k051649;
 import mame056.sound.upd7759;
 import mame056.sound.k007232;
+import mame056.sound.k053260;
 
 // MESS Sound Chips
 import mess056.sound.speaker;
@@ -596,7 +597,7 @@ public class sndintrf {
                 /*TODO*///		0,
                 /*TODO*///		0
                 /*TODO*///	},
-                new Dummy_snd(),
+                new k053260(),
                 /*TODO*///#endif
                 /*TODO*///#if (HAS_K054539)
                 /*TODO*///    {

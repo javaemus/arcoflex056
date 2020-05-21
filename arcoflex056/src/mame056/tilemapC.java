@@ -1024,7 +1024,7 @@ public class tilemapC {
 
     static void recalculate_scroll( struct_tilemap tilemap )
 	{
-            System.out.println("recalculate scroll");
+            //System.out.println("recalculate scroll");
 		int i;
 
                 tilemap.scrollx_delta = (tilemap.attributes & TILEMAP_FLIPX )!=0?tilemap.dx_if_flipped:tilemap.dx;

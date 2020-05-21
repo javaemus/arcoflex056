@@ -59,6 +59,8 @@ import static mame056.sound.mixerH.*;
 import static arcadeflex056.osdepend.logerror;
 import static mame056.machine.eeprom.*;
 import static mame056.machine.eepromH.*;
+import static mame056.sound.k053260.*;
+import static mame056.sound.k053260H.*;
 import mame056.timer;
 
 public class simpsons
@@ -100,7 +102,7 @@ public class simpsons
 		new Memory_WriteAddress( 0x1fb0, 0x1fbf, K053251_w ),
 		new Memory_WriteAddress( 0x1fc0, 0x1fc0, simpsons_coin_counter_w ),
 		new Memory_WriteAddress( 0x1fc2, 0x1fc2, simpsons_eeprom_w ),
-/*TODO*///		new Memory_WriteAddress( 0x1fc6, 0x1fc7, K053260_0_w ),
+		new Memory_WriteAddress( 0x1fc6, 0x1fc7, K053260_0_w ),
 		new Memory_WriteAddress( 0x2000, 0x3fff, MWA_BANK4 ),
 		new Memory_WriteAddress( 0x0000, 0x3fff, K052109_w ),
 		new Memory_WriteAddress( 0x4000, 0x5fff, MWA_RAM ),
@@ -146,7 +148,7 @@ public class simpsons
 		new Memory_ReadAddress( 0x8000, 0xbfff, MRA_BANK2 ),
 		new Memory_ReadAddress( 0xf000, 0xf7ff, MRA_RAM ),
 		new Memory_ReadAddress( 0xf801, 0xf801, YM2151_status_port_0_r ),
-/*TODO*///		new Memory_ReadAddress( 0xfc00, 0xfc2f, K053260_0_r ),
+		new Memory_ReadAddress( 0xfc00, 0xfc2f, K053260_0_r ),
 		new Memory_ReadAddress(MEMPORT_MARKER, 0)
 	};
 	
@@ -158,7 +160,7 @@ public class simpsons
 		new Memory_WriteAddress( 0xf800, 0xf800, YM2151_register_port_0_w ),
 		new Memory_WriteAddress( 0xf801, 0xf801, YM2151_data_port_0_w ),
 		new Memory_WriteAddress( 0xfa00, 0xfa00, z80_arm_nmi_w ),
-/*TODO*///		new Memory_WriteAddress( 0xfc00, 0xfc2f, K053260_0_w ),
+		new Memory_WriteAddress( 0xfc00, 0xfc2f, K053260_0_w ),
 		new Memory_WriteAddress( 0xfe00, 0xfe00, z80_bankswitch_w ),
 		new Memory_WriteAddress(MEMPORT_MARKER, 0)
 	};
@@ -297,14 +299,15 @@ public class simpsons
 		new WriteYmHandlerPtr[]{ null }
 	);
 	
-/*TODO*///	static struct K053260_interface k053260_interface =
-/*TODO*///	{
-/*TODO*///		1,
-/*TODO*///		{ 3579545 },
-/*TODO*///		{ REGION_SOUND1 }, /* memory region */
-/*TODO*///		{ { MIXER(75,MIXER_PAN_LEFT), MIXER(75,MIXER_PAN_RIGHT) } },
-/*TODO*///	//	{ nmi_callback }
-/*TODO*///	};
+	static K053260_interface k053260_interface = new K053260_interface
+	(
+		1,
+		new int[]{ 3579545 },
+		new int[]{ REGION_SOUND1 }, /* memory region */
+		new int[][]{ { MIXER(75,MIXER_PAN_LEFT), MIXER(75,MIXER_PAN_RIGHT) } },
+	//	{ nmi_callback }
+                new timer_callback[]{ null }
+	);
 	
 	public static InterruptPtr simpsons_irq = new InterruptPtr() { public int handler() 
 	{
@@ -362,10 +365,10 @@ public class simpsons
 			new MachineSound(
 				SOUND_YM2151,
 				ym2151_interface
-/*TODO*///			),
-/*TODO*///			new MachineSound(
-/*TODO*///				SOUND_K053260,
-/*TODO*///				k053260_interface
+			),
+			new MachineSound(
+				SOUND_K053260,
+				k053260_interface
 			)
 		},
 	
