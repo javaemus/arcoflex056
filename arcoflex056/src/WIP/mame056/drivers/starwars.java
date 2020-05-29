@@ -522,7 +522,7 @@ public class starwars
 		init_machine,
 	
 		/* video hardware */
-		400, 300, new rectangle( 0, 250, 0, 280 ),
+		640, 480, new rectangle( 0, 640, 0, 480 ),
 		null,
 		256, 0,
 		avg_init_palette_swars,
