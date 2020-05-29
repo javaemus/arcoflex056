@@ -136,11 +136,11 @@ public class mainevt
 	 	/* I think bit 1 resets the UPD7795C sound chip */
 	 	if ((data & 0x02) == 0)
 	 	{
-	 		UPD7759_reset_w(0,(data & 0x02) >> 1);
+	 		UPD7759_reset_w.handler(0,(data & 0x02) >> 1);
 	 	}
 		else if ((data & 0x01) != 0)
 	 	{
-			UPD7759_start_w(0,0);
+			UPD7759_start_w.handler(0,0);
 	 	}
 	
 		interrupt_enable_w.handler(0,data & 4);
@@ -258,7 +258,8 @@ public class mainevt
 		new Memory_ReadAddress( 0x8000, 0x83ff, MRA_RAM ),
 		new Memory_ReadAddress( 0xa000, 0xa000, soundlatch_r ),
 		new Memory_ReadAddress( 0xb000, 0xb00d, K007232_read_port_0_r ),
-		new Memory_ReadAddress( 0xd000, 0xd000, UPD7759_0_busy_r ),
+/*TODO*///		new Memory_ReadAddress( 0xd000, 0xd000, UPD7759_0_busy_r ),
+                new Memory_ReadAddress( 0xd000, 0xd000, UPD7759_busy_r ),
 		new Memory_ReadAddress(MEMPORT_MARKER, 0)
 	};
 	
@@ -267,7 +268,8 @@ public class mainevt
 		new Memory_WriteAddress( 0x0000, 0x7fff, MWA_ROM ),
 		new Memory_WriteAddress( 0x8000, 0x83ff, MWA_RAM ),
 		new Memory_WriteAddress( 0xb000, 0xb00d, K007232_write_port_0_w ),
-		new Memory_WriteAddress( 0x9000, 0x9000, UPD7759_0_message_w ),
+/*TODO*///		new Memory_WriteAddress( 0x9000, 0x9000, UPD7759_0_message_w ),
+                new Memory_WriteAddress( 0x9000, 0x9000, UPD7759_message_w ),
 		new Memory_WriteAddress( 0xe000, 0xe000, mainevt_sh_irqcontrol_w ),
 		new Memory_WriteAddress( 0xf000, 0xf000, mainevt_sh_bankswitch_w ),
 		new Memory_WriteAddress(MEMPORT_MARKER, 0)
@@ -666,7 +668,7 @@ public class mainevt
 		new int[]{ 50 }, /* volume */
 		new int[]{ REGION_SOUND2 },		/* memory region */
 		UPD7759_STANDALONE_MODE,		/* chip mode */
-		new irqcallbacksPtr[]{null}
+		new irqcallbackPtr[]{null}
 	);
 	
 	static YM2151interface ym2151_interface = new YM2151interface

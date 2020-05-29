@@ -305,6 +305,104 @@ public class ptr {
             offset -= count * bsize;
         }
     }
+    
+    /**
+     * Unsigned Short Ptr emulation
+     */
+    public static class xShortPtr {
+
+        public int bsize = 2;
+        public char[] memory;
+        public int offset;
+
+        public xShortPtr() {
+        }
+
+        public xShortPtr(int size) {
+            memory = new char[size];
+            offset = 0;
+        }
+
+        public xShortPtr(char[] m) {
+            set(m, 0);
+        }
+
+        public xShortPtr(char[] m, int b) {
+            set(m, b);
+        }
+
+        public xShortPtr(xShortPtr cp, int b) {
+            set(cp.memory, cp.offset + b);
+        }
+
+        public xShortPtr(xShortPtr cp) {
+            set(cp.memory, cp.offset);
+        }
+
+        public xShortPtr(UBytePtr cp) {
+            set(cp.memory, cp.offset);
+        }
+
+        public xShortPtr(UBytePtr cp, int b) {
+            set(cp.memory, cp.offset + b);
+        }
+        
+        public xShortPtr(int[] cp, int b) {
+            set(cp, b);
+        }
+
+        public void set(char[] m, int b) {
+            memory = m;
+            offset = b;
+        }
+        
+        public void set(int[] m, int b) {
+            //memory = m;
+            //System.out.println(m);
+            //System.out.println(memory);
+            if (m!=null && memory!=null){
+                System.arraycopy(m, 0, memory, 0, m.length);
+                offset = b;
+            }
+        }
+
+        public void set(char[] m) {
+            memory = m;
+            offset = 0;
+        }
+
+        public char read(int index) {
+            return (char) (((memory[offset + 1 + index * 2] << 8) & 0xFF) | (memory[offset + index * 2] & 0xFF));
+            //return (char) (memory[offset + index]);
+        }
+
+        public void write(int index, char value) {
+            
+            memory[offset + index * 2] = (char) (value & 0xFF);
+            memory[offset + index * 2 + 1] = (char) ((value >> 8) & 0xFF);
+            //memory[offset + index] = (char) (value);
+        }
+        public void write(char value) {
+            memory[offset] = (char) (value & 0xFF);
+            memory[offset + 1] = (char) ((value >> 8) & 0xFF);
+            //memory[offset] = (char) (value);
+        }
+        public void inc() {
+            offset += bsize;
+        }
+
+        public void dec() {
+            offset -= bsize;
+        }
+
+        public void inc(int count) {
+            offset += count * bsize;
+        }
+
+        public void dec(int count) {
+            offset -= count * bsize;
+        }
+    }
 
     /**
      * ShortPtr emulation

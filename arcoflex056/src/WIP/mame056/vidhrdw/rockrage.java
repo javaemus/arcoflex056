@@ -54,14 +54,14 @@ public class rockrage
 	
 	***************************************************************************/
 	
-	static K007342_callback tile_callback = new K007342_callback() {
-            public void handler(int layer, int bank, UBytePtr code, UBytePtr color) {
+	static K007342_callbackProcPtr tile_callback = new K007342_callbackProcPtr() {
+            public void handler(int layer, int bank, int[] code, int[] color) {
             
 		if (layer == 1)
-			code.write( code.read() | ((color.read() & 0x40) << 2) | ((bank & 0x01) << 9));
+			code[0]=( code[0] | ((color[0] & 0x40) << 2) | ((bank & 0x01) << 9));
 		else
-			code.write( code.read() | ((color.read() & 0x40) << 2) | ((bank & 0x03) << 10) | ((rockrage_vreg & 0x04) << 7) | ((rockrage_vreg & 0x08) << 9));
-		color.write( layer_colorbase[layer] + (color.read() & 0x0f));
+			code[0]=( code[0] | ((color[0] & 0x40) << 2) | ((bank & 0x03) << 10) | ((rockrage_vreg & 0x04) << 7) | ((rockrage_vreg & 0x08) << 9));
+		color[0]=( layer_colorbase[layer] + (color[0] & 0x0f));
             }
         };
 	
@@ -71,12 +71,12 @@ public class rockrage
 	
 	***************************************************************************/
 	
-	static K007420_callback _sprite_callback = new K007420_callback() {
-                public void handler(UBytePtr code, UBytePtr color) {
+	static K007420_callbackProcPtr _sprite_callback = new K007420_callbackProcPtr() {
+                public void handler(int[] code, int[] color) {
                 
-		code.write( code.read() | ((color.read() & 0x40) << 2) | ((color.read() & 0x80) << 1)*(rockrage_vreg << 1));
-		code.write( (code.read() << 2) | ((color.read() & 0x30) >> 4) );
-		color.write( 0 );
+		code[0]=( code[0] | ((color[0] & 0x40) << 2) | ((color[0] & 0x80) << 1)*(rockrage_vreg << 1));
+		code[0]=( (code[0] << 2) | ((color[0] & 0x30) >> 4) );
+		color[0]=( 0 );
             }
         };
 	
@@ -134,10 +134,10 @@ public class rockrage
 	{
 		K007342_tilemap_update();
 	
-		K007342_tilemap_draw( bitmap, 0, TILEMAP_IGNORE_TRANSPARENCY ,0);
+		K007342_tilemap_draw( bitmap, 0, TILEMAP_IGNORE_TRANSPARENCY, 0);
 		K007420_sprites_draw( bitmap );
-		K007342_tilemap_draw( bitmap, 0, 1 | TILEMAP_IGNORE_TRANSPARENCY ,0);
-		K007342_tilemap_draw( bitmap, 1, 0 ,0);
-		K007342_tilemap_draw( bitmap, 1, 1 ,0);
+		K007342_tilemap_draw( bitmap, 0, 1 | TILEMAP_IGNORE_TRANSPARENCY, 0);
+		K007342_tilemap_draw( bitmap, 1, 0, 0);
+		K007342_tilemap_draw( bitmap, 1, 1, 0);
 	} };
 }

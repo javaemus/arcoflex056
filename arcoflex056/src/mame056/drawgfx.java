@@ -6982,8 +6982,8 @@ public class drawgfx {
 /*TODO*///						BLOCKMOVELU(4toN_opaque,(sd,sw,sh,sm,ls,ts,flipx,flipy,dd,dw,dh,dm,paldata));
                 } else {
                     if (pribuf != null) {
-                        System.out.println("BLOCKMOVEPRI(8toN_opaque");
-                        blockmove_8toN_opaque16(sd, sw, sh, sm, ls, ts, flipx, flipy, dd, dw, dh, dm, paldata); /*TODO*///, pribuf,pri_mask);
+                        System.out.println("BLOCKMOVEPRI(8toN_opaque NOT IMPLEMENTED");
+                        //blockmove_8toN_opaque16(sd, sw, sh, sm, ls, ts, flipx, flipy, dd, dw, dh, dm, paldata); /*TODO*///, pribuf,pri_mask);
                         //throw new UnsupportedOperationException("unsupported");
                         /*TODO*///						BLOCKMOVEPRI(8toN_opaque,(sd,sw,sh,sm,ls,ts,flipx,flipy,dd,dw,dh,dm,paldata,pribuf,pri_mask));
                     } else {
@@ -7029,9 +7029,9 @@ public class drawgfx {
                 } else {
                     if (pribuf != null) {
                         //throw new UnsupportedOperationException("Unsupported");
-                        System.out.println("BLOCKMOVEPRI(8toN_transpen,");
+                        System.out.println("BLOCKMOVEPRI(8toN_transpen, NOT IMPLEMENTED");
                         /*TODO*///						BLOCKMOVEPRI(8toN_transpen,(sd,sw,sh,sm,ls,ts,flipx,flipy,dd,dw,dh,dm,paldata,pribuf,pri_mask,transparent_color));
-                        blockmove_8toN_transpen16(sd, sw, sh, sm, ls, ts, flipx, flipy, dd, dw, dh, dm, paldata, transparent_color);
+                        //blockmove_8toN_transpen16(sd, sw, sh, sm, ls, ts, flipx, flipy, dd, dw, dh, dm, paldata, transparent_color);
                     } else {
                         if ((gfx.flags & GFX_SWAPXY) != 0) {
                             throw new UnsupportedOperationException("Unsupported");//blockmove_##function##_swapxy##16 args ;
@@ -7117,10 +7117,10 @@ public class drawgfx {
             /*TODO*///
 			case TRANSPARENCY_PEN_TABLE:
 				if (pribuf != null){
-                                    System.out.println("BLOCKMOVEPRI(8toN_pen_table1,");
+                                    System.out.println("BLOCKMOVEPRI(8toN_pen_table1 NOT IMPLEMENTED,");
                                     /*TODO*///BLOCKMOVEPRI(8toN_pen_table,(sd,sw,sh,sm,ls,ts,flipx,flipy,dd,dw,dh,dm,paldata,pribuf,pri_mask,transparent_color));
                                 } else {
-                                    System.out.println("BLOCKMOVELU(8toN_pen_table2,");
+                                    System.out.println("BLOCKMOVELU(8toN_pen_table2 NOT IMPLEMENTED,");
                                     /*TODO*///BLOCKMOVELU(8toN_pen_table,(sd,sw,sh,sm,ls,ts,flipx,flipy,dd,dw,dh,dm,paldata,transparent_color));
                                 }
 				break;
@@ -9417,3 +9417,4 @@ public class drawgfx {
 
     
 }
+

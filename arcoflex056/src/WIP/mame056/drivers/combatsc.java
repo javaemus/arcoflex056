@@ -218,12 +218,12 @@ public class combatsc
 	public static WriteHandlerPtr combasc_play_w = new WriteHandlerPtr() {public void handler(int offset, int data)
 	{
 		if ((data & 0x02)!=0)
-                    UPD7759_start_w(0, 0);
+                    UPD7759_start_w.handler(0, 0);
 	} };
 	
 	public static WriteHandlerPtr combasc_voice_reset_w = new WriteHandlerPtr() {public void handler(int offset, int data)
 	{
-	    UPD7759_reset_w(0,data & 1);
+	    UPD7759_reset_w.handler(0,data & 1);
 	} };
 	
 	public static WriteHandlerPtr combasc_portA_w = new WriteHandlerPtr() {public void handler(int offset, int data)
@@ -327,7 +327,8 @@ public class combatsc
 		new Memory_ReadAddress(MEMPORT_MARKER, MEMPORT_DIRECTION_READ | MEMPORT_TYPE_MEM | MEMPORT_WIDTH_8),
 		new Memory_ReadAddress( 0x0000, 0x7fff, MRA_ROM ),					/* ROM */
 		new Memory_ReadAddress( 0x8000, 0x87ff, MRA_RAM ),					/* RAM */
-		new Memory_ReadAddress( 0xb000, 0xb000, UPD7759_0_busy_r ),			/* UPD7759 busy? */
+/*TODO*///		new Memory_ReadAddress( 0xb000, 0xb000, UPD7759_0_busy_r ),			/* UPD7759 busy? */
+                new Memory_ReadAddress( 0xb000, 0xb000, UPD7759_busy_r ),			/* UPD7759 busy? */
 		new Memory_ReadAddress( 0xd000, 0xd000, soundlatch_r ),				/* soundlatch_r? */
                 new Memory_ReadAddress( 0xe000, 0xe000, YM2203_status_port_0_r ),		/* YM 2203 */
 		new Memory_ReadAddress(MEMPORT_MARKER, 0)
@@ -338,7 +339,8 @@ public class combatsc
 		new Memory_WriteAddress( 0x0000, 0x7fff, MWA_ROM ),				/* ROM */
 		new Memory_WriteAddress( 0x8000, 0x87ff, MWA_RAM ),				/* RAM */
 		new Memory_WriteAddress( 0x9000, 0x9000, combasc_play_w ),			/* uPD7759 play voice */
-		new Memory_WriteAddress( 0xa000, 0xa000, UPD7759_0_message_w ),	/* uPD7759 voice select */
+/*TODO*///		new Memory_WriteAddress( 0xa000, 0xa000, UPD7759_0_message_w ),	/* uPD7759 voice select */
+                new Memory_WriteAddress( 0xa000, 0xa000, UPD7759_message_w ),	/* uPD7759 voice select */
 		new Memory_WriteAddress( 0xc000, 0xc000, combasc_voice_reset_w ),	/* uPD7759 reset? */
 	 	new Memory_WriteAddress( 0xe000, 0xe000, YM2203_control_port_0_w ),/* YM 2203 */
 		new Memory_WriteAddress( 0xe001, 0xe001, YM2203_write_port_0_w ),	/* YM 2203 */
@@ -655,7 +657,7 @@ public class combatsc
 		new int[]{ 70 },						/* volume */
 		new int[]{ REGION_SOUND1 },			/* memory region */
 		UPD7759_STANDALONE_MODE,	/* chip mode */
-		new irqcallbacksPtr[]{null}
+		new irqcallbackPtr[]{null}
 	);
 	
 	

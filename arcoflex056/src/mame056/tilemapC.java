@@ -10,7 +10,7 @@ import static common.subArrays.*;
 import static java.lang.Math.abs;
 import static mame056.common.*;
 import static mame056.commonH.*;
-import static mame056.drawgfx.copyrozbitmap_core16;
+/*TODO*///import static mame056.drawgfx.copyrozbitmap_core16;
 import static mame056.drawgfxH.*;
 import static mame056.driverH.*;
 import static mame056.mame.*;
@@ -1444,8 +1444,8 @@ public static void tilemap_draw_roz(mame_bitmap dest,struct_tilemap tilemap,
 
 		case 15:
 		case 16:
-			copyrozbitmap_core16(dest,mb,startx,starty,incxx,incxy,incyx,incyy,
-				wraparound,tilemap.logical_clip,mask,value,priority);
+/*TODO*///			copyrozbitmap_core16(dest,mb,startx,starty,incxx,incxy,incyx,incyy,
+/*TODO*///				wraparound,tilemap.logical_clip,mask,value,priority);
 			break;
 
 		default:
@@ -3669,6 +3669,7 @@ public static void tilemap_draw_roz(mame_bitmap dest,struct_tilemap tilemap,
 /*TODO*///#undef PAL_GET
 /*TODO*///#endif // TRANSP
 }
+
 
 
 

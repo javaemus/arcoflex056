@@ -440,9 +440,9 @@ public class vector
 			return;
 	
 		//dst = ((UINT32 *)vecbitmap.line[y])[x];
-                dst = (new UShortPtr(vecbitmap.line[y])).read(x);
+                dst = ((vecbitmap.line[y])).read(x);
 		//((UINT32 *)vecbitmap.line[y])[x] = LIMIT8((col & 0xff) + (dst & 0xff))
-                (new UShortPtr(vecbitmap.line[y])).write(x, (char) (LIMIT8((col & 0xff) + (dst & 0xff))
+                ((vecbitmap.line[y])).write(x, (char) (LIMIT8((col & 0xff) + (dst & 0xff))
                         | (LIMIT8(((col >> 8) & 0xff) + ((dst >> 8) & 0xff)) << 8)
                         | (LIMIT8((col >> 16) + (dst >> 16)) << 16)));
 	
@@ -469,12 +469,14 @@ public class vector
 	 *
 	 * written by Andrew Caldwell
 	 */
+        
+        static int x1=0,yy1=0;
 	
 	public static void vector_draw_to (int x2, int y2, int col, int intensity, int dirty)
 	{
 		int a1=0;
 		int dx=0,dy=0,sx=0,sy=0,cx=0,cy=0,width=0;
-		int x1=0,yy1=0;
+		
 		int xx=0,yy=0;
 		int xy_swap=0;
                 //antialias = 1;
@@ -617,7 +619,7 @@ public class vector
 			cx = dx/2;
 			cy = dy/2;
                         
-                        System.out.println("Draw line2-> "+col);
+                        //System.out.println("Draw line2-> "+col);
                         //col = 0;
 	
 			if (dx>=dy)

@@ -1185,14 +1185,24 @@ int A() {
     };
     opcode adcb_ex = new opcode() {
         public void handler() {
-            //fclose(konamilog);
-            throw new UnsupportedOperationException("unsupported opcode");
+            int t,r;
+            t = EXTBYTE();
+            r = B() + t + (konami.cc & CC_C);
+            CLR_HNZVC();
+            SET_FLAGS8(B(),t,r);
+            SET_H(B(),t,r);
+            B(r);
         }
     };
     opcode adcb_im = new opcode() {
         public void handler() {
-            //fclose(konamilog);
-            throw new UnsupportedOperationException("unsupported opcode");
+            int t,r;
+            t = IMMBYTE();
+            r = B() + t + (konami.cc & CC_C);
+            CLR_HNZVC();
+            SET_FLAGS8(B(),t,r);
+            SET_H(B(),t,r);
+            B(r);
         }
     };
     opcode adcb_ix = new opcode() {
@@ -3785,8 +3795,11 @@ int A() {
     };
     opcode ror_ex = new opcode() {
         public void handler() {
-            fclose(konamilog);
-            throw new UnsupportedOperationException("unsupported opcode");
+            int t,r;
+            t = EXTBYTE(); r=(konami.cc & CC_C) << 7;
+            CLR_NZC(); konami.cc |= (t & CC_C);
+            r |= t>>1; SET_NZ8(r);
+            WM(ea,r);
         }
     };
     opcode ror_ix = new opcode() {

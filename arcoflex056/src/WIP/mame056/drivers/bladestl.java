@@ -132,7 +132,7 @@ public class bladestl
 	
 	public static WriteHandlerPtr bladestl_port_A_w = new WriteHandlerPtr() {public void handler(int offset, int data){
 		/* bits 0-4 = uPD7759 sample number (chip 0) */
-/*TODO*///		UPD7759_message_w( 0, data);
+/*TODO*///		UPD7759_message_w.handler(0, data);
 		//if (data)
 		//	logerror("%04x: (port A) write %02x\n",cpu_get_pc(), data);
 	} };
@@ -191,7 +191,8 @@ public class bladestl
 		new Memory_ReadAddress( 0x0000, 0x07ff, MRA_RAM ),				/* RAM */
 		new Memory_ReadAddress( 0x1000, 0x1000, YM2203_status_port_0_r ),	/* YM2203 */
 		new Memory_ReadAddress( 0x1001, 0x1001, YM2203_read_port_0_r ),	/* YM2203 */
-		new Memory_ReadAddress( 0x4000, 0x4000, UPD7759_0_busy_r ),		/* UPD7759? */
+/*TODO*///		new Memory_ReadAddress( 0x4000, 0x4000, UPD7759_0_busy_r ),		/* UPD7759? */
+                new Memory_ReadAddress( 0x4000, 0x4000, UPD7759_busy_r ),		/* UPD7759? */
 		new Memory_ReadAddress( 0x6000, 0x6000, soundlatch_r ),			/* soundlatch_r */
 		new Memory_ReadAddress( 0x8000, 0xffff, MRA_ROM ),				/* ROM */
 		new Memory_ReadAddress(MEMPORT_MARKER, 0)
@@ -489,7 +490,7 @@ public class bladestl
 		new int[]{ 60, 50 },					/* volume */
 		new int[]{ REGION_SOUND1, REGION_SOUND2 },					/* memory regions */
 		UPD7759_STANDALONE_MODE,
-		new irqcallbacksPtr[]{ null, null }
+		new irqcallbackPtr[]{ null, null }
 	);
 	
 	static MachineDriver machine_driver_bladestl = new MachineDriver

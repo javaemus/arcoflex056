@@ -8,7 +8,6 @@ import static arcadeflex056.fucPtr.*;
 import static common.ptr.*;
 import static mame056.tilemapH.*;
 import static mame056.tilemapC.*;
-//import static mame037b11.mame.tilemapC.*;
 import static mame056.cpuintrfH.*;
 import static mame056.cpuintrf.*;
 import static mame056.cpuexec.*;
@@ -37,10 +36,10 @@ public class battlnts
 	
 	***************************************************************************/
 	
-	static K007342_callback tile_callback = new K007342_callback() {
-            public void handler(int layer, int bank, UBytePtr code, UBytePtr color) {                
-		code.write( code.read() | ((color.read() & 0x0f) << 9) | ((color.read() & 0x40) << 2));
-		color.write( layer_colorbase[layer] );
+	static K007342_callbackProcPtr tile_callback = new K007342_callbackProcPtr() {
+            public void handler(int layer, int bank, int[] code, int[] color) {                
+		code[0] |= ((color[0] & 0x0f) << 9) | ((color[0] & 0x40) << 2);
+		color[0] = layer_colorbase[layer];
             }
         };
 	
@@ -50,11 +49,11 @@ public class battlnts
 	
 	***************************************************************************/
 	
-	static K007420_callback sprite_callback = new K007420_callback() {
-            public void handler(UBytePtr code, UBytePtr color) {
-            	code.write( code.read() | ((color.read() & 0xc0) << 2) | spritebank );
-		code.write((code.read() << 2) | ((color.read() & 0x30) >> 4));
-		color.write( 0 );
+	static K007420_callbackProcPtr sprite_callback = new K007420_callbackProcPtr() {
+            public void handler(int[] code, int[] color) {
+            	code[0]=( code[0] | ((color[0] & 0xc0) << 2) | spritebank );
+		code[0]=((code[0] << 2) | ((color[0] & 0x30) >> 4));
+		color[0]=( 0 );
             }
         };
 	
@@ -77,7 +76,8 @@ public class battlnts
 		if (K007342_vh_start(0,tile_callback) != 0)
 		{
 			/* Battlantis use this as Work RAM */
-			K007342_tilemap_set_enable(1, 0);
+			//K007342_tilemap_set_enable(1, 0);
+                        tilemap_set_enable(K007342_tilemap[1], 0);
 			return 1;
 		}
 	
@@ -106,8 +106,8 @@ public class battlnts
 	
 		K007342_tilemap_update();
 	
-		K007342_tilemap_draw( bitmap, 0, TILEMAP_IGNORE_TRANSPARENCY ,0);
+		K007342_tilemap_draw( bitmap, 0, TILEMAP_IGNORE_TRANSPARENCY, 0);
 		K007420_sprites_draw( bitmap );
-		K007342_tilemap_draw( bitmap, 0, 1 | TILEMAP_IGNORE_TRANSPARENCY ,0);
+		K007342_tilemap_draw( bitmap, 0, 1 | TILEMAP_IGNORE_TRANSPARENCY, 0);
 	} };
 }

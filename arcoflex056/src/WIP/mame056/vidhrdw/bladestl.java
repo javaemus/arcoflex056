@@ -53,11 +53,11 @@ public class bladestl
 	
 	***************************************************************************/
 	
-	static K007342_callback tile_callback = new K007342_callback() {
-            public void handler(int layer, int bank, UBytePtr code, UBytePtr color) {
+	static K007342_callbackProcPtr tile_callback = new K007342_callbackProcPtr() {
+            public void handler(int layer, int bank, int[] code, int[] color) {
             
-		code.write( code.read() | ((color.read() & 0x0f) << 8) | ((color.read() & 0x40) << 6));
-		color.write( layer_colorbase[layer] );
+		code[0] |= ((color[0] & 0x0f) << 8) | ((color[0] & 0x40) << 6);
+		color[0] = layer_colorbase[layer];
             }
         };
 	
@@ -67,12 +67,12 @@ public class bladestl
 	
 	***************************************************************************/
 	
-	static K007420_callback sprite_callback = new K007420_callback() {
-            public void handler(UBytePtr code, UBytePtr color) {
+	static K007420_callbackProcPtr sprite_callback = new K007420_callbackProcPtr() {
+            public void handler(int[] code, int[] color) {
                 
-		code.write( code.read() | ((color.read() & 0xc0) << 2) + bladestl_spritebank);
-		code.write( (code.read() << 2) | ((color.read() & 0x30) >> 4));
-		color.write( 0 + (color.read() & 0x0f));
+		code[0]=( code[0] | ((color[0] & 0xc0) << 2) + bladestl_spritebank);
+		code[0]=( (code[0] << 2) | ((color[0] & 0x30) >> 4));
+		color[0]=( 0 + (color[0] & 0x0f));
             }
         };
 	
@@ -118,10 +118,10 @@ public class bladestl
 	{
 		K007342_tilemap_update();
 	
-		K007342_tilemap_draw( bitmap, 1, TILEMAP_IGNORE_TRANSPARENCY ,0);
+		K007342_tilemap_draw( bitmap, 1, TILEMAP_IGNORE_TRANSPARENCY, 0);
 		K007420_sprites_draw( bitmap );
-		K007342_tilemap_draw( bitmap, 1, 1 | TILEMAP_IGNORE_TRANSPARENCY ,0);
-		K007342_tilemap_draw( bitmap, 0, 0 ,0);
-		K007342_tilemap_draw( bitmap, 0, 1 ,0);
+		K007342_tilemap_draw( bitmap, 1, 1 | TILEMAP_IGNORE_TRANSPARENCY, 0);
+		K007342_tilemap_draw( bitmap, 0, 0, 0);
+		K007342_tilemap_draw( bitmap, 0, 1, 0);
 	} };
 }

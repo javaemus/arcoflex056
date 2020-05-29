@@ -85,6 +85,12 @@ public class cstring {
             dst[mem] = (short) value;
         }
     }
+    
+    public static void memset(xShortPtr dst, int value, int size) {
+        for (int mem = 0; mem < size; mem++) {
+            dst.write(mem, (char) value);
+        }
+    }
 
     public static void memset(int[] dst, int value, int size) {
         for (int mem = 0; mem < size; mem++) {

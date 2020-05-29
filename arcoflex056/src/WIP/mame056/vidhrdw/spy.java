@@ -37,13 +37,13 @@ public class spy
 	
 	***************************************************************************/
 	
-	static K007342_callback tile_callback = new K007342_callback() {
-            public void handler(int layer, int bank, UBytePtr code, UBytePtr color) {
+	static K052109_callbackProcPtr tile_callback = new K052109_callbackProcPtr() {
+            public void handler(int layer, int bank, int[] code, int[] color) {
             
-		tile_info.flags = (color.read() & 0x20)!=0 ? TILE_FLIPX : 0;
-		code.write( code.read() | ((color.read() & 0x03) << 8) | ((color.read() & 0x10) << 6) | ((color.read() & 0x0c) << 9)
+		tile_info.flags = (color[0] & 0x20)!=0 ? TILE_FLIPX : 0;
+		code[0]=( code[0] | ((color[0] & 0x03) << 8) | ((color[0] & 0x10) << 6) | ((color[0] & 0x0c) << 9)
 				| (bank << 13));
-		color.write(  layer_colorbase[layer] + ((color.read() & 0xc0) >> 6));
+		color[0]=(  layer_colorbase[layer] + ((color[0] & 0xc0) >> 6));
             }
         };
 	
@@ -54,12 +54,12 @@ public class spy
 	
 	***************************************************************************/
 	
-	static sprite_callback _sprite_callback = new sprite_callback() {
-            public void handler(UBytePtr code, UBytePtr color, UBytePtr priority, UBytePtr shadow) {                
+	static K051960_callbackProcPtr sprite_callback = new K051960_callbackProcPtr() {
+            public void handler(int[] code, int[] color, int[] priority, int[] shadow) {                
 		/* bit 4 = priority over layer A (0 = have priority) */
 		/* bit 5 = priority over layer B (1 = have priority) */
-		priority.write( (color.read() & 0x30) >> 4 );
-		color.write( sprite_colorbase + (color.read() & 0x0f) );
+		priority[0]=( (color[0] & 0x30) >> 4 );
+		color[0]=( sprite_colorbase + (color[0] & 0x0f) );
             }
         };
 	
@@ -80,7 +80,7 @@ public class spy
 		{
 			return 1;
 		}
-		if (K051960_vh_start(REGION_GFX2,0, 1, 2, 3,_sprite_callback) != 0)
+		if (K051960_vh_start(REGION_GFX2,0, 1, 2, 3,sprite_callback) != 0)
 		{
 			K052109_vh_stop.handler();
 			return 1;
@@ -92,7 +92,7 @@ public class spy
 	public static VhStopPtr spy_vh_stop = new VhStopPtr() { public void handler() 
 	{
 		K052109_vh_stop.handler();
-		K051960_vh_stop.handler();
+/*TODO*///		K051960_vh_stop.handler();
 	} };
 	
 	
@@ -107,7 +107,7 @@ public class spy
 	{
 		K052109_tilemap_update();
 	
-		fillbitmap(bitmap,Machine.pens[16 * layer_colorbase[0]],Machine.visible_area);
+		fillbitmap(bitmap,Machine.pens[16 * layer_colorbase[0]],new rectangle(Machine.visible_area));
 		K051960_sprites_draw(bitmap,1,1);	/* are these used? */
 		K052109_tilemap_draw(bitmap,1,0,0);
 		K051960_sprites_draw(bitmap,0,0);

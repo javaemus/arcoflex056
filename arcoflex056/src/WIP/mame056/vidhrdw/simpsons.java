@@ -40,11 +40,11 @@ public class simpsons
 	
 	***************************************************************************/
 	
-	static K007342_callback tile_callback = new K007342_callback() {
-            public void handler(int layer, int bank, UBytePtr code, UBytePtr color) {
+	static K052109_callbackProcPtr tile_callback = new K052109_callbackProcPtr() {
+            public void handler(int layer, int bank, int[] code, int[] color) {
                 
-		code.write( code.read() | ((color.read() & 0x3f) << 8) | (bank << 14));
-		color.write( layer_colorbase[layer] + ((color.read() & 0xc0) >> 6) );
+		code[0] |= ((color[0] & 0x3f) << 8) | (bank << 14);
+		color[0] = layer_colorbase[layer] + ((color[0] & 0xc0) >> 6);
             }
         };
 	
@@ -54,18 +54,18 @@ public class simpsons
 	
 	***************************************************************************/
 	
-	static sprite_callback _sprite_callback = new sprite_callback() {
-            public void handler(UBytePtr code, UBytePtr color, UBytePtr priority_mask, UBytePtr shadow) {
+	public static K053247_callbackProcPtr sprite_callback = new K053247_callbackProcPtr() { 
+            public void handler(int[] code,int[] color,int[] priority_mask){
             
-		int pri = (color.read() & 0x0f80) >> 6;	/* ??????? */
+		int pri = (color[0] & 0x0f80) >> 6;	/* ??????? */
 		if (pri <= layerpri[2])
-                    priority_mask.write( 0 );
-		else if (pri > layerpri[2] && pri <= layerpri[1])	priority_mask.write( 0xf0 );
-		else if (pri > layerpri[1] && pri <= layerpri[0])	priority_mask.write( 0xf0|0xcc );
+                    priority_mask[0] =  0;
+		else if (pri > layerpri[2] && pri <= layerpri[1])	priority_mask[0] = 0xf0;
+		else if (pri > layerpri[1] && pri <= layerpri[0])	priority_mask[0] = 0xf0|0xcc;
 		else
-                    priority_mask.write( 0xf0|0xcc|0xaa );
+                    priority_mask[0] = 0xf0|0xcc|0xaa;
 	
-		color.write( sprite_colorbase + (color.read() & 0x001f) );
+		color[0] = sprite_colorbase + (color[0] & 0x001f);
             }
         };
 	
@@ -79,7 +79,7 @@ public class simpsons
 	{
 		if (K052109_vh_start(REGION_GFX1,0, 1, 2, 3,tile_callback) != 0)
 			return 1;
-		if (K053247_vh_start(REGION_GFX2,53,23,0, 1, 2, 3,_sprite_callback) != 0)
+		if (K053247_vh_start(REGION_GFX2,53,23,0, 1, 2, 3,sprite_callback) != 0)
 		{
 			K052109_vh_stop.handler();
 			return 1;
@@ -184,14 +184,12 @@ public class simpsons
 			t = layerpri[0]; layerpri[0] = layerpri[1]; layerpri[1] = t; 
 			t = layer[0]; layer[0] = layer[1]; layer[1] = t; 
 		}
-		//SWAP(0,2)
                 if (layerpri[0] < layerpri[2]) 
 		{ 
 			int t; 
 			t = layerpri[0]; layerpri[0] = layerpri[2]; layerpri[2] = t; 
 			t = layer[0]; layer[0] = layer[2]; layer[2] = t; 
 		}
-		//SWAP(1,2)
                 if (layerpri[1] < layerpri[2]) 
 		{ 
 			int t; 

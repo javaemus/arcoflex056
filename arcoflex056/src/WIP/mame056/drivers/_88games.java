@@ -169,15 +169,15 @@ public class _88games
 	
 		speech_chip = ( data & 4 )!=0 ? 1 : 0;
 	
-		UPD7759_reset_w( speech_chip, reset );
+		UPD7759_reset_w.handler(speech_chip, reset );
 	
 		if (invalid_code == 0)
-			UPD7759_start_w( speech_chip, start );
+			UPD7759_start_w.handler(speech_chip, start );
 	} };
 	
 	public static WriteHandlerPtr speech_msg_w = new WriteHandlerPtr() {public void handler(int offset, int data)
 	{
-		UPD7759_message_w( speech_chip, data );
+		UPD7759_message_w.handler(speech_chip, data );
 		invalid_code = (data == total_samples[speech_chip]) ? 1 : 0;
 	} };
 	
@@ -360,7 +360,7 @@ public class _88games
 		new int[]{ 30, 30 },					/* volume */
 		new int[]{ REGION_SOUND1, REGION_SOUND2 },	/* memory region */
 		UPD7759_STANDALONE_MODE,	/* chip mode */
-		new irqcallbacksPtr[]{null, null}
+		new irqcallbackPtr[]{null, null}
 	);
 	
 	public static InitMachinePtr k88games_init_machine = new InitMachinePtr() { public void handler()

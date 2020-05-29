@@ -291,6 +291,8 @@ import static WIP.mame056.drivers.lkage.*;
 import static WIP.mame056.drivers.amspdwy.*;
 import static WIP.mame056.drivers.vastar.*;
 import static WIP.mame056.drivers.spdodgeb.*;
+import static WIP.mame056.drivers.parodius.*;
+import static WIP.mame056.drivers.aliens.*;
 
 public class driver {
 
@@ -2953,12 +2955,12 @@ public class driver {
         /*TODO*///	driver_mstadium,	/* GX891 (c) 1989 (Japan) */
         /*TODO*///	driver_blockhl,	/* GX973 (c) 1989 */
         /*TODO*///	driver_quarth,	/* GX973 (c) 1989 (Japan) */
-        /*TODO*///	driver_aliens,	/* GX875 (c) 1990 (World) */
-        /*TODO*///	driver_aliens2,	/* GX875 (c) 1990 (World) */
-        /*TODO*///	driver_aliensu,	/* GX875 (c) 1990 (US) */
-        /*TODO*///	driver_aliensj,	/* GX875 (c) 1990 (Japan) */
+        driver_aliens,	/* GX875 (c) 1990 (World) */
+        driver_aliens2,	/* GX875 (c) 1990 (World) */
+        driver_aliensu,	/* GX875 (c) 1990 (US) */
+        driver_aliensj,	/* GX875 (c) 1990 (Japan) */
         /*TODO*///	driver_surpratk,	/* GX911 (c) 1990 (Japan) */
-        /*TODO*///	driver_parodius,	/* GX955 (c) 1990 (Japan) */
+        driver_parodius,	/* GX955 (c) 1990 (Japan) */
         /*TODO*///	driver_rollerg,	/* GX999 (c) 1991 (US) */
         /*TODO*///	driver_rollergj,	/* GX999 (c) 1991 (Japan) */
         driver_simpsons,	/* GX072 (c) 1991 */

@@ -46,25 +46,25 @@ public class mainevt
 	
 	***************************************************************************/
 	
-	static K007342_callback mainevt_tile_callback = new K007342_callback() {
-            public void handler(int layer, int bank, UBytePtr code, UBytePtr color) {
+	static K052109_callbackProcPtr mainevt_tile_callback = new K052109_callbackProcPtr() {
+            public void handler(int layer, int bank, int[] code, int[] color) {
             
-		tile_info.flags = (color.read() & 0x02) != 0 ? TILE_FLIPX : 0;
+		tile_info.flags = (color[0] & 0x02) != 0 ? TILE_FLIPX : 0;
 	
 		/* priority relative to HALF priority sprites */
-		if (layer == 2) tile_info.priority = (color.read() & 0x20) >> 5;
+		if (layer == 2) tile_info.priority = (color[0] & 0x20) >> 5;
 		else tile_info.priority = 0;
 	
-		code.write( code.read() | ((color.read() & 0x01) << 8) | ((color.read() & 0x1c) << 7));
-		color.write( layer_colorbase[layer] + ((color.read() & 0xc0) >> 6));
+		code[0] = ( code[0] | ((color[0] & 0x01) << 8) | ((color[0] & 0x1c) << 7));
+		color[0] = layer_colorbase[layer] + ((color[0] & 0xc0) >> 6);
             }
         };
 	
-	static K007342_callback dv_tile_callback = new K007342_callback() {
-            public void handler(int layer, int bank, UBytePtr code, UBytePtr color) {
+	static K052109_callbackProcPtr dv_tile_callback = new K052109_callbackProcPtr() {
+            public void handler(int layer, int bank, int[] code, int[] color) {
 		/* (color & 0x02) is flip y handled internally by the 052109 */
-		code.write( code.read() | ((color.read() & 0x01) << 8) | ((color.read() & 0x3c) << 7));
-		color.write( layer_colorbase[layer] + ((color.read() & 0xc0) >> 6));
+		code[0]=( code[0] | ((color[0] & 0x01) << 8) | ((color[0] & 0x3c) << 7));
+		color[0]=( layer_colorbase[layer] + ((color[0] & 0xc0) >> 6));
             }
         };
 	
@@ -75,24 +75,24 @@ public class mainevt
 	
 	***************************************************************************/
 	
-	static sprite_callback mainevt_sprite_callback = new sprite_callback() {
-            public void handler(UBytePtr code, UBytePtr color, UBytePtr priority_mask, UBytePtr shadow) {
+	static K051960_callbackProcPtr mainevt_sprite_callback = new K051960_callbackProcPtr() {
+            public void handler(int[] code, int[] color, int[] priority_mask, int[] shadow) {
             
 		/* bit 5 = priority over layer B (has precedence) */
 		/* bit 6 = HALF priority over layer B (used for crowd when you get out of the ring) */
-		if ((color.read() & 0x20) != 0)		priority_mask.write( 0xff00 );
-		else if ((color.read() & 0x40) != 0)	priority_mask.write( 0xff00|0xf0f0 );
-		else					priority_mask.write( 0xff00|0xf0f0|0xcccc );
+		if ((color[0] & 0x20) != 0)		priority_mask[0]= 0xff00;
+		else if ((color[0] & 0x40) != 0)	priority_mask[0]= 0xff00|0xf0f0;
+		else					priority_mask[0]= 0xff00|0xf0f0|0xcccc;
 		/* bit 7 is shadow, not used */
 	
-		color.write( sprite_colorbase + (color.read() & 0x03) );
+		color[0]=( sprite_colorbase + (color[0] & 0x03) );
             }
         };
 	
-	static sprite_callback dv_sprite_callback = new sprite_callback() {
-            public void handler(UBytePtr code, UBytePtr color, UBytePtr priority_mask, UBytePtr shadow) {
+	static K051960_callbackProcPtr dv_sprite_callback = new K051960_callbackProcPtr() {
+            public void handler(int[] code, int[] color, int[] priority_mask, int[] shadow) {
 		/* TODO: the priority/shadow handling (bits 5-7) seems to be quite complex (see PROM) */
-		color.write( sprite_colorbase + (color.read() & 0x07) );
+		color[0]=( sprite_colorbase + (color[0] & 0x07) );
             }
         };
 	
@@ -138,7 +138,7 @@ public class mainevt
 	public static VhStopPtr mainevt_vh_stop = new VhStopPtr() { public void handler() 
 	{
 		K052109_vh_stop.handler();
-		K051960_vh_stop.handler();
+/*TODO*///		K051960_vh_stop.handler();
 	} };
 	
 	/*****************************************************************************/

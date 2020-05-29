@@ -52,8 +52,7 @@ import static mame056.sound._2151intf.*;
 import static mame056.sound._2151intfH.*;
 import static mame056.sound.mixerH.MIXER_PAN_LEFT;
 import static mame056.sound.mixerH.MIXER_PAN_RIGHT;
-import static mame056.sound.upd7759.*;
-import static mame056.sound.upd7759H.*;
+
 
 public class labyrunr
 {

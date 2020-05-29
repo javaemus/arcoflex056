@@ -28,10 +28,10 @@ public class _88games
 	
 	***************************************************************************/
 	
-	static K007342_callback tile_callback = new K007342_callback() {
-            public void handler(int layer, int bank, UBytePtr code, UBytePtr color) {
-		code.write( code.read() | ((color.read() & 0x0f) << 8) | (bank << 12));
-		color.write( layer_colorbase[layer] + ((color.read() & 0xf0) >> 4) );
+	static K052109_callbackProcPtr tile_callback = new K052109_callbackProcPtr() {
+            public void handler(int layer, int bank, int[] code, int[] color) {
+		code[0] |= ((color[0] & 0x0f) << 8) | (bank << 12);
+		color[0] = layer_colorbase[layer] + ((color[0] & 0xf0) >> 4);
             }
         };
 	
@@ -41,10 +41,10 @@ public class _88games
 	
 	***************************************************************************/
 	
-	static sprite_callback _sprite_callback = new sprite_callback() {
-            public void handler(UBytePtr code, UBytePtr color, UBytePtr priority, UBytePtr shadow) {
-		priority.write( (color.read() & 0x20) >> 5);	/* ??? */
-		color.write( sprite_colorbase + (color.read() & 0x0f) );
+	static K051960_callbackProcPtr _sprite_callback = new K051960_callbackProcPtr() {
+            public void handler(int[] code, int[] color, int[] priority, int[] shadow) {
+		priority[0] = (color[0] & 0x20) >> 5;	/* ??? */
+		color[0] = sprite_colorbase + (color[0] & 0x0f);
             }
         };
 	
@@ -55,12 +55,12 @@ public class _88games
 	
 	***************************************************************************/
 	
-	static sprite_callback zoom_callback = new sprite_callback() {
-            public void handler(UBytePtr code, UBytePtr color, UBytePtr _pri, UBytePtr _shadow) {
+	static K051316_callbackProcPtr zoom_callback = new K051316_callbackProcPtr() {
+            public void handler(int[] code, int[] color) {
             
-		tile_info.flags = (color.read() & 0x40)!=0 ? TILE_FLIPX : 0;
-		code.write( code.read() | ((color.read() & 0x07) << 8) );
-		color.write( zoom_colorbase + ((color.read() & 0x38) >> 3) + ((color.read() & 0x80) >> 4) );
+		tile_info.flags = (color[0] & 0x40)!=0 ? TILE_FLIPX : 0;
+		code[0]=( code[0] | ((color[0] & 0x07) << 8) );
+		color[0]=( zoom_colorbase + ((color[0] & 0x38) >> 3) + ((color[0] & 0x80) >> 4) );
             }
         };
 	
@@ -119,8 +119,8 @@ public class _88games
 		{
 			K052109_tilemap_draw(bitmap,0,TILEMAP_IGNORE_TRANSPARENCY,0);
 			K051960_sprites_draw(bitmap,1,1);
-			K052109_tilemap_draw(bitmap,2,0,0);
-			K052109_tilemap_draw(bitmap,1,0,0);
+                        K052109_tilemap_draw(bitmap,2,0,0);
+                        K052109_tilemap_draw(bitmap,1,0,0);
 			K051960_sprites_draw(bitmap,0,0);
 			K051316_zoom_draw_0(bitmap,0,0);
 		}

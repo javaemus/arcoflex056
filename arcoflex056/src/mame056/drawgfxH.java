@@ -67,7 +67,7 @@ public class drawgfxH {
         return 0;
     };
     
-    public static int STEP16(int offset, int START, int STEP){
+public static int STEP16(int offset, int START, int STEP){
         switch (offset){
             case 0:
             case 1:
@@ -84,10 +84,7 @@ public class drawgfxH {
         
         return 0;
     };
-    
-/*TODO*///#define STEP16(START,STEP) STEP8(START,STEP),STEP8((START)+8*(STEP),STEP)
-/*TODO*///
-/*TODO*///
+
     public static class GfxLayout {
 
         public GfxLayout() {
@@ -292,3 +289,4 @@ public class drawgfxH {
                     + (alphad[d & 0xff] | (alphad[(d>>8) & 0xff] << 8) | (alphad[(d>>16) & 0xff] << 16));
     }
 }
+
