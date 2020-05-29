@@ -952,6 +952,10 @@ public class avgdvg
 	public static void avg_init_palette (int paltype, char[] palette, char[] colortable, UBytePtr color_prom)
 	{
 		int i;
+                
+                palette[0]=0;
+                palette[1]=255;
+                palette[2]=0;
 	
 		/* initialize the colorram */
 		for (i = 0; i < 16; i++){
