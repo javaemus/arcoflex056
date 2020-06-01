@@ -220,7 +220,7 @@ public class palette {
                                         54,45,1,
                                         159,211,68};*/
                     
-                    char rgbpalette[]={ //0,0,0,
+                    /*char rgbpalette[]={ 0,0,0,
                                         255,0,0,
                                         0,255,0,
                                         255,255,0,
@@ -478,7 +478,6 @@ public class palette {
                                         255,255,255
                     };
                         
-                        //if (osd_allocate_colors(5,rgbpalette,direct_rgb_components) != 0)
                         if (osd_allocate_colors(16,rgbpalette,null) != 0)
                                 return 1;
                         
@@ -493,15 +492,25 @@ public class palette {
                             Machine.pens[i] = i;
                         }
 
-                        /* refresh the palette to support shadows in PROM games */
-                        /*for (i = 0; i < Machine.drv.total_colors; i++) {
-                            palette_set_color(i, game_palette[3 * i + 0], game_palette[3 * i + 1], game_palette[3 * i + 2]);
-                        }*/
+                       
                         
                         /*game_palette[0]=0;
                         game_palette[1]=0;
                         game_palette[2]=0;*/
-                        
+                        char rgbpalette[] = { 0xff,0x00,0x00, 0x00,0xff,0x00, 0x00,0x00,0xff };
+	
+				if (osd_allocate_colors(3,rgbpalette,direct_rgb_components) != 0)
+					return 1;
+                                
+                                System.out.println("Vector Total colors="+total_colors);
+	
+				for (i = 0;i < total_colors;i++)
+					Machine.pens[i] =
+							(game_palette[3*i + 0] >> 3) * (direct_rgb_components[0] / 0x1f) +
+							(game_palette[3*i + 1] >> 3) * (direct_rgb_components[1] / 0x1f) +
+							(game_palette[3*i + 2] >> 3) * (direct_rgb_components[2] / 0x1f);
+	
+				
                         
                         break;
                         

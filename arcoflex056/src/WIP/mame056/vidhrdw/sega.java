@@ -89,7 +89,19 @@ public class sega
 	
 				currentX = ((currentX & 0x7ff) - min_x) << VEC_SHIFT;
 				currentY = (max_y - (currentY & 0x7ff)) << VEC_SHIFT;
-				vector_add_point ( currentX, currentY, 0, 0);
+				//vector_add_point ( currentX, currentY, 0, 0);
+                                struct_vector_add_point _param = new struct_vector_add_point();
+                                        _param.x = currentX;
+                                        _param.y = currentY;
+                                        _param.color = 0;
+                                        _param.intensity = 0;
+                                        
+					_param = vector_add_point ( _param );
+                                        
+                                        currentX = _param.x;
+                                        currentY = _param.y;
+                                        //VECTOR_COLOR111(colorram[1]) = _param.color;
+                                        //z = _param.intensity;
 				vectorIndex &= 0xfff;
 	
 				/* walk the vector list until 'last vector' bit */
@@ -122,7 +134,19 @@ public class sega
 					}
 					else
 						intensity = 0;
-					vector_add_point ( currentX, currentY, color, intensity );
+					//vector_add_point ( currentX, currentY, color, intensity );
+                                        _param = new struct_vector_add_point();
+                                        _param.x = currentX;
+                                        _param.y = currentY;
+                                        _param.color = color;
+                                        _param.intensity = intensity;
+                                        
+					_param = vector_add_point ( _param );
+                                        
+                                        currentX = _param.x;
+                                        currentY = _param.y;
+                                        //VECTOR_COLOR111(colorram[1]) = _param.color;
+                                        intensity = _param.intensity;
 	
 				} while ((attrib & 0x80)==0);
 			}

@@ -298,7 +298,18 @@ public class avgdvg
 						z = z * BRIGHTNESS;
 					else
 						if (z != 0) z = (z << 4) | 0x0f;
-					vector_add_point (currentx, currenty, VECTOR_COLOR111(colorram[1]), z);
+                                        struct_vector_add_point _param = new struct_vector_add_point();
+                                        _param.x = currentx;
+                                        _param.y = currenty;
+                                        _param.color = VECTOR_COLOR111(colorram[1]);
+                                        _param.intensity = z;
+                                        
+					_param = vector_add_point ( _param );
+                                        
+                                        //currentx = _param.x;
+                                        //currenty = _param.y;
+                                        //VECTOR_COLOR111(colorram[1]) = _param.color;
+                                        //z = _param.intensity;
 	
 					break;
 	
@@ -389,7 +400,20 @@ public class avgdvg
 						z = z * BRIGHTNESS;
 					else
 						if (z != 0) z = (z << 4) | 0x0f;
-					vector_add_point (currentx, currenty, VECTOR_COLOR111(colorram[1]), z);
+                                        
+					_param = new struct_vector_add_point();
+                                        _param.x = currentx;
+                                        _param.y = currenty;
+                                        _param.color = VECTOR_COLOR111(colorram[1]);
+                                        _param.intensity = z;
+                                        
+					_param = vector_add_point ( _param );
+                                        
+                                        //currentx = _param.x;
+                                        //currenty = _param.y;
+                                        //VECTOR_COLOR111(colorram[1]) = _param.color;
+                                        //z = _param.intensity;
+                                        
 					break;
 	
 				default:
@@ -613,8 +637,19 @@ public class avgdvg
 						else
 							color = 2;
 					}
-	
-					vector_add_point (currentx, currenty, VECTOR_COLOR111(colorram[color]), z);
+                                        struct_vector_add_point _param = new struct_vector_add_point();
+                                        _param.x = currentx;
+                                        _param.y = currenty;
+                                        _param.color = VECTOR_COLOR111(color);
+                                        _param.intensity = z;
+                                        
+					_param = vector_add_point ( _param );
+                                        
+                                        //currentx = _param.x;
+                                        //currenty = _param.y;
+                                        //VECTOR_COLOR111(color) = _param.color;
+                                        //z = _param.intensity;
+					
 	
 	/*#ifdef VG_DEBUG
 					logerror("VCTR x:%d y:%d z:%d statz:%d", x, y, z, statz);
@@ -656,8 +691,21 @@ public class avgdvg
 					{
 						color = rand() & 0x07;
 					}
+                                        
+                                        _param = new struct_vector_add_point();
+                                        _param.x = currentx;
+                                        _param.y = currenty;
+                                        _param.color = VECTOR_COLOR111(color);
+                                        _param.intensity = z;
+                                        
+					_param = vector_add_point ( _param );
+                                        
+                                        //currentx = _param.x;
+                                        //currenty = _param.y;
+                                        //VECTOR_COLOR111(color) = _param.color;
+                                        //z = _param.intensity;
 	
-					vector_add_point (currentx, currenty, VECTOR_COLOR111(colorram[color]), z);
+					//vector_add_point (currentx, currenty, VECTOR_COLOR111(colorram[color]), z);
 	
 	/*#ifdef VG_DEBUG
 					logerror("SVEC x:%d y:%d z:%d statz:%d", x, y, z, statz);
@@ -746,7 +794,19 @@ public class avgdvg
 	#endif*/
 					currentx = xcenter ;  /* ASG 080497 */ /*.ac JAN2498 */
 					currenty = ycenter ;  /* ASG 080497 */ /*.ac JAN2498 */
-					vector_add_point (currentx, currenty, 0, 0);
+					//vector_add_point (currentx, currenty, 0, 0);
+                                        _param = new struct_vector_add_point();
+                                        _param.x = currentx;
+                                        _param.y = currenty;
+                                        _param.color = 0;
+                                        _param.intensity = 0;
+                                        
+					_param = vector_add_point ( _param );
+                                        
+                                        //currentx = _param.x;
+                                        //currenty = _param.y;
+                                        //VECTOR_COLOR111(colorram[1]) = _param.color;
+                                        //z = _param.intensity;
 					break;
 	
 				case RTSL:
@@ -906,10 +966,10 @@ public class avgdvg
 	
 		if (vectorEngine==USE_AVG_SWARS)
 			flipword=1;
-	/*#ifndef LSB_FIRST
+	//#ifndef LSB_FIRST
 		else if (vectorEngine==USE_AVG_QUANTUM)
 			flipword=1;
-	#endif*/
+	//#endif
 		else
 			flipword=0;
 	
@@ -1101,10 +1161,10 @@ public class avgdvg
 
                     //if (ACCESSING_LSB != 0)
                     //{
-                            int trans[]= { 7/*white*/, 0, 3, 1/*blue*/, 2/*green*/, 5, 6, 4/*red*/,
-                                           7/*white*/, 0, 3, 1/*blue*/, 2/*green*/, 5, 6, 4/*red*/};
+                    //        int trans[]= { 7/*white*/, 0, 3, 1/*blue*/, 2/*green*/, 5, 6, 4/*red*/,
+                    //                       7/*white*/, 0, 3, 1/*blue*/, 2/*green*/, 5, 6, 4/*red*/};
 
-                            colorram_w.handler(offset, trans[data & 0x0f]);
+                    //        colorram_w.handler(offset, trans[data & 0x0f]);
                     //}
             }
 

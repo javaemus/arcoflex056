@@ -400,10 +400,13 @@ public class vector
                 break;
             }
         }
-	
+        
+        
 	static void vector_draw_aa_pixel_15 (int x, int y, int col, int dirty)
 	{
-            //System.out.println("vector_draw_aa_pixel_15 x="+x+" y="+y+" color="+col);
+            if ((col == 0)&&(dirty!=0)){
+                    col = 0xFFFFFF;
+            }
 		int dst;
 	
 		if (x < xmin || x >= xmax)
@@ -471,9 +474,18 @@ public class vector
 	 */
         
         static int x1=0,yy1=0;
+        
+        public static class struct_draw_to {
+            public int x2;
+            public int y2;
+            public int col;
+            public int intensity;
+            public int dirty;
+        }
 	
-	public static void vector_draw_to (int x2, int y2, int col, int intensity, int dirty)
+	public static struct_draw_to vector_draw_to (struct_draw_to _param)
 	{
+            //int x1=0,yy1=0;
 		int a1=0;
 		int dx=0,dy=0,sx=0,sy=0,cx=0,cy=0,width=0;
 		
@@ -483,8 +495,8 @@ public class vector
 	
 		/* [1] scale coordinates to display */
 	
-		x2 = vec_mult(x2<<4,vector_scale_x);
-		y2 = vec_mult(y2<<4,vector_scale_y);
+		_param.x2 = vec_mult(_param.x2<<4,vector_scale_x);
+		_param.y2 = vec_mult(_param.y2<<4,vector_scale_y);
 	
 		/* [2] fix display orientation */
 	
@@ -496,29 +508,29 @@ public class vector
 		if ((vector_orientation & ORIENTATION_FLIP_X) != 0)
 		{
 			if (xy_swap != 0)
-				x2 = ((vecheight-1)<<16)-x2;
+				_param.x2 = ((vecheight-1)<<16)-_param.x2;
 			else
-				x2 = ((vecwidth-1)<<16)-x2;
+				_param.x2 = ((vecwidth-1)<<16)-_param.x2;
 		}
 		if ((vector_orientation & ORIENTATION_FLIP_Y) != 0)
 		{
 			if (xy_swap != 0)
-				y2 = ((vecwidth-1)<<16)-y2;
+				_param.y2 = ((vecwidth-1)<<16)-_param.y2;
 			else
-				y2 = ((vecheight-1)<<16)-y2;
+				_param.y2 = ((vecheight-1)<<16)-_param.y2;
 		}
 	
 		if (((Machine.orientation ^ vector_orientation) & ORIENTATION_SWAP_XY) != 0)
 		{
 			int temp;
-			temp = x2;
-			x2 = y2;
-			y2 = temp;
+			temp = _param.x2;
+			_param.x2 = _param.y2;
+			_param.y2 = temp;
 		}
 		if ((Machine.orientation & ORIENTATION_FLIP_X) != 0)
-			x2 = ((vecwidth-1)<<16)-x2;
+			_param.x2 = ((vecwidth-1)<<16)-_param.x2;
 		if ((Machine.orientation & ORIENTATION_FLIP_Y) != 0)
-			y2 = ((vecheight-1)<<16)-y2;
+			_param.y2 = ((vecheight-1)<<16)-_param.y2;
 	
 		/* [3] adjust cords if needed */
 	
@@ -526,57 +538,57 @@ public class vector
 		{
 			if(beam_diameter_is_one != 0)
 			{
-				x2 = (x2+0x8000)&0xffff0000;
-				y2 = (y2+0x8000)&0xffff0000;
+				_param.x2 = (_param.x2+0x8000)&0xffff0000;
+				_param.y2 = (_param.y2+0x8000)&0xffff0000;
 			}
 		}
 		else /* noantialiasing */
 		{
-			x2 >>= 16;
-			y2 >>= 16;
+			_param.x2 >>= 16;
+			_param.y2 >>= 16;
 		}
 	
 		/* [4] handle color and intensity */
 	
 		//if (intensity == 0) goto end_draw;
-                if (intensity == 0){
-                    x1=x2;
-                    yy1=y2;
-                    return;
-                }
+                /*if (_param.intensity == 0){
+                    x1=_param.x2;
+                    yy1=_param.y2;
+                    return _param;
+                }*/
 	
-		col = Tinten(intensity,col);
+		_param.col = Tinten(_param.intensity,_param.col);
 	
 		/* [5] draw line */
 	
 		if (antialias != 0)
 		{
 			/* draw an anti-aliased line */
-			dx=abs(x1-x2);
-			dy=abs(yy1-y2);
+			dx=abs(x1-_param.x2);
+			dy=abs(yy1-_param.y2);
 			if (dx>=dy)
 			{
-				sx = ((x1 <= x2) ? 1:-1);
-				sy = vec_div(y2-yy1,dx);
+				sx = ((x1 <= _param.x2) ? 1:-1);
+				sy = vec_div(_param.y2-yy1,dx);
 				if (sy<0)
 					dy--;
 				x1 >>= 16;
-				xx = x2>>16;
+				xx = _param.x2>>16;
 				width = vec_mult(beam<<4,Tcosin(abs(sy)>>5));
 				if (beam_diameter_is_one == 0)
 					yy1-= width>>1; /* start back half the diameter */
-                                System.out.println("Draw line-> "+col);
+                                System.out.println("Draw line-> "+_param.col);
 				for (;;)
 				{
 					dx = width;    /* init diameter of beam */
 					dy = yy1>>16;
-					vector_draw_aa_pixel(x1,dy++,Tinten(Tgammar[0xff&(yy1>>8)],col), dirty);
+					vector_draw_aa_pixel(x1,dy++,Tinten(Tgammar[0xff&(yy1>>8)],_param.col), _param.dirty);
 					dx -= 0x10000-(0xffff & yy1); /* take off amount plotted */
 					a1 = Tgamma[(dx>>8)&0xff];   /* calc remainder pixel */
 					dx >>= 16;                   /* adjust to pixel (solid) count */
 					while (dx-- != 0)                 /* plot rest of pixels */
-						vector_draw_aa_pixel(x1,dy++,col, dirty);
-					vector_draw_aa_pixel(x1,dy,Tinten(a1,col), dirty);
+						vector_draw_aa_pixel(x1,dy++,_param.col, _param.dirty);
+					vector_draw_aa_pixel(x1,dy,Tinten(a1,_param.col), _param.dirty);
 					if (x1 == xx) break;
 					x1+=sx;
 					yy1+=sy;
@@ -584,12 +596,12 @@ public class vector
 			}
 			else
 			{
-				sy = ((yy1 <= y2) ? 1:-1);
-				sx = vec_div(x2-x1,dy);
+				sy = ((yy1 <= _param.y2) ? 1:-1);
+				sx = vec_div(_param.x2-x1,dy);
 				if (sx<0)
 					dx--;
 				yy1 >>= 16;
-				yy = y2>>16;
+				yy = _param.y2>>16;
 				width = vec_mult(beam<<4,Tcosin(abs(sx)>>5));
 				if (beam_diameter_is_one == 0)
 					x1-= width>>1; /* start back half the width */
@@ -597,13 +609,13 @@ public class vector
 				{
 					dy = width;    /* calc diameter of beam */
 					dx = x1>>16;
-					vector_draw_aa_pixel(dx++,yy1,Tinten(Tgammar[0xff&(x1>>8)],col), dirty);
+					vector_draw_aa_pixel(dx++,yy1,Tinten(Tgammar[0xff&(x1>>8)],_param.col), _param.dirty);
 					dy -= 0x10000-(0xffff & x1); /* take off amount plotted */
 					a1 = Tgamma[(dy>>8)&0xff];   /* remainder pixel */
 					dy >>= 16;                   /* adjust to pixel (solid) count */
 					while (dy-- != 0)                 /* plot rest of pixels */
-						vector_draw_aa_pixel(dx++,yy1,col, dirty);
-					vector_draw_aa_pixel(dx,yy1,Tinten(a1,col), dirty);
+						vector_draw_aa_pixel(dx++,yy1,_param.col, _param.dirty);
+					vector_draw_aa_pixel(dx,yy1,Tinten(a1,_param.col), _param.dirty);
 					if (yy1 == yy) break;
 					yy1+=sy;
 					x1+=sx;
@@ -612,10 +624,10 @@ public class vector
 		}
 		else /* use good old Bresenham for non-antialiasing 980317 BW */
 		{
-			dx = abs(x1-x2);
-			dy = abs(yy1-y2);
-			sx = (x1 <= x2) ? 1: -1;
-			sy = (yy1 <= y2) ? 1: -1;
+			dx = abs(x1-_param.x2);
+			dy = abs(yy1-_param.y2);
+			sx = (x1 <= _param.x2) ? 1: -1;
+			sy = (yy1 <= _param.y2) ? 1: -1;
 			cx = dx/2;
 			cy = dy/2;
                         
@@ -626,8 +638,8 @@ public class vector
 			{
 				for (;;)
 				{
-					vector_draw_aa_pixel (x1, yy1, col, dirty);
-					if (x1 == x2) break;
+					vector_draw_aa_pixel (x1, yy1, _param.col, _param.dirty);
+					if (x1 == _param.x2) break;
 					x1 += sx;
 					cx -= dy;
 					if (cx < 0)
@@ -641,8 +653,8 @@ public class vector
 			{
 				for (;;)
 				{
-					vector_draw_aa_pixel (x1, yy1, col, dirty);
-					if (yy1 == y2) break;
+					vector_draw_aa_pixel (x1, yy1, _param.col, _param.dirty);
+					if (yy1 == _param.y2) break;
 					yy1 += sy;
 					cy -= dx;
 					if (cy < 0)
@@ -655,9 +667,12 @@ public class vector
 		}
 	
 	//end_draw:
-	
-		x1=x2;
-		yy1=y2;
+	if (_param.intensity == 0){
+		x1=_param.x2;
+		yy1=_param.y2;
+        }
+                
+                return _param;
 	}
 	
 	
@@ -665,30 +680,37 @@ public class vector
 	 * Adds a line end point to the vertices list. The vector processor emulation
 	 * needs to call this.
 	 */
-	public static void vector_add_point (int x, int y, int color, int intensity)
+        static class struct_vector_add_point {
+            public int x;
+            public int y;
+            public int color;
+            public int intensity;
+        }
+                
+	public static struct_vector_add_point vector_add_point (struct_vector_add_point _param)
 	{
 		//point _new;
 	
-		intensity *= intensity_correction;
-		if (intensity > 0xff)
-			intensity = 0xff;
+		_param.intensity *= intensity_correction;
+		if (_param.intensity > 0xff)
+			_param.intensity = 0xff;
 	
-		if (flicker!=0 && (intensity > 0))
+		if (flicker!=0 && (_param.intensity > 0))
 		{
-			intensity += (intensity * (0x80-(rand()&0xff)) * flicker)>>16;
-			if (intensity < 0)
-				intensity = 0;
-			if (intensity > 0xff)
-				intensity = 0xff;
+			_param.intensity += (_param.intensity * (0x80-(rand()&0xff)) * flicker)>>16;
+			if (_param.intensity < 0)
+				_param.intensity = 0;
+			if (_param.intensity > 0xff)
+				_param.intensity = 0xff;
 		}
 		//new = &new_list[new_index];
                 if (new_list[new_index] == null)
                     new_list[new_index] = new point();
                 
-		new_list[new_index].x = x;
-		new_list[new_index].y = y;
-		new_list[new_index].col = color;
-		new_list[new_index].intensity = intensity;
+		new_list[new_index].x = _param.x;
+		new_list[new_index].y = _param.y;
+		new_list[new_index].col = _param.color;
+		new_list[new_index].intensity = _param.intensity;
 		new_list[new_index].status = VDIRTY; /* mark identical lines as clean later */
 	
 		new_index++;
@@ -697,6 +719,8 @@ public class vector
 			new_index--;
 			logerror("*** Warning! Vector list overflow!\n");
 		}
+                
+                return _param;
 	}
 	
 	/*
@@ -725,74 +749,83 @@ public class vector
 	/*
 	 * Set the clipping area
 	 */
-	public static void vector_set_clip (int x1, int yy1, int x2, int y2)
+        public static class struct_vector_set_clip {
+            public int x1;
+            public int yy1;
+            public int x2;
+            public int y2;
+        }
+        
+	public static struct_vector_set_clip vector_set_clip (struct_vector_set_clip _param)
 	{
 		int tmp;
 	
 		/* failsafe */
-		if ((x1 >= x2) || (yy1 >= y2))
+		if ((_param.x1 >= _param.x2) || (_param.yy1 >= _param.y2))
 		{
 			logerror("Error in clipping parameters.\n");
 			xmin = 0;
 			ymin = 0;
 			xmax = vecwidth;
 			ymax = vecheight;
-			return;
+			return _param;
 		}
 	
 		/* scale coordinates to display */
-		x1 = vec_mult(x1<<4,vector_scale_x);
-		yy1 = vec_mult(yy1<<4,vector_scale_y);
-		x2 = vec_mult(x2<<4,vector_scale_x);
-		y2 = vec_mult(y2<<4,vector_scale_y);
+		_param.x1 = vec_mult(_param.x1<<4,vector_scale_x);
+		_param.yy1 = vec_mult(_param.yy1<<4,vector_scale_y);
+		_param.x2 = vec_mult(_param.x2<<4,vector_scale_x);
+		_param.y2 = vec_mult(_param.y2<<4,vector_scale_y);
 	
 		/* fix orientation */
 	
 		/* don't forget to swap x1,x2, since x2 becomes the minimum */
 		if ((vector_orientation & ORIENTATION_FLIP_X) != 0)
 		{
-			x1 = ((vecwidth-1)<<16)-x1;
-			x2 = ((vecwidth-1)<<16)-x2;
-			tmp = x1; x1 = x2; x2 = tmp;
+			_param.x1 = ((vecwidth-1)<<16)-_param.x1;
+			_param.x2 = ((vecwidth-1)<<16)-_param.x2;
+			tmp = _param.x1; _param.x1 = _param.x2; _param.x2 = tmp;
 		}
 		/* don't forget to swap yy1,y2, since y2 becomes the minimum */
 		if ((vector_orientation & ORIENTATION_FLIP_Y) != 0)
 		{
-			yy1 = ((vecheight-1)<<16)-yy1;
-			y2 = ((vecheight-1)<<16)-y2;
-			tmp = yy1; yy1 = y2; y2 = tmp;
+			_param.yy1 = ((vecheight-1)<<16)-_param.yy1;
+			_param.y2 = ((vecheight-1)<<16)-_param.y2;
+			tmp = _param.yy1; _param.yy1 = _param.y2; _param.y2 = tmp;
 		}
 		/* swapping x/y coordinates will still have the minima in x1,yy1 */
 		if (((Machine.orientation ^ vector_orientation) & ORIENTATION_SWAP_XY) != 0)
 		{
-			tmp = x1; x1 = yy1; yy1 = tmp;
-			tmp = x2; x2 = y2; y2 = tmp;
+			tmp = _param.x1; _param.x1 = _param.yy1; _param.yy1 = tmp;
+			tmp = _param.x2; _param.x2 = _param.y2; _param.y2 = tmp;
 		}
 		/* don't forget to swap x1,x2, since x2 becomes the minimum */
 		if ((Machine.orientation & ORIENTATION_FLIP_X) != 0)
 		{
-			x1 = ((vecwidth-1)<<16)-x1;
-			x2 = ((vecwidth-1)<<16)-x2;
-			tmp = x1; x1 = x2; x2 = tmp;
+			_param.x1 = ((vecwidth-1)<<16)-_param.x1;
+			_param.x2 = ((vecwidth-1)<<16)-_param.x2;
+			tmp = _param.x1; _param.x1 = _param.x2; _param.x2 = tmp;
 		}
 		/* don't forget to swap yy1,y2, since y2 becomes the minimum */
 		if ((Machine.orientation & ORIENTATION_FLIP_Y) != 0)
 		{
-			yy1 = ((vecheight-1)<<16)-yy1;
-			y2 = ((vecheight-1)<<16)-y2;
-			tmp = yy1; yy1 = y2; y2 = tmp;
+			_param.yy1 = ((vecheight-1)<<16)-_param.yy1;
+			_param.y2 = ((vecheight-1)<<16)-_param.y2;
+			tmp = _param.yy1; _param.yy1 = _param.y2; _param.y2 = tmp;
 		}
 	
-		xmin = x1 >> 16;
-		ymin = yy1 >> 16;
-		xmax = x2 >> 16;
-		ymax = y2 >> 16;
+		xmin = _param.x1 >> 16;
+		ymin = _param.yy1 >> 16;
+		xmax = _param.x2 >> 16;
+		ymax = _param.y2 >> 16;
 	
 		/* Make it foolproof by trapping rounding errors */
 		if (xmin < 0) xmin = 0;
 		if (ymin < 0) ymin = 0;
 		if (xmax > vecwidth) xmax = vecwidth;
 		if (ymax > vecheight) ymax = vecheight;
+                
+                return _param;
 	}
 	
 	
@@ -960,12 +993,39 @@ public class vector
 		//_new = new_list;
 		for (i = 0; i < new_index; i++)
 		{
-			if (new_list[newPos].status == VCLIP)
-				vector_set_clip (new_list[newPos].x, new_list[newPos].y, new_list[newPos].arg1, new_list[newPos].arg2);
-			else
+			if (new_list[newPos].status == VCLIP){
+				struct_vector_set_clip _param = new struct_vector_set_clip();
+                                _param.x1 = new_list[newPos].x;
+                                _param.yy1 = new_list[newPos].y;
+                                _param.x2 = new_list[newPos].arg1;
+                                _param.y2 = new_list[newPos].arg2;
+                                
+                                _param = vector_set_clip ( _param );
+                                
+                                /*new_list[newPos].x = _param.x1;
+                                new_list[newPos].y = _param.yy1;
+                                new_list[newPos].arg1 = _param.x2;
+                                new_list[newPos].arg2 = _param.y2;*/
+			
+                        } 
+                        else
 			{
 				new_list[newPos].arg1 = p_index;
-				vector_draw_to (new_list[newPos].x, new_list[newPos].y, new_list[newPos].col, Tgamma[new_list[newPos].intensity], new_list[newPos].status);
+                                
+                                struct_draw_to _param = new struct_draw_to();
+                                _param.x2 = new_list[newPos].x;
+                                _param.y2 = new_list[newPos].y;
+                                _param.col = new_list[newPos].col;
+                                _param.intensity = Tgamma[new_list[newPos].intensity];
+                                _param.dirty = new_list[newPos].status;
+                                
+				_param = vector_draw_to ( _param );
+                                
+                                new_list[newPos].x = _param.x2;
+                                new_list[newPos].y = _param.y2;
+                                new_list[newPos].col = _param.col;
+                                Tgamma[new_list[newPos].intensity] = _param.intensity;
+                                new_list[newPos].status = _param.dirty;
 	
 				new_list[newPos].arg2 = p_index;
 			}
