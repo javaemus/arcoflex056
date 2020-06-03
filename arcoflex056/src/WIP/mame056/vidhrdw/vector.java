@@ -405,7 +405,7 @@ public class vector
 	static void vector_draw_aa_pixel_15 (int x, int y, int col, int dirty)
 	{
             if ((col == 0)&&(dirty!=0)){
-                    col = 0xFFFFFF;
+                    col = 0x00FF00;
             }
 		int dst;
 	
@@ -417,9 +417,8 @@ public class vector
 		//dst = ((UINT16 *)vecbitmap.line[y])[x];
                 dst = (new UShortPtr(vecbitmap.line[y])).read(x);
 		//((UINT16 *)vecbitmap.line[y])[x] = LIMIT5(((col>>3) & 0x1f) + (dst & 0x1f))
-                (new UShortPtr(vecbitmap.line[y])).write(x, (char) (LIMIT5(((col>>3) & 0x1f) + (dst & 0x1f))
-                        | (LIMIT5(((col >> 11) & 0x1f) + ((dst >> 5) & 0x1f)) << 5)
-                        | (LIMIT5((col >> 19) + (dst >> 10)) << 10)));
+                if (dirty!=0)
+                (new UShortPtr(vecbitmap.line[y])).write(x, (char) 0x00FF00);
 	
 		if (p_index<MAX_PIXELS)
 		{
@@ -485,7 +484,7 @@ public class vector
 	
 	public static struct_draw_to vector_draw_to (struct_draw_to _param)
 	{
-            //int x1=0,yy1=0;
+                //x1=0;yy1=0;
 		int a1=0;
 		int dx=0,dy=0,sx=0,sy=0,cx=0,cy=0,width=0;
 		
@@ -1021,6 +1020,7 @@ public class vector
                                 
 				_param = vector_draw_to ( _param );
                                 
+                                //if ((_param.intensity!=0)){
                                 new_list[newPos].x = _param.x2;
                                 new_list[newPos].y = _param.y2;
                                 new_list[newPos].col = _param.col;
@@ -1028,6 +1028,7 @@ public class vector
                                 new_list[newPos].status = _param.dirty;
 	
 				new_list[newPos].arg2 = p_index;
+                                
 			}
 			newPos++;
 		}
