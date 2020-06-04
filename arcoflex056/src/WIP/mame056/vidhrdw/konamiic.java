@@ -59,33 +59,36 @@ public class konamiic
         		(it could be easily converted into an iterative one).
         		It's called shuffle because it mimics the shuffling of a deck of cards.
         	*/
-        	static void shuffle(UBytePtr buf,int len)
+        	static void shuffle(UShortPtr buf,int len)
         	{
         		int i;
-        		int t;
-        	
-        		if (len == 2) return;
-        	
-        		if ((len % 4)!=0) exit(1);   /* must not happen */
-        	
-        		len /= 2;
-        	
-        		for (i = 0;i < len/2;i++)
-        		{
-        			t = buf.read(len/2 + i);
-        			buf.write(len/2 + i, buf.read(len + i));
-        			buf.write(len + i, (char) t);
-        		}
-        	
-        		shuffle(buf,len);
-        		shuffle(new UBytePtr(buf, len),len);
+                        char t;
+
+                        if (len == 2) {
+                            return;
+                        }
+
+                        if ((len % 4) != 0) {
+                            throw new UnsupportedOperationException("Error in shuffle konamicc");
+                        }   /* must not happen */
+
+                        len /= 2;
+
+                        for (i = 0; i < len / 2; i++) {
+                            t = buf.read(len / 2 + i);
+                            buf.write(len / 2 + i, buf.read(len + i));
+                            buf.write(len + i, t);
+                        }
+
+                        shuffle(new UShortPtr(buf), len);
+                        shuffle(new UShortPtr(buf, len), len);//len*2 ??
         	}
         	
         	
         	/* helper function to join two 16-bit ROMs and form a 32-bit data stream */
         	public static void konami_rom_deinterleave_2(int mem_region)
         	{
-        		shuffle(memory_region(mem_region),memory_region_length(mem_region)/2);
+        		shuffle(new UShortPtr(memory_region(mem_region)),memory_region_length(mem_region));
         	}
         	
         	/* helper function to join four 16-bit ROMs and form a 64-bit data stream */
@@ -869,83 +872,80 @@ public class konamiic
         			K052109_callbackProcPtr callback)
         	{
         		int gfx_index;
-        		GfxLayout charlayout = new GfxLayout
-        		(
-        			8,8,
-        			0,				/* filled in later */
-        			4,
-        			new int[] { 0, 0, 0, 0 },	/* filled in later */
-        			new int[] { 0, 1, 2, 3, 4, 5, 6, 7 },
-        			new int[] { 0*32, 1*32, 2*32, 3*32, 4*32, 5*32, 6*32, 7*32 },
-        			32*8
-        		);
-        	
-        	
-        		/* find first empty slot to decode gfx */
-        		for (gfx_index = 0; gfx_index < MAX_GFX_ELEMENTS; gfx_index++)
-        			if (Machine.gfx[gfx_index] == null)
-        				break;
-        		if (gfx_index == MAX_GFX_ELEMENTS)
-        			return 1;
-        	
-        		/* tweak the structure for the number of tiles we have */
-        		charlayout.total = memory_region_length(gfx_memory_region) / 32;
-        		charlayout.planeoffset[0] = plane3 * 8;
-        		charlayout.planeoffset[1] = plane2 * 8;
-        		charlayout.planeoffset[2] = plane1 * 8;
-        		charlayout.planeoffset[3] = plane0 * 8;
-        	
-        		/* decode the graphics */
-        		Machine.gfx[gfx_index] = decodegfx(memory_region(gfx_memory_region),charlayout);
-        		if (Machine.gfx[gfx_index]==null)
-        			return 1;
-        	
-        		/* set the color information */
-        		if (Machine.drv.color_table_len != 0)
-        		{
-        			Machine.gfx[gfx_index].colortable = Machine.remapped_colortable;
-        			Machine.gfx[gfx_index].total_colors = Machine.drv.color_table_len / 16;
-        		}
-        		else
-        		{
-        			Machine.gfx[gfx_index].colortable = new IntArray(Machine.pens);
-        			Machine.gfx[gfx_index].total_colors = Machine.drv.total_colors / 16;
-        		}
-        	
-        		K052109_memory_region = gfx_memory_region;
-        		K052109_gfxnum = gfx_index;
-        		K052109_callback = callback;
-        		K052109_RMRD_line = CLEAR_LINE;
-        	
-        		has_extra_video_ram = 0;
-        	
-        		K052109_tilemap[0] = tilemap_create(K052109_get_tile_info0,tilemap_scan_rows,TILEMAP_TRANSPARENT,8,8,64,32);
-        		K052109_tilemap[1] = tilemap_create(K052109_get_tile_info1,tilemap_scan_rows,TILEMAP_TRANSPARENT,8,8,64,32);
-        		K052109_tilemap[2] = tilemap_create(K052109_get_tile_info2,tilemap_scan_rows,TILEMAP_TRANSPARENT,8,8,64,32);
-        	
-        		K052109_ram = new UBytePtr(0x6000);
-        	
-        		if (K052109_ram==null || K052109_tilemap[0]==null || K052109_tilemap[1]==null || K052109_tilemap[2]==null)
-        		{
-        			K052109_vh_stop.handler();
-        			return 1;
-        		}
-        	
-        		memset(K052109_ram,0,0x6000);
-        	
-        		K052109_colorram_F = new UBytePtr(K052109_ram, 0x0000);
-        		K052109_colorram_A = new UBytePtr(K052109_ram, 0x0800);
-        		K052109_colorram_B = new UBytePtr(K052109_ram, 0x1000);
-        		K052109_videoram_F = new UBytePtr(K052109_ram, 0x2000);
-        		K052109_videoram_A = new UBytePtr(K052109_ram, 0x2800);
-        		K052109_videoram_B = new UBytePtr(K052109_ram, 0x3000);
-        		K052109_videoram2_F = new UBytePtr(K052109_ram, 0x4000);
-        		K052109_videoram2_A = new UBytePtr(K052109_ram, 0x4800);
-        		K052109_videoram2_B = new UBytePtr(K052109_ram, 0x5000);
-        	
-        		tilemap_set_transparent_pen(K052109_tilemap[0],0);
-        		tilemap_set_transparent_pen(K052109_tilemap[1],0);
-        		tilemap_set_transparent_pen(K052109_tilemap[2],0);
+        GfxLayout charlayout = new GfxLayout(
+                8, 8,
+                0, /* filled in later */
+                4,
+                new int[]{0, 0, 0, 0}, /* filled in later */
+                new int[]{0, 1, 2, 3, 4, 5, 6, 7},
+                new int[]{0 * 32, 1 * 32, 2 * 32, 3 * 32, 4 * 32, 5 * 32, 6 * 32, 7 * 32},
+                32 * 8
+        );
+
+
+        /* find first empty slot to decode gfx */
+        for (gfx_index = 0; gfx_index < MAX_GFX_ELEMENTS; gfx_index++) {
+            if (Machine.gfx[gfx_index] == null) {
+                break;
+            }
+        }
+        if (gfx_index == MAX_GFX_ELEMENTS) {
+            return 1;
+        }
+
+        /* tweak the structure for the number of tiles we have */
+        charlayout.total = memory_region_length(gfx_memory_region) / 32;
+        charlayout.planeoffset[0] = plane3 * 8;
+        charlayout.planeoffset[1] = plane2 * 8;
+        charlayout.planeoffset[2] = plane1 * 8;
+        charlayout.planeoffset[3] = plane0 * 8;
+
+        /* decode the graphics */
+        Machine.gfx[gfx_index] = decodegfx(memory_region(gfx_memory_region), charlayout);
+        if (Machine.gfx[gfx_index] == null) {
+            return 1;
+        }
+
+        /* set the color information */
+        Machine.gfx[gfx_index].colortable = new IntArray(Machine.remapped_colortable);
+        Machine.gfx[gfx_index].total_colors = Machine.drv.color_table_len / 16;
+
+        K052109_memory_region = gfx_memory_region;
+        K052109_gfxnum = gfx_index;
+        K052109_callback = callback;
+        K052109_RMRD_line = CLEAR_LINE;
+
+        has_extra_video_ram = 0;
+
+        K052109_tilemap[0] = tilemap_create(K052109_get_tile_info0,tilemap_scan_rows,TILEMAP_TRANSPARENT,8,8,64,32);
+	K052109_tilemap[1] = tilemap_create(K052109_get_tile_info1,tilemap_scan_rows,TILEMAP_TRANSPARENT,8,8,64,32);
+	K052109_tilemap[2] = tilemap_create(K052109_get_tile_info2,tilemap_scan_rows,TILEMAP_TRANSPARENT,8,8,64,32);
+
+        K052109_ram = new UBytePtr(0x6000);
+
+        if (K052109_ram == null || K052109_tilemap[0] == null || K052109_tilemap[1] == null || K052109_tilemap[2] == null) {
+            K052109_vh_stop.handler();
+            return 1;
+        }
+
+        for (int i = 0; i < 0x6000; i++) {
+            K052109_ram.write(i, 0);//memset(K052109_ram,0,0x6000);
+        }
+        K052109_colorram_F = new UBytePtr(K052109_ram, 0x0000);
+        K052109_colorram_A = new UBytePtr(K052109_ram, 0x0800);
+        K052109_colorram_B = new UBytePtr(K052109_ram, 0x1000);
+        K052109_videoram_F = new UBytePtr(K052109_ram, 0x2000);
+        K052109_videoram_A = new UBytePtr(K052109_ram, 0x2800);
+        K052109_videoram_B = new UBytePtr(K052109_ram, 0x3000);
+        K052109_videoram2_F = new UBytePtr(K052109_ram, 0x4000);
+        K052109_videoram2_A = new UBytePtr(K052109_ram, 0x4800);
+        K052109_videoram2_B = new UBytePtr(K052109_ram, 0x5000);
+
+        K052109_tilemap[0].transparent_pen = 0;
+        K052109_tilemap[1].transparent_pen = 0;
+        K052109_tilemap[2].transparent_pen = 0;
+
+        
         	
         /*TODO*///		state_save_register_UINT8("k052109", 0, "ram",        K052109_ram, 0x6000);
         /*TODO*///		state_save_register_int  ("k052109", 0, "rmrd",       &K052109_RMRD_line);
@@ -1283,11 +1283,11 @@ public class konamiic
             tilemap_set_scrolly(K052109_tilemap[2], 0, yscroll);
         }
 
-        tilemap0_preupdate();
+        //tilemap0_preupdate();
         //tilemap_update(K052109_tilemap[0]);
-        tilemap1_preupdate();
+        //tilemap1_preupdate();
         //tilemap_update(K052109_tilemap[1]);
-        tilemap2_preupdate();
+        //tilemap2_preupdate();
         //tilemap_update(K052109_tilemap[2]);
 
         /*#ifdef MAME_DEBUG
@@ -3001,11 +3001,11 @@ public class konamiic
         		K051316_wraparound[chip] = status;
         	}
         	
-        /*TODO*///	void K051316_set_offset(int chip, int xoffs, int yoffs)
-        /*TODO*///	{
-        /*TODO*///		K051316_offset[chip][0] = xoffs;
-        /*TODO*///		K051316_offset[chip][1] = yoffs;
-        /*TODO*///	}
+        	public static void K051316_set_offset(int chip, int xoffs, int yoffs)
+        	{
+        		K051316_offset[chip][0] = xoffs;
+        		K051316_offset[chip][1] = yoffs;
+        	}
         	
         	
         	public static void K051316_zoom_draw(int chip, mame_bitmap bitmap,int flags,int priority)

@@ -295,6 +295,8 @@ import static WIP.mame056.drivers.parodius.*;
 import static WIP.mame056.drivers.aliens.*;
 import static WIP.mame056.drivers.hcastle.*;
 import static WIP.mame056.drivers.ajax.*;
+import static WIP.mame056.drivers.rollerg.*;
+import static WIP.mame056.drivers.surpratk.*;
 
 public class driver {
 
@@ -2961,10 +2963,10 @@ public class driver {
         driver_aliens2,	/* GX875 (c) 1990 (World) */
         driver_aliensu,	/* GX875 (c) 1990 (US) */
         driver_aliensj,	/* GX875 (c) 1990 (Japan) */
-        /*TODO*///	driver_surpratk,	/* GX911 (c) 1990 (Japan) */
+        driver_surpratk,	/* GX911 (c) 1990 (Japan) */
         driver_parodius,	/* GX955 (c) 1990 (Japan) */
-        /*TODO*///	driver_rollerg,	/* GX999 (c) 1991 (US) */
-        /*TODO*///	driver_rollergj,	/* GX999 (c) 1991 (Japan) */
+        driver_rollerg,	/* GX999 (c) 1991 (US) */
+        driver_rollergj,	/* GX999 (c) 1991 (Japan) */
         driver_simpsons,	/* GX072 (c) 1991 */
         driver_simpsn2p,	/* GX072 (c) 1991 */
         driver_simps2pj,	/* GX072 (c) 1991 (Japan) */

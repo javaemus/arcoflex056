@@ -21,6 +21,7 @@ import static mame056.memoryH.*;
 import static mame056.palette.*;
 import static mame056.cpu.konami.konami.konami_cpu_setlines_callback;
 import static mame056.cpu.konami.konami.konami_cpu_setlines_callbackPtr;
+import static mame056.sound.k053260.*;
 import static arcadeflex056.osdepend.logerror;
 
 public class simpsons
@@ -134,8 +135,7 @@ public class simpsons
 		/* If the sound CPU is running, read the status, otherwise
 		   just make it pass the test */
 		if (Machine.sample_rate != 0){ 	
-/*TODO*///                    return K053260_0_r.handler(2 + offset);
-                    return 0;
+                    return K053260_0_r.handler(2 + offset);                    
                 }
 		else
 		{
