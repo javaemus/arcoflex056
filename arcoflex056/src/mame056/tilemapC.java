@@ -738,11 +738,11 @@ public class tilemapC {
             tilemap.tile_depth = 0;
             tilemap.tile_granularity = 0;
             tilemap.tile_dirty_map = null;
-            /*TODO*///
+            
             tilemap.logical_rowscroll	= new int[tilemap.cached_height];
             tilemap.cached_rowscroll	= new int[tilemap.cached_height];
-            tilemap.logical_colscroll	= new int[tilemap.cached_width];
-            tilemap.cached_colscroll	= new int[tilemap.cached_width];
+            tilemap.logical_colscroll	= new int[tilemap.cached_width*2];
+            tilemap.cached_colscroll	= new int[tilemap.cached_width*2];
 
             tilemap.transparency_data = new UBytePtr( num_tiles * 1024 );
             tilemap.transparency_data_row = new UBytePtr[ num_rows ];

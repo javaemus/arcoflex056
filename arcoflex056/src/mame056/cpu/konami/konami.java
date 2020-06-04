@@ -3697,8 +3697,19 @@ int A() {
     };
     opcode pulu = new opcode() {
         public void handler() {
-            fclose(konamilog);
-            throw new UnsupportedOperationException("unsupported opcode");
+            int t;
+            t = IMMBYTE();
+            if(( t&0x01 )!=0) { konami.cc=PULUBYTE(); konami_ICount[0] -= 1; }
+            if(( t&0x02 )!=0) { A(PULUBYTE());  konami_ICount[0] -= 1; }
+            if(( t&0x04 )!=0) { B(PULUBYTE());  konami_ICount[0] -= 1; }
+            if(( t&0x08 )!=0) { konami.dp = PULUBYTE(); konami_ICount[0] -= 1; }
+            if(( t&0x10 )!=0) { konami.x = PULUWORD(); konami_ICount[0] -= 2; }
+            if(( t&0x20 )!=0) { konami.y = PULUWORD(); konami_ICount[0] -= 2; }
+            if(( t&0x40 )!=0) { konami.s = PULUWORD(); konami_ICount[0] -= 2; }
+            if(( t&0x80 )!=0) { konami.pc = PULLWORD(); change_pc16(konami.pc); konami_ICount[0] -= 2; }
+
+            /* check after all PULLs */
+            if(( t&0x01 )!=0) { CHECK_IRQ_LINES(); }
         }
     };
     opcode rol_di = new opcode() {

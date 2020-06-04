@@ -35,6 +35,8 @@ import static mame056.sound.vlm5030H.*;
 import static mame056.sound.streams.*;
 import static mame056.sound.k007232.*;
 import static mame056.sound.k007232H.*;
+import static mame056.sound.k051649.*;
+import static mame056.sound.k051649H.*;
 import static WIP.mame056.vidhrdw.hcastle.*;
 import static WIP.mame056.vidhrdw.konamiic.*;
 import static mame056.sound.MSM5205.*;
@@ -149,7 +151,7 @@ public class hcastle
 		new Memory_ReadAddress(MEMPORT_MARKER, MEMPORT_DIRECTION_READ | MEMPORT_TYPE_MEM | MEMPORT_WIDTH_8),
 		new Memory_ReadAddress( 0x0000, 0x7fff, MRA_ROM ),
 		new Memory_ReadAddress( 0x8000, 0x87ff, MRA_RAM ),
-/*TODO*///		new Memory_ReadAddress( 0xa000, 0xa000, YM3812_status_port_0_r ),
+		new Memory_ReadAddress( 0xa000, 0xa000, YM3812_status_port_0_r ),
 		new Memory_ReadAddress( 0xb000, 0xb00d, K007232_read_port_0_r ),
 		new Memory_ReadAddress( 0xd000, 0xd000, soundlatch_r ),
 		new Memory_ReadAddress(MEMPORT_MARKER, 0)
@@ -159,12 +161,12 @@ public class hcastle
 		new Memory_WriteAddress(MEMPORT_MARKER, MEMPORT_DIRECTION_WRITE | MEMPORT_TYPE_MEM | MEMPORT_WIDTH_8),
 		new Memory_WriteAddress( 0x0000, 0x7fff, MWA_ROM ),
 		new Memory_WriteAddress( 0x8000, 0x87ff, MWA_RAM ),
-/*TODO*///		new Memory_WriteAddress( 0x9800, 0x987f, K051649_waveform_w ),
-/*TODO*///		new Memory_WriteAddress( 0x9880, 0x9889, K051649_frequency_w ),
-/*TODO*///		new Memory_WriteAddress( 0x988a, 0x988e, K051649_volume_w ),
-/*TODO*///		new Memory_WriteAddress( 0x988f, 0x988f, K051649_keyonoff_w ),
-/*TODO*///		new Memory_WriteAddress( 0xa000, 0xa000, YM3812_control_port_0_w ),
-/*TODO*///		new Memory_WriteAddress( 0xa001, 0xa001, YM3812_write_port_0_w ),
+		new Memory_WriteAddress( 0x9800, 0x987f, K051649_waveform_w ),
+		new Memory_WriteAddress( 0x9880, 0x9889, K051649_frequency_w ),
+		new Memory_WriteAddress( 0x988a, 0x988e, K051649_volume_w ),
+		new Memory_WriteAddress( 0x988f, 0x988f, K051649_keyonoff_w ),
+		new Memory_WriteAddress( 0xa000, 0xa000, YM3812_control_port_0_w ),
+		new Memory_WriteAddress( 0xa001, 0xa001, YM3812_write_port_0_w ),
 		new Memory_WriteAddress( 0xb000, 0xb00d, K007232_write_port_0_w ),
 		new Memory_WriteAddress( 0xc000, 0xc000, sound_bank_w ), /* 7232 bankswitch */
 		new Memory_WriteAddress(MEMPORT_MARKER, 0)
@@ -328,11 +330,11 @@ public class hcastle
 		new WriteYmHandlerPtr[]{ irqhandler }
 	);
 	
-/*TODO*///	static k051649_interface k051649_interface = new k051649_interface
-/*TODO*///	(
-/*TODO*///		3579545/2,	/* Clock */
-/*TODO*///		45,			/* Volume */
-/*TODO*///	);
+	static k051649_interface k051649_interface = new k051649_interface
+	(
+		3579545/2,	/* Clock */
+		45			/* Volume */
+	);
 	
 	static MachineDriver machine_driver_hcastle = new MachineDriver
 	(
@@ -378,10 +380,10 @@ public class hcastle
 			new MachineSound(
 				SOUND_YM3812,
 				ym3812_interface
-/*TODO*///			),
-/*TODO*///			new MachineSound(
-/*TODO*///				SOUND_K051649,
-/*TODO*///				k051649_interface,
+			),
+			new MachineSound(
+				SOUND_K051649,
+				k051649_interface
 			)
 		}
                 

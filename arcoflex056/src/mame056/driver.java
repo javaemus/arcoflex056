@@ -294,6 +294,7 @@ import static WIP.mame056.drivers.spdodgeb.*;
 import static WIP.mame056.drivers.parodius.*;
 import static WIP.mame056.drivers.aliens.*;
 import static WIP.mame056.drivers.hcastle.*;
+import static WIP.mame056.drivers.ajax.*;
 
 public class driver {
 
@@ -2928,9 +2929,9 @@ public class driver {
         driver_hcastle,	/* GX768 (c) 1988 */
         driver_hcastlea,	/* GX768 (c) 1988 */
         driver_hcastlej,	/* GX768 (c) 1988 (Japan) */
-        /*TODO*///	driver_ajax,		/* GX770 (c) 1987 */
-        /*TODO*///	driver_typhoon,	/* GX770 (c) 1987 */
-        /*TODO*///	driver_ajaxj,		/* GX770 (c) 1987 (Japan) */
+        driver_ajax,		/* GX770 (c) 1987 */
+        driver_typhoon,	/* GX770 (c) 1987 */
+        driver_ajaxj,		/* GX770 (c) 1987 (Japan) */
         /*TODO*///	driver_scontra,	/* GX775 (c) 1988 */
         /*TODO*///	driver_scontraj,	/* GX775 (c) 1988 (Japan) */
         /*TODO*///	driver_thunderx,	/* GX873 (c) 1988 */

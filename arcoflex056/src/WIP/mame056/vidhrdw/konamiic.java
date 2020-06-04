@@ -1179,16 +1179,7 @@ public class konamiic
         	
         	public static void K052109_tilemap_update()
         	{
-        /*TODO*///	#if 0
-        /*TODO*///	{
-        /*TODO*///	usrintf_showmessage("%x %x %x %x",
-        /*TODO*///		K052109_charrombank[0],
-        /*TODO*///		K052109_charrombank[1],
-        /*TODO*///		K052109_charrombank[2],
-        /*TODO*///		K052109_charrombank[3]);
-        /*TODO*///	}
-        /*TODO*///	#endif
-        		if ((K052109_scrollctrl & 0x03) == 0x02) {
+        if ((K052109_scrollctrl & 0x03) == 0x02) {
             int xscroll, yscroll, offs;
             UBytePtr scrollram = new UBytePtr(K052109_ram, 0x1a00);
 
@@ -1298,29 +1289,15 @@ public class konamiic
         //tilemap_update(K052109_tilemap[1]);
         tilemap2_preupdate();
         //tilemap_update(K052109_tilemap[2]);
-        	
-        /*TODO*///	#ifdef MAME_DEBUG
-        /*TODO*///	if ((K052109_scrollctrl & 0x03) == 0x01 ||
-        /*TODO*///			(K052109_scrollctrl & 0x18) == 0x08 ||
-        /*TODO*///			((K052109_scrollctrl & 0x04) && (K052109_scrollctrl & 0x03)) ||
-        /*TODO*///			((K052109_scrollctrl & 0x20) && (K052109_scrollctrl & 0x18)) ||
-        /*TODO*///			(K052109_scrollctrl & 0xc0) != 0)
-        /*TODO*///		usrintf_showmessage("scrollcontrol = %02x",K052109_scrollctrl);
-        /*TODO*///	#endif
-        	
-        /*TODO*///	#if 0
-        /*TODO*///	if (keyboard_pressed(KEYCODE_F))
-        /*TODO*///	{
-        /*TODO*///		FILE *fp;
-        /*TODO*///		fp=fopen("TILE.DMP", "w+b");
-        /*TODO*///		if (fp)
-        /*TODO*///		{
-        /*TODO*///			fwrite(K052109_ram, 0x6000, 1, fp);
-        /*TODO*///			usrintf_showmessage("saved");
-        /*TODO*///			fclose(fp);
-        /*TODO*///		}
-        /*TODO*///	}
-        /*TODO*///	#endif
+
+        /*#ifdef MAME_DEBUG
+         if ((K052109_scrollctrl & 0x03) == 0x01 ||
+         (K052109_scrollctrl & 0x18) == 0x08 ||
+         ((K052109_scrollctrl & 0x04) && (K052109_scrollctrl & 0x03)) ||
+         ((K052109_scrollctrl & 0x20) && (K052109_scrollctrl & 0x18)) ||
+         (K052109_scrollctrl & 0xc0) != 0)
+         usrintf_showmessage("scrollcontrol = %02x",K052109_scrollctrl);
+         #endif*/
         	}
         	
         	public static void K052109_tilemap_draw(mame_bitmap bitmap,int num,int flags,int priority)
@@ -2807,29 +2784,24 @@ public class konamiic
         		}
         		else if (bpp == 7 || bpp == 8)
         		{
-        			GfxLayout charlayout = new GfxLayout
-        			(
-        				16,16,
-        				0,				/* filled in later */
-        				0,				/* filled in later */
-        				new int[] { 0 },			/* filled in later */
-        				new int[] { 0*8, 1*8, 2*8, 3*8, 4*8, 5*8, 6*8, 7*8,
-        						8*8, 9*8, 10*8, 11*8, 12*8, 13*8, 14*8, 15*8 },
-        				new int[] { 0*128, 1*128, 2*128, 3*128, 4*128, 5*128, 6*128, 7*128,
-        						8*128, 9*128, 10*128, 11*128, 12*128, 13*128, 14*128, 15*128 },
-        				256*8
-        			);
-        			int i;
-        	
-        	
-        			/* tweak the structure for the number of tiles we have */
-        			charlayout.total = memory_region_length(gfx_memory_region) / 256;
-        			charlayout.planes = bpp;
-        			if (bpp == 7) for (i = 0;i < 7;i++) charlayout.planeoffset[i] = i+1;
-        			else for (i = 0;i < 8;i++) charlayout.planeoffset[i] = i;
-        	
-        			/* decode the graphics */
-        			Machine.gfx[gfx_index] = decodegfx(memory_region(gfx_memory_region),charlayout);
+        			GfxLayout charlayout = new GfxLayout(
+                    16, 16,
+                    0, /* filled in later */
+                    7,
+                    new int[]{1, 2, 3, 4, 5, 6, 7},
+                    new int[]{0 * 8, 1 * 8, 2 * 8, 3 * 8, 4 * 8, 5 * 8, 6 * 8, 7 * 8,
+                        8 * 8, 9 * 8, 10 * 8, 11 * 8, 12 * 8, 13 * 8, 14 * 8, 15 * 8},
+                    new int[]{0 * 128, 1 * 128, 2 * 128, 3 * 128, 4 * 128, 5 * 128, 6 * 128, 7 * 128,
+                        8 * 128, 9 * 128, 10 * 128, 11 * 128, 12 * 128, 13 * 128, 14 * 128, 15 * 128},
+                    256 * 8
+            );
+
+
+            /* tweak the structure for the number of tiles we have */
+            charlayout.total = memory_region_length(gfx_memory_region) / 256;
+
+            /* decode the graphics */
+            Machine.gfx[gfx_index] = decodegfx(memory_region(gfx_memory_region), charlayout);
         		}
         		else
         		{
@@ -3023,12 +2995,12 @@ public class konamiic
         /*TODO*///	{
         /*TODO*///		K051316_ctrl_w(2,offset,data);
         /*TODO*///	} };
-        /*TODO*///	
-        /*TODO*///	void K051316_wraparound_enable(int chip, int status)
-        /*TODO*///	{
-        /*TODO*///		K051316_wraparound[chip] = status;
-        /*TODO*///	}
-        /*TODO*///	
+        	
+        	public static void K051316_wraparound_enable(int chip, int status)
+        	{
+        		K051316_wraparound[chip] = status;
+        	}
+        	
         /*TODO*///	void K051316_set_offset(int chip, int xoffs, int yoffs)
         /*TODO*///	{
         /*TODO*///		K051316_offset[chip][0] = xoffs;
