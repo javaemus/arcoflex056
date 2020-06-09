@@ -277,6 +277,11 @@ public class ptr {
             //return (char) (((memory[offset + 1 + index * 2] << 8) & 0xFF) | (memory[offset + index * 2] & 0xFF));
             return (char) (memory[offset + index]);
         }
+        
+        public char read() {
+            //return (char) (((memory[offset + 1 + index * 2] << 8) & 0xFF) | (memory[offset + index * 2] & 0xFF));
+            return (char) (memory[offset]);
+        }
 
         public void write(int index, char value) {
             

@@ -506,7 +506,7 @@ public class drawgfx {
 /*TODO*///}
 /*TODO*///
 /*TODO*///
-/*TODO*///static int afterdrawmask = 31;
+    static int afterdrawmask = 31;
     public static int pdrawgfx_shadow_lowpri = 0;
 
     /*TODO*///
@@ -7122,8 +7122,9 @@ public class drawgfx {
                                     System.out.println("BLOCKMOVEPRI(8toN_pen_table1 NOT IMPLEMENTED,");
                                     /*TODO*///BLOCKMOVEPRI(8toN_pen_table,(sd,sw,sh,sm,ls,ts,flipx,flipy,dd,dw,dh,dm,paldata,pribuf,pri_mask,transparent_color));
                                 } else {
-                                    System.out.println("BLOCKMOVELU(8toN_pen_table2 NOT IMPLEMENTED,");
+                                    System.out.println("BLOCKMOVELU(8toN_pen_table2 WIP METHOD");
                                     /*TODO*///BLOCKMOVELU(8toN_pen_table,(sd,sw,sh,sm,ls,ts,flipx,flipy,dd,dw,dh,dm,paldata,transparent_color));
+                                    blockmove_8toN_pen_table(sd,sw,sh,sm,ls,ts,flipx,flipy,dd,dw,dh,dm,paldata,transparent_color);
                                 }
 				break;
 
@@ -8717,6 +8718,99 @@ public class drawgfx {
             }
         }
     }
+    
+    public static void blockmove_8toN_pen_table(UBytePtr srcdata, int srcwidth, int srcheight, int srcmodulo, int leftskip, int topskip, int flipx, int flipy, UShortPtr dstdata, int dstwidth, int dstheight, int dstmodulo, IntArray paldata, int transcolor){
+        int ydir;
+        if (flipy != 0) {
+            dstdata.inc(dstmodulo * (dstheight - 1));
+            srcdata.inc((srcheight - dstheight - topskip) * srcmodulo);
+            ydir = -1;
+        } else {
+            srcdata.inc(topskip * srcmodulo);
+            ydir = 1;
+        }
+        if (flipx != 0) {
+            dstdata.inc(dstwidth - 1);
+            srcdata.inc(srcwidth - dstwidth - leftskip);
+        } else {
+            srcdata.inc(leftskip);
+        }
+        srcmodulo -= dstwidth;
+        
+        if (flipx != 0)
+		{
+			int end;
+	
+			while (dstheight != 0)
+			{
+				end = dstdata.offset - dstwidth;
+				while (dstdata.offset > end)
+				{
+					int col;
+	
+					col = srcdata.readinc();
+					if (col != transcolor)
+					{
+						switch(gfx_drawmode_table[col])
+						{
+						case DRAWMODE_SOURCE:
+							//SETPIXELCOLOR(0,LOOKUP(col))
+                                                        dstdata.write(0, (char) paldata.read(col));
+							break;
+						case DRAWMODE_SHADOW:
+							afterdrawmask = pdrawgfx_shadow_lowpri!=0 ? 0 : 0x80;
+							//SETPIXELCOLOR(0,palette_shadow_table[*dstdata])
+                                                        dstdata.write(0, (char) palette_shadow_table[dstdata.read()]);
+							afterdrawmask = 31;
+							break;
+						}
+					}
+					dstdata.dec();
+				}
+	
+				srcdata.inc( srcmodulo );
+				dstdata.inc(ydir * dstmodulo + dstwidth * 1);
+				dstheight--;
+			}
+		}
+		else
+		{
+			int end;
+	
+			while (dstheight != 0)
+			{
+				end = dstdata.offset + dstwidth;
+				while (dstdata.offset < end)
+				{
+					int col;
+	
+					col = srcdata.readinc();
+					if (col != transcolor)
+					{
+						switch(gfx_drawmode_table[col])
+						{
+						case DRAWMODE_SOURCE:
+							//SETPIXELCOLOR(0,LOOKUP(col))                                                        
+                                                        dstdata.write(0, (char) paldata.read(col));
+                    
+							break;
+						case DRAWMODE_SHADOW:
+							afterdrawmask = pdrawgfx_shadow_lowpri!=0 ? 0 : 0x80;
+							//SETPIXELCOLOR(0,palette_shadow_table[*dstdata])
+                                                        dstdata.write(0, (char) palette_shadow_table[dstdata.read()]);
+							afterdrawmask = 31;
+							break;
+						}
+					}
+					dstdata.inc();
+				}
+	
+				srcdata.inc( srcmodulo );
+				dstdata.inc(ydir * dstmodulo - dstwidth * 1);
+				dstheight--;
+			}
+		}
+    }
 
     public static void blockmove_8toN_transcolor16(UBytePtr srcdata, int srcwidth, int srcheight, int srcmodulo, int leftskip, int topskip, int flipx, int flipy, UShortPtr dstdata, int dstwidth, int dstheight, int dstmodulo, IntArray paldata, UShortArray colortable, int transcolor) {
         //System.out.println("blockmove_8toN_transcolor16");
@@ -8947,6 +9041,7 @@ public class drawgfx {
 		int startx, int starty,int incxx,int incxy,int incyx,int incyy,int wraparound,
 		rectangle clip, int transparency, int transparent_color, int priority)
     {
+        
         //System.out.println("copyroz");
 	int cx;
 	int cy;
@@ -9292,6 +9387,7 @@ public class drawgfx {
 		}
 	}
     }
+
 
     public static void blockmove_8toN_transmaskLU(UBytePtr srcdata, int srcwidth, int srcheight, int srcmodulo, int leftskip, int topskip, int flipx, int flipy, UShortPtr dstdata, int dstwidth, int dstheight, int dstmodulo, IntArray paldata, int transpen) {
         int ydir;

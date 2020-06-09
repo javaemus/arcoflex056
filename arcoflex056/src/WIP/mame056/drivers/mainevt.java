@@ -701,7 +701,7 @@ public class mainevt
 		null,
 	
 		/* video hardware */
-		64*8, 32*8, new rectangle( 14*8, (64-14)*8-1, 2*8, 30*8-1 ),
+		64*8, 32*8, new rectangle( 14*8, (64)*8-1, 2*8, 30*8-1 ),
 		null,	/* gfx decoded by konamiic.c */
 		256, 0,
 		null,
@@ -749,7 +749,7 @@ public class mainevt
 		null,
 	
 		/* video hardware */
-		64*8, 32*8, new rectangle( 13*8, (64-13)*8-1, 2*8, 30*8-1 ),
+		64*8, 32*8, new rectangle( 13*8, (64)*8-1, 2*8, 30*8-1 ),
 		null,	/* gfx decoded by konamiic.c */
 		256, 0,
 		null,

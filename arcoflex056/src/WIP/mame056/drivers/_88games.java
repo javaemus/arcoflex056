@@ -391,7 +391,7 @@ public class _88games
 		k88games_init_machine,
 	
 		/* video hardware */
-		64*8, 32*8, new rectangle( 13*8, (64-13)*8-1, 2*8, 30*8-1 ),
+		64*8, 32*8, new rectangle( 13*8, (64)*8-1, 2*8, 30*8-1 ),
 		null,	/* gfx decoded by konamiic.c */
 		2048, 0,
 		null,

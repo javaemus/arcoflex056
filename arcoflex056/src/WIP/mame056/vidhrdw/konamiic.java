@@ -29,6 +29,9 @@ import static arcadeflex056.osdepend.logerror;
 import java.awt.Transparency;
 import static mame056.cpuexec.cpu_getcurrentframe;
 import static mame056.cpuintrfH.ASSERT_LINE;
+import static mame056.driverH.ORIENTATION_FLIP_X;
+import static mame056.driverH.ORIENTATION_FLIP_Y;
+import static mame056.driverH.ORIENTATION_SWAP_XY;
 
 public class konamiic
 {
@@ -814,7 +817,7 @@ public class konamiic
         		int flipy = 0;
                         int[] code=new int[1], color=new int[1];
                         code[0] = vram1.read(tile_index) + 256 * vram2.read(tile_index);
-                        color[0] = cram.read(tile_index);
+                        color[0] = READ_WORD(cram,tile_index);
                         int bank = K052109_charrombank[(color[0] & 0x0c) >> 2];
                         if (has_extra_video_ram!=0) bank = (color[0] & 0x0c) >> 2;	/* kludge for X-Men */
                         color[0] = (color[0] & 0xf3) | ((bank & 0x03) << 2);
@@ -902,7 +905,7 @@ public class konamiic
                         /* set the color information */
                         if (Machine.drv.color_table_len != 0)
                         {
-                                Machine.gfx[gfx_index].colortable = Machine.remapped_colortable;
+                                Machine.gfx[gfx_index].colortable = new IntArray(Machine.remapped_colortable);
                                 Machine.gfx[gfx_index].total_colors = Machine.drv.color_table_len / 16;
                         }
                         else
@@ -1172,137 +1175,109 @@ public class konamiic
         	
         	public static void K052109_tilemap_update()
         	{
-        if ((K052109_scrollctrl & 0x03) == 0x02)
-		{
-			int xscroll,yscroll,offs;
-			UBytePtr scrollram = new UBytePtr(K052109_ram, 0x1a00);
-	
-	
-			tilemap_set_scroll_rows(K052109_tilemap[1],256);
-			tilemap_set_scroll_cols(K052109_tilemap[1],1);
-			yscroll = K052109_ram.read(0x180c);
-			tilemap_set_scrolly(K052109_tilemap[1],0,yscroll);
-			for (offs = 0;offs < 256;offs++)
-			{
-				xscroll = scrollram.read(2*(offs&0xfff8)+0) + 256 * scrollram.read(2*(offs&0xfff8)+1);
-				xscroll -= 6;
-				tilemap_set_scrollx(K052109_tilemap[1],(offs+yscroll)&0xff,xscroll);
-			}
-		}
-		else if ((K052109_scrollctrl & 0x03) == 0x03)
-		{
-			int xscroll,yscroll,offs;
-			UBytePtr scrollram = new UBytePtr(K052109_ram, 0x1a00);
-	
-	
-			tilemap_set_scroll_rows(K052109_tilemap[1],256);
-			tilemap_set_scroll_cols(K052109_tilemap[1],1);
-			yscroll = K052109_ram.read(0x180c);
-			tilemap_set_scrolly(K052109_tilemap[1],0,yscroll);
-			for (offs = 0;offs < 256;offs++)
-			{
-				xscroll = scrollram.read(2*offs+0) + 256 * scrollram.read(2*offs+1);
-				xscroll -= 6;
-				tilemap_set_scrollx(K052109_tilemap[1],(offs+yscroll)&0xff,xscroll);
-			}
-		}
-		else if ((K052109_scrollctrl & 0x04) == 0x04)
-		{
-			int xscroll,yscroll,offs;
-			UBytePtr scrollram = new UBytePtr(K052109_ram, 0x1800);
-	
-	
-			tilemap_set_scroll_rows(K052109_tilemap[1],1);
-			tilemap_set_scroll_cols(K052109_tilemap[1],512);
-			xscroll = K052109_ram.read(0x1a00) + 256 * K052109_ram.read(0x1a01);
-			xscroll -= 6;
-			tilemap_set_scrollx(K052109_tilemap[1],0,xscroll);
-			for (offs = 0;offs < 512;offs++)
-			{
-				yscroll = scrollram.read(offs/8);
-				tilemap_set_scrolly(K052109_tilemap[1],(offs+xscroll)&0x1ff,yscroll);
-			}
-		}
-		else
-		{
-			int xscroll,yscroll;
-			UBytePtr scrollram = new UBytePtr(K052109_ram, 0x1a00);
-	
-	
-			tilemap_set_scroll_rows(K052109_tilemap[1],1);
-			tilemap_set_scroll_cols(K052109_tilemap[1],1);
-			xscroll = scrollram.read(0) + 256 * scrollram.read(1);
-			xscroll -= 6;
-			yscroll = K052109_ram.read(0x180c);
-			tilemap_set_scrollx(K052109_tilemap[1],0,xscroll);
-			tilemap_set_scrolly(K052109_tilemap[1],0,yscroll);
-		}
-	
-		if ((K052109_scrollctrl & 0x18) == 0x10)
-		{
-			int xscroll,yscroll,offs;
-			UBytePtr scrollram = new UBytePtr(K052109_ram, 0x3a00);
-	
-	
-			tilemap_set_scroll_rows(K052109_tilemap[2],256);
-			tilemap_set_scroll_cols(K052109_tilemap[2],1);
-			yscroll = K052109_ram.read(0x380c);
-			tilemap_set_scrolly(K052109_tilemap[2],0,yscroll);
-			for (offs = 0;offs < 256;offs++)
-			{
-				xscroll = scrollram.read(2*(offs&0xfff8)+0) + 256 * scrollram.read(2*(offs&0xfff8)+1);
-				xscroll -= 6;
-				tilemap_set_scrollx(K052109_tilemap[2],(offs+yscroll)&0xff,xscroll);
-			}
-		}
-		else if ((K052109_scrollctrl & 0x18) == 0x18)
-		{
-			int xscroll,yscroll,offs;
-			UBytePtr scrollram = new UBytePtr(K052109_ram, 0x3a00);
-	
-	
-			tilemap_set_scroll_rows(K052109_tilemap[2],256);
-			tilemap_set_scroll_cols(K052109_tilemap[2],1);
-			yscroll = K052109_ram.read(0x380c);
-			tilemap_set_scrolly(K052109_tilemap[2],0,yscroll);
-			for (offs = 0;offs < 256;offs++)
-			{
-				xscroll = scrollram.read(2*offs+0) + 256 * scrollram.read(2*offs+1);
-				xscroll -= 6;
-				tilemap_set_scrollx(K052109_tilemap[2],(offs+yscroll)&0xff,xscroll);
-			}
-		}
-		else if ((K052109_scrollctrl & 0x20) == 0x20)
-		{
-			int xscroll,yscroll,offs;
-			UBytePtr scrollram = new UBytePtr(K052109_ram, 0x3800);
-	
-	
-			tilemap_set_scroll_rows(K052109_tilemap[2],1);
-			tilemap_set_scroll_cols(K052109_tilemap[2],512);
-			xscroll = K052109_ram.read(0x3a00) + 256 * K052109_ram.read(0x3a01);
-			xscroll -= 6;
-			tilemap_set_scrollx(K052109_tilemap[2],0,xscroll);
-			for (offs = 0;offs < 512;offs++)
-			{
-				yscroll = scrollram.read(offs/8);
-				tilemap_set_scrolly(K052109_tilemap[2],(offs+xscroll)&0x1ff,yscroll);
-			}
-		}
-		else
-		{
-			int xscroll,yscroll;
-			UBytePtr scrollram = new UBytePtr(K052109_ram, 0x3a00);
-	
-	
-			tilemap_set_scroll_rows(K052109_tilemap[2],1);
-			tilemap_set_scroll_cols(K052109_tilemap[2],1);
-			xscroll = scrollram.read(0) + 256 * scrollram.read(1);
-			xscroll -= 6;
-			yscroll = K052109_ram.read(0x380c);
-			tilemap_set_scrollx(K052109_tilemap[2],0,xscroll);
-			tilemap_set_scrolly(K052109_tilemap[2],0,yscroll);
-		}
+        if ((K052109_scrollctrl & 0x03) == 0x02) {
+            int xscroll, yscroll, offs;
+            UBytePtr scrollram = new UBytePtr(K052109_ram, 0x1a00);
+
+            tilemap_set_scroll_rows(K052109_tilemap[1], 256);
+            tilemap_set_scroll_cols(K052109_tilemap[1], 1);
+            yscroll = K052109_ram.read(0x180c);
+            tilemap_set_scrolly(K052109_tilemap[1], 0, yscroll);
+            for (offs = 0; offs < 256; offs++) {
+                xscroll = scrollram.read(2 * (offs & 0xfff8) + 0) + 256 * scrollram.read(2 * (offs & 0xfff8) + 1);
+                xscroll -= 6;
+                tilemap_set_scrollx(K052109_tilemap[1], (offs + yscroll) & 0xff, xscroll);
+            }
+        } else if ((K052109_scrollctrl & 0x03) == 0x03) {
+            int xscroll, yscroll, offs;
+            UBytePtr scrollram = new UBytePtr(K052109_ram, 0x1a00);
+
+            tilemap_set_scroll_rows(K052109_tilemap[1], 256);
+            tilemap_set_scroll_cols(K052109_tilemap[1], 1);
+            yscroll = K052109_ram.read(0x180c);
+            tilemap_set_scrolly(K052109_tilemap[1], 0, yscroll);
+            for (offs = 0; offs < 256; offs++) {
+                xscroll = scrollram.read(2 * offs + 0) + 256 * scrollram.read(2 * offs + 1);
+                xscroll -= 6;
+                tilemap_set_scrollx(K052109_tilemap[1], (offs + yscroll) & 0xff, xscroll);
+            }
+        } else if ((K052109_scrollctrl & 0x04) == 0x04) {
+            int xscroll, yscroll, offs;
+            UBytePtr scrollram = new UBytePtr(K052109_ram, 0x1800);
+
+            tilemap_set_scroll_rows(K052109_tilemap[1], 1);
+            tilemap_set_scroll_cols(K052109_tilemap[1], 512);
+            xscroll = K052109_ram.read(0x1a00) + 256 * K052109_ram.read(0x1a01);
+            xscroll -= 6;
+            tilemap_set_scrollx(K052109_tilemap[1], 0, xscroll);
+            for (offs = 0; offs < 512; offs++) {
+                yscroll = scrollram.read(offs / 8);
+                tilemap_set_scrolly(K052109_tilemap[1], (offs + xscroll) & 0x1ff, yscroll);
+            }
+        } else {
+            int xscroll, yscroll;
+            UBytePtr scrollram = new UBytePtr(K052109_ram, 0x1a00);
+
+            tilemap_set_scroll_rows(K052109_tilemap[1], 1);
+            tilemap_set_scroll_cols(K052109_tilemap[1], 1);
+            xscroll = scrollram.read(0) + 256 * scrollram.read(1);
+            xscroll -= 6;
+            yscroll = K052109_ram.read(0x180c);
+            tilemap_set_scrollx(K052109_tilemap[1], 0, xscroll);
+            tilemap_set_scrolly(K052109_tilemap[1], 0, yscroll);
+        }
+
+        if ((K052109_scrollctrl & 0x18) == 0x10) {
+            int xscroll, yscroll, offs;
+            UBytePtr scrollram = new UBytePtr(K052109_ram, 0x3a00);
+
+            tilemap_set_scroll_rows(K052109_tilemap[2], 256);
+            tilemap_set_scroll_cols(K052109_tilemap[2], 1);
+            yscroll = K052109_ram.read(0x380c);
+            tilemap_set_scrolly(K052109_tilemap[2], 0, yscroll);
+            for (offs = 0; offs < 256; offs++) {
+                xscroll = scrollram.read(2 * (offs & 0xfff8) + 0) + 256 * scrollram.read(2 * (offs & 0xfff8) + 1);
+                xscroll -= 6;
+                tilemap_set_scrollx(K052109_tilemap[2], (offs + yscroll) & 0xff, xscroll);
+            }
+        } else if ((K052109_scrollctrl & 0x18) == 0x18) {
+            int xscroll, yscroll, offs;
+            UBytePtr scrollram = new UBytePtr(K052109_ram, 0x3a00);
+
+            tilemap_set_scroll_rows(K052109_tilemap[2], 256);
+            tilemap_set_scroll_cols(K052109_tilemap[2], 1);
+            yscroll = K052109_ram.read(0x380c);
+            tilemap_set_scrolly(K052109_tilemap[2], 0, yscroll);
+            for (offs = 0; offs < 256; offs++) {
+                xscroll = scrollram.read(2 * offs + 0) + 256 * scrollram.read(2 * offs + 1);
+                xscroll -= 6;
+                tilemap_set_scrollx(K052109_tilemap[2], (offs + yscroll) & 0xff, xscroll);
+            }
+        } else if ((K052109_scrollctrl & 0x20) == 0x20) {
+            int xscroll, yscroll, offs;
+            UBytePtr scrollram = new UBytePtr(K052109_ram, 0x3800);
+
+            tilemap_set_scroll_rows(K052109_tilemap[2], 1);
+            tilemap_set_scroll_cols(K052109_tilemap[2], 512);
+            xscroll = K052109_ram.read(0x3a00) + 256 * K052109_ram.read(0x3a01);
+            xscroll -= 6;
+            tilemap_set_scrollx(K052109_tilemap[2], 0, xscroll);
+            for (offs = 0; offs < 512; offs++) {
+                yscroll = scrollram.read(offs / 8);
+                tilemap_set_scrolly(K052109_tilemap[2], (offs + xscroll) & 0x1ff, yscroll);
+            }
+        } else {
+            int xscroll, yscroll;
+            UBytePtr scrollram = new UBytePtr(K052109_ram, 0x3a00);
+
+            tilemap_set_scroll_rows(K052109_tilemap[2], 1);
+            tilemap_set_scroll_cols(K052109_tilemap[2], 1);
+            xscroll = scrollram.read(0) + 256 * scrollram.read(1);
+            xscroll -= 6;
+            yscroll = K052109_ram.read(0x380c);
+            tilemap_set_scrollx(K052109_tilemap[2], 0, xscroll);
+            tilemap_set_scrolly(K052109_tilemap[2], 0, yscroll);
+        }
         	}
         	
         	public static void K052109_tilemap_draw(mame_bitmap bitmap,int num,int flags,int priority)
@@ -1371,7 +1346,7 @@ public class konamiic
         		/* set the color information */
         		if (Machine.drv.color_table_len != 0)
         		{
-        			Machine.gfx[gfx_index].colortable = Machine.remapped_colortable;
+        			Machine.gfx[gfx_index].colortable = new IntArray(Machine.remapped_colortable);
         			Machine.gfx[gfx_index].total_colors = Machine.drv.color_table_len / 16;
         		}
         		else
@@ -1580,6 +1555,7 @@ public class konamiic
                         int NUM_SPRITES = 128;
         		int offs,pri_code;
         		int[] sortedlist = new int[NUM_SPRITES];
+                        //K051960_ram.offset=0;
         	
         		for (offs = 0;offs < NUM_SPRITES;offs++)
         			sortedlist[offs] = -1;
@@ -1623,7 +1599,8 @@ public class konamiic
         			color[0] = K051960_ram.read(offs+3) & 0xff;
         			pri[0] = 0;
         			shadow[0] = color[0] & 0x80;
-        			(K051960_callback).handler(code,color,pri,shadow);
+                                //shadow[0]=0;
+        			K051960_callback.handler(code,color,pri,shadow);
         	
         			if (max_priority != -1)
         				if (pri[0] < min_priority || pri[0] > max_priority) continue;
@@ -1655,7 +1632,7 @@ public class konamiic
         				flipx = flipx!=0?0:1;
         				flipy = flipy!=0?0:1;
         			}
-        	
+                                                                        	
         			if (zoomx == 0x10000 && zoomy == 0x10000)
         			{
         				int sx,sy;
@@ -1838,7 +1815,7 @@ public class konamiic
         		/* set the color information */
         		if (Machine.drv.color_table_len != 0)
         		{
-        			Machine.gfx[gfx_index].colortable = Machine.remapped_colortable;
+        			Machine.gfx[gfx_index].colortable = new IntArray(Machine.remapped_colortable);
         			Machine.gfx[gfx_index].total_colors = Machine.drv.color_table_len / 16;
         		}
         		else
@@ -2040,9 +2017,9 @@ public class konamiic
         		/* prebuild a sorted table */
         		for (offs = 0;offs < K053245_ramsize / 2;offs += 8)
         		{
-        			if ((K053245_buffer.read(offs) & 0x8000) != 0)
+        			if ((READ_WORD(K053245_buffer, offs) & 0x8000) != 0)
         			{
-        				sortedlist[K053245_buffer.read(offs) & 0x007f] = offs;
+        				sortedlist[READ_WORD(K053245_buffer, offs) & 0x007f] = offs;
         			}
         		}
         	
@@ -2081,15 +2058,15 @@ public class konamiic
         			/* field to do bank switching. However this applies only to TMNT2, with its */
         			/* protection mcu creating the sprite table, so we don't know where to fetch */
         			/* the bits from. */
-        			code[0] = K053245_buffer.read(offs+1);
+        			code[0] = READ_WORD(K053245_buffer, offs+1);
         			code[0] = ((code[0] & 0xffe1) + ((code[0] & 0x0010) >> 2) + ((code[0] & 0x0008) << 1)
         					 + ((code[0] & 0x0004) >> 1) + ((code[0] & 0x0002) << 2));
-        			color[0] = K053245_buffer.read(offs+6) & 0x00ff;
+        			color[0] = READ_WORD(K053245_buffer, offs+6) & 0x00ff;
         			pri[0] = 0;
         	
         			(K053245_callback).handler(code,color,pri);
         	
-        			size = (K053245_buffer.read(offs) & 0x0f00) >> 8;
+        			size = (READ_WORD(K053245_buffer, offs) & 0x0f00) >> 8;
         	
         			w = 1 << (size & 0x03);
         			h = 1 << ((size >> 2) & 0x03);
@@ -2099,13 +2076,13 @@ public class konamiic
         			  <0x40 enlarge (0x20 = double size)
         			  >0x40 reduce (0x80 = half size)
         			*/
-        			zoomy = K053245_buffer.read(offs+4);
+        			zoomy = READ_WORD(K053245_buffer, offs+4);
         			if (zoomy > 0x2000) continue;
         			if (zoomy!=0) zoomy = (0x400000+zoomy/2) / zoomy;
         			else zoomy = 2 * 0x400000;
-        			if ((K053245_buffer.read(offs) & 0x4000) == 0)
+        			if ((READ_WORD(K053245_buffer, offs) & 0x4000) == 0)
         			{
-        				zoomx = K053245_buffer.read(offs+5);
+        				zoomx = READ_WORD(K053245_buffer, offs+5);
         				if (zoomx > 0x2000) continue;
         				if (zoomx!=0) zoomx = (0x400000+zoomx/2) / zoomx;
         	//			else zoomx = 2 * 0x400000;
@@ -2113,14 +2090,14 @@ public class konamiic
         			}
         			else zoomx = zoomy;
         	
-        			ox = K053245_buffer.read(offs+3) + spriteoffsX;
-        			oy = K053245_buffer.read(offs+2);
+        			ox = READ_WORD(K053245_buffer, offs+3) + spriteoffsX;
+        			oy = READ_WORD(K053245_buffer, offs+2);
         	
-        			flipx = K053245_buffer.read(offs) & 0x1000;
-        			flipy = K053245_buffer.read(offs) & 0x2000;
-        			mirrorx = K053245_buffer.read(offs+6) & 0x0100;
-        			mirrory = K053245_buffer.read(offs+6) & 0x0200;
-        			shadow[0] = K053245_buffer.read(offs+6) & 0x0080;
+        			flipx = READ_WORD(K053245_buffer, offs) & 0x1000;
+        			flipy = READ_WORD(K053245_buffer, offs) & 0x2000;
+        			mirrorx = READ_WORD(K053245_buffer, offs+6) & 0x0100;
+        			mirrory = READ_WORD(K053245_buffer, offs+6) & 0x0200;
+        			shadow[0] = READ_WORD(K053245_buffer, offs+6) & 0x0080;
         	
         			if (flipscreenX != 0)
         			{
@@ -2255,18 +2232,17 @@ public class konamiic
 						 K053247_callbackProcPtr callback)
 	{
 		int gfx_index,i;
-		GfxLayout spritelayout = new GfxLayout
-		(
-			16,16,
-			0,				/* filled in later */
-			4,
-			new int[] { 0, 0, 0, 0 },	/* filled in later */
-			new int[] { 2*4, 3*4, 0*4, 1*4, 6*4, 7*4, 4*4, 5*4,
-					10*4, 11*4, 8*4, 9*4, 14*4, 15*4, 12*4, 13*4 },
-			new int[] { 0*64, 1*64, 2*64, 3*64, 4*64, 5*64, 6*64, 7*64,
-					8*64, 9*64, 10*64, 11*64, 12*64, 13*64, 14*64, 15*64 },
-			128*8
-		);
+		GfxLayout spritelayout = new GfxLayout(
+                        16, 16,
+                        0, /* filled in later */
+                        4,
+                        new int[]{0, 0, 0, 0}, /* filled in later */
+                        new int[]{2 * 4, 3 * 4, 0 * 4, 1 * 4, 6 * 4, 7 * 4, 4 * 4, 5 * 4,
+                            10 * 4, 11 * 4, 8 * 4, 9 * 4, 14 * 4, 15 * 4, 12 * 4, 13 * 4},
+                        new int[]{0 * 64, 1 * 64, 2 * 64, 3 * 64, 4 * 64, 5 * 64, 6 * 64, 7 * 64,
+                            8 * 64, 9 * 64, 10 * 64, 11 * 64, 12 * 64, 13 * 64, 14 * 64, 15 * 64},
+                        128 * 8
+                );
 	
 	
 		/* find first empty slot to decode gfx */
@@ -2291,7 +2267,7 @@ public class konamiic
 		/* set the color information */
 		if (Machine.drv.color_table_len != 0)
 		{
-			Machine.gfx[gfx_index].colortable = Machine.remapped_colortable;
+			Machine.gfx[gfx_index].colortable = new IntArray(Machine.remapped_colortable);
 			Machine.gfx[gfx_index].total_colors = Machine.drv.color_table_len / 16;
 		}
 		else
@@ -2552,11 +2528,11 @@ public class konamiic
 			ox = READ_WORD(K053247_ram, offs + 0x06);
                         oy = READ_WORD(K053247_ram, offs + 0x04);
 	
-			flipx = K053247_ram.read(offs) & 0x1000;
-			flipy = K053247_ram.read(offs) & 0x2000;
-			mirrorx = K053247_ram.read(offs+6) & 0x4000;
-			mirrory = K053247_ram.read(offs+6) & 0x8000;
-			shadow = K053247_ram.read(offs+6) & 0x0400;
+			flipx = READ_WORD(K053247_ram, offs) & 0x1000;
+			flipy = READ_WORD(K053247_ram, offs) & 0x2000;
+			mirrorx = READ_WORD(K053247_ram, offs+6) & 0x4000;
+			mirrory = READ_WORD(K053247_ram, offs+6) & 0x8000;
+			shadow = READ_WORD(K053247_ram, offs+6) & 0x0400;
 	
 			if (flipscreenx!=0)
 			{
@@ -2806,7 +2782,7 @@ public class konamiic
         		/* set the color information */
         		if (Machine.drv.color_table_len != 0)
         		{
-        			Machine.gfx[gfx_index].colortable = Machine.remapped_colortable;
+        			Machine.gfx[gfx_index].colortable = new IntArray(Machine.remapped_colortable);
         			Machine.gfx[gfx_index].total_colors = Machine.drv.color_table_len / (1 << bpp);
         		}
         		else
@@ -3002,46 +2978,26 @@ public class konamiic
         	public static void K051316_zoom_draw(int chip, mame_bitmap bitmap,int flags,int priority)
         	{
         		int startx,starty;
-        		int incxx,incxy,incyx,incyy;
-        	
-        		startx = 256 * ((256 * K051316_ctrlram[chip][0x00] + K051316_ctrlram[chip][0x01]));
-        		incxx  =        (256 * K051316_ctrlram[chip][0x02] + K051316_ctrlram[chip][0x03]);
-        		incyx  =        (256 * K051316_ctrlram[chip][0x04] + K051316_ctrlram[chip][0x05]);
-        		starty = 256 * ((256 * K051316_ctrlram[chip][0x06] + K051316_ctrlram[chip][0x07]));
-        		incxy  =        (256 * K051316_ctrlram[chip][0x08] + K051316_ctrlram[chip][0x09]);
-        		incyy  =        (256 * K051316_ctrlram[chip][0x0a] + K051316_ctrlram[chip][0x0b]);
-        	
-        		startx -= (16 + K051316_offset[chip][1]) * incyx;
-        		starty -= (16 + K051316_offset[chip][1]) * incyy;
-        	
-        		startx -= (89 + K051316_offset[chip][0]) * incxx;
-        		starty -= (89 + K051316_offset[chip][0]) * incxy;
-        	
-        		tilemap_draw_roz(bitmap,K051316_tilemap[chip],startx << 5,starty << 5,
-        				incxx << 5,incxy << 5,incyx << 5,incyy << 5,
-        				K051316_wraparound[chip],
-        				flags,priority);
-        	
-        /*TODO*///	#if 0
-        /*TODO*///		usrintf_showmessage("%02x%02x%02x%02x %02x%02x%02x%02x %02x%02x%02x%02x %02x%02x%02x%02x",
-        /*TODO*///				K051316_ctrlram[chip][0x00],
-        /*TODO*///				K051316_ctrlram[chip][0x01],
-        /*TODO*///				K051316_ctrlram[chip][0x02],
-        /*TODO*///				K051316_ctrlram[chip][0x03],
-        /*TODO*///				K051316_ctrlram[chip][0x04],
-        /*TODO*///				K051316_ctrlram[chip][0x05],
-        /*TODO*///				K051316_ctrlram[chip][0x06],
-        /*TODO*///				K051316_ctrlram[chip][0x07],
-        /*TODO*///				K051316_ctrlram[chip][0x08],
-        /*TODO*///				K051316_ctrlram[chip][0x09],
-        /*TODO*///				K051316_ctrlram[chip][0x0a],
-        /*TODO*///				K051316_ctrlram[chip][0x0b],
-        /*TODO*///				K051316_ctrlram[chip][0x0c],	/* bank for ROM testing */
-        /*TODO*///				K051316_ctrlram[chip][0x0d],
-        /*TODO*///				K051316_ctrlram[chip][0x0e],	/* 0 = test ROMs */
-        /*TODO*///				K051316_ctrlram[chip][0x0f]);
-        /*TODO*///	#endif
-        	}
+		int incxx,incxy,incyx,incyy;
+	
+		startx = 256 * ((256 * K051316_ctrlram[chip][0x00] + K051316_ctrlram[chip][0x01]));
+		incxx  =        (256 * K051316_ctrlram[chip][0x02] + K051316_ctrlram[chip][0x03]);
+		incyx  =        (256 * K051316_ctrlram[chip][0x04] + K051316_ctrlram[chip][0x05]);
+		starty = 256 * ((256 * K051316_ctrlram[chip][0x06] + K051316_ctrlram[chip][0x07]));
+		incxy  =        (256 * K051316_ctrlram[chip][0x08] + K051316_ctrlram[chip][0x09]);
+		incyy  =        (256 * K051316_ctrlram[chip][0x0a] + K051316_ctrlram[chip][0x0b]);
+	
+		startx -= (16 + K051316_offset[chip][1]) * incyx;
+		starty -= (16 + K051316_offset[chip][1]) * incyy;
+	
+		startx -= (89 + K051316_offset[chip][0]) * incxx;
+		starty -= (89 + K051316_offset[chip][0]) * incxy;
+	
+		tilemap_draw_roz(bitmap,K051316_tilemap[chip],startx << 5,starty << 5,
+				incxx << 5,incxy << 5,incyx << 5,incyy << 5,
+				K051316_wraparound[chip],
+				flags,priority);
+                }
         	
         	public static void K051316_zoom_draw_0(mame_bitmap bitmap,int flags,int priority)
         	{
