@@ -35,10 +35,10 @@ import static mame056.sound._2151intfH.*;
 import static mame056.sound.vlm5030.*;
 import static mame056.sound.vlm5030H.*;
 import static mame056.sound.streams.*;
-import static mame056.sound.k007232.*;
-import static mame056.sound.k007232H.*;
-import static mame056.sound.k051649.*;
-import static mame056.sound.k051649H.*;
+//import static mame056.sound.k007232.*;
+//import static mame056.sound.k007232H.*;
+//import static mame056.sound.k051649.*;
+//import static mame056.sound.k051649H.*;
 import static mame056.timer.*;
 import static mame056.timerH.*;
 import static WIP.mame056.vidhrdw.rollerg.*;
@@ -94,8 +94,9 @@ public class rollerg
 	{
 		/* If the sound CPU is running, read the status, otherwise
 		   just make it pass the test */
-		if (Machine.sample_rate != 0) 	return K053260_0_r.handler(2 + offset);
-		else return 0x00;
+/*TODO*///		if (Machine.sample_rate != 0) 	return K053260_0_r.handler(2 + offset);
+/*TODO*///		else return 0x00;
+            return 0x00;
 	} };
 	
 	public static WriteHandlerPtr soundirq_w = new WriteHandlerPtr() {public void handler(int offset, int data)

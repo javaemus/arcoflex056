@@ -26,7 +26,11 @@ import static arcadeflex056.osdepend.logerror;
 
 public class k053260  extends snd_interface {
 
-	
+
+    public k053260() {
+        this.name = "053260";
+        this.sound_num = SOUND_K053260;
+    }
 /*TODO*///	#define LOG 0
 	
 	public static int BASE_SHIFT	= 16;
@@ -160,20 +164,20 @@ public class k053260  extends snd_interface {
 		long[] delta=new long[4], end=new long[4], pos=new long[4];
 		int dataL, dataR;
 		int d;
-		K053260_chip_def ic = K053260_chip[param];
+		//K053260_chip_def ic = K053260_chip[param];
 	
 		/* precache some values */
 		for ( i = 0; i < 4; i++ ) {
-			rom[i]= new UBytePtr(ic.rom,((int)(ic.channels[i].start + ( ic.channels[i].bank << 16 ))));
-			delta[i] = ic.delta_table[(int)ic.channels[i].rate];
-			lvol[i] = (int) (ic.channels[i].volume * ic.channels[i].pan);
-			rvol[i] = (int) (ic.channels[i].volume * ( 8 - ic.channels[i].pan ));
-			end[i] = ic.channels[i].size;
-			pos[i] = ic.channels[i].pos;
-			play[i] = ic.channels[i].play;
-			loop[i] = ic.channels[i].loop;
-			ppcm[i] = ic.channels[i].ppcm;
-			ppcm_data[i] = ic.channels[i].ppcm_data;
+			rom[i]= new UBytePtr(K053260_chip[param].rom,((int)(K053260_chip[param].channels[i].start + ( K053260_chip[param].channels[i].bank << 16 ))));
+			delta[i] = K053260_chip[param].delta_table[(int)K053260_chip[param].channels[i].rate];
+			lvol[i] = (int) (K053260_chip[param].channels[i].volume * K053260_chip[param].channels[i].pan);
+			rvol[i] = (int) (K053260_chip[param].channels[i].volume * ( 8 - K053260_chip[param].channels[i].pan ));
+			end[i] = K053260_chip[param].channels[i].size;
+			pos[i] = K053260_chip[param].channels[i].pos;
+			play[i] = K053260_chip[param].channels[i].play;
+			loop[i] = K053260_chip[param].channels[i].loop;
+			ppcm[i] = K053260_chip[param].channels[i].ppcm;
+			ppcm_data[i] = K053260_chip[param].channels[i].ppcm_data;
 			if ( ppcm[i] != 0 )
 				delta[i] /= 2;
 		}
@@ -226,22 +230,22 @@ public class k053260  extends snd_interface {
 							pos[i] += delta[i];
 						}
 	
-						if (( ic.mode & 2 ) != 0) {
+						if (( K053260_chip[param].mode & 2 ) != 0) {
 							dataL += ( d * lvol[i] ) >> 2;
 							dataR += ( d * rvol[i] ) >> 2;
 						}
 					}
 				}
 	
-				buffer[1].write(j, limit( dataL, MAXOUT, MINOUT ));
-				buffer[0].write(j, limit( dataR, MAXOUT, MINOUT ));
+/*TODO*///				buffer[1].write(j, limit( dataL, MAXOUT, MINOUT ));
+/*TODO*///				buffer[0].write(j, limit( dataR, MAXOUT, MINOUT ));
 			}
 	
 		/* update the regs now */
 		for ( i = 0; i < 4; i++ ) {
-			ic.channels[i].pos = pos[i];
-			ic.channels[i].play = play[i];
-			ic.channels[i].ppcm_data = ppcm_data[i];
+			K053260_chip[param].channels[i].pos = pos[i];
+			K053260_chip[param].channels[i].play = play[i];
+			K053260_chip[param].channels[i].ppcm_data = ppcm_data[i];
 		}
             }
         };
@@ -270,20 +274,20 @@ public class k053260  extends snd_interface {
                 
                 
 		for( ics = 0; ics < intf.num; ics++ ) {
-			K053260_chip_def ic = K053260_chip[ics];
+			//K053260_chip_def ic = K053260_chip[ics];
 	
-			ic.mode = 0;
-			ic.rom = new UBytePtr(memory_region(intf.region[ics]));
-			ic.rom_size = memory_region_length(intf.region[ics]) - 1;
+			K053260_chip[ics].mode = 0;
+			K053260_chip[ics].rom = new UBytePtr(memory_region(intf.region[ics]));
+			K053260_chip[ics].rom_size = memory_region_length(intf.region[ics]) - 1;
 	
 			K053260_reset( ics );
 	
 			for ( i = 0; i < 0x30; i++ )
-				ic.regs[i] = 0;
+				K053260_chip[ics].regs[i] = 0;
 	
-			ic.delta_table = new long[0x1000];
+			K053260_chip[ics].delta_table = new long[0x1000];
 	
-			if ( ic.delta_table == null )
+			if ( K053260_chip[ics].delta_table == null )
 				return -1;
 	
 			for ( i = 0; i < 2; i++ ) {
@@ -291,15 +295,15 @@ public class k053260  extends snd_interface {
 				ch_names[i] = sprintf("%s #%d Ch %d",sound_name(msound),ics,i);
 			}
 	
-			ic.channel = stream_init_multi( 2, names, intf.mixing_level[ics], Machine.sample_rate, ics, K053260_update );
+			K053260_chip[ics].channel = stream_init_multi( 2, names, intf.mixing_level[ics], Machine.sample_rate, ics, K053260_update );
 	
 			InitDeltaTable( ics );
 	
 			/* setup SH1 timer if necessary */
 			if ( intf.irq[ics] != null )
-				ic.timer = timer_pulse( TIME_IN_HZ( ( intf.clock[ics] / 32 ) ), 0, intf.irq[ics] );
+				K053260_chip[ics].timer = timer_pulse( TIME_IN_HZ( ( intf.clock[ics] / 32 ) ), 0, intf.irq[ics] );
 			else
-				ic.timer = null;
+				K053260_chip[ics].timer = null;
 		}
 	
 	    return 0;
@@ -310,17 +314,17 @@ public class k053260  extends snd_interface {
 	
 		if ( K053260_chip != null ) {
 			for( ics = 0; ics < intf.num; ics++ ) {
-				K053260_chip_def ic = K053260_chip[ics];
+				//K053260_chip_def ic = K053260_chip[ics];
 	
-				if ( ic.delta_table != null )
-					ic.delta_table = null;
+				if ( K053260_chip[ics].delta_table != null )
+					K053260_chip[ics].delta_table = null;
 	
-				ic.delta_table = null;
+				K053260_chip[ics].delta_table = null;
 	
-				if ( ic.timer != null )
-					timer_remove( ic.timer );
+				if ( K053260_chip[ics].timer != null )
+					timer_remove( K053260_chip[ics].timer );
 	
-				ic.timer = null;
+				K053260_chip[ics].timer = null;
 			}
 	
 			K053260_chip = null;
@@ -328,26 +332,26 @@ public class k053260  extends snd_interface {
 	}
 	
 	public static void check_bounds( int chip, int channel ) {
-		K053260_chip_def ic = K053260_chip[chip];
+		//K053260_chip_def ic = K053260_chip[chip];
 	
-		int channel_start = (int) (( ic.channels[channel].bank << 16 ) + ic.channels[channel].start);
-		int channel_end = (int) (channel_start + ic.channels[channel].size - 1);
+		int channel_start = (int) (( K053260_chip[chip].channels[channel].bank << 16 ) + K053260_chip[chip].channels[channel].start);
+		int channel_end = (int) (channel_start + K053260_chip[chip].channels[channel].size - 1);
 	
-		if ( channel_start > ic.rom_size ) {
+		if ( channel_start > K053260_chip[chip].rom_size ) {
 			logerror("K53260: Attempting to start playing past the end of the rom ( start = %06x, end = %06x ).\n", channel_start, channel_end );
 	
-			ic.channels[channel].play = 0;
+			K053260_chip[chip].channels[channel].play = 0;
 	
 			return;
 		}
 	
-		if ( channel_end > ic.rom_size ) {
+		if ( channel_end > K053260_chip[chip].rom_size ) {
 			logerror("K53260: Attempting to play past the end of the rom ( start = %06x, end = %06x ).\n", channel_start, channel_end );
 	
-			ic.channels[channel].size = ic.rom_size - channel_start;
+			K053260_chip[chip].channels[channel].size = K053260_chip[chip].rom_size - channel_start;
 		}
 //	#if LOG
-		logerror("K053260: Sample Start = %06x, Sample End = %06x, Sample rate = %04lx, PPCM = %s\n", channel_start, channel_end, ic.channels[channel].rate, ic.channels[channel].ppcm != 0 ? "yes" : "no" );
+//		logerror("K053260: Sample Start = %06x, Sample End = %06x, Sample rate = %04lx, PPCM = %s\n", channel_start, channel_end, ic.channels[channel].rate, ic.channels[channel].ppcm != 0 ? "yes" : "no" );
 //	#endif
 	}
 	
@@ -357,7 +361,7 @@ public class k053260  extends snd_interface {
 		int r = offset;
 		int v = data;
 	
-		K053260_chip_def ic = K053260_chip[chip];
+		//K053260_chip_def ic = K053260_chip[chip];
 	
 		if ( r > 0x2f ) {
 			logerror("K053260: Writing past registers\n" );
@@ -365,30 +369,30 @@ public class k053260  extends snd_interface {
 		}
 	
 		if ( Machine.sample_rate != 0 )
-			stream_update( ic.channel, 0 );
+			stream_update( K053260_chip[chip].channel, 0 );
 	
 		/* before we update the regs, we need to check for a latched reg */
 		if ( r == 0x28 ) {
-			t = ic.regs[r] ^ v;
+			t = K053260_chip[chip].regs[r] ^ v;
 	
 			for ( i = 0; i < 4; i++ ) {
 				if (( t & ( 1 << i ) ) != 0) {
 					if (( v & ( 1 << i ) ) != 0) {
-						ic.channels[i].play = 1;
-						ic.channels[i].pos = 0;
-						ic.channels[i].ppcm_data = 0;
+						K053260_chip[chip].channels[i].play = 1;
+						K053260_chip[chip].channels[i].pos = 0;
+						K053260_chip[chip].channels[i].ppcm_data = 0;
 						check_bounds( chip, i );
 					} else
-						ic.channels[i].play = 0;
+						K053260_chip[chip].channels[i].play = 0;
 				}
 			}
 	
-			ic.regs[r] = v;
+			K053260_chip[chip].regs[r] = v;
 			return;
 		}
 	
 		/* update regs */
-		ic.regs[r] = v;
+		K053260_chip[chip].regs[r] = v;
 	
 		/* communication registers */
 		if ( r < 8 )
@@ -400,41 +404,41 @@ public class k053260  extends snd_interface {
 	
 			switch ( ( r - 8 ) & 0x07 ) {
 				case 0: /* sample rate low */
-					ic.channels[channel].rate &= 0x0f00;
-					ic.channels[channel].rate |= v;
+					K053260_chip[chip].channels[channel].rate &= 0x0f00;
+					K053260_chip[chip].channels[channel].rate |= v;
 				break;
 	
 				case 1: /* sample rate high */
-					ic.channels[channel].rate &= 0x00ff;
-					ic.channels[channel].rate |= ( v & 0x0f ) << 8;
+					K053260_chip[chip].channels[channel].rate &= 0x00ff;
+					K053260_chip[chip].channels[channel].rate |= ( v & 0x0f ) << 8;
 				break;
 	
 				case 2: /* size low */
-					ic.channels[channel].size &= 0xff00;
-					ic.channels[channel].size |= v;
+					K053260_chip[chip].channels[channel].size &= 0xff00;
+					K053260_chip[chip].channels[channel].size |= v;
 				break;
 	
 				case 3: /* size high */
-					ic.channels[channel].size &= 0x00ff;
-					ic.channels[channel].size |= v << 8;
+					K053260_chip[chip].channels[channel].size &= 0x00ff;
+					K053260_chip[chip].channels[channel].size |= v << 8;
 				break;
 	
 				case 4: /* start low */
-					ic.channels[channel].start &= 0xff00;
-					ic.channels[channel].start |= v;
+					K053260_chip[chip].channels[channel].start &= 0xff00;
+					K053260_chip[chip].channels[channel].start |= v;
 				break;
 	
 				case 5: /* start high */
-					ic.channels[channel].start &= 0x00ff;
-					ic.channels[channel].start |= v << 8;
+					K053260_chip[chip].channels[channel].start &= 0x00ff;
+					K053260_chip[chip].channels[channel].start |= v << 8;
 				break;
 	
 				case 6: /* bank */
-					ic.channels[channel].bank = v & 0xff;
+					K053260_chip[chip].channels[channel].bank = v & 0xff;
 				break;
 	
 				case 7: /* volume is 7 bits. Convert to 8 bits now. */
-					ic.channels[channel].volume = ( ( v & 0x7f ) << 1 ) | ( v & 1 );
+					K053260_chip[chip].channels[channel].volume = ( ( v & 0x7f ) << 1 ) | ( v & 1 );
 				break;
 			}
 	
@@ -444,24 +448,24 @@ public class k053260  extends snd_interface {
 		switch( r ) {
 			case 0x2a: /* loop, ppcm */
 				for ( i = 0; i < 4; i++ )
-					ic.channels[i].loop = ( v & ( 1 << i ) );
+					K053260_chip[chip].channels[i].loop = ( v & ( 1 << i ) );
 	
 				for ( i = 4; i < 8; i++ )
-					ic.channels[i-4].ppcm = ( v & ( 1 << i ) );
+					K053260_chip[chip].channels[i-4].ppcm = ( v & ( 1 << i ) );
 			break;
 	
 			case 0x2c: /* pan */
-				ic.channels[0].pan = v & 7;
-				ic.channels[1].pan = ( v >> 3 ) & 7;
+				K053260_chip[chip].channels[0].pan = v & 7;
+				K053260_chip[chip].channels[1].pan = ( v >> 3 ) & 7;
 			break;
 	
 			case 0x2d: /* more pan */
-				ic.channels[2].pan = v & 7;
-				ic.channels[3].pan = ( v >> 3 ) & 7;
+				K053260_chip[chip].channels[2].pan = v & 7;
+				K053260_chip[chip].channels[3].pan = ( v >> 3 ) & 7;
 			break;
 	
 			case 0x2f: /* control */
-				ic.mode = v & 7;
+				K053260_chip[chip].mode = v & 7;
 				/* bit 0 = read ROM */
 				/* bit 1 = enable sound output */
 				/* bit 2 = unknown */
@@ -471,7 +475,7 @@ public class k053260  extends snd_interface {
 	
 	public static int K053260_read( int chip, int offset )
 	{
-		K053260_chip_def ic = K053260_chip[chip];
+		//K053260_chip_def ic = K053260_chip[chip];
 	
 		switch ( offset ) {
 			case 0x29: /* channel status */
@@ -479,30 +483,30 @@ public class k053260  extends snd_interface {
 					int i, status = 0;
 	
 					for ( i = 0; i < 4; i++ )
-						status |= ic.channels[i].play << i;
+						status |= K053260_chip[chip].channels[i].play << i;
 	
 					return status;
 				}
 			//break;
 	
 			case 0x2e: /* read rom */
-				if (( ic.mode & 1 ) != 0) {
-					long offs = ic.channels[0].start + ( ic.channels[0].pos >> BASE_SHIFT ) + ( ic.channels[0].bank << 16 );
+				if (( K053260_chip[chip].mode & 1 ) != 0) {
+					long offs = K053260_chip[chip].channels[0].start + ( K053260_chip[chip].channels[0].pos >> BASE_SHIFT ) + ( K053260_chip[chip].channels[0].bank << 16 );
 	
-					ic.channels[0].pos += ( 1 << 16 );
+					K053260_chip[chip].channels[0].pos += ( 1 << 16 );
 	
-					if ( offs > ic.rom_size ) {
-						logerror("%06x: K53260: Attempting to read past rom size in rom Read Mode (offs = %06x, size = %06x).\n",cpu_get_pc(),offs,ic.rom_size );
+					if ( offs > K053260_chip[chip].rom_size ) {
+						logerror("%06x: K53260: Attempting to read past rom size in rom Read Mode (offs = %06x, size = %06x).\n",cpu_get_pc(),offs,K053260_chip[chip].rom_size );
 	
 						return 0;
 					}
 	
-					return ic.rom.read((int) offs);
+					return K053260_chip[chip].rom.read((int) offs);
 				}
 			break;
 		}
 	
-		return ic.regs[offset];
+		return K053260_chip[chip].regs[offset];
 	}
 	
 	/**************************************************************************************************/

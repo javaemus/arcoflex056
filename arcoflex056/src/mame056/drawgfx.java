@@ -6983,7 +6983,7 @@ public class drawgfx {
                 } else {
                     if (pribuf != null) {
                         System.out.println("BLOCKMOVEPRI(8toN_opaque NOT IMPLEMENTED");
-                        //blockmove_8toN_opaque16(sd, sw, sh, sm, ls, ts, flipx, flipy, dd, dw, dh, dm, paldata); /*TODO*///, pribuf,pri_mask);
+                        blockmove_8toN_opaque16(sd, sw, sh, sm, ls, ts, flipx, flipy, dd, dw, dh, dm, paldata); /*TODO*///, pribuf,pri_mask);
                         //throw new UnsupportedOperationException("unsupported");
                         /*TODO*///						BLOCKMOVEPRI(8toN_opaque,(sd,sw,sh,sm,ls,ts,flipx,flipy,dd,dw,dh,dm,paldata,pribuf,pri_mask));
                     } else {
@@ -7031,7 +7031,7 @@ public class drawgfx {
                         //throw new UnsupportedOperationException("Unsupported");
                         System.out.println("BLOCKMOVEPRI(8toN_transpen, NOT IMPLEMENTED");
                         /*TODO*///						BLOCKMOVEPRI(8toN_transpen,(sd,sw,sh,sm,ls,ts,flipx,flipy,dd,dw,dh,dm,paldata,pribuf,pri_mask,transparent_color));
-                        //blockmove_8toN_transpen16(sd, sw, sh, sm, ls, ts, flipx, flipy, dd, dw, dh, dm, paldata, transparent_color);
+                        blockmove_8toN_transpen16(sd, sw, sh, sm, ls, ts, flipx, flipy, dd, dw, dh, dm, paldata, transparent_color);
                     } else {
                         if ((gfx.flags & GFX_SWAPXY) != 0) {
                             throw new UnsupportedOperationException("Unsupported");//blockmove_##function##_swapxy##16 args ;

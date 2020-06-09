@@ -28,7 +28,7 @@ public class simpsons
 {
 	
 	
-	public static int simpsons_firq_enabled;
+public static int simpsons_firq_enabled;
 	
 	/***************************************************************************
 	
@@ -36,24 +36,21 @@ public class simpsons
 	
 	***************************************************************************/
 	
-	static int init_eeprom_count;
+	public static int init_eeprom_count;
 	
 	
 	static EEPROM_interface eeprom_interface = new EEPROM_interface
-	(
+    (
 		7,				/* address bits */
 		8,				/* data bits */
 		"011000",		/*  read command */
 		"011100",		/* write command */
 		null,				/* erase command */
 		"0100000000000",/* lock command */
-		"0100110000000", /* unlock command */
-                0
-	);
-	
-	public static nvramPtr simpsons_nvram_handler = new nvramPtr() {
-            public void handler(Object file, int read_or_write) {
-            
+		"0100110000000" /* unlock command */
+    );
+	public static nvramPtr simpsons_nvram_handler = new nvramPtr(){ public void handler(Object file,int read_or_write)
+    {
 		if (read_or_write != 0)
 			EEPROM_save(file);
 		else
@@ -68,10 +65,9 @@ public class simpsons
 			else
 				init_eeprom_count = 10;
 		}
-            }
-        };
+	}};
 	
-	public static ReadHandlerPtr simpsons_eeprom_r  = new ReadHandlerPtr() { public int handler(int offset)
+	public static ReadHandlerPtr simpsons_eeprom_r = new ReadHandlerPtr() { public int handler(int offset)
 	{
 		int res;
 	
@@ -89,7 +85,7 @@ public class simpsons
 		return res;
 	} };
 	
-	public static WriteHandlerPtr simpsons_eeprom_w = new WriteHandlerPtr() {public void handler(int offset, int data)
+	public static WriteHandlerPtr simpsons_eeprom_w = new WriteHandlerPtr() { public void handler(int offset, int data)
 	{
 		if ( data == 0xff )
 			return;
@@ -109,7 +105,7 @@ public class simpsons
 	
 	***************************************************************************/
 	
-	public static WriteHandlerPtr simpsons_coin_counter_w = new WriteHandlerPtr() {public void handler(int offset, int data)
+	public static WriteHandlerPtr simpsons_coin_counter_w = new WriteHandlerPtr() { public void handler(int offset, int data)
 	{
 		/* bit 0,1 coin counters */
 		coin_counter_w.handler(0,data & 0x01);
@@ -122,27 +118,23 @@ public class simpsons
 		K053246_set_OBJCHA_line((~data & 0x20)!=0 ? ASSERT_LINE : CLEAR_LINE);
 	} };
 	
-	public static ReadHandlerPtr simpsons_sound_interrupt_r  = new ReadHandlerPtr() { public int handler(int offset)
+	public static ReadHandlerPtr simpsons_sound_interrupt_r = new ReadHandlerPtr() { public int handler(int offset)
 	{
 		cpu_cause_interrupt( 1, 0xff );
 		return 0x00;
 	} };
-        
-        static int res = 0x80;
-	
-	public static ReadHandlerPtr simpsons_sound_r  = new ReadHandlerPtr() { public int handler(int offset)
+	static int res = 0x80;
+	public static ReadHandlerPtr simpsons_sound_r = new ReadHandlerPtr() { public int handler(int offset)
 	{
 		/* If the sound CPU is running, read the status, otherwise
 		   just make it pass the test */
-		if (Machine.sample_rate != 0){ 	
-                    return K053260_0_r.handler(2 + offset);                    
-                }
+		if (Machine.sample_rate != 0) 	return K053260_0_r.handler(2 + offset);
 		else
 		{
 			
 	
 			res = (res & 0xfc) | ((res + 1) & 0x03);
-			return (offset!=0 ? res : 0x00);
+			return offset!=0 ? res : 0x00;
 		}
 	} };
 	
@@ -152,9 +144,9 @@ public class simpsons
 	
 	***************************************************************************/
 	
-	public static ReadHandlerPtr simpsons_speedup1_r  = new ReadHandlerPtr() { public int handler(int offset)
+	public static ReadHandlerPtr simpsons_speedup1_r = new ReadHandlerPtr() { public int handler(int offs)
 	{
-		UBytePtr RAM = new UBytePtr(memory_region(REGION_CPU1));
+		UBytePtr RAM = memory_region(REGION_CPU1);
 	
 		int data1 = RAM.read(0x486a);
 	
@@ -176,14 +168,16 @@ public class simpsons
 		}
 	
 		if ( data1 == 1 )
-			RAM.write(RAM.read(0x486a)-1);
+                {                
+                    RAM.write(0x486a,RAM.read(0x486a)-1); //RAM[0x486a]--;  //probably correct TODO recheck?		   
+                }
 	
 		return RAM.read(0x4942);
 	} };
 	
-	public static ReadHandlerPtr simpsons_speedup2_r  = new ReadHandlerPtr() { public int handler(int offset)
+	public static ReadHandlerPtr simpsons_speedup2_r = new ReadHandlerPtr() { public int handler(int offs)
 	{
-		int data = (new UBytePtr(memory_region(REGION_CPU1))).read(0x4856);
+		int data = memory_region(REGION_CPU1).read(0x4856);
 	
 		if ( data == 1 )
 			cpu_spinuntil_int();
@@ -197,10 +191,9 @@ public class simpsons
 	
 	***************************************************************************/
 	
-	static konami_cpu_setlines_callbackPtr simpsons_banking = new konami_cpu_setlines_callbackPtr() {
-            public void handler(int lines) {
-                
-		UBytePtr RAM = new UBytePtr(memory_region(REGION_CPU1));
+	public static konami_cpu_setlines_callbackPtr simpsons_banking = new konami_cpu_setlines_callbackPtr() { public void handler(int lines)
+        {
+		UBytePtr RAM = memory_region(REGION_CPU1);
 		int offs = 0;
 	
 		switch ( lines & 0xf0 )
@@ -222,31 +215,31 @@ public class simpsons
 			break;
 	
 			default:
-				logerror("PC = %04x : Unknown bank selected (%02x)\n", cpu_get_pc(), lines );
+/*TODO*///				if (errorlog != null)
+/*TODO*///					fprintf( errorlog, "PC = %04x : Unknown bank selected (%02x)\n", cpu_get_pc(), lines );
 			break;
 		}
 	
-		cpu_setbank( 1, new UBytePtr(RAM, offs) );
-            }
-        };
-	
-	public static InitMachinePtr simpsons_init_machine = new InitMachinePtr() { public void handler() 
-	{
-		UBytePtr RAM = new UBytePtr(memory_region(REGION_CPU1));
+		cpu_setbank( 1, new UBytePtr(RAM,offs) );
+	}};
+	public static InitMachinePtr simpsons_init_machine = new InitMachinePtr() {
+        public void handler() {
+
+		UBytePtr RAM = memory_region(REGION_CPU1);
 	
 		konami_cpu_setlines_callback = simpsons_banking;
 	
-		paletteram = new UBytePtr(RAM, 0x88000);
-		simpsons_xtraram = new UBytePtr(RAM, 0x89000);
+		paletteram = new UBytePtr(RAM,0x88000);
+		simpsons_xtraram = new UBytePtr(RAM,0x89000);
 		simpsons_firq_enabled = 0;
 	
 		/* init the default banks */
-		cpu_setbank( 1, new UBytePtr(RAM, 0x10000) );
+		cpu_setbank( 1, new UBytePtr(RAM,0x10000) );
 	
 		RAM = memory_region(REGION_CPU2);
 	
-		cpu_setbank( 2, new UBytePtr(RAM, 0x10000) );
+		cpu_setbank( 2, new UBytePtr(RAM,0x10000) );
 	
 		simpsons_video_banking( 0 );
-	} };
+	}};
 }

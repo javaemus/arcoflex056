@@ -58,12 +58,10 @@ public class simpsons
             public void handler(int[] code,int[] color,int[] priority_mask){
             
 		int pri = (color[0] & 0x0f80) >> 6;	/* ??????? */
-		if (pri <= layerpri[2])
-                    priority_mask[0] =  0;
+		if (pri <= layerpri[2])					priority_mask[0] = 0;
 		else if (pri > layerpri[2] && pri <= layerpri[1])	priority_mask[0] = 0xf0;
 		else if (pri > layerpri[1] && pri <= layerpri[0])	priority_mask[0] = 0xf0|0xcc;
-		else
-                    priority_mask[0] = 0xf0|0xcc|0xaa;
+                else priority_mask[0] = 0xf0|0xcc|0xaa;
 	
 		color[0] = sprite_colorbase + (color[0] & 0x001f);
             }
@@ -91,7 +89,7 @@ public class simpsons
 	public static VhStopPtr simpsons_vh_stop = new VhStopPtr() { public void handler() 
 	{
 		K052109_vh_stop.handler();
-		K053247_vh_stop.handler();
+		K053247_vh_stop();
 	} };
 	
 	/***************************************************************************
@@ -160,7 +158,6 @@ public class simpsons
 	{
 		int[] layer = new int[3];
 	
-	
 		bg_colorbase       = K053251_get_palette_index(K053251_CI0);
 		sprite_colorbase   = K053251_get_palette_index(K053251_CI1);
 		layer_colorbase[0] = K053251_get_palette_index(K053251_CI2);
@@ -176,8 +173,18 @@ public class simpsons
 		layer[2] = 2;
 		layerpri[2] = K053251_get_priority(K053251_CI4);
 	
-		//sortlayers(layer,layerpri);
-                //SWAP(0,1)
+/*TODO*///		sortlayers(layer,layerpri);
+/*                if (pri[a] < pri[b])
+		{
+			int t;
+			t = pri[a]; pri[a] = pri[b]; pri[b] = t;
+			t = layer[a]; layer[a] = layer[b]; layer[b] = t;
+		}
+	
+		SWAP(0,1)
+		SWAP(0,2)
+		SWAP(1,2)
+*/
                 if (layerpri[0] < layerpri[1]) 
 		{ 
 			int t; 
