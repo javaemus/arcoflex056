@@ -812,32 +812,31 @@ public class konamiic
         	public static void K052109_get_tile_info(int tile_index,int layer,UBytePtr cram,UBytePtr vram1,UBytePtr vram2)
         	{
         		int flipy = 0;
-        		int[] code = new int[1];
-                        int[] color = new int[1];
+                        int[] code=new int[1], color=new int[1];
                         code[0] = vram1.read(tile_index) + 256 * vram2.read(tile_index);
-        		color[0] = cram.read(tile_index);
-        		int bank = K052109_charrombank[(color[0] & 0x0c) >> 2];
-                        if (has_extra_video_ram != 0) bank = (color[0] & 0x0c) >> 2;	/* kludge for X-Men */
-                                color[0] = (color[0] & 0xf3) | ((bank & 0x03) << 2);
-        		bank >>= 2;
-        	
-        		flipy = color[0] & 0x02;
-        	
-        		tile_info.flags = 0;
-        	
-        		(K052109_callback).handler(layer,bank,code,color);
-        	
-        		SET_TILE_INFO(
-        				K052109_gfxnum,
-        				code[0],
-        				color[0],
-        				tile_info.flags);
-        	
-        		/* if the callback set flip X but it is not enabled, turn it off */
-        		if ((K052109_tileflip_enable & 1)==0) tile_info.flags &= ~TILE_FLIPX;
-        	
-        		/* if flip Y is enabled and the attribute but is set, turn it on */
-        		if (flipy!=0 && (K052109_tileflip_enable & 2)!=0) tile_info.flags |= TILE_FLIPY;
+                        color[0] = cram.read(tile_index);
+                        int bank = K052109_charrombank[(color[0] & 0x0c) >> 2];
+                        if (has_extra_video_ram!=0) bank = (color[0] & 0x0c) >> 2;	/* kludge for X-Men */
+                        color[0] = (color[0] & 0xf3) | ((bank & 0x03) << 2);
+                        bank >>= 2;
+
+                        flipy = color[0] & 0x02;
+
+                        tile_info.flags = 0;
+
+                        K052109_callback.handler(layer,bank,code,color);
+
+                        SET_TILE_INFO(
+                                        K052109_gfxnum,
+                                        code[0],
+                                        color[0],
+                                        tile_info.flags);
+
+                        /* if the callback set flip X but it is not enabled, turn it off */
+                        if ((K052109_tileflip_enable & 1)==0) tile_info.flags &= ~TILE_FLIPX;
+
+                        /* if flip Y is enabled and the attribute but is set, turn it on */
+                        if (flipy!=0 && (K052109_tileflip_enable & 2)!=0) tile_info.flags |= TILE_FLIPY;
         	}
         	
         	static GetTileInfoPtr K052109_get_tile_info0 = new GetTileInfoPtr() { public void handler(int tile_index) {K052109_get_tile_info(tile_index,0,K052109_colorram_F,K052109_videoram_F,K052109_videoram2_F); }};
@@ -869,83 +868,84 @@ public class konamiic
         			K052109_callbackProcPtr callback)
         	{
         		int gfx_index;
-		GfxLayout charlayout = new GfxLayout
-		(
-			8,8,
-			0,				/* filled in later */
-			4,
-			new int[] { 0, 0, 0, 0 },	/* filled in later */
-			new int[] { 0, 1, 2, 3, 4, 5, 6, 7 },
-			new int[] { 0*32, 1*32, 2*32, 3*32, 4*32, 5*32, 6*32, 7*32 },
-			32*8
-		);
+                        GfxLayout charlayout = new GfxLayout
+                        (
+                                8,8,
+                                0,				/* filled in later */
+                                4,
+                                new int[] { 0, 0, 0, 0 },	/* filled in later */
+                                new int[] { 0, 1, 2, 3, 4, 5, 6, 7 },
+                                new int[] { 0*32, 1*32, 2*32, 3*32, 4*32, 5*32, 6*32, 7*32 },
+                                32*8
+                        );
+
+
+                        /* find first empty slot to decode gfx */
+                        for (gfx_index = 0; gfx_index < MAX_GFX_ELEMENTS; gfx_index++)
+                                if (Machine.gfx[gfx_index] == null)
+                                        break;
+                        if (gfx_index == MAX_GFX_ELEMENTS)
+                                return 1;
+
+                        /* tweak the structure for the number of tiles we have */
+                        charlayout.total = memory_region_length(gfx_memory_region) / 32;
+                        charlayout.planeoffset[0] = plane3 * 8;
+                        charlayout.planeoffset[1] = plane2 * 8;
+                        charlayout.planeoffset[2] = plane1 * 8;
+                        charlayout.planeoffset[3] = plane0 * 8;
+
+                        /* decode the graphics */
+                        Machine.gfx[gfx_index] = decodegfx(memory_region(gfx_memory_region),charlayout);
+                        if (Machine.gfx[gfx_index]==null)
+                                return 1;
+
+                        /* set the color information */
+                        if (Machine.drv.color_table_len != 0)
+                        {
+                                Machine.gfx[gfx_index].colortable = Machine.remapped_colortable;
+                                Machine.gfx[gfx_index].total_colors = Machine.drv.color_table_len / 16;
+                        }
+                        else
+                        {
+                                Machine.gfx[gfx_index].colortable = new IntArray(Machine.pens);
+                                Machine.gfx[gfx_index].total_colors = Machine.drv.total_colors / 16;
+                        }
+
+                        K052109_memory_region = gfx_memory_region;
+                        K052109_gfxnum = gfx_index;
+                        K052109_callback = callback;
+                        K052109_RMRD_line = CLEAR_LINE;
+
+                        has_extra_video_ram = 0;
+
+                        K052109_tilemap[0] = tilemap_create(K052109_get_tile_info0,tilemap_scan_rows,TILEMAP_TRANSPARENT,8,8,64,32);
+                        K052109_tilemap[1] = tilemap_create(K052109_get_tile_info1,tilemap_scan_rows,TILEMAP_TRANSPARENT,8,8,64,32);
+                        K052109_tilemap[2] = tilemap_create(K052109_get_tile_info2,tilemap_scan_rows,TILEMAP_TRANSPARENT,8,8,64,32);
+
+                        K052109_ram = new UBytePtr(0x6000);
+
+                        if (K052109_ram==null || K052109_tilemap[0]==null || K052109_tilemap[1]==null || K052109_tilemap[2]==null)
+                        {
+                                K052109_vh_stop.handler();
+                                return 1;
+                        }
+
+                        memset(K052109_ram,0,0x6000);
+
+                        K052109_colorram_F = new UBytePtr(K052109_ram, 0x0000);
+                        K052109_colorram_A = new UBytePtr(K052109_ram, 0x0800);
+                        K052109_colorram_B = new UBytePtr(K052109_ram, 0x1000);
+                        K052109_videoram_F = new UBytePtr(K052109_ram, 0x2000);
+                        K052109_videoram_A = new UBytePtr(K052109_ram, 0x2800);
+                        K052109_videoram_B = new UBytePtr(K052109_ram, 0x3000);
+                        K052109_videoram2_F = new UBytePtr(K052109_ram, 0x4000);
+                        K052109_videoram2_A = new UBytePtr(K052109_ram, 0x4800);
+                        K052109_videoram2_B = new UBytePtr(K052109_ram, 0x5000);
+
+                        tilemap_set_transparent_pen(K052109_tilemap[0],0);
+                        tilemap_set_transparent_pen(K052109_tilemap[1],0);
+                        tilemap_set_transparent_pen(K052109_tilemap[2],0);
 	
-	
-		/* find first empty slot to decode gfx */
-		for (gfx_index = 0; gfx_index < MAX_GFX_ELEMENTS; gfx_index++)
-			if (Machine.gfx[gfx_index] == null)
-				break;
-		if (gfx_index == MAX_GFX_ELEMENTS)
-			return 1;
-	
-		/* tweak the structure for the number of tiles we have */
-		charlayout.total = memory_region_length(gfx_memory_region) / 32;
-		charlayout.planeoffset[0] = plane3 * 8;
-		charlayout.planeoffset[1] = plane2 * 8;
-		charlayout.planeoffset[2] = plane1 * 8;
-		charlayout.planeoffset[3] = plane0 * 8;
-	
-		/* decode the graphics */
-		Machine.gfx[gfx_index] = decodegfx(memory_region(gfx_memory_region),charlayout);
-		if (Machine.gfx[gfx_index]==null)
-			return 1;
-	
-		/* set the color information */
-		if (Machine.drv.color_table_len != 0)
-		{
-			Machine.gfx[gfx_index].colortable = Machine.remapped_colortable;
-			Machine.gfx[gfx_index].total_colors = Machine.drv.color_table_len / 16;
-		}
-		else
-		{
-			Machine.gfx[gfx_index].colortable = new IntArray(Machine.pens);
-			Machine.gfx[gfx_index].total_colors = Machine.drv.total_colors / 16;
-		}
-	
-		K052109_memory_region = gfx_memory_region;
-		K052109_gfxnum = gfx_index;
-		K052109_callback = callback;
-		K052109_RMRD_line = CLEAR_LINE;
-	
-		has_extra_video_ram = 0;
-	
-		K052109_tilemap[0] = tilemap_create(K052109_get_tile_info0,tilemap_scan_rows,TILEMAP_TRANSPARENT,8,8,64,32);
-		K052109_tilemap[1] = tilemap_create(K052109_get_tile_info1,tilemap_scan_rows,TILEMAP_TRANSPARENT,8,8,64,32);
-		K052109_tilemap[2] = tilemap_create(K052109_get_tile_info2,tilemap_scan_rows,TILEMAP_TRANSPARENT,8,8,64,32);
-	
-		K052109_ram = new UBytePtr(0x6000);
-	
-		if (K052109_ram==null || K052109_tilemap[0]==null || K052109_tilemap[1]==null || K052109_tilemap[2]==null)
-		{
-			K052109_vh_stop.handler();
-			return 1;
-		}
-	
-		memset(K052109_ram,0,0x6000);
-	
-		K052109_colorram_F = new UBytePtr(K052109_ram, 0x0000);
-		K052109_colorram_A = new UBytePtr(K052109_ram, 0x0800);
-		K052109_colorram_B = new UBytePtr(K052109_ram, 0x1000);
-		K052109_videoram_F = new UBytePtr(K052109_ram, 0x2000);
-		K052109_videoram_A = new UBytePtr(K052109_ram, 0x2800);
-		K052109_videoram_B = new UBytePtr(K052109_ram, 0x3000);
-		K052109_videoram2_F = new UBytePtr(K052109_ram, 0x4000);
-		K052109_videoram2_A = new UBytePtr(K052109_ram, 0x4800);
-		K052109_videoram2_B = new UBytePtr(K052109_ram, 0x5000);
-	
-		tilemap_set_transparent_pen(K052109_tilemap[0],0);
-		tilemap_set_transparent_pen(K052109_tilemap[1],0);
-		tilemap_set_transparent_pen(K052109_tilemap[2],0);
 
         
         	
@@ -992,13 +992,13 @@ public class konamiic
 		}
 		else	/* Punk Shot and TMNT read from 0000-1fff, Aliens from 2000-3fff */
 		{
-			int[] code = new int[1], color=new int[1];
+			int[] code=new int[1], color=new int[1];
                         code[0] = (offset & 0x1fff) >> 5;
 			color[0] = K052109_romsubbank;
 			int bank = K052109_charrombank[(color[0] & 0x0c) >> 2] >> 2;   /* discard low bits (TMNT) */
 			int addr;
 	
-	if (has_extra_video_ram!=0) code[0] |= color[0] << 8;	/* kludge for X-Men */
+	if (has_extra_video_ram != 0) code[0] |= color[0] << 8;	/* kludge for X-Men */
 	else
 			K052109_callback.handler(0,bank,code,color);
 	
@@ -1051,7 +1051,7 @@ public class konamiic
 	
 				if (K052109_charrombank[0] != (data & 0x0f)) dirty |= 1;
 				if (K052109_charrombank[1] != ((data >> 4) & 0x0f)) dirty |= 2;
-				if (dirty!=0)
+				if (dirty != 0)
 				{
 					int i;
 	
@@ -1094,7 +1094,7 @@ public class konamiic
 	
 				if (K052109_charrombank[2] != (data & 0x0f)) dirty |= 1;
 				if (K052109_charrombank[3] != ((data >> 4) & 0x0f)) dirty |= 2;
-				if (dirty!=0)
+				if (dirty != 0)
 				{
 					int i;
 	
@@ -1303,22 +1303,6 @@ public class konamiic
 			tilemap_set_scrollx(K052109_tilemap[2],0,xscroll);
 			tilemap_set_scrolly(K052109_tilemap[2],0,yscroll);
 		}
-
-        //tilemap0_preupdate();
-        //tilemap_update(K052109_tilemap[0]);
-        //tilemap1_preupdate();
-        //tilemap_update(K052109_tilemap[1]);
-        //tilemap2_preupdate();
-        //tilemap_update(K052109_tilemap[2]);
-
-        /*#ifdef MAME_DEBUG
-         if ((K052109_scrollctrl & 0x03) == 0x01 ||
-         (K052109_scrollctrl & 0x18) == 0x08 ||
-         ((K052109_scrollctrl & 0x04) && (K052109_scrollctrl & 0x03)) ||
-         ((K052109_scrollctrl & 0x20) && (K052109_scrollctrl & 0x18)) ||
-         (K052109_scrollctrl & 0xc0) != 0)
-         usrintf_showmessage("scrollcontrol = %02x",K052109_scrollctrl);
-         #endif*/
         	}
         	
         	public static void K052109_tilemap_draw(mame_bitmap bitmap,int num,int flags,int priority)
@@ -2469,6 +2453,8 @@ public class konamiic
     static int offsetkludge;
 
     public static void K053247_sprites_draw(mame_bitmap bitmap) {
+        //System.out.println("K053247_sprites_draw");
+        K053247_ram.offset=0;
         int NUM_SPRITES = 256;
         int offs,pri_code;
 		int[] sortedlist = new int[NUM_SPRITES];
@@ -2483,16 +2469,19 @@ public class konamiic
 	
 	
 		/* prebuild a sorted table */
-		for (offs = 0;offs < 0x800;offs += 8)
+		for (offs = 0;offs < 0x1000;offs += 16)
 		{
 	//		if (K053247_ram[offs] & 0x8000)
-			sortedlist[K053247_ram.read(offs) & 0x00ff] = offs;
+			sortedlist[READ_WORD(K053247_ram, offs) & 0x00ff] = offs;
 		}
+                
+                //System.out.println("A");
 	
 		for (pri_code = 0;pri_code < NUM_SPRITES;pri_code++)
 		{
-			int ox,oy,size,w,h,x,y,xa,ya,flipx,flipy,mirrorx,mirrory,zoomx,zoomy;
-                        int[] color=new int[1],code=new int[1],shadow=new int[1], pri=new int[1]; 
+			//System.out.println(pri_code);
+                        int ox,oy,size,w,h,x,y,xa,ya,flipx,flipy,mirrorx,mirrory,zoomx,zoomy, shadow;
+                        int[] color=new int[1],code=new int[1],pri=new int[1]; 
 			/* sprites can be grouped up to 8x8. The draw order is
 				 0  1  4  5 16 17 20 21
 				 2  3  6  7 18 19 22 23
@@ -2506,22 +2495,29 @@ public class konamiic
 			int xoffset[] = { 0, 1, 4, 5, 16, 17, 20, 21 };
 			int yoffset[] = { 0, 2, 8, 10, 32, 34, 40, 42 };
 	
-	
+	//System.out.println("B");
 			offs = sortedlist[pri_code];
 			if (offs == -1) continue;
+                        
+                        //System.out.println("C");
 	
-			if ((K053247_ram.read(offs) & 0x8000) == 0) continue;
+			if ((READ_WORD(K053247_ram, offs) & 0x8000) == 0) continue;
+                        
+                        //System.out.println("D");
 	
-			code[0] = K053247_ram.read(offs+1);
-			color[0] = K053247_ram.read(offs+6);
+			code[0] = READ_WORD(K053247_ram, offs + 0x02);
+			color[0] = READ_WORD(K053247_ram, offs + 0x0c);
 			pri[0] = 0;
 	
 			K053247_callback.handler(code,color,pri);
 	
-			size = (K053247_ram.read(offs) & 0x0f00) >> 8;
+			size = (READ_WORD(K053247_ram, offs) & 0x0f00) >> 8;
 	
 			w = 1 << (size & 0x03);
 			h = 1 << ((size >> 2) & 0x03);
+                        
+                        //System.out.println("w="+w);
+                        //System.out.println("h="+h);
 	
 			/* the sprite can start at any point in the 8x8 grid. We have to */
 			/* adjust the offsets to draw it correctly. Simpsons does this all the time. */
@@ -2541,27 +2537,26 @@ public class konamiic
 			  <0x40 enlarge (0x20 = double size)
 			  >0x40 reduce (0x80 = half size)
 			*/
-			zoomy = K053247_ram.read(offs+4);
+			zoomy = READ_WORD(K053247_ram, offs + 0x08);
 			if (zoomy > 0x2000) continue;
 			if (zoomy!=0) zoomy = (0x400000+zoomy/2) / zoomy;
 			else zoomy = 2 * 0x400000;
-			if ((K053247_ram.read(offs) & 0x4000) == 0)
-			{
-				zoomx = K053247_ram.read(offs+5);
+			if ((READ_WORD(K053247_ram, offs) & 0x4000) == 0) {
+                                zoomx = READ_WORD(K053247_ram, offs + 0x0a);
 				if (zoomx > 0x2000) continue;
 				if (zoomx!=0) zoomx = (0x400000+zoomx/2) / zoomx;
 				else zoomx = 2 * 0x400000;
 			}
 			else zoomx = zoomy;
 	
-			ox = K053247_ram.read(offs+3);
-			oy = K053247_ram.read(offs+2);
+			ox = READ_WORD(K053247_ram, offs + 0x06);
+                        oy = READ_WORD(K053247_ram, offs + 0x04);
 	
 			flipx = K053247_ram.read(offs) & 0x1000;
 			flipy = K053247_ram.read(offs) & 0x2000;
 			mirrorx = K053247_ram.read(offs+6) & 0x4000;
 			mirrory = K053247_ram.read(offs+6) & 0x8000;
-			shadow[0] = K053247_ram.read(offs+6) & 0x0400;
+			shadow = K053247_ram.read(offs+6) & 0x0400;
 	
 			if (flipscreenx!=0)
 			{
@@ -2583,6 +2578,8 @@ public class konamiic
 			/* the coordinates given are for the *center* of the sprite */
 			ox -= (zoomx * w) >> 13;
 			oy -= (zoomy * h) >> 13;
+                        
+                        //System.out.println("h="+h);
 	
 			for (y = 0;y < h;y++)
 			{
@@ -2638,24 +2635,28 @@ public class konamiic
 						else c += yoffset[(y+ya)&7];
 						fy = flipy;
 					}
+                                        
+                                        //System.out.println("zoomx="+zoomx);
 	
 					if (zoomx == 0x10000 && zoomy == 0x10000)
 					{
+                                            //System.out.println("pdrawgfx");
 						pdrawgfx(bitmap,K053247_gfx,
 								c,
 								color[0],
 								fx,fy,
 								sx,sy,
-								Machine.visible_area,shadow[0]!=0 ? TRANSPARENCY_PEN_TABLE : TRANSPARENCY_PEN,0,pri[0]);
+								Machine.visible_area,shadow!=0 ? TRANSPARENCY_PEN_TABLE : TRANSPARENCY_PEN,0,pri[0]);
 					}
 					else
 					{
-						pdrawgfxzoom(bitmap,K053247_gfx,
+						//System.out.println("pdrawgfxzoom");
+                                                pdrawgfxzoom(bitmap,K053247_gfx,
 								c,
 								color[0],
 								fx,fy,
 								sx,sy,
-								Machine.visible_area,shadow[0]!=0 ? TRANSPARENCY_PEN_TABLE : TRANSPARENCY_PEN,0,
+								Machine.visible_area,shadow!=0 ? TRANSPARENCY_PEN_TABLE : TRANSPARENCY_PEN,0,
 								(zw << 16) / 16,(zh << 16) / 16,pri[0]);
 					}
 	
@@ -2663,21 +2664,23 @@ public class konamiic
 					{
 						if (zoomx == 0x10000 && zoomy == 0x10000)
 						{
+                                                    //System.out.println("pdrawgfx2");
 							pdrawgfx(bitmap,K053247_gfx,
 									c,
 									color[0],
 									fx,fy!=0?0:1,
 									sx,sy,
-									Machine.visible_area,shadow[0]!=0 ? TRANSPARENCY_PEN_TABLE : TRANSPARENCY_PEN,0,pri[0]);
+									Machine.visible_area,shadow!=0 ? TRANSPARENCY_PEN_TABLE : TRANSPARENCY_PEN,0,pri[0]);
 						}
 						else
 						{
+                                                    //System.out.println("pdrawgfxzoom2");
 							pdrawgfxzoom(bitmap,K053247_gfx,
 									c,
 									color[0],
 									fx,fy!=0?0:1,
 									sx,sy,
-									Machine.visible_area,shadow[0]!=0 ? TRANSPARENCY_PEN_TABLE : TRANSPARENCY_PEN,0,
+									Machine.visible_area,shadow!=0 ? TRANSPARENCY_PEN_TABLE : TRANSPARENCY_PEN,0,
 									(zw << 16) / 16,(zh << 16) / 16,pri[0]);
 						}
 					}
@@ -3058,71 +3061,51 @@ public class konamiic
                 
                 
                 
-        	static int[] K053251_ram = new int[16];
-        	static int[] K053251_palette_index = new int[5];
-        /*TODO*///	
-        /*TODO*///	static void K053251_reset_indexes(void)
-        /*TODO*///	{
-        /*TODO*///		K053251_palette_index[0] = 32 * ((K053251_ram[9] >> 0) & 0x03);
-        /*TODO*///		K053251_palette_index[1] = 32 * ((K053251_ram[9] >> 2) & 0x03);
-        /*TODO*///		K053251_palette_index[2] = 32 * ((K053251_ram[9] >> 4) & 0x03);
-        /*TODO*///		K053251_palette_index[3] = 16 * ((K053251_ram[10] >> 0) & 0x07);
-        /*TODO*///		K053251_palette_index[4] = 16 * ((K053251_ram[10] >> 3) & 0x07);
-        /*TODO*///	}
-        /*TODO*///	
-        /*TODO*///	public static VhStartPtr K053251_vh_start = new VhStartPtr() { public int handler() 
-        /*TODO*///	{
-        /*TODO*///		state_save_register_UINT8("K053251", 0, "registers", K053251_ram, 16);
-        /*TODO*///		state_save_register_func_postload(K053251_reset_indexes);
-        /*TODO*///		return 0;
-        /*TODO*///	} };
-        	
-        	public static WriteHandlerPtr K053251_w = new WriteHandlerPtr() {public void handler(int offset, int data)
-        	{
-        		data &= 0x3f;
-        	
-        		if (K053251_ram[offset] != data)
-        		{
-        			K053251_ram[offset] = data;
-        			if (offset == 9)
-        			{
-        				/* palette base index */
-        				K053251_palette_index[0] = 32 * ((data >> 0) & 0x03);
-        				K053251_palette_index[1] = 32 * ((data >> 2) & 0x03);
-        				K053251_palette_index[2] = 32 * ((data >> 4) & 0x03);
-        				tilemap_mark_all_tiles_dirty(ALL_TILEMAPS);
-        			}
-        			else if (offset == 10)
-        			{
-        				/* palette base index */
-        				K053251_palette_index[3] = 16 * ((data >> 0) & 0x07);
-        				K053251_palette_index[4] = 16 * ((data >> 3) & 0x07);
-        				tilemap_mark_all_tiles_dirty(ALL_TILEMAPS);
-        			}
-        		}
-        	} };
-        	
-        /*TODO*///	WRITE16_HANDLER( K053251_lsb_w )
-        /*TODO*///	{
-        /*TODO*///		if (ACCESSING_LSB)
-        /*TODO*///			K053251_w(offset, data & 0xff);
-        /*TODO*///	}
-        /*TODO*///	
-        /*TODO*///	WRITE16_HANDLER( K053251_msb_w )
-        /*TODO*///	{
-        /*TODO*///		if (ACCESSING_MSB)
-        /*TODO*///			K053251_w(offset, (data >> 8) & 0xff);
-        /*TODO*///	}
-        	
-        	public static int K053251_get_priority(int ci)
-        	{
-        		return K053251_ram[ci];
-        	}
-        	
-        	public static int K053251_get_palette_index(int ci)
-        	{
-        		return K053251_palette_index[ci];
-        	}
+        	static /*unsigned*/ char[] K053251_ram = new char[16];
+    static int[] K053251_palette_index = new int[5];
+
+    public static WriteHandlerPtr K053251_w = new WriteHandlerPtr() {
+        public void handler(int offset, int data) {
+            data &= 0x3f;
+
+            if (K053251_ram[offset] != data) {
+                K053251_ram[offset] = (char) (data & 0xFF);
+                if (offset == 9) {
+                    /* palette base index */
+                    K053251_palette_index[0] = 32 * ((data >> 0) & 0x03);
+                    K053251_palette_index[1] = 32 * ((data >> 2) & 0x03);
+                    K053251_palette_index[2] = 32 * ((data >> 4) & 0x03);
+                    tilemap_mark_all_tiles_dirty(ALL_TILEMAPS);
+                } else if (offset == 10) {
+                    /* palette base index */
+                    K053251_palette_index[3] = 16 * ((data >> 0) & 0x07);
+                    K053251_palette_index[4] = 16 * ((data >> 3) & 0x07);
+                    tilemap_mark_all_tiles_dirty(ALL_TILEMAPS);
+                }
+                /*#if 0
+                 else
+                 {
+                 if (errorlog)
+                 fprintf(errorlog,"%04x: write %02x to K053251 register %04x\n",cpu_get_pc(),data&0xff,offset);
+                 usrintf_showmessage("pri = %02x%02x%02x%02x %02x%02x%02x%02x %02x%02x%02x%02x %02x%02x%02x%02x",
+                 K053251_ram[0],K053251_ram[1],K053251_ram[2],K053251_ram[3],
+                 K053251_ram[4],K053251_ram[5],K053251_ram[6],K053251_ram[7],
+                 K053251_ram[8],K053251_ram[9],K053251_ram[10],K053251_ram[11],
+                 K053251_ram[12],K053251_ram[13],K053251_ram[14],K053251_ram[15]
+                 );
+                 }
+                 #endif*/
+            }
+        }
+    };
+
+    static int K053251_get_priority(int ci) {
+        return K053251_ram[ci];
+    }
+
+    static int K053251_get_palette_index(int ci) {
+        return K053251_palette_index[ci];
+    }
         	
         	
         	

@@ -6972,6 +6972,8 @@ public class drawgfx {
 /*TODO*/// 			}
 /*TODO*///         }
 
+//System.out.println("Transparency="+transparency);
+
         switch (transparency) {
             case TRANSPARENCY_NONE:
                 if ((gfx.flags & GFX_PACKED) != 0) {
