@@ -220,6 +220,12 @@ public class libc_old {
                     | (((int) memory[base + offset + 3]) << 24);
             return myNumber;
         }
+        
+        public int readinc(){
+            int _i=read();
+            inc();
+            return _i;
+        }
 
         public int read() {
             int myNumber = (((int) memory[base]) << 0)

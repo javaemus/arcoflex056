@@ -1073,6 +1073,8 @@ public class memory {
 
             int width;
             int bank;
+            
+            System.out.println("WIDTH DB: "+cpunum_databus_width(cpunum));
 
             /* determine the desired width */
             switch (cpunum_databus_width(cpunum)) {
@@ -1224,6 +1226,8 @@ public class memory {
         /* loop over CPUs */
         for (cpunum = 0; cpunum < cpu_gettotalcpu(); cpunum++) {
             int/*UINT32*/ width;
+            
+            System.out.println("WIDTH DB2: "+cpunum_databus_width(cpunum));
 
             /* determine the desired width */
             switch (cpunum_databus_width(cpunum)) {

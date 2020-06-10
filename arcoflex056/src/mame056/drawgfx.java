@@ -6984,8 +6984,8 @@ public class drawgfx {
 /*TODO*///						BLOCKMOVELU(4toN_opaque,(sd,sw,sh,sm,ls,ts,flipx,flipy,dd,dw,dh,dm,paldata));
                 } else {
                     if (pribuf != null) {
-                        System.out.println("BLOCKMOVEPRI(8toN_opaque NOT IMPLEMENTED");
-                        blockmove_8toN_opaque16(sd, sw, sh, sm, ls, ts, flipx, flipy, dd, dw, dh, dm, paldata); /*TODO*///, pribuf,pri_mask);
+                        System.out.println("BLOCKMOVEPRI(8toN_opaque TESTING METHOD");
+                        pri_blockmove_8toN_opaque16(sd, sw, sh, sm, ls, ts, flipx, flipy, dd, dw, dh, dm, paldata, pribuf,pri_mask);
                         //throw new UnsupportedOperationException("unsupported");
                         /*TODO*///						BLOCKMOVEPRI(8toN_opaque,(sd,sw,sh,sm,ls,ts,flipx,flipy,dd,dw,dh,dm,paldata,pribuf,pri_mask));
                     } else {
@@ -7031,9 +7031,10 @@ public class drawgfx {
                 } else {
                     if (pribuf != null) {
                         //throw new UnsupportedOperationException("Unsupported");
-                        System.out.println("BLOCKMOVEPRI(8toN_transpen, NOT IMPLEMENTED");
+                        System.out.println("BLOCKMOVEPRI(8toN_transpen, TESTING METHOD");
                         /*TODO*///						BLOCKMOVEPRI(8toN_transpen,(sd,sw,sh,sm,ls,ts,flipx,flipy,dd,dw,dh,dm,paldata,pribuf,pri_mask,transparent_color));
-                        blockmove_8toN_transpen16(sd, sw, sh, sm, ls, ts, flipx, flipy, dd, dw, dh, dm, paldata, transparent_color);
+/*TODO*///                        blockmove_pri_8toN_transpen16(sd,sw,sh,sm,ls,ts,flipx,flipy,dd,dw,dh,dm,paldata,pribuf,pri_mask,transparent_color);
+                                pri_blockmove_8toN_transpen16(sd, sw, sh, sm, ls, ts, flipx, flipy, dd, dw, dh, dm, paldata, pribuf, pri_mask, transparent_color);
                     } else {
                         if ((gfx.flags & GFX_SWAPXY) != 0) {
                             throw new UnsupportedOperationException("Unsupported");//blockmove_##function##_swapxy##16 args ;
@@ -8719,6 +8720,268 @@ public class drawgfx {
         }
     }
     
+    public static void pri_blockmove_8toN_opaque16(UBytePtr srcdata, int srcwidth, int srcheight, int srcmodulo, int leftskip, int topskip, int flipx, int flipy, UShortPtr dstdata, int dstwidth, int dstheight, int dstmodulo, IntArray paldata, UBytePtr pri_data, int pri_mask) {
+        //for (int i=0 ; i<paldata.buffer.length ; i++)
+        //    System.out.println("color:: "+i+"="+paldata.read(i));
+        int ydir;
+        if (flipy != 0) {
+            dstdata.inc(dstmodulo * (dstheight - 1));
+            pri_data.inc(dstmodulo * (dstheight - 1));
+            srcdata.inc((srcheight - dstheight - topskip) * srcmodulo);
+            ydir = -1;
+        } else {
+            srcdata.inc(topskip * srcmodulo);
+            ydir = 1;
+        }
+        if (flipx != 0) {
+            dstdata.inc(dstwidth - 1);
+            pri_data.inc(dstwidth - 1);
+            srcdata.inc(srcwidth - dstwidth - leftskip);
+        } else {
+            srcdata.inc(leftskip);
+        }
+        srcmodulo -= dstwidth;
+
+        if (flipx != 0) {
+            int end;
+
+            while (dstheight != 0) {
+                end = dstdata.offset - dstwidth;
+                while (dstdata.offset >= end + 8) {
+                    dstdata.dec(8);pri_data.dec(8);
+                    //dstdata.write(8, (char) paldata.read(srcdata.read(0)));
+                    int _dest = 8;
+                    int _n = paldata.read(srcdata.read(0));
+                    if (((1 << (pri_data.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                        if ((pri_data.read(_dest) & 0x80)!=0) { 
+                            dstdata.write(_dest, palette_shadow_table[_n]);
+                        } else { 
+                            dstdata.write(_dest, (char) (_n));
+                        } 
+                    } 
+                    pri_data.write(_dest, (pri_data.read(_dest) & 0x7f) | afterdrawmask);
+                    //dstdata.write(7, (char) paldata.read(srcdata.read(1)));
+                    _dest = 7;
+                    _n = paldata.read(srcdata.read(1));
+                    if (((1 << (pri_data.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                        if ((pri_data.read(_dest) & 0x80)!=0) { 
+                            dstdata.write(_dest, palette_shadow_table[_n]);
+                        } else { 
+                            dstdata.write(_dest, (char) (_n));
+                        } 
+                    } 
+                    pri_data.write(_dest, (pri_data.read(_dest) & 0x7f) | afterdrawmask);
+                    //dstdata.write(6, (char) paldata.read(srcdata.read(2)));
+                    _dest = 6;
+                    _n = paldata.read(srcdata.read(2));
+                    if (((1 << (pri_data.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                        if ((pri_data.read(_dest) & 0x80)!=0) { 
+                            dstdata.write(_dest, palette_shadow_table[_n]);
+                        } else { 
+                            dstdata.write(_dest, (char) (_n));
+                        } 
+                    } 
+                    pri_data.write(_dest, (pri_data.read(_dest) & 0x7f) | afterdrawmask);
+                    //dstdata.write(5, (char) paldata.read(srcdata.read(3)));
+                    _dest = 5;
+                    _n = paldata.read(srcdata.read(3));
+                    if (((1 << (pri_data.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                        if ((pri_data.read(_dest) & 0x80)!=0) { 
+                            dstdata.write(_dest, palette_shadow_table[_n]);
+                        } else { 
+                            dstdata.write(_dest, (char) (_n));
+                        } 
+                    } 
+                    pri_data.write(_dest, (pri_data.read(_dest) & 0x7f) | afterdrawmask);
+                    //dstdata.write(4, (char) paldata.read(srcdata.read(4)));
+                    _dest = 4;
+                    _n = paldata.read(srcdata.read(4));
+                    if (((1 << (pri_data.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                        if ((pri_data.read(_dest) & 0x80)!=0) { 
+                            dstdata.write(_dest, palette_shadow_table[_n]);
+                        } else { 
+                            dstdata.write(_dest, (char) (_n));
+                        } 
+                    } 
+                    pri_data.write(_dest, (pri_data.read(_dest) & 0x7f) | afterdrawmask);
+                    //dstdata.write(3, (char) paldata.read(srcdata.read(5)));
+                    _dest = 3;
+                    _n = paldata.read(srcdata.read(5));
+                    if (((1 << (pri_data.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                        if ((pri_data.read(_dest) & 0x80)!=0) { 
+                            dstdata.write(_dest, palette_shadow_table[_n]);
+                        } else { 
+                            dstdata.write(_dest, (char) (_n));
+                        } 
+                    } 
+                    pri_data.write(_dest, (pri_data.read(_dest) & 0x7f) | afterdrawmask);
+                    //dstdata.write(2, (char) paldata.read(srcdata.read(6)));
+                    _dest = 2;
+                    _n = paldata.read(srcdata.read(6));
+                    if (((1 << (pri_data.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                        if ((pri_data.read(_dest) & 0x80)!=0) { 
+                            dstdata.write(_dest, palette_shadow_table[_n]);
+                        } else { 
+                            dstdata.write(_dest, (char) (_n));
+                        } 
+                    } 
+                    pri_data.write(_dest, (pri_data.read(_dest) & 0x7f) | afterdrawmask);
+                    //dstdata.write(1, (char) paldata.read(srcdata.read(7)));
+                    _dest = 1;
+                    _n = paldata.read(srcdata.read(7));
+                    if (((1 << (pri_data.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                        if ((pri_data.read(_dest) & 0x80)!=0) { 
+                            dstdata.write(_dest, palette_shadow_table[_n]);
+                        } else { 
+                            dstdata.write(_dest, (char) (_n));
+                        } 
+                    } 
+                    pri_data.write(_dest, (pri_data.read(_dest) & 0x7f) | afterdrawmask);
+                    srcdata.inc(8);
+                }
+                while (dstdata.offset > end) {
+                    //dstdata.write(0, (char) paldata.read(srcdata.read(0)));
+                    int _dest = 0;
+                    int _n = paldata.read(srcdata.read(0));
+                    if (((1 << (pri_data.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                        if ((pri_data.read(_dest) & 0x80)!=0) { 
+                            dstdata.write(_dest, palette_shadow_table[_n]);
+                        } else { 
+                            dstdata.write(_dest, (char) (_n));
+                        } 
+                    } 
+                    pri_data.write(_dest, (pri_data.read(_dest) & 0x7f) | afterdrawmask);
+                    srcdata.inc();
+                    dstdata.dec(); pri_data.dec();
+                }
+
+                srcdata.inc(srcmodulo);
+                dstdata.inc(ydir * dstmodulo + dstwidth);
+                pri_data.inc(ydir * dstmodulo + dstwidth);
+                dstheight--;
+            }
+        } else {
+            int end;//DATA_TYPE *end;
+
+            while (dstheight != 0) {
+                end = dstdata.offset + dstwidth;
+                while (dstdata.offset <= end - 8) {
+                    //dstdata.write(0, (char) paldata.read(srcdata.read(0)));
+                    int _dest = 0;
+                    int _n = paldata.read(srcdata.read(0));
+                    if (((1 << (pri_data.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                        if ((pri_data.read(_dest) & 0x80)!=0) { 
+                            dstdata.write(_dest, palette_shadow_table[_n]);
+                        } else { 
+                            dstdata.write(_dest, (char) (_n));
+                        } 
+                    } 
+                    pri_data.write(_dest, (pri_data.read(_dest) & 0x7f) | afterdrawmask);
+                    //dstdata.write(1, (char) paldata.read(srcdata.read(1)));
+                    _dest = 1;
+                    _n = paldata.read(srcdata.read(1));
+                    if (((1 << (pri_data.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                        if ((pri_data.read(_dest) & 0x80)!=0) { 
+                            dstdata.write(_dest, palette_shadow_table[_n]);
+                        } else { 
+                            dstdata.write(_dest, (char) (_n));
+                        } 
+                    } 
+                    pri_data.write(_dest, (pri_data.read(_dest) & 0x7f) | afterdrawmask);
+                    //dstdata.write(2, (char) paldata.read(srcdata.read(2)));
+                    _dest = 2;
+                    _n = paldata.read(srcdata.read(2));
+                    if (((1 << (pri_data.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                        if ((pri_data.read(_dest) & 0x80)!=0) { 
+                            dstdata.write(_dest, palette_shadow_table[_n]);
+                        } else { 
+                            dstdata.write(_dest, (char) (_n));
+                        } 
+                    } 
+                    pri_data.write(_dest, (pri_data.read(_dest) & 0x7f) | afterdrawmask);
+                    //dstdata.write(3, (char) paldata.read(srcdata.read(3)));
+                    _dest = 3;
+                    _n = paldata.read(srcdata.read(3));
+                    if (((1 << (pri_data.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                        if ((pri_data.read(_dest) & 0x80)!=0) { 
+                            dstdata.write(_dest, palette_shadow_table[_n]);
+                        } else { 
+                            dstdata.write(_dest, (char) (_n));
+                        } 
+                    } 
+                    pri_data.write(_dest, (pri_data.read(_dest) & 0x7f) | afterdrawmask);
+                    //dstdata.write(4, (char) paldata.read(srcdata.read(4)));
+                    _dest = 4;
+                    _n = paldata.read(srcdata.read(4));
+                    if (((1 << (pri_data.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                        if ((pri_data.read(_dest) & 0x80)!=0) { 
+                            dstdata.write(_dest, palette_shadow_table[_n]);
+                        } else { 
+                            dstdata.write(_dest, (char) (_n));
+                        } 
+                    } 
+                    pri_data.write(_dest, (pri_data.read(_dest) & 0x7f) | afterdrawmask);
+                    //dstdata.write(5, (char) paldata.read(srcdata.read(5)));
+                    _dest = 5;
+                    _n = paldata.read(srcdata.read(5));
+                    if (((1 << (pri_data.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                        if ((pri_data.read(_dest) & 0x80)!=0) { 
+                            dstdata.write(_dest, palette_shadow_table[_n]);
+                        } else { 
+                            dstdata.write(_dest, (char) (_n));
+                        } 
+                    } 
+                    pri_data.write(_dest, (pri_data.read(_dest) & 0x7f) | afterdrawmask);
+                    //dstdata.write(6, (char) paldata.read(srcdata.read(6)));
+                    _dest = 6;
+                    _n = paldata.read(srcdata.read(6));
+                    if (((1 << (pri_data.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                        if ((pri_data.read(_dest) & 0x80)!=0) { 
+                            dstdata.write(_dest, palette_shadow_table[_n]);
+                        } else { 
+                            dstdata.write(_dest, (char) (_n));
+                        } 
+                    } 
+                    pri_data.write(_dest, (pri_data.read(_dest) & 0x7f) | afterdrawmask);
+                    //dstdata.write(7, (char) paldata.read(srcdata.read(7)));
+                    _dest = 7;
+                    _n = paldata.read(srcdata.read(7));
+                    if (((1 << (pri_data.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                        if ((pri_data.read(_dest) & 0x80)!=0) { 
+                            dstdata.write(_dest, palette_shadow_table[_n]);
+                        } else { 
+                            dstdata.write(_dest, (char) (_n));
+                        } 
+                    } 
+                    pri_data.write(_dest, (pri_data.read(_dest) & 0x7f) | afterdrawmask);
+                    srcdata.inc(8);
+                    dstdata.inc(8); pri_data.inc(8);
+                }
+                while (dstdata.offset < end) {
+                    //dstdata.write(0, (char) paldata.read(srcdata.read(0)));
+                    int _dest = 0;
+                    int _n = paldata.read(srcdata.read(0));
+                    if (((1 << (pri_data.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                        if ((pri_data.read(_dest) & 0x80)!=0) { 
+                            dstdata.write(_dest, palette_shadow_table[_n]);
+                        } else { 
+                            dstdata.write(_dest, (char) (_n));
+                        } 
+                    } 
+                    pri_data.write(_dest, (pri_data.read(_dest) & 0x7f) | afterdrawmask);
+                    srcdata.inc();
+                    dstdata.inc(); pri_data.inc();
+                }
+
+                srcdata.inc(srcmodulo);
+                dstdata.inc((ydir * dstmodulo - dstwidth * 1));
+                pri_data.inc(ydir * dstmodulo - dstwidth * 1);
+                dstheight--;
+            }
+        }
+    }
+    
+    
     public static void blockmove_8toN_pen_table(UBytePtr srcdata, int srcwidth, int srcheight, int srcmodulo, int leftskip, int topskip, int flipx, int flipy, UShortPtr dstdata, int dstwidth, int dstheight, int dstmodulo, IntArray paldata, int transcolor){
         int ydir;
         if (flipy != 0) {
@@ -9003,6 +9266,270 @@ public class drawgfx {
             }
         }
     }
+    
+    public static void pri_blockmove_8toN_transpen16(UBytePtr srcdata, int srcwidth, int srcheight, int srcmodulo, int leftskip, int topskip, int flipx, int flipy, UShortPtr dstdata, int dstwidth, int dstheight, int dstmodulo, IntArray paldata, UBytePtr pri_data, int pri_mask, int transpen) {
+        int ydir;
+        if (flipy != 0) {
+            dstdata.inc(dstmodulo * (dstheight - 1));
+            pri_data.inc(dstmodulo * (dstheight - 1));
+            srcdata.inc((srcheight - dstheight - topskip) * srcmodulo);
+            ydir = -1;
+        } else {
+            srcdata.inc(topskip * srcmodulo);
+            ydir = 1;
+        }
+        if (flipx != 0) {
+            dstdata.inc(dstwidth - 1);
+            pri_data.inc(dstwidth - 1);
+            srcdata.inc(srcwidth - dstwidth - leftskip);
+        } else {
+            srcdata.inc(leftskip);
+        }
+        srcmodulo -= dstwidth;
+        if (flipx != 0) {
+            int end;
+            int trans4;
+            IntPtr sd4;
+
+            trans4 = transpen * 0x01010101;
+
+            while (dstheight != 0) {
+
+                end = dstdata.offset - dstwidth;
+                while (((long) srcdata.offset & 3) != 0 && dstdata.offset > end) /* longword align */ {
+                    int col;
+
+                    col = srcdata.readinc();
+                    if (col != transpen) {
+                        dstdata.write(0, (char) paldata.read(col));
+                        int _dest = 0;
+                        int _n = paldata.read(col);
+                        if (((1 << (pri_data.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                            if ((pri_data.read(_dest) & 0x80)!=0) { 
+                                dstdata.write(_dest, palette_shadow_table[_n]);
+                            } else { 
+                                dstdata.write(_dest, (char) (_n));
+                            } 
+                        } 
+                        pri_data.write(_dest, (pri_data.read(_dest) & 0x7f) | afterdrawmask);
+                    }
+                    dstdata.dec();pri_data.dec();
+                }
+
+                sd4 = new IntPtr(srcdata);
+                while (dstdata.offset >= end + 4) {
+                    int col4;
+
+                    dstdata.dec(4);
+                    if ((col4 = sd4.read(0)) != trans4) {
+                        int xod4;
+
+                        xod4 = col4 ^ trans4;
+                        if ((xod4 & (0xff << SHIFT0)) != 0) {
+                            //dstdata.write(4, (char) paldata.read(((col4 >> SHIFT0) & 0xff)));
+                            int _dest = 4;
+                            int _n = paldata.read(((col4 >> SHIFT0) & 0xff));
+                            if (((1 << (pri_data.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                                if ((pri_data.read(_dest) & 0x80)!=0) { 
+                                    dstdata.write(_dest, palette_shadow_table[_n]);
+                                } else { 
+                                    dstdata.write(_dest, (char) (_n));
+                                } 
+                            } 
+                            pri_data.write(_dest, (pri_data.read(_dest) & 0x7f) | afterdrawmask);
+                        }
+                        if ((xod4 & (0xff << SHIFT1)) != 0) {
+                            //dstdata.write(3, (char) paldata.read((((col4 >> SHIFT1) & 0xff))));
+                            int _dest = 3;
+                            int _n = paldata.read(((col4 >> SHIFT1) & 0xff));
+                            if (((1 << (pri_data.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                                if ((pri_data.read(_dest) & 0x80)!=0) { 
+                                    dstdata.write(_dest, palette_shadow_table[_n]);
+                                } else { 
+                                    dstdata.write(_dest, (char) (_n));
+                                } 
+                            } 
+                            pri_data.write(_dest, (pri_data.read(_dest) & 0x7f) | afterdrawmask);
+                        }
+                        if ((xod4 & (0xff << SHIFT2)) != 0) {
+                            //dstdata.write(2, (char) paldata.read((((col4 >> SHIFT2) & 0xff))));
+                            int _dest = 2;
+                            int _n = paldata.read(((col4 >> SHIFT2) & 0xff));
+                            if (((1 << (pri_data.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                                if ((pri_data.read(_dest) & 0x80)!=0) { 
+                                    dstdata.write(_dest, palette_shadow_table[_n]);
+                                } else { 
+                                    dstdata.write(_dest, (char) (_n));
+                                } 
+                            } 
+                            pri_data.write(_dest, (pri_data.read(_dest) & 0x7f) | afterdrawmask);
+                        }
+                        if ((xod4 & (0xff << SHIFT3)) != 0) {
+                            //dstdata.write(1, (char) paldata.read((((col4 >> SHIFT3) & 0xff))));
+                            int _dest = 1;
+                            int _n = paldata.read(((col4 >> SHIFT3) & 0xff));
+                            if (((1 << (pri_data.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                                if ((pri_data.read(_dest) & 0x80)!=0) { 
+                                    dstdata.write(_dest, palette_shadow_table[_n]);
+                                } else { 
+                                    dstdata.write(_dest, (char) (_n));
+                                } 
+                            } 
+                            pri_data.write(_dest, (pri_data.read(_dest) & 0x7f) | afterdrawmask);
+                        }
+                    }
+                    sd4.base += 4;
+                }
+                srcdata.set(sd4.readCA(), sd4.getBase());
+                while (dstdata.offset > end) {
+                    int col;
+
+                    col = srcdata.readinc();
+                    if (col != transpen) {
+                        dstdata.write(0, (char) paldata.read(col));
+                        int _dest = 0;
+                        int _n = paldata.read(col);
+                        if (((1 << (pri_data.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                            if ((pri_data.read(_dest) & 0x80)!=0) { 
+                                dstdata.write(_dest, palette_shadow_table[_n]);
+                            } else { 
+                                dstdata.write(_dest, (char) (_n));
+                            } 
+                        } 
+                        pri_data.write(_dest, (pri_data.read(_dest) & 0x7f) | afterdrawmask);
+                    }
+                    dstdata.dec(); pri_data.dec();
+                }
+
+                srcdata.inc(srcmodulo);
+                dstdata.inc(ydir * dstmodulo + dstwidth);
+                pri_data.inc(ydir * dstmodulo + dstwidth);
+                dstheight--;
+            }
+        } else {
+            int end;
+            int trans4;
+            IntPtr sd4;
+
+            trans4 = transpen * 0x01010101;
+
+            while (dstheight != 0) {
+                end = dstdata.offset + dstwidth;
+                while (((long) srcdata.offset & 3) != 0 && dstdata.offset < end) /* longword align */ {
+                    int col;
+
+                    col = srcdata.readinc();
+                    if (col != transpen) {
+                        dstdata.write(0, (char) paldata.read(col));
+                        int _dest = 0;
+                        int _n = paldata.read(col);
+                        if (((1 << (pri_data.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                            if ((pri_data.read(_dest) & 0x80)!=0) { 
+                                dstdata.write(_dest, palette_shadow_table[_n]);
+                            } else { 
+                                dstdata.write(_dest, (char) (_n));
+                            } 
+                        } 
+                        pri_data.write(_dest, (pri_data.read(_dest) & 0x7f) | afterdrawmask);
+                    }
+                    dstdata.inc();
+                    pri_data.inc();
+                }
+                sd4 = new IntPtr(srcdata);
+                while (dstdata.offset <= end - 4) {
+                    int col4;
+
+                    if ((col4 = sd4.read(0)) != trans4) {
+                        int xod4;
+
+                        xod4 = col4 ^ trans4;
+                        if ((xod4 & (0xff << SHIFT0)) != 0) {
+                            //dstdata.write(0, (char) paldata.read(((col4 >> SHIFT0) & 0xff)));
+                            int _dest = 0;
+                            int _n = paldata.read(((col4 >> SHIFT0) & 0xff));
+                            if (((1 << (pri_data.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                                if ((pri_data.read(_dest) & 0x80)!=0) { 
+                                    dstdata.write(_dest, palette_shadow_table[_n]);
+                                } else { 
+                                    dstdata.write(_dest, (char) (_n));
+                                } 
+                            } 
+                            pri_data.write(_dest, (pri_data.read(_dest) & 0x7f) | afterdrawmask);
+                        }
+                        if ((xod4 & (0xff << SHIFT1)) != 0) {
+                            //dstdata.write(1, (char) paldata.read((char) (((col4 >> SHIFT1) & 0xff))));
+                            int _dest = 1;
+                            int _n = paldata.read(((col4 >> SHIFT1) & 0xff));
+                            if (((1 << (pri_data.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                                if ((pri_data.read(_dest) & 0x80)!=0) { 
+                                    dstdata.write(_dest, palette_shadow_table[_n]);
+                                } else { 
+                                    dstdata.write(_dest, (char) (_n));
+                                } 
+                            } 
+                            pri_data.write(_dest, (pri_data.read(_dest) & 0x7f) | afterdrawmask);
+                        }
+                        if ((xod4 & (0xff << SHIFT2)) != 0) {
+                            //dstdata.write(2, (char) paldata.read((((col4 >> SHIFT2) & 0xff))));
+                            int _dest = 2;
+                            int _n = paldata.read(((col4 >> SHIFT2) & 0xff));
+                            if (((1 << (pri_data.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                                if ((pri_data.read(_dest) & 0x80)!=0) { 
+                                    dstdata.write(_dest, palette_shadow_table[_n]);
+                                } else { 
+                                    dstdata.write(_dest, (char) (_n));
+                                } 
+                            } 
+                            pri_data.write(_dest, (pri_data.read(_dest) & 0x7f) | afterdrawmask);
+                        }
+                        if ((xod4 & (0xff << SHIFT3)) != 0) {
+                            //dstdata.write(3, (char) paldata.read((((col4 >> SHIFT3) & 0xff))));
+                            int _dest = 3;
+                            int _n = paldata.read(((col4 >> SHIFT3) & 0xff));
+                            if (((1 << (pri_data.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                                if ((pri_data.read(_dest) & 0x80)!=0) { 
+                                    dstdata.write(_dest, palette_shadow_table[_n]);
+                                } else { 
+                                    dstdata.write(_dest, (char) (_n));
+                                } 
+                            } 
+                            pri_data.write(_dest, (pri_data.read(_dest) & 0x7f) | afterdrawmask);
+                        }
+                    }
+                    dstdata.inc(4);
+                    pri_data.inc(4);
+                    sd4.base += 4;
+                }
+                srcdata.set(sd4.readCA(), sd4.getBase());
+                while (dstdata.offset < end) {
+                    int col;
+
+                    col = srcdata.readinc();
+                    if (col != transpen) {
+                        dstdata.write(0, (char) paldata.read(col));
+                        int _dest = 0;
+                        int _n = paldata.read(col);
+                        if (((1 << (pri_data.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                            if ((pri_data.read(_dest) & 0x80)!=0) { 
+                                dstdata.write(_dest, palette_shadow_table[_n]);
+                            } else { 
+                                dstdata.write(_dest, (char) (_n));
+                            } 
+                        } 
+                        pri_data.write(_dest, (pri_data.read(_dest) & 0x7f) | afterdrawmask);
+                    }
+                    dstdata.inc();
+                    pri_data.inc();
+                }
+
+                srcdata.inc(srcmodulo);
+                dstdata.inc(ydir * dstmodulo - dstwidth);
+                pri_data.inc(ydir * dstmodulo - dstwidth);
+                dstheight--;
+            }
+        }
+    }
+
 
     public static void blockmove_NtoN_blend_remap16(UShortPtr srcdata, int srcwidth, int srcheight, int srcmodulo,
             UShortPtr dstdata, int dstmodulo, int[] paldata, int srcshift) {
@@ -9511,6 +10038,273 @@ public class drawgfx {
 			dstheight--;
 		}
 	}
+    }
+    
+    private static void blockmove_pri_8toN_transpen16(UBytePtr srcdata, int srcwidth, int srcheight, int srcmodulo, int leftskip, int topskip, int flipx, int flipy, UShortPtr dstdata, int dstwidth, int dstheight, int dstmodulo, IntArray paldata, UBytePtr pridata, int pri_mask, int transpen) {
+                // ADJUST_8
+                int ydir;
+                if (flipy != 0) {
+                    dstdata.inc(dstmodulo * (dstheight - 1));
+                    srcdata.inc((srcheight - dstheight - topskip) * srcmodulo);
+                    ydir = -1;
+                } else {
+                    srcdata.inc(topskip * srcmodulo);
+                    ydir = 1;
+                }
+                if (flipx != 0) {
+                    dstdata.inc(dstwidth - 1);
+                    srcdata.inc(srcwidth - dstwidth - leftskip);
+                } else {
+                    srcdata.inc(leftskip);
+                }
+                srcmodulo -= dstwidth;
+	
+		if (flipx != 0)
+		{
+			int end;
+			int trans4;
+			UBytePtr sd4;
+	
+			trans4 = transpen * 0x01010101;
+	
+			while (dstheight != 0)
+			{
+				end = dstdata.offset - dstwidth*1;
+				while (((long)srcdata.offset & 3)!=0 && dstdata.offset > end)	/* longword align */
+				{
+					int col;
+	
+					col = srcdata.readinc();
+					if (col != transpen){ 
+                                            //SETPIXELCOLOR(0,paldata.read(col));
+                                            int _dest = 0;
+                                            int _n = paldata.read(col);
+                                            if (((1 << (pridata.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                                                if ((pridata.read(_dest) & 0x80)!=0) { 
+                                                    dstdata.write(_dest, palette_shadow_table[_n]);
+                                                } else { 
+                                                    dstdata.write(_dest, (char) (_n));
+                                                } 
+                                            } 
+                                            pridata.write(_dest, (pridata.read(_dest) & 0x7f) | afterdrawmask); 
+                                        }
+					dstdata.dec(1);pridata.dec(1);
+				}
+				sd4 = new UBytePtr(srcdata);
+				while (dstdata.offset >= end + 4*1)
+				{
+					int col4;
+	
+					dstdata.dec(4);pridata.dec(4);
+					if ((col4 = (sd4.readinc())) != trans4)
+					{
+						int xod4;
+	
+						xod4 = col4 ^ trans4;
+						if ((xod4 & (0xff<<SHIFT0))!=0){
+                                                    //SETPIXELCOLOR(4*1,paldata.read(((col4>>SHIFT0) & 0xff)));
+                                                    int _dest = 4*1;
+                                                    int _n = paldata.read(((col4>>SHIFT0) & 0xff));
+                                                    if (((1 << (pridata.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                                                        if ((pridata.read(_dest) & 0x80)!=0) { 
+                                                            dstdata.write(_dest, palette_shadow_table[_n]);
+                                                        } else { 
+                                                            dstdata.write(_dest, (char) (_n));
+                                                        } 
+                                                    } 
+                                                    pridata.write(_dest, (pridata.read(_dest) & 0x7f) | afterdrawmask);
+                                                }
+						if ((xod4 & (0xff<<SHIFT1))!=0){
+                                                    //SETPIXELCOLOR(3*1,paldata.read(((col4>>SHIFT1) & 0xff)));
+                                                    int _dest = 3*1;
+                                                    int _n = paldata.read(((col4>>SHIFT1) & 0xff));
+                                                    if (((1 << (pridata.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                                                        if ((pridata.read(_dest) & 0x80)!=0) { 
+                                                            dstdata.write(_dest, palette_shadow_table[_n]);
+                                                        } else { 
+                                                            dstdata.write(_dest, (char) (_n));
+                                                        } 
+                                                    } 
+                                                    pridata.write(_dest, (pridata.read(_dest) & 0x7f) | afterdrawmask);
+                                                }
+						if ((xod4 & (0xff<<SHIFT2))!=0){
+                                                    //SETPIXELCOLOR(2*1,paldata.read(((col4>>SHIFT2) & 0xff)));
+                                                    int _dest = 2*1;
+                                                    int _n = paldata.read(((col4>>SHIFT2) & 0xff));
+                                                    if (((1 << (pridata.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                                                        if ((pridata.read(_dest) & 0x80)!=0) { 
+                                                            dstdata.write(_dest, palette_shadow_table[_n]);
+                                                        } else { 
+                                                            dstdata.write(_dest, (char) (_n));
+                                                        } 
+                                                    } 
+                                                    pridata.write(_dest, (pridata.read(_dest) & 0x7f) | afterdrawmask);
+                                                }
+						if ((xod4 & (0xff<<SHIFT3))!=0){
+                                                    //SETPIXELCOLOR(1*1,paldata.read(((col4>>SHIFT3) & 0xff)));
+                                                    int _dest = 1*1;
+                                                    int _n = paldata.read(((col4>>SHIFT3) & 0xff));
+                                                    if (((1 << (pridata.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                                                        if ((pridata.read(_dest) & 0x80)!=0) { 
+                                                            dstdata.write(_dest, palette_shadow_table[_n]);
+                                                        } else { 
+                                                            dstdata.write(_dest, (char) (_n));
+                                                        } 
+                                                    } 
+                                                    pridata.write(_dest, (pridata.read(_dest) & 0x7f) | afterdrawmask);
+                                                }
+					}
+				}
+				srcdata = new UBytePtr(sd4);
+				while (dstdata.offset > end)
+				{
+					int col;
+	
+					col = srcdata.readinc();
+					if (col != transpen){
+                                            //SETPIXELCOLOR(0,paldata.read((col)));
+                                            int _dest = 0;
+                                            int _n = paldata.read((col));
+                                            if (((1 << (pridata.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                                                if ((pridata.read(_dest) & 0x80)!=0) { 
+                                                    dstdata.write(_dest, palette_shadow_table[_n]);
+                                                } else { 
+                                                    dstdata.write(_dest, (char) (_n));
+                                                } 
+                                            } 
+                                            pridata.write(_dest, (pridata.read(_dest) & 0x7f) | afterdrawmask);
+                                        }
+					dstdata.dec(1);pridata.dec(1);
+				}
+	
+				srcdata.inc( srcmodulo );
+				dstdata.inc(ydir*dstmodulo + dstwidth);pridata.inc(ydir*dstmodulo + dstwidth);
+				dstheight--;
+			}
+		}
+		else
+		{
+			int end;
+			int trans4;
+			UBytePtr sd4;
+	
+			trans4 = transpen * 0x01010101;
+	
+			while (dstheight != 0)
+			{
+				end = dstdata.offset + dstwidth*1;
+				while (((long)srcdata.offset & 3)!=0 && dstdata.offset < end)	/* longword align */
+				{
+					int col;
+	
+					col = srcdata.readinc();
+					if (col != transpen){
+                                            //SETPIXELCOLOR(0,paldata.read((col)));
+                                            int _dest = 0;
+                                            int _n = paldata.read((col));
+                                            if (((1 << (pridata.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                                                if ((pridata.read(_dest) & 0x80)!=0) { 
+                                                    dstdata.write(_dest, palette_shadow_table[_n]);
+                                                } else { 
+                                                    dstdata.write(_dest, (char) (_n));
+                                                } 
+                                            } 
+                                            pridata.write(_dest, (pridata.read(_dest) & 0x7f) | afterdrawmask);
+                                        }
+					dstdata.inc(1);pridata.inc(1);
+				}
+				sd4 = new UBytePtr(srcdata);
+				while (dstdata.offset <= end - 4*1)
+				{
+					int col4;
+	
+					if ((col4 = (sd4.readinc())) != trans4)
+					{
+						int xod4;
+	
+						xod4 = col4 ^ trans4;
+						if ((xod4 & (0xff<<SHIFT0))!=0){ 
+                                                    //SETPIXELCOLOR(0*1,paldata.read(((col4>>SHIFT0) & 0xff)));
+                                                    int _dest = 0*1;
+                                                    int _n = paldata.read(((col4>>SHIFT0) & 0xff));
+                                                    if (((1 << (pridata.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                                                        if ((pridata.read(_dest) & 0x80)!=0) { 
+                                                            dstdata.write(_dest, palette_shadow_table[_n]);
+                                                        } else { 
+                                                            dstdata.write(_dest, (char) (_n));
+                                                        } 
+                                                    } 
+                                                    pridata.write(_dest, (pridata.read(_dest) & 0x7f) | afterdrawmask);
+                                                }
+						if ((xod4 & (0xff<<SHIFT1))!=0){ 
+                                                    //SETPIXELCOLOR(1*1,paldata.read(((col4>>SHIFT1) & 0xff)));
+                                                    int _dest = 1*1;
+                                                    int _n = paldata.read(((col4>>SHIFT1) & 0xff));
+                                                    if (((1 << (pridata.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                                                        if ((pridata.read(_dest) & 0x80)!=0) { 
+                                                            dstdata.write(_dest, palette_shadow_table[_n]);
+                                                        } else { 
+                                                            dstdata.write(_dest, (char) (_n));
+                                                        } 
+                                                    } 
+                                                    pridata.write(_dest, (pridata.read(_dest) & 0x7f) | afterdrawmask);
+                                                }
+						if ((xod4 & (0xff<<SHIFT2))!=0){ 
+                                                    //SETPIXELCOLOR(2*1,paldata.read(((col4>>SHIFT2) & 0xff)));
+                                                    int _dest = 2*1;
+                                                    int _n = paldata.read(((col4>>SHIFT2) & 0xff));
+                                                    if (((1 << (pridata.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                                                        if ((pridata.read(_dest) & 0x80)!=0) { 
+                                                            dstdata.write(_dest, palette_shadow_table[_n]);
+                                                        } else { 
+                                                            dstdata.write(_dest, (char) (_n));
+                                                        } 
+                                                    } 
+                                                    pridata.write(_dest, (pridata.read(_dest) & 0x7f) | afterdrawmask);
+                                                }
+						if ((xod4 & (0xff<<SHIFT3))!=0){ 
+                                                    //SETPIXELCOLOR(3*1,paldata.read(((col4>>SHIFT3) & 0xff)));
+                                                    int _dest = 3*1;
+                                                    int _n = paldata.read(((col4>>SHIFT3) & 0xff));
+                                                    if (((1 << (pridata.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                                                        if ((pridata.read(_dest) & 0x80)!=0) { 
+                                                            dstdata.write(_dest, palette_shadow_table[_n]);
+                                                        } else { 
+                                                            dstdata.write(_dest, (char) (_n));
+                                                        } 
+                                                    } 
+                                                    pridata.write(_dest, (pridata.read(_dest) & 0x7f) | afterdrawmask);
+                                                }
+					}
+					dstdata.inc(4);pridata.inc(4);
+				}
+				srcdata = new UBytePtr(sd4);
+				while (dstdata.offset < end)
+				{
+					int col;
+	
+					col = srcdata.readinc();
+					if (col != transpen){ 
+                                            //SETPIXELCOLOR(0,paldata.read((col)));
+                                            int _dest = 0;
+                                            int _n = paldata.read((col));
+                                            if (((1 << (pridata.read(_dest) & 0x1f)) & pri_mask) == 0) { 
+                                                if ((pridata.read(_dest) & 0x80)!=0) { 
+                                                    dstdata.write(_dest, palette_shadow_table[_n]);
+                                                } else { 
+                                                    dstdata.write(_dest, (char) (_n));
+                                                } 
+                                            } 
+                                            pridata.write(_dest, (pridata.read(_dest) & 0x7f) | afterdrawmask);
+                                        }
+					dstdata.inc(1);pridata.inc(1);
+				}
+	
+				srcdata.inc(srcmodulo);
+				dstdata.inc(ydir*dstmodulo - dstwidth*1);pridata.inc(ydir*dstmodulo - dstwidth*1);
+				dstheight--;
+			}
+		}
     }
 
     
