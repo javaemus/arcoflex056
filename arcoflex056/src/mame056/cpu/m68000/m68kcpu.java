@@ -619,43 +619,43 @@ public class m68kcpu {
 /*TODO*///	}
 /*TODO*///	return sizeof(m68k_cpu_context);
 /*TODO*///}
+
+public static void m68k_set_context(Object src)
+{
+	if( src != null)
+	{
+/*TODO*///		m68k_cpu_context cpu = src;
 /*TODO*///
-/*TODO*///void m68k_set_context(void* src)
-/*TODO*///{
-/*TODO*///	if( src )
-/*TODO*///	{
-/*TODO*///		m68k_cpu_context *cpu = src;
-/*TODO*///
-/*TODO*///        CPU_MODE                 = cpu->mode;
-/*TODO*///		m68ki_set_sr_no_int(cpu->sr); /* This stays on top to prevent side-effects */
-/*TODO*///		m68ki_set_pc(cpu->pc);
-/*TODO*///		memcpy(CPU_D, cpu->d, sizeof(CPU_D));
-/*TODO*///		memcpy(CPU_A, cpu->a, sizeof(CPU_D));
-/*TODO*///		CPU_USP 				 = cpu->usp;
-/*TODO*///		CPU_ISP 				 = cpu->isp;
-/*TODO*///		CPU_MSP 				 = cpu->msp;
-/*TODO*///		CPU_VBR 				 = cpu->vbr;
-/*TODO*///		CPU_SFC 				 = cpu->sfc;
-/*TODO*///		CPU_DFC 				 = cpu->dfc;
-/*TODO*///		CPU_STOPPED 			 = cpu->stopped;
-/*TODO*///		CPU_HALTED				 = cpu->halted;
-/*TODO*///		CPU_INT_STATE			 = cpu->int_state;	/* ASG: changed from CPU_INTS_PENDING */
-/*TODO*///		CPU_INT_CYCLES           = cpu->int_cycles;	/* ASG */
-/*TODO*///		CPU_INT_ACK_CALLBACK	 = cpu->int_ack_callback;
-/*TODO*///		CPU_BKPT_ACK_CALLBACK	 = cpu->bkpt_ack_callback;
-/*TODO*///		CPU_RESET_INSTR_CALLBACK = cpu->reset_instr_callback;
-/*TODO*///		CPU_PC_CHANGED_CALLBACK  = cpu->pc_changed_callback;
-/*TODO*///		CPU_SET_FC_CALLBACK 	 = cpu->set_fc_callback;
-/*TODO*///		CPU_INSTR_HOOK_CALLBACK  = cpu->instr_hook_callback;
-/*TODO*///		CPU_PREF_ADDR 			 = cpu->pref_addr;
-/*TODO*///		CPU_PREF_DATA 			 = cpu->pref_data;
-/*TODO*///
-/*TODO*///		/* ASG: check for interrupts */
-/*TODO*///		m68ki_check_interrupts();
-/*TODO*///	}
-/*TODO*///}
-/*TODO*///
-/*TODO*///
+/*TODO*///                CPU_MODE                 = cpu.mode;
+/*TODO*///		m68ki_set_sr_no_int(cpu.sr); /* This stays on top to prevent side-effects */
+/*TODO*///		m68ki_set_pc(cpu.pc);
+/*TODO*///		memcpy(CPU_D, cpu.d, sizeof(CPU_D));
+/*TODO*///		memcpy(CPU_A, cpu.a, sizeof(CPU_D));
+/*TODO*///		CPU_USP 				 = cpu.usp;
+/*TODO*///		CPU_ISP 				 = cpu.isp;
+/*TODO*///		CPU_MSP 				 = cpu.msp;
+/*TODO*///		CPU_VBR 				 = cpu.vbr;
+/*TODO*///		CPU_SFC 				 = cpu.sfc;
+/*TODO*///		CPU_DFC 				 = cpu.dfc;
+/*TODO*///		CPU_STOPPED 			 = cpu.stopped;
+/*TODO*///		CPU_HALTED				 = cpu.halted;
+/*TODO*///		CPU_INT_STATE			 = cpu.int_state;	/* ASG: changed from CPU_INTS_PENDING */
+/*TODO*///		CPU_INT_CYCLES           = cpu.int_cycles;	/* ASG */
+/*TODO*///		CPU_INT_ACK_CALLBACK	 = cpu.int_ack_callback;
+/*TODO*///		CPU_BKPT_ACK_CALLBACK	 = cpu.bkpt_ack_callback;
+/*TODO*///		CPU_RESET_INSTR_CALLBACK = cpu.reset_instr_callback;
+/*TODO*///		CPU_PC_CHANGED_CALLBACK  = cpu.pc_changed_callback;
+/*TODO*///		CPU_SET_FC_CALLBACK 	 = cpu.set_fc_callback;
+/*TODO*///		CPU_INSTR_HOOK_CALLBACK  = cpu.instr_hook_callback;
+/*TODO*///		CPU_PREF_ADDR 			 = cpu.pref_addr;
+/*TODO*///		CPU_PREF_DATA 			 = cpu.pref_data;
+
+		/* ASG: check for interrupts */
+		m68ki_check_interrupts();
+	}
+}
+
+
 /*TODO*////* Check if the instruction is a valid one */
 /*TODO*///int m68k_is_valid_instruction(int instruction, int cpu_mode)
 /*TODO*///{

@@ -1110,8 +1110,10 @@ public class common {
             /*TODO*///		debugload("+ Byte swapping region\n");
 		for (i = 0, base = romdata.regionbase; i < romdata.regionlength; i += datawidth)
 		{
-			UBytePtr temp=new UBytePtr(8);
+			UBytePtr temp=new UBytePtr(base.memory.length*2);
 			memcpy(temp, base, datawidth);
+                        base.offset=0;
+                        temp.offset=0;
 			for (j = datawidth - 1; j >= 0; j--){
 				base.write(temp.read(j));
                                 base.inc();

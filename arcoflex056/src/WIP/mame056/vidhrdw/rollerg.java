@@ -76,7 +76,7 @@ public class rollerg
 			return 1;
 		if (K051316_vh_start_0(REGION_GFX2,4,TILEMAP_TRANSPARENT,0,zoom_callback) != 0)
 		{
-			K053245_vh_stop.handler();
+			K053245_vh_stop();
 			return 1;
 		}
 	
@@ -86,7 +86,7 @@ public class rollerg
 	
 	public static VhStopPtr rollerg_vh_stop = new VhStopPtr() { public void handler() 
 	{
-		K053245_vh_stop.handler();
+		K053245_vh_stop();
 		K051316_vh_stop_0.handler();
 	} };
 	

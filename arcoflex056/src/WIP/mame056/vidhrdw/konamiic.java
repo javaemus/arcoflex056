@@ -1767,209 +1767,167 @@ public class konamiic
                     public abstract void handler(int[] code, int[] color, int[] priority);
                 }
         	
-        	static int K053245_memory_region=2;
-        	static GfxElement K053245_gfx;
-        	static K053245_callbackProcPtr K053245_callback;//(int *code,int *color,int *priority);
-        	static int K053244_rombank;
-        	static int K053245_ramsize;
-        	static UBytePtr K053245_ram, K053245_buffer;
-        	static int[] K053244_regs = new int[0x10];
-        	
-        	public static int K053245_vh_start(int gfx_memory_region,int plane0,int plane1,int plane2,int plane3,
-        			K053245_callbackProcPtr callback)
-        	{
-        		int gfx_index,i;
-        		GfxLayout spritelayout = new GfxLayout
-        		(
-        			16,16,
-        			0,				/* filled in later */
-        			4,
-        			new int[] { 0, 0, 0, 0 },	/* filled in later */
-        			new int[] { 0, 1, 2, 3, 4, 5, 6, 7,
-        					8*32+0, 8*32+1, 8*32+2, 8*32+3, 8*32+4, 8*32+5, 8*32+6, 8*32+7 },
-        			new int[] { 0*32, 1*32, 2*32, 3*32, 4*32, 5*32, 6*32, 7*32,
-        					16*32, 17*32, 18*32, 19*32, 20*32, 21*32, 22*32, 23*32 },
-        			128*8
-        		);
-        	
-        	
-        		/* find first empty slot to decode gfx */
-        		for (gfx_index = 0; gfx_index < MAX_GFX_ELEMENTS; gfx_index++)
-        			if (Machine.gfx[gfx_index] == null)
-        				break;
-        		if (gfx_index == MAX_GFX_ELEMENTS)
-        			return 1;
-        	
-        		/* tweak the structure for the number of tiles we have */
-        		spritelayout.total = memory_region_length(gfx_memory_region) / 128;
-        		spritelayout.planeoffset[0] = plane3 * 8;
-        		spritelayout.planeoffset[1] = plane2 * 8;
-        		spritelayout.planeoffset[2] = plane1 * 8;
-        		spritelayout.planeoffset[3] = plane0 * 8;
-        	
-        		/* decode the graphics */
-        		Machine.gfx[gfx_index] = decodegfx(memory_region(gfx_memory_region),spritelayout);
-        		if (Machine.gfx[gfx_index]==null)
-        			return 1;
-        	
-        		/* set the color information */
-        		if (Machine.drv.color_table_len != 0)
-        		{
-        			Machine.gfx[gfx_index].colortable = new IntArray(Machine.remapped_colortable);
-        			Machine.gfx[gfx_index].total_colors = Machine.drv.color_table_len / 16;
-        		}
-        		else
-        		{
-        			Machine.gfx[gfx_index].colortable = new IntArray(Machine.pens);
-        			Machine.gfx[gfx_index].total_colors = Machine.drv.total_colors / 16;
-        		}
-        	
-        	if ((Machine.drv.video_attributes & VIDEO_HAS_SHADOWS)==0)
-        		usrintf_showmessage("driver should use VIDEO_HAS_SHADOWS");
-        	
-        		/* prepare shadow draw table */
-        		gfx_drawmode_table[0] = DRAWMODE_NONE;
-        		for (i = 1;i < 15;i++)
-        			gfx_drawmode_table[i] = DRAWMODE_SOURCE;
-        		gfx_drawmode_table[15] = DRAWMODE_SHADOW;
-        	
-        		K053245_memory_region = gfx_memory_region;
-        		K053245_gfx = Machine.gfx[gfx_index];
-        		K053245_callback = callback;
-        		K053244_rombank = 0;
-        		K053245_ramsize = 0x800;
-        		K053245_ram = new UBytePtr(K053245_ramsize);
-        		if (K053245_ram == null) return 1;
-        	
-        		K053245_buffer = new UBytePtr(K053245_ramsize);
-        		if (K053245_buffer == null) {
-        			K053245_ram = null;
-        			return 1;
-        		}
-        	
-        		memset(K053245_ram,0,K053245_ramsize);
-        		memset(K053245_buffer,0,K053245_ramsize);
-        	
-        		return 0;
-        	}
-        	
-        	public static VhStopPtr K053245_vh_stop = new VhStopPtr() { public void handler() 
-        	{
-        		K053245_ram = null;
-        		K053245_buffer = null;
-        	} };
-        	
-        /*TODO*///	READ16_HANDLER( K053245_word_r )
-        /*TODO*///	{
-        /*TODO*///		return K053245_ram[offset];
-        /*TODO*///	}
-        /*TODO*///	
-        /*TODO*///	WRITE16_HANDLER( K053245_word_w )
-        /*TODO*///	{
-        /*TODO*///		COMBINE_DATA(K053245_ram+offset);
-        /*TODO*///	}
-        	
-        	public static ReadHandlerPtr K053245_r  = new ReadHandlerPtr() { public int handler(int offset)
-        	{
-        		if((offset & 1) != 0)
-        			return K053245_ram.read(offset>>1) & 0xff;
-        		else
-        			return (K053245_ram.read(offset>>1)>>8) & 0xff;
-        	} };
-        	
-        	public static WriteHandlerPtr K053245_w = new WriteHandlerPtr() {public void handler(int offset, int data)
-        	{
-        		if((offset & 1) != 0)
-        			K053245_ram.write(offset>>1, (K053245_ram.read(offset>>1) & 0xff00) | data);
-        		else
-        			K053245_ram.write(offset>>1, (K053245_ram.read(offset>>1) & 0x00ff) | (data<<8));
-        	} };
-        	
-        	public static void K053245_update_buffer()
-        	{
-        		memcpy(K053245_buffer, K053245_ram, K053245_ramsize);
-        	}
-        	
-        	public static ReadHandlerPtr K053244_r  = new ReadHandlerPtr() { public int handler(int offset)
-        	{
-        		if ((K053244_regs[5] & 0x10)!=0 && offset >= 0x0c && offset < 0x10)
-        		{
-        			int addr;
-        	
-        			addr = (K053244_rombank << 19) | ((K053244_regs[11] & 0x7) << 18)
-        				| (K053244_regs[8] << 10) | (K053244_regs[9] << 2)
-        				| ((offset & 3) ^ 1);
-        			addr &= memory_region_length(K053245_memory_region)-1;
-        	
-        /*TODO*///	#if 0
-        /*TODO*///		usrintf_showmessage("%04x: offset %02x addr %06x",cpu_get_pc(),offset&3,addr);
-        /*TODO*///	#endif
-        	
-        			return memory_region(K053245_memory_region).read(addr);
-        		}
-        		else if (offset == 0x06)
-        		{
-        			K053245_update_buffer();
-        			return 0;
-        		}
-        		else
-        		{
-        	logerror("%04x: read from unknown 053244 address %x\n",cpu_get_pc(),offset);
-        			return 0;
-        		}
-        	} };
-        	
-        	public static WriteHandlerPtr K053244_w = new WriteHandlerPtr() {public void handler(int offset, int data)
-        	{
-        		K053244_regs[offset] = data;
-        	
-        		switch(offset) {
-        		case 0x05: {
-        /*TODO*///	#ifdef MAME_DEBUG
-        /*TODO*///			if (data & 0xc8)
-        /*TODO*///				usrintf_showmessage("053244 reg 05 = %02x",data);
-        /*TODO*///	#endif
-        			/* bit 2 = unknown, Parodius uses it */
-        			/* bit 5 = unknown, Rollergames uses it */
-        /*TODO*///	#if VERBOSE
-        /*TODO*///			logerror("%04x: write %02x to 053244 address 5\n",cpu_get_pc(),data);
-        /*TODO*///	#endif
-        			break;
-        		}
-        		case 0x06:
-        			K053245_update_buffer();
-        			break;
-        		}
-        	} };
-        	
-        /*TODO*///	READ16_HANDLER( K053244_lsb_r )
-        /*TODO*///	{
-        /*TODO*///		return K053244_r(offset);
-        /*TODO*///	}
-        /*TODO*///	
-        /*TODO*///	WRITE16_HANDLER( K053244_lsb_w )
-        /*TODO*///	{
-        /*TODO*///		if (ACCESSING_LSB)
-        /*TODO*///			K053244_w(offset, data & 0xff);
-        /*TODO*///	}
-        /*TODO*///	
-        /*TODO*///	READ16_HANDLER( K053244_word_r )
-        /*TODO*///	{
-        /*TODO*///		return (K053244_r(offset*2)<<8)|K053244_r(offset*2+1);
-        /*TODO*///	}
-        /*TODO*///	
-        /*TODO*///	WRITE16_HANDLER( K053244_word_w )
-        /*TODO*///	{
-        /*TODO*///		if (ACCESSING_MSB)
-        /*TODO*///			K053244_w(offset*2, (data >> 8) & 0xff);
-        /*TODO*///		if (ACCESSING_LSB)
-        /*TODO*///			K053244_w(offset*2+1, data & 0xff);
-        /*TODO*///	}
-        /*TODO*///	
-        /*TODO*///	void K053244_bankselect(int bank)
-        /*TODO*///	{
-        /*TODO*///		K053244_rombank = bank;
-        /*TODO*///	}
+        	static int K053245_memory_region = 2;
+    static GfxElement K053245_gfx;
+    static K053245_callbackProcPtr K053245_callback;//static void (*K053245_callback)(int *code,int *color,int *priority);
+    static int K053244_romoffset, K053244_rombank;
+    static int K053244_readroms;
+    static int K053245_flipscreenX, K053245_flipscreenY;
+    static int K053245_spriteoffsX, K053245_spriteoffsY;
+    static UBytePtr K053245_ram;
+
+    public static int K053245_vh_start(int gfx_memory_region, int plane0, int plane1, int plane2, int plane3,
+            K053245_callbackProcPtr callback) {
+        int gfx_index;
+        GfxLayout spritelayout = new GfxLayout(
+                16, 16,
+                0, /* filled in later */
+                4,
+                new int[]{0, 0, 0, 0}, /* filled in later */
+                new int[]{0, 1, 2, 3, 4, 5, 6, 7,
+                    8 * 32 + 0, 8 * 32 + 1, 8 * 32 + 2, 8 * 32 + 3, 8 * 32 + 4, 8 * 32 + 5, 8 * 32 + 6, 8 * 32 + 7},
+                new int[]{0 * 32, 1 * 32, 2 * 32, 3 * 32, 4 * 32, 5 * 32, 6 * 32, 7 * 32,
+                    16 * 32, 17 * 32, 18 * 32, 19 * 32, 20 * 32, 21 * 32, 22 * 32, 23 * 32},
+                128 * 8
+        );
+
+        /* find first empty slot to decode gfx */
+        for (gfx_index = 0; gfx_index < MAX_GFX_ELEMENTS; gfx_index++) {
+            if (Machine.gfx[gfx_index] == null) {
+                break;
+            }
+        }
+        if (gfx_index == MAX_GFX_ELEMENTS) {
+            return 1;
+        }
+
+        /* tweak the structure for the number of tiles we have */
+        spritelayout.total = memory_region_length(gfx_memory_region) / 128;
+        spritelayout.planeoffset[0] = plane3 * 8;
+        spritelayout.planeoffset[1] = plane2 * 8;
+        spritelayout.planeoffset[2] = plane1 * 8;
+        spritelayout.planeoffset[3] = plane0 * 8;
+
+        /* decode the graphics */
+        Machine.gfx[gfx_index] = decodegfx(memory_region(gfx_memory_region), spritelayout);
+        if (Machine.gfx[gfx_index] == null) {
+            return 1;
+        }
+
+        /* set the color information */
+        Machine.gfx[gfx_index].colortable = new IntArray(Machine.remapped_colortable);
+        Machine.gfx[gfx_index].total_colors = Machine.drv.color_table_len / 16;
+
+        K053245_memory_region = gfx_memory_region;
+        K053245_gfx = Machine.gfx[gfx_index];
+        K053245_callback = callback;
+        K053244_rombank = 0;
+        K053245_ram = new UBytePtr(0x800);
+        if (K053245_ram == null) {
+            return 1;
+        }
+
+        for (int i = 0; i < 0x800; i++) {
+            K053245_ram.write(i, 0);//memset(K053245_ram,0,0x800);
+        }
+        return 0;
+    }
+
+    public static void K053245_vh_stop() {
+        K053245_ram = null;
+    }
+    public static ReadHandlerPtr K053245_word_r = new ReadHandlerPtr() {
+        public int handler(int offset) {
+            return READ_WORD(K053245_ram, offset);
+        }
+    };
+    public static WriteHandlerPtr K053245_word_w = new WriteHandlerPtr() {
+        public void handler(int offset, int data) {
+            COMBINE_WORD_MEM(K053245_ram, offset, data);
+        }
+    };
+
+    public static ReadHandlerPtr K053245_r = new ReadHandlerPtr() {
+        public int handler(int offset) {
+
+            int shift = ((offset & 1) ^ 1) << 3;
+            int d = (READ_WORD(K053245_ram, offset & ~1) >>> shift) & 0xff;
+            
+            //System.out.println(d);
+            return d;
+
+            //return (READ_WORD(&K053245_ram[offset & ~1]) >> shift) & 0xff;
+        }
+    };
+
+    public static WriteHandlerPtr K053245_w = new WriteHandlerPtr() {
+        public void handler(int offset, int data) {
+            int shift = ((offset & 1) ^ 1) << 3;
+            offset &= ~1;
+            //K053245_ram.COMBINE_WORD_MEM(offset,(char)((0xff000000 >> shift) | ((data & 0xff) << shift)));
+            COMBINE_WORD_MEM(K053245_ram, offset, (0xff000000 >>> shift) | ((data & 0xff) << shift));
+            
+        }
+    };
+
+    public static ReadHandlerPtr K053244_r = new ReadHandlerPtr() {
+        public int handler(int offset) {
+            if (K053244_readroms != 0 && offset >= 0x0c && offset < 0x10) {
+                int addr;
+
+                addr = 0x200000 * K053244_rombank + 4 * (K053244_romoffset & 0x7ffff) + ((offset & 3) ^ 1);
+                addr &= memory_region_length(K053245_memory_region) - 1;
+
+                /*#if 0
+                 usrintf_showmessage("%04x: offset %02x addr %06x",cpu_get_pc(),offset&3,addr);
+                 #endif*/
+                return memory_region(K053245_memory_region).read(addr);
+            } else {
+                
+                return 0;
+            }
+        }
+    };
+
+    public static WriteHandlerPtr K053244_w = new WriteHandlerPtr() {
+        public void handler(int offset, int data) {
+            if (offset == 0x00) {
+                K053245_spriteoffsX = (K053245_spriteoffsX & 0x00ff) | (data << 8);
+            } else if (offset == 0x01) {
+                K053245_spriteoffsX = (K053245_spriteoffsX & 0xff00) | data;
+            } else if (offset == 0x02) {
+                K053245_spriteoffsY = (K053245_spriteoffsY & 0x00ff) | (data << 8);
+            } else if (offset == 0x03) {
+                K053245_spriteoffsY = (K053245_spriteoffsY & 0xff00) | data;
+            } else if (offset == 0x05) {
+                /*#ifdef MAME_DEBUG
+                 if (data & 0xc8)
+                 usrintf_showmessage("053244 reg 05 = %02x",data);
+                 #endif*/
+                /* bit 0/1 = flip screen */
+                K053245_flipscreenX = data & 0x01;
+                K053245_flipscreenY = data & 0x02;
+
+                /* bit 2 = unknown, Parodius uses it */
+
+                /* bit 4 = enable gfx ROM reading */
+                K053244_readroms = data & 0x10;
+
+                /* bit 5 = unknown, Rollergames uses it */
+                /*#if VERBOSE
+                 if (errorlog) fprintf(errorlog,"%04x: write %02x to 053244 address 5\n",cpu_get_pc(),data);
+                 #endif*/
+            } else if (offset >= 0x08 && offset < 0x0c) {
+                offset = 8 * ((offset & 0x03) ^ 0x01);
+                K053244_romoffset = (K053244_romoffset & ~(0xff << offset)) | (data << offset);
+                return;
+            } 
+        }
+    };
+
+    public static void K053244_bankselect(int bank) /* used by TMNT2 for ROM testing */ {
+        K053244_rombank = bank;
+    }
         	
         	/*
         	 * Sprite Format
@@ -2002,220 +1960,218 @@ public class konamiic
         	public static void K053245_sprites_draw(mame_bitmap bitmap)
         	{
                         int NUM_SPRITES = 128;
-        		int offs,pri_code;
-        		int[] sortedlist = new int[NUM_SPRITES];
-        		int flipscreenX, flipscreenY, spriteoffsX, spriteoffsY;
-        	
-        		flipscreenX = K053244_regs[5] & 0x01;
-        		flipscreenY = K053244_regs[5] & 0x02;
-        		spriteoffsX = (K053244_regs[0] << 8) | K053244_regs[1];
-        		spriteoffsY = (K053244_regs[2] << 8) | K053244_regs[3];
-        	
-        		for (offs = 0;offs < NUM_SPRITES;offs++)
-        			sortedlist[offs] = -1;
-        	
-        		/* prebuild a sorted table */
-        		for (offs = 0;offs < K053245_ramsize / 2;offs += 8)
-        		{
-        			if ((READ_WORD(K053245_buffer, offs) & 0x8000) != 0)
-        			{
-        				sortedlist[READ_WORD(K053245_buffer, offs) & 0x007f] = offs;
-        			}
-        		}
-        	
-        		for (pri_code = NUM_SPRITES-1;pri_code >= 0;pri_code--)
-        		{
-        			int ox,oy,size,w,h,x,y,flipx,flipy,mirrorx,mirrory,zoomx,zoomy;
-                                int[] color=new int[1],code=new int[1],shadow=new int[1],pri=new int[1];
-        	
-        			offs = sortedlist[pri_code];
-        			if (offs == -1) continue;
-        	
-        			/* the following changes the sprite draw order from
-        				 0  1  4  5 16 17 20 21
-        				 2  3  6  7 18 19 22 23
-        				 8  9 12 13 24 25 28 29
-        				10 11 14 15 26 27 30 31
-        				32 33 36 37 48 49 52 53
-        				34 35 38 39 50 51 54 55
-        				40 41 44 45 56 57 60 61
-        				42 43 46 47 58 59 62 63
-        	
-        				to
-        	
-        				 0  1  2  3  4  5  6  7
-        				 8  9 10 11 12 13 14 15
-        				16 17 18 19 20 21 22 23
-        				24 25 26 27 28 29 30 31
-        				32 33 34 35 36 37 38 39
-        				40 41 42 43 44 45 46 47
-        				48 49 50 51 52 53 54 55
-        				56 57 58 59 60 61 62 63
-        			*/
-        	
-        			/* NOTE: from the schematics, it looks like the top 2 bits should be ignored */
-        			/* (there are not output pins for them), and probably taken from the "color" */
-        			/* field to do bank switching. However this applies only to TMNT2, with its */
-        			/* protection mcu creating the sprite table, so we don't know where to fetch */
-        			/* the bits from. */
-        			code[0] = READ_WORD(K053245_buffer, offs+1);
-        			code[0] = ((code[0] & 0xffe1) + ((code[0] & 0x0010) >> 2) + ((code[0] & 0x0008) << 1)
-        					 + ((code[0] & 0x0004) >> 1) + ((code[0] & 0x0002) << 2));
-        			color[0] = READ_WORD(K053245_buffer, offs+6) & 0x00ff;
-        			pri[0] = 0;
-        	
-        			(K053245_callback).handler(code,color,pri);
-        	
-        			size = (READ_WORD(K053245_buffer, offs) & 0x0f00) >> 8;
-        	
-        			w = 1 << (size & 0x03);
-        			h = 1 << ((size >> 2) & 0x03);
-        	
-        			/* zoom control:
-        			   0x40 = normal scale
-        			  <0x40 enlarge (0x20 = double size)
-        			  >0x40 reduce (0x80 = half size)
-        			*/
-        			zoomy = READ_WORD(K053245_buffer, offs+4);
-        			if (zoomy > 0x2000) continue;
-        			if (zoomy!=0) zoomy = (0x400000+zoomy/2) / zoomy;
-        			else zoomy = 2 * 0x400000;
-        			if ((READ_WORD(K053245_buffer, offs) & 0x4000) == 0)
-        			{
-        				zoomx = READ_WORD(K053245_buffer, offs+5);
-        				if (zoomx > 0x2000) continue;
-        				if (zoomx!=0) zoomx = (0x400000+zoomx/2) / zoomx;
-        	//			else zoomx = 2 * 0x400000;
-        	else zoomx = zoomy; /* workaround for TMNT2 */
-        			}
-        			else zoomx = zoomy;
-        	
-        			ox = READ_WORD(K053245_buffer, offs+3) + spriteoffsX;
-        			oy = READ_WORD(K053245_buffer, offs+2);
-        	
-        			flipx = READ_WORD(K053245_buffer, offs) & 0x1000;
-        			flipy = READ_WORD(K053245_buffer, offs) & 0x2000;
-        			mirrorx = READ_WORD(K053245_buffer, offs+6) & 0x0100;
-        			mirrory = READ_WORD(K053245_buffer, offs+6) & 0x0200;
-        			shadow[0] = READ_WORD(K053245_buffer, offs+6) & 0x0080;
-        	
-        			if (flipscreenX != 0)
-        			{
-        				ox = 512 - ox;
-        				if (mirrorx == 0) flipx = flipx!=0?0:1;
-        			}
-        			if (flipscreenY != 0)
-        			{
-        				oy = -oy;
-        				if (mirrory == 0) flipy = flipy!=0?0:1;
-        			}
-        	
-        			ox = (ox + 0x5d) & 0x3ff;
-        			if (ox >= 768) ox -= 1024;
-        			oy = (-(oy + spriteoffsY + 0x07)) & 0x3ff;
-        			if (oy >= 640) oy -= 1024;
-        	
-        			/* the coordinates given are for the *center* of the sprite */
-        			ox -= (zoomx * w) >> 13;
-        			oy -= (zoomy * h) >> 13;
-        	
-        			for (y = 0;y < h;y++)
-        			{
-        				int sx,sy,zw,zh;
-        	
-        				sy = oy + ((zoomy * y + (1<<11)) >> 12);
-        				zh = (oy + ((zoomy * (y+1) + (1<<11)) >> 12)) - sy;
-        	
-        				for (x = 0;x < w;x++)
-        				{
-        					int c,fx,fy;
-        	
-        					sx = ox + ((zoomx * x + (1<<11)) >> 12);
-        					zw = (ox + ((zoomx * (x+1) + (1<<11)) >> 12)) - sx;
-        					c = code[0];
-        					if (mirrorx != 0)
-        					{
-        						if ((flipx == 0) ^ (2*x < w))
-        						{
-        							/* mirror left/right */
-        							c += (w-x-1);
-        							fx = 1;
-        						}
-        						else
-        						{
-        							c += x;
-        							fx = 0;
-        						}
-        					}
-        					else
-        					{
-        						if (flipx!=0) c += w-1-x;
-        						else c += x;
-        						fx = flipx;
-        					}
-        					if (mirrory!=0)
-        					{
-        						if ((flipy == 0) ^ (2*y >= h))
-        						{
-        							/* mirror top/bottom */
-        							c += 8*(h-y-1);
-        							fy = 1;
-        						}
-        						else
-        						{
-        							c += 8*y;
-        							fy = 0;
-        						}
-        					}
-        					else
-        					{
-        						if (flipy!=0) c += 8*(h-1-y);
-        						else c += 8*y;
-        						fy = flipy;
-        					}
-        	
-        					/* the sprite can start at any point in the 8x8 grid, but it must stay */
-        					/* in a 64 entries window, wrapping around at the edges. The animation */
-        					/* at the end of the saloon level in Sunset Riders breaks otherwise. */
-        					c = (c & 0x3f) | (code[0] & ~0x3f);
-        	
-        					if (zoomx == 0x10000 && zoomy == 0x10000)
-        					{
-        						pdrawgfx(bitmap,K053245_gfx,
-        								c,
-        								color[0],
-        								fx,fy,
-        								sx,sy,
-        								Machine.visible_area,shadow[0]!=0 ? TRANSPARENCY_PEN_TABLE : TRANSPARENCY_PEN,0,pri[0]);
-        					}
-        					else
-        					{
-        						pdrawgfxzoom(bitmap,K053245_gfx,
-        								c,
-        								color[0],
-        								fx,fy,
-        								sx,sy,
-        								Machine.visible_area,shadow[0]!=0 ? TRANSPARENCY_PEN_TABLE : TRANSPARENCY_PEN,0,
-        								(zw << 16) / 16,(zh << 16) / 16,pri[0]);
-        					}
-        				}
-        			}
-        		}
-        /*TODO*///	#if 0
-        /*TODO*///	if (keyboard_pressed(KEYCODE_D))
-        /*TODO*///	{
-        /*TODO*///		FILE *fp;
-        /*TODO*///		fp=fopen("SPRITE.DMP", "w+b");
-        /*TODO*///		if (fp)
-        /*TODO*///		{
-        /*TODO*///			fwrite(K053245_buffer, 0x800, 1, fp);
-        /*TODO*///			usrintf_showmessage("saved");
-        /*TODO*///			fclose(fp);
-        /*TODO*///		}
-        /*TODO*///	}
-        /*TODO*///	#endif
-        /*TODO*///	#undef NUM_SPRITES
-        	}
+        int offs, pri_code;
+        int[] sortedlist = new int[NUM_SPRITES];
+
+        for (offs = 0; offs < NUM_SPRITES; offs++) {
+            sortedlist[offs] = -1;
+        }
+
+        /* prebuild a sorted table */
+        for (offs = 0; offs < 0x800; offs += 16) {
+            if ((READ_WORD(K053245_ram, offs) & 0x8000) != 0) {
+                sortedlist[READ_WORD(K053245_ram, offs) & 0x007f] = offs;
+            }
+        }
+
+        for (pri_code = 0; pri_code < NUM_SPRITES; pri_code++) {
+            int ox, oy, size, w, h, x, y, flipx, flipy, mirrorx, mirrory, zoomx, zoomy;
+            int[] color = new int[1];
+            int[] code = new int[1];
+            int[] pri = new int[1];
+
+            offs = sortedlist[pri_code];
+            if (offs == -1) {
+                continue;
+            }
+
+            /* the following changes the sprite draw order from
+             0  1  4  5 16 17 20 21
+             2  3  6  7 18 19 22 23
+             8  9 12 13 24 25 28 29
+             10 11 14 15 26 27 30 31
+             32 33 36 37 48 49 52 53
+             34 35 38 39 50 51 54 55
+             40 41 44 45 56 57 60 61
+             42 43 46 47 58 59 62 63
+
+             to
+
+             0  1  2  3  4  5  6  7
+             8  9 10 11 12 13 14 15
+             16 17 18 19 20 21 22 23
+             24 25 26 27 28 29 30 31
+             32 33 34 35 36 37 38 39
+             40 41 42 43 44 45 46 47
+             48 49 50 51 52 53 54 55
+             56 57 58 59 60 61 62 63
+             */
+
+            /* NOTE: from the schematics, it looks like the top 2 bits should be ignored */
+            /* (there are not output pins for them), and probably taken from the "color" */
+            /* field to do bank switching. However this applies only to TMNT2, with its */
+            /* protection mcu creating the sprite table, so we don't know where to fetch */
+            /* the bits from. */
+            code[0] = READ_WORD(K053245_ram, offs + 0x02);
+            code[0] = ((code[0] & 0xffe1) + ((code[0] & 0x0010) >> 2) + ((code[0] & 0x0008) << 1)
+                    + ((code[0] & 0x0004) >> 1) + ((code[0] & 0x0002) << 2));
+            color[0] = READ_WORD(K053245_ram, offs + 0x0c) & 0x00ff;
+            pri[0] = 0;
+
+            (K053245_callback).handler(code, color, pri);
+
+            /*if (pri[0] < min_priority || pri[0] > max_priority) {
+                continue;
+            }*/
+
+            size = (READ_WORD(K053245_ram, offs) & 0x0f00) >> 8;
+
+            w = 1 << (size & 0x03);
+            h = 1 << ((size >> 2) & 0x03);
+
+            /* zoom control:
+             0x40 = normal scale
+             <0x40 enlarge (0x20 = double size)
+             >0x40 reduce (0x80 = half size)
+             */
+            zoomy = READ_WORD(K053245_ram, offs + 0x08);
+            if (zoomy > 0x2000) {
+                continue;
+            }
+            if (zoomy != 0) {
+                zoomy = (0x400000 + zoomy / 2) / zoomy;
+            } else {
+                zoomy = 2 * 0x400000;
+            }
+            if ((READ_WORD(K053245_ram, offs) & 0x4000) == 0) {
+                zoomx = READ_WORD(K053245_ram, offs + 0x0a);
+                if (zoomx > 0x2000) {
+                    continue;
+                }
+                if (zoomx != 0) {
+                    zoomx = (0x400000 + zoomx / 2) / zoomx;
+                } //			else zoomx = 2 * 0x400000;
+                else {
+                    zoomx = zoomy; /* workaround for TMNT2 */
+
+                }
+            } else {
+                zoomx = zoomy;
+            }
+
+            ox = READ_WORD(K053245_ram, offs + 0x06) + K053245_spriteoffsX;
+            oy = READ_WORD(K053245_ram, offs + 0x04);
+
+            flipx = READ_WORD(K053245_ram, offs) & 0x1000;
+            flipy = READ_WORD(K053245_ram, offs) & 0x2000;
+            mirrorx = READ_WORD(K053245_ram, offs + 0x0c) & 0x0100;
+            mirrory = READ_WORD(K053245_ram, offs + 0x0c) & 0x0200;
+
+            if (K053245_flipscreenX != 0) {
+                ox = 512 - ox;
+                if (mirrorx == 0) {
+                    flipx = flipx!=0?0:1;
+                }
+            }
+            if (K053245_flipscreenY != 0) {
+                oy = -oy;
+                if (mirrory == 0) {
+                    flipy = flipy!=0?0:1;
+                }
+            }
+
+            ox = (ox + 0x5d) & 0x3ff;
+            if (ox >= 768) {
+                ox -= 1024;
+            }
+            oy = (-(oy + K053245_spriteoffsY + 0x07)) & 0x3ff;
+            if (oy >= 640) {
+                oy -= 1024;
+            }
+
+            /* the coordinates given are for the *center* of the sprite */
+            ox -= (zoomx * w) >> 13;
+            oy -= (zoomy * h) >> 13;
+
+            for (y = 0; y < h; y++) {
+                int sx, sy, zw, zh;
+
+                sy = oy + ((zoomy * y + (1 << 11)) >> 12);
+                zh = (oy + ((zoomy * (y + 1) + (1 << 11)) >> 12)) - sy;
+
+                for (x = 0; x < w; x++) {
+                    int c, fx, fy;
+
+                    sx = ox + ((zoomx * x + (1 << 11)) >> 12);
+                    zw = (ox + ((zoomx * (x + 1) + (1 << 11)) >> 12)) - sx;
+                    c = code[0];
+                    if (mirrorx != 0) {
+                        if ((flipx == 0) ^ (2 * x < w)) {
+                            /* mirror left/right */
+                            c += (w - x - 1);
+                            fx = 1;
+                        } else {
+                            c += x;
+                            fx = 0;
+                        }
+                    } else {
+                        if (flipx != 0) {
+                            c += w - 1 - x;
+                        } else {
+                            c += x;
+                        }
+                        fx = flipx;
+                    }
+                    if (mirrory != 0) {
+                        if ((flipy == 0) ^ (2 * y >= h)) {
+                            /* mirror top/bottom */
+                            c += 8 * (h - y - 1);
+                            fy = 1;
+                        } else {
+                            c += 8 * y;
+                            fy = 0;
+                        }
+                    } else {
+                        if (flipy != 0) {
+                            c += 8 * (h - 1 - y);
+                        } else {
+                            c += 8 * y;
+                        }
+                        fy = flipy;
+                    }
+
+                    /* the sprite can start at any point in the 8x8 grid, but it must stay */
+                    /* in a 64 entries window, wrapping around at the edges. The animation */
+                    /* at the end of the saloon level in SUnset Riders breaks otherwise. */
+                    c = (c & 0x3f) | (code[0] & ~0x3f);
+
+                    if (zoomx == 0x10000 && zoomy == 0x10000) {
+                        /* hack to simulate shadow */
+                        if ((READ_WORD(K053245_ram, offs + 0x0c) & 0x0080) != 0) {
+                            int o = K053245_gfx.colortable.read(16 * color[0] + 15);
+                            K053245_gfx.colortable.write(16 * color[0] + 15, TRANSPARENCY_PEN);
+                            drawgfx(bitmap, K053245_gfx, c, color[0],
+                                    fx, fy,
+                                    sx, sy,
+                                    Machine.visible_area, TRANSPARENCY_PENS, (cpu_getcurrentframe() & 1) != 0 ? 0x8001 : 0x0001);
+                            K053245_gfx.colortable.write(16 * color[0] + 15, o);
+                        } else {
+                            drawgfx(bitmap, K053245_gfx, c, color[0],
+                                    fx, fy,
+                                    sx, sy,
+                                    Machine.visible_area, TRANSPARENCY_PEN, 0);
+                        }
+                    } else {
+                        drawgfxzoom(bitmap, K053245_gfx, c, color[0],
+                                fx, fy,
+                                sx, sy,
+                                Machine.visible_area, TRANSPARENCY_PEN, 0,
+                                (zw << 16) / 16, (zh << 16) / 16);
+                    }
+                }
+            }
+        }
+    }
         	
         	
         	

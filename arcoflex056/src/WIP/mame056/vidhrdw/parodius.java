@@ -99,7 +99,7 @@ public class parodius
 	public static VhStopPtr parodius_vh_stop = new VhStopPtr() { public void handler() 
 	{
 		K052109_vh_stop.handler();
-		K053245_vh_stop.handler();
+		K053245_vh_stop();
 	} };
 	
 	/* useful function to sort the three tile layers by priority order */

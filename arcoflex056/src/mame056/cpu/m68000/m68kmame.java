@@ -23,8 +23,8 @@ public class m68kmame extends cpu_interface {
         irq_int = -1;
 /*TODO*///        nmi_int = -1;
         address_shift = 0;
-        address_bits = 24;
-        databus_width = 24;
+        address_bits = 32;
+        databus_width = 32;
         endianess = CPU_IS_BE;
         align_unit = 2;
         max_inst_len = 10;
@@ -88,15 +88,15 @@ public class m68kmame extends cpu_interface {
     
     @Override
     public int mem_address_bits_of_cpu() {
-        return 16;
+        return 32;
     }
 
 
     @Override
-    public void set_context(Object reg) {
-        throw new UnsupportedOperationException("Not supported yet.");
-        /*TODO*///	if( src )
-        /*TODO*///		m68k_set_context(src);
+    public void set_context(Object src) {
+        //throw new UnsupportedOperationException("Not supported yet.");
+        	if( src != null )
+        		m68k_set_context(src);
     }
 
     public int get_pc() {

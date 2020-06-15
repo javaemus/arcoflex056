@@ -143,8 +143,15 @@ public class cstring {
     }
 
     public static void memcpy(UBytePtr dst, UBytePtr src, int size) {
+        /*
+        System.out.println("DST: "+dst.memory.length);
+        System.out.println("SRC: "+src.memory.length);
+        System.out.println("Size: "+size);
+        System.out.println("MIN: "+Math.min(size, src.memory.length));
+        */
         for (int i = 0; i < Math.min(size, src.memory.length); i++) {
-            dst.write(i, src.read(i));
+            //dst.write(i, src.read(i));
+            dst.memory[i] = src.memory[i];
         }
     }
     

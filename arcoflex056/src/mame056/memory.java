@@ -737,9 +737,9 @@ public class memory {
             if (ext.data == null) {
                 break;
             }
-            throw new UnsupportedOperationException("Unsupported");
-            /*TODO*///		if (ext->region == region && ext->start <= offset && ext->end >= offset)
-/*TODO*///			return (void *)((UINT8 *)ext->data + (offset - ext->start));
+            //throw new UnsupportedOperationException("Unsupported");
+            if (ext.region == region && ext.start <= offset && ext.end >= offset)
+			return new UBytePtr(ext.data, (offset - ext.start));
         }
         return new UBytePtr(cpudata[cpunum].rambase, offset);
     }
@@ -886,37 +886,38 @@ public class memory {
     }
 
     /*TODO*///
-/*TODO*///
-/*TODO*////*-------------------------------------------------
-/*TODO*///	assign_dynamic_bank - finds a free or exact
-/*TODO*///	matching bank
-/*TODO*///-------------------------------------------------*/
-/*TODO*///
-/*TODO*///void *assign_dynamic_bank(int cpunum, offs_t start)
-/*TODO*///{
-/*TODO*///	int bank;
-/*TODO*///
-/*TODO*///	/* special case: never assign a dynamic bank to an offset that */
-/*TODO*///	/* intersects the CPU's region; always use RAM for that */
-/*TODO*///	if (start < memory_region_length(REGION_CPU1 + cpunum))
-/*TODO*///		return (void *)STATIC_RAM;
-/*TODO*///
-/*TODO*///	/* loop over banks, searching for an exact match or an empty */
-/*TODO*///	for (bank = 1; bank <= MAX_BANKS; bank++)
-/*TODO*///		if (!bankdata[bank].used || (bankdata[bank].cpunum == cpunum && bankdata[bank].base == start))
-/*TODO*///		{
-/*TODO*///			bankdata[bank].used = 1;
-/*TODO*///			bankdata[bank].cpunum = cpunum;
-/*TODO*///			bankdata[bank].base = start;
-/*TODO*///			return BANK_TO_HANDLER(bank);
-/*TODO*///		}
-/*TODO*///
-/*TODO*///	/* if we got here, we failed */
-/*TODO*///	fatalerror("cpu #%d: ran out of banks for sparse memory regions!\n", cpunum);
-/*TODO*///	return NULL;
-/*TODO*///}
-/*TODO*///
-/*TODO*///
+
+/*-------------------------------------------------
+	assign_dynamic_bank - finds a free or exact
+	matching bank
+-------------------------------------------------*/
+
+public static int assign_dynamic_bank(int cpunum, int start)
+{
+	int bank;
+
+	/* special case: never assign a dynamic bank to an offset that */
+	/* intersects the CPU's region; always use RAM for that */
+	if (start < memory_region_length(REGION_CPU1 + cpunum))
+		return STATIC_RAM;
+
+	/* loop over banks, searching for an exact match or an empty */
+	for (bank = 1; bank <= MAX_BANKS; bank++)
+		if (bankdata[bank].used==0 || (bankdata[bank].cpunum == cpunum && bankdata[bank].base == start))
+		{
+			bankdata[bank].used = 1;
+			bankdata[bank].cpunum = cpunum;
+			bankdata[bank].base = start;
+			//return BANK_TO_HANDLER(bank);
+                        return (bank);
+		}
+
+	/* if we got here, we failed */
+	fatalerror("cpu #%d: ran out of banks for sparse memory regions!\n", cpunum);
+	return 0;
+}
+
+
     /*-------------------------------------------------
             install_mem_handler - installs a handler for
             memory operatinos
@@ -934,8 +935,8 @@ public class memory {
 
         /* assign banks for sparse memory spaces */
         if (IS_SPARSE(memport.abits) && HANDLER_IS_RAM(handler)) {
-            throw new UnsupportedOperationException("Unsupported");
-            /*TODO*///		handler = (void *)assign_dynamic_bank(memport->cpunum, start);
+            //throw new UnsupportedOperationException("Unsupported");
+            handler = assign_dynamic_bank(memport.cpunum, start);
         }
         /* set the handler */
         idx = get_handler_index(tabledata.handlers, handler, _handler, start);
@@ -1106,9 +1107,9 @@ public class memory {
                         if ((mra[mra_ptr].end & MEMPORT_DIRECTION_MASK) != MEMPORT_DIRECTION_READ) {
                             return fatalerror("cpu #%d has memory write handlers in place of memory read handlers!\n", cpunum);
                         }
-                        if ((mra[mra_ptr].end & MEMPORT_WIDTH_MASK) != width) {
-                            return fatalerror("cpu #%d uses wrong data width memory handlers! (width = %d, memory = %08x)\n", cpunum, cpunum_databus_width(cpunum), mra[mra_ptr].end);
-                        }
+                        /*if ((mra[mra_ptr].end & MEMPORT_WIDTH_MASK) != width) {
+                            return fatalerror("cpu #%d uses wrong data width memory handlers1! (width = %d, memory = %08x)\n", cpunum, cpunum_databus_width(cpunum), mra[mra_ptr].end);
+                        }*/
                         mra_ptr++;
                     }
 
@@ -1138,9 +1139,9 @@ public class memory {
                         if ((mwa[mwa_ptr].end & MEMPORT_DIRECTION_MASK) != MEMPORT_DIRECTION_WRITE) {
                             return fatalerror("cpu #%d has memory read handlers in place of memory write handlers!\n", cpunum);
                         }
-                        if ((mwa[mwa_ptr].end & MEMPORT_WIDTH_MASK) != width) {
-                            return fatalerror("cpu #%d uses wrong data width memory handlers! (width = %d, memory = %08x)\n", cpunum, cpunum_databus_width(cpunum), mwa[mwa_ptr].end);
-                        }
+                        /*if ((mwa[mwa_ptr].end & MEMPORT_WIDTH_MASK) != width) {
+                            return fatalerror("cpu #%d uses wrong data width memory handlers2! (width = %d, memory = %08x)\n", cpunum, cpunum_databus_width(cpunum), mwa[mwa_ptr].end);
+                        }*/
                         mwa_ptr++;
                     }
 
@@ -1393,79 +1394,92 @@ public class memory {
                     if (lowest == Integer.MAX_VALUE) {
                         break;
                     }
-                    throw new UnsupportedOperationException("Unimplemented");
+                    //throw new UnsupportedOperationException("Unimplemented");
+                    
+                                        mra_ptr = 0;
+                                        mra_obj = Machine.drv.cpu[cpunum].memory_read;
+                                        mwa_obj = Machine.drv.cpu[cpunum].memory_write;
 
-                    /*TODO*///			/* now loop until we find the end of this contiguous block of memory */
-                    /*TODO*///			lastend = ~0;
-                    /*TODO*///			end = lowest;
-                    /*TODO*///			while (end != lastend)
-                    /*TODO*///			{
-                    /*TODO*///				lastend = end;
-                    /*TODO*///
-                    /*TODO*///				/* find the end of the contiguous block of memory */
-                    /*TODO*///				for (mra = Machine->drv->cpu[cpunum].memory_read; !IS_MEMPORT_END(mra); mra++)
-                    /*TODO*///					if (!IS_MEMPORT_MARKER(mra))
-                    /*TODO*///						if (mra->start <= end+1 && mra->end > end && needs_ram(cpunum, (void *)mra->handler))
-                    /*TODO*///							end = mra->end;
-                    /*TODO*///
-                    /*TODO*///				for (mwa = Machine->drv->cpu[cpunum].memory_write; !IS_MEMPORT_END(mwa); mwa++)
-                    /*TODO*///					if (!IS_MEMPORT_MARKER(mwa))
-                    /*TODO*///						if (mwa->start <= end+1 && mwa->end > end && (mwa->base || needs_ram(cpunum, (void *)mwa->handler)))
-                    /*TODO*///							end = mwa->end;
-                    /*TODO*///			}
+                    			/* now loop until we find the end of this contiguous block of memory */
+                    			lastend = ~0;
+                    			end = lowest;
+                    			while (end != lastend)
+                    			{
+                    				lastend = end;
+                    
+                    				/* find the end of the contiguous block of memory */
+                    				for (mra_ptr = 0; !IS_MEMPORT_END(mra[mra_ptr]); mra_ptr++)
+                    					if (!IS_MEMPORT_MARKER(mra[mra_ptr]))
+                    						if (mra[mra_ptr].start <= end+1 && mra[mra_ptr].end > end && needs_ram(cpunum, mra[mra_ptr].handler, mra[mra_ptr]._handler))
+                    							end = mra[mra_ptr].end;
+                    
+                    				mwa = (Memory_WriteAddress[]) mwa_obj;
+                                                mwa_ptr = 0;
+
+                                                for (mwa_ptr = 0; !IS_MEMPORT_END(mwa[mwa_ptr]); mwa_ptr++) {
+                    					if (!IS_MEMPORT_MARKER(mwa[mwa_ptr]))
+                    						if (mwa[mwa_ptr].start <= end+1 && mwa[mwa_ptr].end > end && (mwa[mwa_ptr].base != null || needs_ram(cpunum, mwa[mwa_ptr].handler, mwa[mwa_ptr]._handler)))
+                    							end = mwa[mwa_ptr].end;
+                    			}
                 }
-                /*TODO*///			/* find the base of the lowest memory region that extends past the end */
-                /*TODO*///			for (mra = Machine->drv->cpu[cpunum].memory_read; !IS_MEMPORT_END(mra); mra++)
-                /*TODO*///				if (!IS_MEMPORT_MARKER(mra))
-                /*TODO*///					if (mra->end >= size && mra->start < lowest && needs_ram(cpunum, (void *)mra->handler))
-                /*TODO*///						lowest = mra->start;
-                /*TODO*///
-                /*TODO*///			for (mwa = Machine->drv->cpu[cpunum].memory_write; !IS_MEMPORT_END(mwa); mwa++)
-                /*TODO*///				if (!IS_MEMPORT_MARKER(mwa))
-                /*TODO*///					if (mwa->end >= size && mwa->start < lowest && (mwa->base || needs_ram(cpunum, (void *)mwa->handler)))
-                /*TODO*///						lowest = mwa->start;
-                /*TODO*///
-                /*TODO*///			/* done if nothing found */
-                /*TODO*///			if (lowest == ~0)
-                /*TODO*///				break;
-                /*TODO*///
-                /*TODO*///			/* now loop until we find the end of this contiguous block of memory */
-                /*TODO*///			lastend = ~0;
-                /*TODO*///			end = lowest;
-                /*TODO*///			while (end != lastend)
-                /*TODO*///			{
-                /*TODO*///				lastend = end;
-                /*TODO*///
-                /*TODO*///				/* find the end of the contiguous block of memory */
-                /*TODO*///				for (mra = Machine->drv->cpu[cpunum].memory_read; !IS_MEMPORT_END(mra); mra++)
-                /*TODO*///					if (!IS_MEMPORT_MARKER(mra))
-                /*TODO*///						if (mra->start <= end+1 && mra->end > end && needs_ram(cpunum, (void *)mra->handler))
-                /*TODO*///							end = mra->end;
-                /*TODO*///
-                /*TODO*///				for (mwa = Machine->drv->cpu[cpunum].memory_write; !IS_MEMPORT_END(mwa); mwa++)
-                /*TODO*///					if (!IS_MEMPORT_MARKER(mwa))
-                /*TODO*///						if (mwa->start <= end+1 && mwa->end > end && (mwa->base || needs_ram(cpunum, (void *)mwa->handler)))
-                /*TODO*///							end = mwa->end;
-                /*TODO*///			}
-                /*TODO*///
-                /*TODO*///			/* fill in the data structure */
-                /*TODO*///			ext->start = lowest;
-                /*TODO*///			ext->end = end;
-                /*TODO*///			ext->region = region;
-                /*TODO*///
-                /*TODO*///			/* allocate memory */
-                /*TODO*///			ext->data = malloc(end+1 - lowest);
-                /*TODO*///			if (!ext->data)
-                /*TODO*///				fatalerror("malloc(%d) failed (lowest: %x - end: %x)\n", end + 1 - lowest, lowest, end);
-                /*TODO*///
-                /*TODO*///			/* reset the memory */
-                /*TODO*///			memset(ext->data, 0, end+1 - lowest);
-                /*TODO*///
-                /*TODO*///			/* prepare for the next loop */
-                /*TODO*///			size = ext->end + 1;
-                /*TODO*///			ext++;
+                			mra_obj = Machine.drv.cpu[cpunum].memory_read;
+                                        mwa_obj = Machine.drv.cpu[cpunum].memory_write;
+                                        
+                                        /* find the base of the lowest memory region that extends past the end */
+                			for (mra_ptr = 0; !IS_MEMPORT_END(mra[mra_ptr]); mra_ptr++)
+                				if (!IS_MEMPORT_MARKER(mra[mra_ptr]))
+                					if (mra[mra_ptr].end >= size && mra[mra_ptr].start < lowest && needs_ram(cpunum, mra[mra_ptr].handler, mra[mra_ptr]._handler))
+                						lowest = mra[mra_ptr].start;
+                
+                			for (mwa_ptr = 0; !IS_MEMPORT_END(mwa[mwa_ptr]); mwa_ptr++)
+                				if (!IS_MEMPORT_MARKER(mwa[mwa_ptr]))
+                					if (mwa[mwa_ptr].end >= size && mwa[mwa_ptr].start < lowest && (mwa[mwa_ptr].base != null || needs_ram(cpunum, mwa[mwa_ptr].handler, mwa[mwa_ptr]._handler)))
+                						lowest = mwa[mwa_ptr].start;
+                
+                			/* done if nothing found */
+                			if (lowest == ~0)
+                				break;
+                
+                			/* now loop until we find the end of this contiguous block of memory */
+                			lastend = ~0;
+                			end = lowest;
+                			while (end != lastend)
+                			{
+                				lastend = end;
+                                                
+                                                mra_obj = Machine.drv.cpu[cpunum].memory_read;
+                                                mwa_obj = Machine.drv.cpu[cpunum].memory_write;
+                
+                				/* find the end of the contiguous block of memory */
+                				for (mra_ptr = 0; !IS_MEMPORT_END(mra[mra_ptr]); mra_ptr++)
+                					if (!IS_MEMPORT_MARKER(mra[mra_ptr]))
+                						if (mra[mra_ptr].start <= end+1 && mra[mra_ptr].end > end && needs_ram(cpunum, mra[mra_ptr].handler, mra[mra_ptr]._handler))
+                							end = mra[mra_ptr].end;
+                
+                				for (mwa_ptr = 0; !IS_MEMPORT_END(mwa[mwa_ptr]); mwa_ptr++)
+                					if (!IS_MEMPORT_MARKER(mwa[mwa_ptr]))
+                						if (mwa[mwa_ptr].start <= end+1 && mwa[mwa_ptr].end > end && (mwa[mwa_ptr].base != null || needs_ram(cpunum, mwa[mwa_ptr].handler, mwa[mwa_ptr]._handler)))
+                							end = mwa[mwa_ptr].end;
+                			}
+                
+                			/* fill in the data structure */
+                			ext_memory[ext].start = lowest;
+                			ext_memory[ext].end = end;
+                			ext_memory[ext].region = region;
+                
+                			/* allocate memory */
+                			ext_memory[ext].data = new UBytePtr(end+1 - lowest);
+                			if (ext_memory[ext].data == null)
+                				fatalerror("malloc(%d) failed (lowest: %x - end: %x)\n", end + 1 - lowest, lowest, end);
+                
+                			/* reset the memory */
+                			memset(ext_memory[ext].data, 0, end+1 - lowest);
+                
+                			/* prepare for the next loop */
+                			size = ext_memory[ext].end + 1;
+                			ext++;
             }
-        }
+            }}
         return 1;
     }
 
