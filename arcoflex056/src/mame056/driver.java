@@ -298,6 +298,8 @@ import static WIP.mame056.drivers.ajax.*;
 import static WIP.mame056.drivers.rollerg.*;
 import static WIP.mame056.drivers.surpratk.*;
 import static WIP.mame056.drivers.thunderx.*;
+import static WIP.mame056.drivers.gbusters.*;
+import static WIP.mame056.drivers.crimfght.*;
 
 public class driver {
 
@@ -2949,11 +2951,11 @@ public class driver {
         driver_88games,	/* GX861 (c) 1988 */
         driver_konami88,	/* GX861 (c) 1988 */
         driver_hypsptsp,	/* GX861 (c) 1988 (Japan) */
-        /*TODO*///	driver_gbusters,	/* GX878 (c) 1988 */
-        /*TODO*///	driver_crazycop,	/* GX878 (c) 1988 (Japan) */
-        /*TODO*///	driver_crimfght,	/* GX821 (c) 1989 (US) */
-        /*TODO*///	driver_crimfgt2,	/* GX821 (c) 1989 (World) */
-        /*TODO*///	driver_crimfgtj,	/* GX821 (c) 1989 (Japan) */
+        driver_gbusters,	/* GX878 (c) 1988 */
+        driver_crazycop,	/* GX878 (c) 1988 (Japan) */
+        driver_crimfght,	/* GX821 (c) 1989 (US) */
+        driver_crimfgt2,	/* GX821 (c) 1989 (World) */
+        driver_crimfgtj,	/* GX821 (c) 1989 (Japan) */
         driver_spy,		/* GX857 (c) 1989 (US) */
         /*TODO*///	driver_bottom9,	/* GX891 (c) 1989 */
         /*TODO*///	driver_bottom9n,	/* GX891 (c) 1989 */
