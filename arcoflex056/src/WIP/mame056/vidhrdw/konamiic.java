@@ -3021,62 +3021,62 @@ public class konamiic
         	
         	
         	
-        /*TODO*///	static unsigned char K054000_ram[0x20];
+        	static char[] K054000_ram = new char[0x20];
         /*TODO*///	
         /*TODO*///	public static WriteHandlerPtr collision_w = new WriteHandlerPtr() {public void handler(int offset, int data)
         /*TODO*///	{
         /*TODO*///	} };
-        /*TODO*///	
-        /*TODO*///	public static WriteHandlerPtr K054000_w = new WriteHandlerPtr() {public void handler(int offset, int data)
-        /*TODO*///	{
+        	
+        	public static WriteHandlerPtr K054000_w = new WriteHandlerPtr() {public void handler(int offset, int data)
+        	{
         /*TODO*///	#if VERBOSE
         /*TODO*///	logerror("%04x: write %02x to 054000 address %02x\n",cpu_get_pc(),data,offset);
         /*TODO*///	#endif
-        /*TODO*///	
-        /*TODO*///		K054000_ram[offset] = data;
-        /*TODO*///	} };
-        /*TODO*///	
-        /*TODO*///	public static ReadHandlerPtr K054000_r  = new ReadHandlerPtr() { public int handler(int offset)
-        /*TODO*///	{
-        /*TODO*///		int Acx,Acy,Aax,Aay;
-        /*TODO*///		int Bcx,Bcy,Bax,Bay;
-        /*TODO*///	
-        /*TODO*///	
+        	
+        		K054000_ram[offset] = (char) data;
+        	} };
+        	
+        	public static ReadHandlerPtr K054000_r  = new ReadHandlerPtr() { public int handler(int offset)
+        	{
+        		int Acx,Acy,Aax,Aay;
+        		int Bcx,Bcy,Bax,Bay;
+        	
+        	
         /*TODO*///	#if VERBOSE
         /*TODO*///	logerror("%04x: read 054000 address %02x\n",cpu_get_pc(),offset);
         /*TODO*///	#endif
-        /*TODO*///	
-        /*TODO*///		if (offset != 0x18) return 0;
-        /*TODO*///	
-        /*TODO*///	
-        /*TODO*///		Acx = (K054000_ram[0x01] << 16) | (K054000_ram[0x02] << 8) | K054000_ram[0x03];
-        /*TODO*///		Acy = (K054000_ram[0x09] << 16) | (K054000_ram[0x0a] << 8) | K054000_ram[0x0b];
-        /*TODO*///	/* TODO: this is a hack to make thndrx2 pass the startup check. It is certainly wrong. */
-        /*TODO*///	if (K054000_ram[0x04] == 0xff) Acx+=3;
-        /*TODO*///	if (K054000_ram[0x0c] == 0xff) Acy+=3;
-        /*TODO*///		Aax = K054000_ram[0x06] + 1;
-        /*TODO*///		Aay = K054000_ram[0x07] + 1;
-        /*TODO*///	
-        /*TODO*///		Bcx = (K054000_ram[0x15] << 16) | (K054000_ram[0x16] << 8) | K054000_ram[0x17];
-        /*TODO*///		Bcy = (K054000_ram[0x11] << 16) | (K054000_ram[0x12] << 8) | K054000_ram[0x13];
-        /*TODO*///		Bax = K054000_ram[0x0e] + 1;
-        /*TODO*///		Bay = K054000_ram[0x0f] + 1;
-        /*TODO*///	
-        /*TODO*///		if (Acx + Aax < Bcx - Bax)
-        /*TODO*///			return 1;
-        /*TODO*///	
-        /*TODO*///		if (Bcx + Bax < Acx - Aax)
-        /*TODO*///			return 1;
-        /*TODO*///	
-        /*TODO*///		if (Acy + Aay < Bcy - Bay)
-        /*TODO*///			return 1;
-        /*TODO*///	
-        /*TODO*///		if (Bcy + Bay < Acy - Aay)
-        /*TODO*///			return 1;
-        /*TODO*///	
-        /*TODO*///		return 0;
-        /*TODO*///	} };
-        /*TODO*///	
+        	
+        		if (offset != 0x18) return 0;
+        	
+        	
+        		Acx = (K054000_ram[0x01] << 16) | (K054000_ram[0x02] << 8) | K054000_ram[0x03];
+        		Acy = (K054000_ram[0x09] << 16) | (K054000_ram[0x0a] << 8) | K054000_ram[0x0b];
+        	/* TODO: this is a hack to make thndrx2 pass the startup check. It is certainly wrong. */
+        	if (K054000_ram[0x04] == 0xff) Acx+=3;
+        	if (K054000_ram[0x0c] == 0xff) Acy+=3;
+        		Aax = K054000_ram[0x06] + 1;
+        		Aay = K054000_ram[0x07] + 1;
+        	
+        		Bcx = (K054000_ram[0x15] << 16) | (K054000_ram[0x16] << 8) | K054000_ram[0x17];
+        		Bcy = (K054000_ram[0x11] << 16) | (K054000_ram[0x12] << 8) | K054000_ram[0x13];
+        		Bax = K054000_ram[0x0e] + 1;
+        		Bay = K054000_ram[0x0f] + 1;
+        	
+        		if (Acx + Aax < Bcx - Bax)
+        			return 1;
+        	
+        		if (Bcx + Bax < Acx - Aax)
+        			return 1;
+        	
+        		if (Acy + Aay < Bcy - Bay)
+        			return 1;
+        	
+        		if (Bcy + Bay < Acy - Aay)
+        			return 1;
+        	
+        		return 0;
+        	} };
+        	
         /*TODO*///	READ16_HANDLER( K054000_lsb_r )
         /*TODO*///	{
         /*TODO*///		return K054000_r(offset);
