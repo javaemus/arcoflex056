@@ -297,6 +297,7 @@ import static WIP.mame056.drivers.hcastle.*;
 import static WIP.mame056.drivers.ajax.*;
 import static WIP.mame056.drivers.rollerg.*;
 import static WIP.mame056.drivers.surpratk.*;
+import static WIP.mame056.drivers.thunderx.*;
 
 public class driver {
 
@@ -2934,10 +2935,10 @@ public class driver {
         driver_ajax,		/* GX770 (c) 1987 */
         driver_typhoon,	/* GX770 (c) 1987 */
         driver_ajaxj,		/* GX770 (c) 1987 (Japan) */
-        /*TODO*///	driver_scontra,	/* GX775 (c) 1988 */
-        /*TODO*///	driver_scontraj,	/* GX775 (c) 1988 (Japan) */
-        /*TODO*///	driver_thunderx,	/* GX873 (c) 1988 */
-        /*TODO*///	driver_thnderxj,	/* GX873 (c) 1988 (Japan) */
+        driver_scontra,	/* GX775 (c) 1988 */
+        driver_scontraj,	/* GX775 (c) 1988 (Japan) */
+        driver_thunderx,	/* GX873 (c) 1988 */
+        driver_thnderxj,	/* GX873 (c) 1988 (Japan) */
         driver_mainevt,         /* GX799 (c) 1988 */
         driver_mainevt2,	/* GX799 (c) 1988 */
         driver_ringohja,	/* GX799 (c) 1988 (Japan) */
