@@ -300,6 +300,7 @@ import static WIP.mame056.drivers.surpratk.*;
 import static WIP.mame056.drivers.thunderx.*;
 import static WIP.mame056.drivers.gbusters.*;
 import static WIP.mame056.drivers.crimfght.*;
+import static WIP.mame056.drivers.blockhl.*;
 
 public class driver {
 
@@ -2960,8 +2961,8 @@ public class driver {
         /*TODO*///	driver_bottom9,	/* GX891 (c) 1989 */
         /*TODO*///	driver_bottom9n,	/* GX891 (c) 1989 */
         /*TODO*///	driver_mstadium,	/* GX891 (c) 1989 (Japan) */
-        /*TODO*///	driver_blockhl,	/* GX973 (c) 1989 */
-        /*TODO*///	driver_quarth,	/* GX973 (c) 1989 (Japan) */
+        driver_blockhl,	/* GX973 (c) 1989 */
+        driver_quarth,	/* GX973 (c) 1989 (Japan) */
         driver_aliens,	/* GX875 (c) 1990 (World) */
         driver_aliens2,	/* GX875 (c) 1990 (World) */
         driver_aliensu,	/* GX875 (c) 1990 (US) */
