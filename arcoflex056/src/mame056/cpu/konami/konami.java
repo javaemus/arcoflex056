@@ -192,7 +192,7 @@ public class konami extends cpu_interface {
         public int /*UINT8*/ cc;
         public int /*UINT8*/ ireg;		/* First opcode */
 
-        public int[] /*UINT8*/ irq_state = new int[2];
+        public int[] /*UINT8*/ irq_state = new int[256];
         public int extra_cycles; /* cycles used up by interrupts */
 
         public irqcallbacksPtr irq_callback;
@@ -1783,8 +1783,10 @@ int A() {
     };
     opcode bitb_ix = new opcode() {
         public void handler() {
-            fclose(konamilog);
-            throw new UnsupportedOperationException("unsupported opcode");
+            int r;
+            r = B() & RM(ea);
+            CLR_NZV();
+            SET_NZ8(r);
         }
     };
     opcode ble = new opcode() {
@@ -3934,8 +3936,12 @@ int A() {
     };
     opcode sbca_ix = new opcode() {
         public void handler() {
-            fclose(konamilog);
-            throw new UnsupportedOperationException("unsupported opcode");
+            int	  t,r;
+            t = RM(ea);
+            r = A() - t - (konami.cc & CC_C);
+            CLR_NZVC();
+            SET_FLAGS8(A(),t,r);
+            A( r );
         }
     };
     opcode sbcb_di = new opcode() {

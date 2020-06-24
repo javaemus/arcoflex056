@@ -711,33 +711,33 @@ public class palette {
 /*TODO*///	*g = game_palette[3*color + 1];
 /*TODO*///	*b = game_palette[3*color + 2];
 /*TODO*///}
-/*TODO*///
-/*TODO*///void palette_set_brightness(int color,double bright)
-/*TODO*///{
-/*TODO*///	if (brightness[color] != bright)
-/*TODO*///	{
-/*TODO*///		brightness[color] = bright;
-/*TODO*///
-/*TODO*///		palette_set_color(color,game_palette[3*color + 0],game_palette[3*color + 1],game_palette[3*color + 2]);
-/*TODO*///	}
-/*TODO*///}
-/*TODO*///
-/*TODO*///void palette_set_shadow_factor(double factor)
-/*TODO*///{
-/*TODO*///	if (shadow_factor != factor)
-/*TODO*///	{
-/*TODO*///		int i;
-/*TODO*///
-/*TODO*///		shadow_factor = factor;
-/*TODO*///
-/*TODO*///		if (palette_initialized)
-/*TODO*///		{
-/*TODO*///			for (i = 0;i < Machine->drv->total_colors;i++)
-/*TODO*///				palette_set_color(i,game_palette[3*i + 0],game_palette[3*i + 1],game_palette[3*i + 2]);
-/*TODO*///		}
-/*TODO*///	}
-/*TODO*///}
-/*TODO*///
+
+    public static void palette_set_brightness(int color,double bright)
+    {
+            if (brightness[color] != bright)
+            {
+                    brightness[color] = bright;
+
+                    palette_set_color(color,game_palette[3*color + 0],game_palette[3*color + 1],game_palette[3*color + 2]);
+            }
+    }
+
+    public static void palette_set_shadow_factor(double factor)
+    {
+            if (shadow_factor != factor)
+            {
+                    int i;
+
+                    shadow_factor = factor;
+
+                    if (palette_initialized != 0)
+                    {
+                            for (i = 0;i < Machine.drv.total_colors;i++)
+                                    palette_set_color(i,game_palette[3*i + 0],game_palette[3*i + 1],game_palette[3*i + 2]);
+                    }
+            }
+    }
+
 /*TODO*///void palette_set_highlight_factor(double factor)
 /*TODO*///{
 /*TODO*///	if (highlight_factor != factor)

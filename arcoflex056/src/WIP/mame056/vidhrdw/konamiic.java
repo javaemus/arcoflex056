@@ -1729,10 +1729,10 @@ public class konamiic
         		return K051960_irq_enabled;
         	}
         	
-        /*TODO*///	int K051960_is_NMI_enabled(void)
-        /*TODO*///	{
-        /*TODO*///		return K051960_nmi_enabled;
-        /*TODO*///	}
+        	public static int K051960_is_NMI_enabled()
+        	{
+        		return K051960_nmi_enabled;
+        	}
         	
         	
         	
@@ -2802,11 +2802,11 @@ public class konamiic
         		K051316_vh_stop(0);
         	} };
         	
-        /*TODO*///	public static VhStopPtr K051316_vh_stop_1 = new VhStopPtr() { public void handler() 
-        /*TODO*///	{
-        /*TODO*///		K051316_vh_stop(1);
-        /*TODO*///	} };
-        /*TODO*///	
+        	public static VhStopPtr K051316_vh_stop_1 = new VhStopPtr() { public void handler() 
+        	{
+        		K051316_vh_stop(1);
+        	} };
+        	
         /*TODO*///	public static VhStopPtr K051316_vh_stop_2 = new VhStopPtr() { public void handler() 
         /*TODO*///	{
         /*TODO*///		K051316_vh_stop(2);
@@ -2822,11 +2822,11 @@ public class konamiic
         		return K051316_r(0, offset);
         	} };
         	
-        /*TODO*///	public static ReadHandlerPtr K051316_1_r  = new ReadHandlerPtr() { public int handler(int offset)
-        /*TODO*///	{
-        /*TODO*///		return K051316_r(1, offset);
-        /*TODO*///	} };
-        /*TODO*///	
+        	public static ReadHandlerPtr K051316_1_r  = new ReadHandlerPtr() { public int handler(int offset)
+        	{
+        		return K051316_r(1, offset);
+        	} };
+        	
         /*TODO*///	public static ReadHandlerPtr K051316_2_r  = new ReadHandlerPtr() { public int handler(int offset)
         /*TODO*///	{
         /*TODO*///		return K051316_r(2, offset);
@@ -2847,10 +2847,10 @@ public class konamiic
         		K051316_w(0,offset,data);
         	} };
         	
-        /*TODO*///	public static WriteHandlerPtr K051316_1_w = new WriteHandlerPtr() {public void handler(int offset, int data)
-        /*TODO*///	{
-        /*TODO*///		K051316_w(1,offset,data);
-        /*TODO*///	} };
+        	public static WriteHandlerPtr K051316_1_w = new WriteHandlerPtr() {public void handler(int offset, int data)
+        	{
+        		K051316_w(1,offset,data);
+        	} };
         /*TODO*///	
         /*TODO*///	public static WriteHandlerPtr K051316_2_w = new WriteHandlerPtr() {public void handler(int offset, int data)
         /*TODO*///	{
@@ -2886,11 +2886,11 @@ public class konamiic
         		return K051316_rom_r(0,offset);
         	} };
         	
-        /*TODO*///	public static ReadHandlerPtr K051316_rom_1_r  = new ReadHandlerPtr() { public int handler(int offset)
-        /*TODO*///	{
-        /*TODO*///		return K051316_rom_r(1,offset);
-        /*TODO*///	} };
-        /*TODO*///	
+        	public static ReadHandlerPtr K051316_rom_1_r  = new ReadHandlerPtr() { public int handler(int offset)
+        	{
+        		return K051316_rom_r(1,offset);
+        	} };
+        	
         /*TODO*///	public static ReadHandlerPtr K051316_rom_2_r  = new ReadHandlerPtr() { public int handler(int offset)
         /*TODO*///	{
         /*TODO*///		return K051316_rom_r(2,offset);
@@ -2909,11 +2909,11 @@ public class konamiic
         		K051316_ctrl_w(0,offset,data);
         	} };
         	
-        /*TODO*///	public static WriteHandlerPtr K051316_ctrl_1_w = new WriteHandlerPtr() {public void handler(int offset, int data)
-        /*TODO*///	{
-        /*TODO*///		K051316_ctrl_w(1,offset,data);
-        /*TODO*///	} };
-        /*TODO*///	
+        	public static WriteHandlerPtr K051316_ctrl_1_w = new WriteHandlerPtr() {public void handler(int offset, int data)
+        	{
+        		K051316_ctrl_w(1,offset,data);
+        	} };
+        	
         /*TODO*///	public static WriteHandlerPtr K051316_ctrl_2_w = new WriteHandlerPtr() {public void handler(int offset, int data)
         /*TODO*///	{
         /*TODO*///		K051316_ctrl_w(2,offset,data);
@@ -2960,11 +2960,11 @@ public class konamiic
         		K051316_zoom_draw(0,bitmap,flags,priority);
         	}
         	
-        /*TODO*///	void K051316_zoom_draw_1(struct mame_bitmap *bitmap,int flags,UINT32 priority)
-        /*TODO*///	{
-        /*TODO*///		K051316_zoom_draw(1,bitmap,flags,priority);
-        /*TODO*///	}
-        /*TODO*///	
+        	public static void K051316_zoom_draw_1(mame_bitmap bitmap,int flags,int priority)
+        	{
+        		K051316_zoom_draw(1,bitmap,flags,priority);
+        	}
+        	
         /*TODO*///	void K051316_zoom_draw_2(struct mame_bitmap *bitmap,int flags,UINT32 priority)
         /*TODO*///	{
         /*TODO*///		K051316_zoom_draw(2,bitmap,flags,priority);

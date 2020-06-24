@@ -302,6 +302,7 @@ import static WIP.mame056.drivers.gbusters.*;
 import static WIP.mame056.drivers.crimfght.*;
 import static WIP.mame056.drivers.blockhl.*;
 import static WIP.mame056.drivers.vendetta.*;
+import static WIP.mame056.drivers.chqflag.*;
 
 public class driver {
 
@@ -2982,8 +2983,8 @@ public class driver {
         driver_vendettj,	/* GX081 (c) 1991 (Japan) */
         /*TODO*///	driver_wecleman,	/* GX602 (c) 1986 */
         /*TODO*///	driver_hotchase,	/* GX763 (c) 1988 */
-        /*TODO*///	driver_chqflag,	/* GX717 (c) 1988 */
-        /*TODO*///	driver_chqflagj,	/* GX717 (c) 1988 (Japan) */
+        driver_chqflag,	/* GX717 (c) 1988 */
+        driver_chqflagj,	/* GX717 (c) 1988 (Japan) */
         /*TODO*///	driver_ultraman,	/* GX910 (c) 1991 Banpresto/Bandai */
         /*TODO*///	driver_hexion,	/* GX122 (c) 1992 */
         /*TODO*///
