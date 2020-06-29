@@ -76,7 +76,7 @@ public class h6280  extends cpu_interface {
 
     @Override
     public void init() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // nothing to do
     }
 
     @Override
@@ -247,12 +247,60 @@ public class h6280  extends cpu_interface {
 
     @Override
     public int get_reg(int regnum) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        switch( regnum )
+	{
+            
+		case H6280_PC: return h6280.pc.D;
+		case H6280_S: return h6280.sp.L;
+		case H6280_P: return h6280.u8_p;
+		case H6280_A: return h6280.u8_a;
+		case H6280_X: return h6280.u8_x;
+		case H6280_Y: return h6280.u8_y;
+		case H6280_IRQ_MASK: return h6280.u8_irq_mask;
+		case H6280_TIMER_STATE: return h6280.u8_timer_status;
+		case H6280_NMI_STATE: return h6280.nmi_state;
+		case H6280_IRQ1_STATE: return h6280.irq_state[0];
+		case H6280_IRQ2_STATE: return h6280.irq_state[1];
+		case H6280_IRQT_STATE: return h6280.irq_state[2];
+		case REG_PREVIOUSPC: return h6280.ppc.D;
+		default:
+			if( regnum <= REG_SP_CONTENTS )
+			{
+				int offset = h6280.sp.L + 2 * (REG_SP_CONTENTS - regnum);
+				if( offset < 0x1ff )
+					return RDMEM( offset ) | ( RDMEM( offset+1 ) << 8 );
+			}
+	}
+	return 0;
     }
 
     @Override
     public void set_reg(int regnum, int val) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+	switch( regnum )
+	{
+		case H6280_PC: h6280.pc.D = val; break;
+		case H6280_S: h6280.sp.L = val; break;
+		case H6280_P: h6280.u8_p = val; break;
+		case H6280_A: h6280.u8_a = val; break;
+		case H6280_X: h6280.u8_x = val; break;
+		case H6280_Y: h6280.u8_y = val; break;
+		case H6280_IRQ_MASK: h6280.u8_irq_mask = val; CHECK_IRQ_LINES(); break;
+		case H6280_TIMER_STATE: h6280.u8_timer_status = val; break;
+		case H6280_NMI_STATE: h6280.nmi_state = val; break;
+		case H6280_IRQ1_STATE: h6280.irq_state[0] = val; break;
+		case H6280_IRQ2_STATE: h6280.irq_state[1] = val; break;
+		case H6280_IRQT_STATE: h6280.irq_state[2] = val; break;
+		default:
+			if( regnum <= REG_SP_CONTENTS )
+			{
+				int offset = h6280.sp.L + 2 * (REG_SP_CONTENTS - regnum);
+				if( offset < 0x1ff )
+				{
+					WRMEM( offset, val & 0xff );
+					WRMEM( offset+1, (val >> 8) & 0xff );
+				}
+			}
+    }
     }
 
     @Override
@@ -367,7 +415,7 @@ public class h6280  extends cpu_interface {
 
     @Override
     public int mem_address_bits_of_cpu() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return 24;
     }
     
     public static FILE h6280log = null;//fopen("h6280.log", "wa");  //for debug purposes
@@ -383,7 +431,7 @@ public class h6280  extends cpu_interface {
         irq_int = -1;
         //nmi_int = H6280_INT_NMI;
         databus_width = 8;
-        address_bits = 21;
+        address_bits = 24;
         address_shift = 0;
         endianess = CPU_IS_LE;
         align_unit = 1;
@@ -491,7 +539,7 @@ public class h6280  extends cpu_interface {
         int extra_cycles;
         /* cycles used taking an interrupt */
         int nmi_state;
-        int[] irq_state = new int[3];
+        int[] irq_state = new int[4];
         public irqcallbacksPtr irq_callback;
     }
     static h6280_Regs h6280 = new h6280_Regs();
@@ -1201,22 +1249,23 @@ public class h6280  extends cpu_interface {
     }
 
 
-    /*TODO*///
-/*TODO*////* 6280 ********************************************************
-/*TODO*/// *	BRK Break
-/*TODO*/// *	increment PC, push PC hi, PC lo, flags (with B bit set),
-/*TODO*/// *	set I flag, reset D flag and jump via IRQ vector
-/*TODO*/// ***************************************************************/
-/*TODO*///#define BRK 													\
-/*TODO*///	logerror("BRK %04x\n",cpu_get_pc());	\
-/*TODO*///	h6280.pc.AddD(1);														\
-/*TODO*///	PUSH(PCH);													\
-/*TODO*///	PUSH(PCL);													\
-/*TODO*///	PUSH(P | _fB);												\
-/*TODO*///	P = (P & ~_fD) | _fI;										\
-/*TODO*///	PCL = RDMEM(H6280_IRQ2_VEC); 								\
-/*TODO*///	PCH = RDMEM(H6280_IRQ2_VEC+1)
-/*TODO*///
+    
+    /* 6280 ********************************************************
+     *	BRK Break
+     *	increment PC, push PC hi, PC lo, flags (with B bit set),
+     *	set I flag, reset D flag and jump via IRQ vector
+     ***************************************************************/
+    public static void BRK() {
+            //logerror("BRK %04x\n",cpu_get_pc());
+            h6280.pc.AddD(1);
+            PUSH(h6280.pc.H);
+            PUSH(h6280.pc.L);
+            PUSH(h6280.u8_p | _fB);
+            h6280.u8_p = (h6280.u8_p & ~_fD) | _fI;
+            h6280.pc.L = RDMEM(H6280_IRQ2_VEC);
+            h6280.pc.H = RDMEM(H6280_IRQ2_VEC+1);
+    }
+
     /* 6280 ********************************************************
      *	BSR Branch to subroutine
      ***************************************************************/
@@ -1640,21 +1689,21 @@ public class h6280  extends cpu_interface {
     *  ST0 Store at hardware address 0
     ***************************************************************/
     public static void ST0(int tmp) {
-        cpu_writeport16(0x0000, tmp);
+        cpu_writeport24(0x0000, tmp);
     }
 
     /* 6280 ********************************************************
     *  ST1 Store at hardware address 2
     ***************************************************************/
     public static void ST1(int tmp) {
-        cpu_writeport16(0x0002, tmp);
+        cpu_writeport24(0x0002, tmp);
     }
 
     /* 6280 ********************************************************
     *  ST2 Store at hardware address 3
     ***************************************************************/
     public static void ST2(int tmp) {
-        cpu_writeport16(0x0003, tmp);
+        cpu_writeport24(0x0003, tmp);
     }
 
     /* H6280 *******************************************************
@@ -1889,8 +1938,7 @@ public class h6280  extends cpu_interface {
     }
     static opcode h6280_000 = new opcode() {
         public void handler() {
-            /*TODO*///            h6280_ICount[0] -= 8;BRK;
-            throw new UnsupportedOperationException("Not supported yet.");
+            h6280_ICount[0] -= 8;BRK();
         }
     }; // 8 BRK
     static opcode h6280_020 = new opcode() {

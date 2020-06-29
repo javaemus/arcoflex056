@@ -303,6 +303,7 @@ import static WIP.mame056.drivers.crimfght.*;
 import static WIP.mame056.drivers.blockhl.*;
 import static WIP.mame056.drivers.vendetta.*;
 import static WIP.mame056.drivers.chqflag.*;
+import static WIP.mame056.drivers.actfancr.*;
 
 public class driver {
 
@@ -2714,10 +2715,10 @@ public class driver {
         driver_spool3i, /* (c) 1990 Data East Corporation + I-Vics license */
         /*TODO*///	driver_battlera,	/* (c) 1988 Data East Corporation (World) */
         /*TODO*///	driver_bldwolf,	/* (c) 1988 Data East USA (US) */
-        /*TODO*///	driver_actfancr,	/* (c) 1989 Data East Corporation (World) */
-        /*TODO*///	driver_actfanc1,	/* (c) 1989 Data East Corporation (World) */
-        /*TODO*///	driver_actfancj,	/* (c) 1989 Data East Corporation (Japan) */
-        /*TODO*///	driver_triothep,	/* (c) 1989 Data East Corporation (Japan) */
+        driver_actfancr,	/* (c) 1989 Data East Corporation (World) */
+        driver_actfanc1,	/* (c) 1989 Data East Corporation (World) */
+        driver_actfancj,	/* (c) 1989 Data East Corporation (Japan) */
+        driver_triothep,	/* (c) 1989 Data East Corporation (Japan) */
 
         /* Data East 8-bit games */
         driver_lastmisn,	/* (c) 1986 Data East USA (US) */

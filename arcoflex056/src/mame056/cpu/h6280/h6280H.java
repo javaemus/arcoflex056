@@ -17,9 +17,18 @@ package mame056.cpu.h6280;
  */
 public class h6280H {
 /*TODO*///enum {
-/*TODO*///	H6280_PC=1, H6280_S, H6280_P, H6280_A, H6280_X, H6280_Y,
-/*TODO*///	H6280_IRQ_MASK, H6280_TIMER_STATE,
-/*TODO*///	H6280_NMI_STATE, H6280_IRQ1_STATE, H6280_IRQ2_STATE, H6280_IRQT_STATE
+    public static final int H6280_PC=1;
+    public static final int H6280_S=2;
+    public static final int H6280_P=3;
+    public static final int H6280_A=4;
+    public static final int H6280_X=5;
+    public static final int H6280_Y=6;
+    public static final int H6280_IRQ_MASK=7;
+    public static final int H6280_TIMER_STATE=8;
+    public static final int H6280_NMI_STATE=9;
+    public static final int H6280_IRQ1_STATE=10;
+    public static final int H6280_IRQ2_STATE=11;
+    public static final int H6280_IRQT_STATE=12;
 /*TODO*///#ifdef MAME_DEBUG
 /*TODO*///    ,
 /*TODO*///	H6280_M1, H6280_M2, H6280_M3, H6280_M4,
