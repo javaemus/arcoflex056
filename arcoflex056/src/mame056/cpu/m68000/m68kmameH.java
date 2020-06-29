@@ -35,7 +35,8 @@ public class m68kmameH {
 
     public static int m68k_read_memory_32(int address) {
 /*TODO*///        return cpu_readmem24_dword(address);
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+return cpu_readmem24(address);
     }
 
     public static int m68k_read_immediate_8(int address) {

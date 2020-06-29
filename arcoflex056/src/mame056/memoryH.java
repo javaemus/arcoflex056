@@ -1006,20 +1006,23 @@ public static final int MRA_BANK24 = STATIC_BANK24;
 /*TODO*///extern UINT8 *			readmem_lookup;		/* pointer to the readmem lookup table */
 /*TODO*///extern offs_t			mem_amask;			/* memory address mask */
 /*TODO*///extern struct ExtMemory	ext_memory[];		/* externally-allocated memory */
-/*TODO*///
-/*TODO*///
-/*TODO*///
-/*TODO*////***************************************************************************
-/*TODO*///
-/*TODO*///	Helper macros
-/*TODO*///
-/*TODO*///***************************************************************************/
-/*TODO*///
-/*TODO*///
-/*TODO*////* ----- 16/32-bit memory accessing ----- */
-/*TODO*///#define COMBINE_DATA(varptr)		(*(varptr) = (*(varptr) & mem_mask) | (data & ~mem_mask))
-/*TODO*///
-    /*TODO*///
+
+
+
+    /***************************************************************************
+
+            Helper macros
+
+    ***************************************************************************/
+
+
+    /* ----- 16/32-bit memory accessing ----- */
+    public static void COMBINE_DATA(int varptr, int data){
+        //hack
+        int mem_mask = 0;
+        varptr = (varptr & mem_mask) | (data & ~mem_mask);
+    }
+
 /*TODO*////* ----- 16-bit memory accessing ----- */
 /*TODO*///#define ACCESSING_LSB16				((mem_mask & 0x00ff) == 0)
 /*TODO*///#define ACCESSING_MSB16				((mem_mask & 0xff00) == 0)

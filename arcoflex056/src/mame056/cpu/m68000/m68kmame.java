@@ -13,7 +13,7 @@ import static mame056.cpu.m68000.m68kops.*;
 import static mame056.cpu.m68000.m68kcpu.*;
 
 public class m68kmame extends cpu_interface {
-
+    //CPU0(M68000,   m68000,	 8, -1,1.00,-1,			   16,24bew,  0,24,BE,2,10	),
     public m68kmame() {
         cpu_num = CPU_M68000;
         num_irqs = 8;
@@ -23,8 +23,8 @@ public class m68kmame extends cpu_interface {
         irq_int = -1;
 /*TODO*///        nmi_int = -1;
         address_shift = 0;
-        address_bits = 32;
-        databus_width = 32;
+        address_bits = 16;
+        databus_width = 16;
         endianess = CPU_IS_BE;
         align_unit = 2;
         max_inst_len = 10;
@@ -149,7 +149,7 @@ public class m68kmame extends cpu_interface {
 		case REG_PREVIOUSPC: return (int)m68k_peek_ppc();
 /*TODO*////* TODO: return contents of [SP + wordsize * (REG_SP_CONTENTS-regnum)] */
             default:
-                throw new UnsupportedOperationException("Not supported yet.");
+                throw new UnsupportedOperationException("Not supported yet. "+regnum);
             /*TODO*///			if( regnum < REG_SP_CONTENTS )
 /*TODO*///			{
 /*TODO*///				unsigned offset = m68k_peek_isp() + 4 * (REG_SP_CONTENTS - regnum);
