@@ -304,7 +304,8 @@ import static WIP.mame056.drivers.blockhl.*;
 import static WIP.mame056.drivers.vendetta.*;
 import static WIP.mame056.drivers.chqflag.*;
 import static WIP.mame056.drivers.actfancr.*;
-
+import static WIP.mame056.drivers.battlera.*;
+        
 public class driver {
 
     public static GameDriver driversArcadeFlex[] = {
@@ -2713,8 +2714,8 @@ public class driver {
         driver_pcktgal2, /* (c) 1989 Data East Corporation (World?) */
         driver_spool3, /* (c) 1989 Data East Corporation (World?) */
         driver_spool3i, /* (c) 1990 Data East Corporation + I-Vics license */
-        /*TODO*///	driver_battlera,	/* (c) 1988 Data East Corporation (World) */
-        /*TODO*///	driver_bldwolf,	/* (c) 1988 Data East USA (US) */
+        driver_battlera,	/* (c) 1988 Data East Corporation (World) */
+        driver_bldwolf,	/* (c) 1988 Data East USA (US) */
         driver_actfancr,	/* (c) 1989 Data East Corporation (World) */
         driver_actfanc1,	/* (c) 1989 Data East Corporation (World) */
         driver_actfancj,	/* (c) 1989 Data East Corporation (Japan) */

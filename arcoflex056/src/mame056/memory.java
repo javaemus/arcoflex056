@@ -2636,7 +2636,6 @@ public static int assign_dynamic_bank(int cpunum, int start)
     };
     
     /*---------------------------------------------*/
-    
     public static setopbase cpu_setOPbase24 = new setopbase() {
         public void handler(int pc) {
             UBytePtr base = null;
@@ -2676,7 +2675,48 @@ public static int assign_dynamic_bank(int cpunum, int start)
             OP_RAM = new UBytePtr(base, -rmemhandler8[entry].offset);
         }
     };
+    
+    public static setopbase cpu_setOPbase21 = new setopbase() {
+        public void handler(int pc) {
+            
+            UBytePtr base = null;
+            int entry;
 
+            /* allow overrides */
+            if (opbasefunc != null) {
+                throw new UnsupportedOperationException("Unsupported");
+                /*TODO*///		pc = (*opbasefunc)(pc);															
+/*TODO*///		if (pc == ~0)																	
+/*TODO*///			return; 
+            }
+
+            /* perform the lookup */
+            pc &= mem_amask;
+            entry = readmem_lookup.read(LEVEL1_INDEX(pc, 21, 0));
+            if (entry >= SUBTABLE_BASE) {
+                entry = readmem_lookup.read(LEVEL2_INDEX(entry, pc, 21, 0));
+            }
+            opcode_entry = entry;
+            
+            /* RAM/ROM/RAMROM */
+            if (entry >= STATIC_RAM && entry <= STATIC_RAMROM) {
+                base = new UBytePtr(cpu_bankbase[STATIC_RAM]);
+            } /* banked memory */ else if (entry >= STATIC_BANK1 && entry <= STATIC_RAM) {
+                if (cpu_bankbase[entry] != null){
+                    base = new UBytePtr(cpu_bankbase[entry]);
+                }
+            } /* other memory -- could be very slow! */ else {
+                logerror("cpu #%d (PC=%08X): warning - op-code execute on mapped I/O\n", cpu_getactivecpu(), activecpu_get_pc());
+                /*base = memory_find_base(cpu_getactivecpu(), pc);*/
+                return;
+            }
+
+            /* compute the adjusted base */
+            OP_ROM = new UBytePtr(base, -rmemhandler8[entry].offset + (OP_ROM.offset - OP_RAM.offset));
+            OP_RAM = new UBytePtr(base, -rmemhandler8[entry].offset);
+        }
+    };
+    
     public static int cpu_readmem24(int address) {
         int entry;
         /* perform lookup */
@@ -2684,6 +2724,27 @@ public static int assign_dynamic_bank(int cpunum, int start)
         entry = readmem_lookup.read(LEVEL1_INDEX(address, 24, 0));
         if (entry >= SUBTABLE_BASE) {
             entry = readmem_lookup.read(LEVEL2_INDEX(entry, address, 24, 0));
+        }
+
+        /* for compatibility with setbankhandler, 8-bit systems */
+ /* must call handlers for banks */
+        if (entry == STATIC_RAM) {
+            return cpu_bankbase[STATIC_RAM].read(address);
+        } /* fall back to the handler */ else {
+            ReadHandlerPtr handler = (ReadHandlerPtr) rmemhandler8[entry].handler;
+            return handler.handler(address - rmemhandler8[entry].offset);
+        }
+        //return 0;
+    }
+
+
+    public static int cpu_readmem21(int address) {
+        int entry;
+        /* perform lookup */
+        address &= mem_amask;
+        entry = readmem_lookup.read(LEVEL1_INDEX(address, 21, 0));
+        if (entry >= SUBTABLE_BASE) {
+            entry = readmem_lookup.read(LEVEL2_INDEX(entry, address, 21, 0));
         }
 
         /* for compatibility with setbankhandler, 8-bit systems */
@@ -2716,14 +2777,35 @@ public static int assign_dynamic_bank(int cpunum, int start)
             handler.handler(address - wmemhandler8[entry].offset, data);
         }
     }
+    
+    public static void cpu_writemem21(int address, int data) {
+        int entry;
 
-    public static int cpu_readport24(int address) {
+        /* perform lookup */
+        address &= mem_amask;
+        entry = writemem_lookup.read(LEVEL1_INDEX(address, 21, 0));
+        if (entry >= SUBTABLE_BASE) {
+            entry = writemem_lookup.read(LEVEL2_INDEX(entry, address, 21, 0));
+        }
+
+        /* for compatibility with setbankhandler, 8-bit systems */
+ /* must call handlers for banks */
+        if (entry == MRA_RAM) {
+            cpu_bankbase[STATIC_RAM].write(address, data);
+        } /* fall back to the handler */ else {
+            WriteHandlerPtr handler = (WriteHandlerPtr) wmemhandler8[entry].handler;
+            handler.handler(address - wmemhandler8[entry].offset, data);
+        }
+    }
+
+
+    public static int cpu_readport21(int address) {
         int entry;
         /* perform lookup */
         address &= port_amask;
-        entry = readport_lookup.read(LEVEL1_INDEX(address, 24, 0));
+        entry = readport_lookup.read(LEVEL1_INDEX(address, 21, 0));
         if (entry >= SUBTABLE_BASE) {
-            entry = readport_lookup.read(LEVEL2_INDEX(entry, address, 24, 0));
+            entry = readport_lookup.read(LEVEL2_INDEX(entry, address, 21, 0));
         }
 
         /* for compatibility with setbankhandler, 8-bit systems */

@@ -107,6 +107,7 @@ public class h6280  extends cpu_interface {
         if (h6280log != null) {
             fprintf(h6280log, "reset :PC:%d,PPC:%d,SP:%d,ZP:%d,EA:%d,A:%d,X:%d,Y:%d,P:%d,MMR0:%d,MMR1:%d,MMR2:%d,MMR3:%d,MMR4:%d,MMR5:%d,MMR6:%d,MMR7:%d,IRQM:%d,TS:%d,TA:%d,TV:%d,TL:%d,EC:%d,NMIS:%d,IR1:%d,IR2:%d,IR3:%d\n", h6280.ppc.D, h6280.pc.D, h6280.sp.D, h6280.zp.D, h6280.ea.D, h6280.u8_a, h6280.u8_x, h6280.u8_y, h6280.u8_p, h6280.u8_mmr[0], h6280.u8_mmr[1], h6280.u8_mmr[2], h6280.u8_mmr[3], h6280.u8_mmr[4], h6280.u8_mmr[5], h6280.u8_mmr[6], h6280.u8_mmr[7], h6280.u8_irq_mask, h6280.u8_timer_status, h6280.u8_timer_ack, h6280.timer_value, h6280.timer_load, h6280.extra_cycles, h6280.nmi_state, h6280.irq_state[0], h6280.irq_state[1], h6280.irq_state[2]);
         }
+        
     }
 
     @Override
@@ -160,6 +161,8 @@ public class h6280  extends cpu_interface {
         h6280.extra_cycles = 0;
 
         return cycles - h6280_ICount[0];
+        
+        
     }
 
     @Override
@@ -305,15 +308,26 @@ public class h6280  extends cpu_interface {
 
     @Override
     public void set_irq_line(int irqline, int state) {
-        h6280.irq_state[irqline] = state;
-
-        /* If line is cleared, just exit */
-        if (state == CLEAR_LINE) {
-            return;
+        
+        if (irqline == IRQ_LINE_NMI)
+        {
+                if (h6280.nmi_state == state) return;
+                h6280.nmi_state = state;
+                if (state != CLEAR_LINE)
+            {
+                        DO_INTERRUPT(H6280_NMI_VEC);
+                }
         }
+        else if (irqline < 3)
+        {
+            h6280.irq_state[irqline] = state;
 
-        /* Check if interrupts are enabled and the IRQ mask is clear */
-        CHECK_IRQ_LINES();
+                /* If line is cleared, just exit */
+                if (state == CLEAR_LINE) return;
+
+                /* Check if interrupts are enabled and the IRQ mask is clear */
+                CHECK_IRQ_LINES();
+        }
     }
 
     @Override
@@ -410,12 +424,12 @@ public class h6280  extends cpu_interface {
 
     @Override
     public void set_op_base(int pc) {
-        cpu_setOPbase24.handler(pc);
+        cpu_setOPbase21.handler(pc);
     }
 
     @Override
     public int mem_address_bits_of_cpu() {
-        return 24;
+        return 21;
     }
     
     public static FILE h6280log = null;//fopen("h6280.log", "wa");  //for debug purposes
@@ -431,7 +445,7 @@ public class h6280  extends cpu_interface {
         irq_int = -1;
         //nmi_int = H6280_INT_NMI;
         databus_width = 8;
-        address_bits = 24;
+        address_bits = 21;
         address_shift = 0;
         endianess = CPU_IS_LE;
         align_unit = 1;
@@ -539,7 +553,7 @@ public class h6280  extends cpu_interface {
         int extra_cycles;
         /* cycles used taking an interrupt */
         int nmi_state;
-        int[] irq_state = new int[4];
+        int[] irq_state = new int[3];
         public irqcallbacksPtr irq_callback;
     }
     static h6280_Regs h6280 = new h6280_Regs();
@@ -839,7 +853,7 @@ public class h6280  extends cpu_interface {
      * *************************************************************
      */
     public static int RDMEM(int addr) {
-        return cpu_readmem24((h6280.u8_mmr[(addr) >>> 13] << 13) | ((addr) & 0x1fff));
+        return cpu_readmem21((h6280.u8_mmr[(addr) >>> 13] << 13) | ((addr) & 0x1fff));
     }
 
     /**
@@ -848,7 +862,7 @@ public class h6280  extends cpu_interface {
      * *************************************************************
      */
     public static void WRMEM(int addr, int data) {
-        cpu_writemem24((h6280.u8_mmr[(addr) >>> 13] << 13) | ((addr) & 0x1fff), data & 0xFF);
+        cpu_writemem21((h6280.u8_mmr[(addr) >>> 13] << 13) | ((addr) & 0x1fff), data & 0xFF);
     }
 
     /**
@@ -858,7 +872,7 @@ public class h6280  extends cpu_interface {
      * *************************************************************
      */
     public static int RDMEMZ(int addr) {
-        return cpu_readmem24((h6280.u8_mmr[1] << 13) | ((addr) & 0x1fff));
+        return cpu_readmem21((h6280.u8_mmr[1] << 13) | ((addr) & 0x1fff));
     }
 
     /**
@@ -867,7 +881,7 @@ public class h6280  extends cpu_interface {
      * *************************************************************
      */
     public static void WRMEMZ(int addr, int data) {
-        cpu_writemem24((h6280.u8_mmr[1] << 13) | ((addr) & 0x1fff), data & 0xFF);
+        cpu_writemem21((h6280.u8_mmr[1] << 13) | ((addr) & 0x1fff), data & 0xFF);
     }
 
     /**
@@ -876,8 +890,8 @@ public class h6280  extends cpu_interface {
      * *************************************************************
      */
     public static int RDMEMW(int addr) {
-        return cpu_readmem24((h6280.u8_mmr[(addr) >>> 13] << 13) | ((addr) & 0x1fff))
-                | (cpu_readmem24((h6280.u8_mmr[(addr + 1) >>> 13] << 13) | ((addr + 1) & 0x1fff)) << 8);
+        return cpu_readmem21((h6280.u8_mmr[(addr) >>> 13] << 13) | ((addr) & 0x1fff))
+                | (cpu_readmem21((h6280.u8_mmr[(addr + 1) >>> 13] << 13) | ((addr + 1) & 0x1fff)) << 8);
     }
 
     /**
@@ -887,11 +901,11 @@ public class h6280  extends cpu_interface {
      */
     public static int RDZPWORD(int addr) {
         if ((addr & 0xff) == 0xff) {
-            return cpu_readmem24((h6280.u8_mmr[1] << 13) | ((addr) & 0x1fff))
-                    + (cpu_readmem24((h6280.u8_mmr[1] << 13) | ((addr - 0xff) & 0x1fff)) << 8);
+            return cpu_readmem21((h6280.u8_mmr[1] << 13) | ((addr) & 0x1fff))
+                    + (cpu_readmem21((h6280.u8_mmr[1] << 13) | ((addr - 0xff) & 0x1fff)) << 8);
         } else {
-            return cpu_readmem24((h6280.u8_mmr[1] << 13) | ((addr) & 0x1fff))
-                    + (cpu_readmem24((h6280.u8_mmr[1] << 13) | ((addr + 1) & 0x1fff)) << 8);
+            return cpu_readmem21((h6280.u8_mmr[1] << 13) | ((addr) & 0x1fff))
+                    + (cpu_readmem21((h6280.u8_mmr[1] << 13) | ((addr + 1) & 0x1fff)) << 8);
         }
     }
 
@@ -901,7 +915,7 @@ public class h6280  extends cpu_interface {
      * *************************************************************
      */
     public static void PUSH(int Rg) {
-        cpu_writemem24((h6280.u8_mmr[1] << 13) | h6280.sp.D, Rg);
+        cpu_writemem21((h6280.u8_mmr[1] << 13) | h6280.sp.D, Rg);
         h6280.sp.AddL(-1);//S--
     }
 
@@ -1536,7 +1550,7 @@ public class h6280  extends cpu_interface {
     public static void PLA() {
         //PULL(A);
         h6280.sp.AddL(1);
-        h6280.u8_a = cpu_readmem24((h6280.u8_mmr[1] << 13) | h6280.sp.D) & 0xFF;
+        h6280.u8_a = cpu_readmem21((h6280.u8_mmr[1] << 13) | h6280.sp.D) & 0xFF;
         SET_NZ(h6280.u8_a);
     }
 
@@ -1546,7 +1560,7 @@ public class h6280  extends cpu_interface {
     public static void PLP() {
         //PULL(P);
         h6280.sp.AddL(1);
-        h6280.u8_p = cpu_readmem24((h6280.u8_mmr[1] << 13) | h6280.sp.D) & 0xFF;
+        h6280.u8_p = cpu_readmem21((h6280.u8_mmr[1] << 13) | h6280.sp.D) & 0xFF;
         CHECK_IRQ_LINES();
     }
 
@@ -1555,7 +1569,7 @@ public class h6280  extends cpu_interface {
      ***************************************************************/
     public static void PLX() {
         h6280.sp.AddL(1);
-        h6280.u8_x = cpu_readmem24((h6280.u8_mmr[1] << 13) | h6280.sp.D) & 0xFF;
+        h6280.u8_x = cpu_readmem21((h6280.u8_mmr[1] << 13) | h6280.sp.D) & 0xFF;
     }
 
     /* 6280 ********************************************************
@@ -1563,7 +1577,7 @@ public class h6280  extends cpu_interface {
      ***************************************************************/
     public static void PLY() {
         h6280.sp.AddL(1);
-        h6280.u8_y = cpu_readmem24((h6280.u8_mmr[1] << 13) | h6280.sp.D) & 0xFF;
+        h6280.u8_y = cpu_readmem21((h6280.u8_mmr[1] << 13) | h6280.sp.D) & 0xFF;
     }
 
     /* 6280 ********************************************************
@@ -1573,13 +1587,13 @@ public class h6280  extends cpu_interface {
     public static void RTI() {
         //PULL(P);
         h6280.sp.AddL(1);
-        h6280.u8_p = cpu_readmem24((h6280.u8_mmr[1] << 13) | h6280.sp.D) & 0xFF;
+        h6280.u8_p = cpu_readmem21((h6280.u8_mmr[1] << 13) | h6280.sp.D) & 0xFF;
         //PULL(PCL);
         h6280.sp.AddL(1);
-        h6280.pc.SetL(cpu_readmem24((h6280.u8_mmr[1] << 13) | h6280.sp.D));
+        h6280.pc.SetL(cpu_readmem21((h6280.u8_mmr[1] << 13) | h6280.sp.D));
         //PULL(PCH);
         h6280.sp.AddL(1);
-        h6280.pc.SetH(cpu_readmem24((h6280.u8_mmr[1] << 13) | h6280.sp.D));
+        h6280.pc.SetH(cpu_readmem21((h6280.u8_mmr[1] << 13) | h6280.sp.D));
         CHECK_IRQ_LINES();
     }
 
@@ -1590,10 +1604,10 @@ public class h6280  extends cpu_interface {
     public static void RTS() {
         //PULL(PCL);
         h6280.sp.AddL(1);
-        h6280.pc.SetL(cpu_readmem24((h6280.u8_mmr[1] << 13) | h6280.sp.D));
+        h6280.pc.SetL(cpu_readmem21((h6280.u8_mmr[1] << 13) | h6280.sp.D));
         //PULL(PCH);
         h6280.sp.AddL(1);
-        h6280.pc.SetH(cpu_readmem24((h6280.u8_mmr[1] << 13) | h6280.sp.D));
+        h6280.pc.SetH(cpu_readmem21((h6280.u8_mmr[1] << 13) | h6280.sp.D));
         h6280.pc.AddD(1);
     }
 
@@ -1689,21 +1703,21 @@ public class h6280  extends cpu_interface {
     *  ST0 Store at hardware address 0
     ***************************************************************/
     public static void ST0(int tmp) {
-        cpu_writeport24(0x0000, tmp);
+        cpu_writeport16(0x0000, tmp);
     }
 
     /* 6280 ********************************************************
     *  ST1 Store at hardware address 2
     ***************************************************************/
     public static void ST1(int tmp) {
-        cpu_writeport24(0x0002, tmp);
+        cpu_writeport16(0x0002, tmp);
     }
 
     /* 6280 ********************************************************
     *  ST2 Store at hardware address 3
     ***************************************************************/
     public static void ST2(int tmp) {
-        cpu_writeport24(0x0003, tmp);
+        cpu_writeport16(0x0003, tmp);
     }
 
     /* H6280 *******************************************************
