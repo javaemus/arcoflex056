@@ -244,28 +244,28 @@ public class i8x41  extends cpu_interface {
             logerror("i8x41 #%d: illegal opcode at 0x%03x: %02x\n", cpu_getactivecpu(), i8x41.pc, ROP(i8x41.pc));
     }
 
-/*TODO*////***********************************
-/*TODO*/// *	0110 1rrr *  ADD	 A,Rr
-/*TODO*/// ***********************************/
-/*TODO*///INLINE void add_r(int r)
-/*TODO*///{
-/*TODO*///	UINT8 res = A + R(r);
-/*TODO*///	if( res < A ) PSW |= FC;
-/*TODO*///	if( (res & 0x0f) < (A & 0x0f) ) PSW |= FA;
-/*TODO*///	A = res;
-/*TODO*///}
-/*TODO*///
-/*TODO*////***********************************
-/*TODO*/// *	0110 000r
-/*TODO*/// *	ADD 	A,@Rr
-/*TODO*/// ***********************************/
-/*TODO*///INLINE void add_rm(int r)
-/*TODO*///{
-/*TODO*///	UINT8 res = A + RM( M_IRAM + (R(r) & 0x3f) );
-/*TODO*///	if( res < A ) PSW |= FC;
-/*TODO*///	if( (res & 0x0f) < (A & 0x0f) ) PSW |= FA;
-/*TODO*///	A = res;
-/*TODO*///}
+    /***********************************
+     *	0110 1rrr *  ADD	 A,Rr
+     ***********************************/
+    public static void add_r(int r)
+    {
+    	int res = i8x41.a + R(r);
+    	if( res < i8x41.a ) i8x41.psw |= FC;
+    	if( (res & 0x0f) < (i8x41.a & 0x0f) ) i8x41.psw |= FA;
+    	i8x41.a = res;
+    }
+    
+    /***********************************
+     *	0110 000r
+     *	ADD 	A,@Rr
+     ***********************************/
+    public static void add_rm(int r)
+    {
+    	int res = i8x41.a + RM( M_IRAM + (R(r) & 0x3f) );
+    	if( res < i8x41.a ) i8x41.psw |= FC;
+    	if( (res & 0x0f) < (i8x41.a & 0x0f) ) i8x41.psw |= FA;
+    	i8x41.a = res;
+    }
 
     /***********************************
      *	0000 0011 7654 3210
@@ -280,29 +280,29 @@ public class i8x41  extends cpu_interface {
             i8x41.a = res;
     }
 
-/*TODO*////***********************************
-/*TODO*/// *	0111 1rrr
-/*TODO*/// *	ADDC	A,Rr
-/*TODO*/// ***********************************/
-/*TODO*///INLINE void addc_r(int r)
-/*TODO*///{
-/*TODO*///	UINT8 res = A + R(r) + (PSW >> 7);
-/*TODO*///	if( res <= A ) PSW |= FC;
-/*TODO*///	if( (res & 0x0f) <= (A & 0x0f) ) PSW |= FA;
-/*TODO*///	A = res;
-/*TODO*///}
-/*TODO*///
-/*TODO*////***********************************
-/*TODO*/// *	0111 000r
-/*TODO*/// *	ADDC	A,@Rr
-/*TODO*/// ***********************************/
-/*TODO*///INLINE void addc_rm(int r)
-/*TODO*///{
-/*TODO*///	UINT8 res = A + RM( M_IRAM+ (R(r) & 0x3f) ) + (PSW >> 7);
-/*TODO*///	if( res <= A ) PSW |= FC;
-/*TODO*///	if( (res & 0x0f) <= (A & 0x0f) ) PSW |= FA;
-/*TODO*///	A = res;
-/*TODO*///}
+    /***********************************
+     *	0111 1rrr
+     *	ADDC	A,Rr
+     ***********************************/
+    public static void addc_r(int r)
+    {
+    	int res = i8x41.a + R(r) + (i8x41.psw >> 7);
+    	if( res <= i8x41.a ) i8x41.psw |= FC;
+    	if( (res & 0x0f) <= (i8x41.a & 0x0f) ) i8x41.psw |= FA;
+    	i8x41.a = res;
+    }
+    
+    /***********************************
+     *	0111 000r
+     *	ADDC	A,@Rr
+     ***********************************/
+    public static void addc_rm(int r)
+    {
+    	int res = i8x41.a + RM( M_IRAM+ (R(r) & 0x3f) ) + (i8x41.psw >> 7);
+    	if( res <= i8x41.a ) i8x41.psw |= FC;
+    	if( (res & 0x0f) <= (i8x41.a & 0x0f) ) i8x41.psw |= FA;
+    	i8x41.a = res;
+    }
 
     /***********************************
      *	0001 0011 7654 3210
@@ -317,34 +317,34 @@ public class i8x41  extends cpu_interface {
             i8x41.a = res;
     }
 
-/*TODO*////***********************************
-/*TODO*/// *	0101 1rrr
-/*TODO*/// *	ANL 	A,Rr
-/*TODO*/// ***********************************/
-/*TODO*///INLINE void anl_r(int r)
-/*TODO*///{
-/*TODO*///	A = A & R(r);
-/*TODO*///}
-/*TODO*///
-/*TODO*////***********************************
-/*TODO*/// *	0101 000r
-/*TODO*/// *	ANL 	A,@Rr
-/*TODO*/// ***********************************/
-/*TODO*///INLINE void anl_rm(int r)
-/*TODO*///{
-/*TODO*///	A = A & RM( M_IRAM + (R(r) & 0x3f) );
-/*TODO*///}
-/*TODO*///
-/*TODO*////***********************************
-/*TODO*/// *	0101 0011 7654 3210
-/*TODO*/// *	ANL 	A,#n
-/*TODO*/// ***********************************/
-/*TODO*///INLINE void anl_i(void)
-/*TODO*///{
-/*TODO*///	A = A & ROP_ARG(PC);
-/*TODO*///	PC++;
-/*TODO*///}
-/*TODO*///
+    /***********************************
+     *	0101 1rrr
+     *	ANL 	A,Rr
+     ***********************************/
+    public static void anl_r(int r)
+    {
+    	i8x41.a = i8x41.a & R(r);
+    }
+
+    /***********************************
+     *	0101 000r
+     *	ANL 	A,@Rr
+     ***********************************/
+    public static void anl_rm(int r)
+    {
+            i8x41.a = i8x41.a & RM( M_IRAM + (R(r) & 0x3f) );
+    }
+
+    /***********************************
+     *	0101 0011 7654 3210
+     *	ANL 	A,#n
+     ***********************************/
+    public static void anl_i()
+    {
+    	i8x41.a = i8x41.a & ROP_ARG(i8x41.pc);
+    	i8x41.pc++;
+    }
+    
 /*TODO*////***********************************
 /*TODO*/// *	1001 10pp 7654 3210
 /*TODO*/// *	ANL 	Pp,#n
@@ -399,16 +399,16 @@ public class i8x41  extends cpu_interface {
 /*TODO*///{
 /*TODO*///	PSW &= ~FC;
 /*TODO*///}
-/*TODO*///
-/*TODO*////***********************************
-/*TODO*/// *	1000 0101
-/*TODO*/// *	CLR 	F0
-/*TODO*/// ***********************************/
-/*TODO*///INLINE void clr_f0(void)
-/*TODO*///{
-/*TODO*///	PSW &= ~F0;
-/*TODO*///}
-/*TODO*///
+    
+    /***********************************
+     *	1000 0101
+     *	CLR 	F0
+     ***********************************/
+    public static void clr_f0()
+    {
+    	i8x41.psw &= ~F0;
+    }
+    
 /*TODO*////***********************************
 /*TODO*/// *	1010 0101
 /*TODO*/// *	CLR 	F1
@@ -417,16 +417,16 @@ public class i8x41  extends cpu_interface {
 /*TODO*///{
 /*TODO*///	PSW &= ~F1;
 /*TODO*///}
-/*TODO*///
-/*TODO*////***********************************
-/*TODO*/// *	0011 0111
-/*TODO*/// *	CPL 	A
-/*TODO*/// ***********************************/
-/*TODO*///INLINE void cpl_a(void)
-/*TODO*///{
-/*TODO*///	A = ~A;
-/*TODO*///}
-/*TODO*///
+
+    /***********************************
+     *	0011 0111
+     *	CPL 	A
+     ***********************************/
+    public static void cpl_a()
+    {
+            i8x41.a = ~i8x41.a;
+    }   
+
 /*TODO*////***********************************
 /*TODO*/// *	1010 0111
 /*TODO*/// *	CPL 	C
@@ -453,22 +453,22 @@ public class i8x41  extends cpu_interface {
 /*TODO*///{
 /*TODO*///	PSW ^= F1;
 /*TODO*///}
-/*TODO*///
-/*TODO*////***********************************
-/*TODO*/// *	0101 0111
-/*TODO*/// *	DA		A
-/*TODO*/// ***********************************/
-/*TODO*///INLINE void da_a(void)
-/*TODO*///{
-/*TODO*///	UINT8 res = A + ((PSW & FA) || ((A & 0x0f) > 0x09)) ? 0x06 : 0x00;
-/*TODO*///	if( (PSW & FC) || ((res & 0xf0) > 0x90) )
-/*TODO*///		res += 0x60;
-/*TODO*///	if( res < A )
-/*TODO*///		PSW |= FC;
-/*TODO*///	else
-/*TODO*///		PSW &= ~FC;
-/*TODO*///	A = res;
-/*TODO*///}
+    
+    /***********************************
+     *	0101 0111
+     *	DA		A
+     ***********************************/
+    public static void da_a()
+    {
+    	int res = i8x41.a + (((i8x41.psw & FA)!=0 || ((i8x41.a & 0x0f) > 0x09)) ? 0x06 : 0x00);
+    	if( (i8x41.psw & FC)!=0 || ((res & 0xf0) > 0x90) )
+    		res += 0x60;
+    	if( res < i8x41.a )
+    		i8x41.psw |= FC;
+    	else
+    		i8x41.psw &= ~FC;
+    	i8x41.a = res;
+    }
 
     /***********************************
      *	0000 0111
@@ -497,15 +497,15 @@ public class i8x41  extends cpu_interface {
             i8x41.enable &= ~IBFI;	/* disable input buffer full interrupt */
     }
 
-/*TODO*////***********************************
-/*TODO*/// *	0011 0101
-/*TODO*/// *	DIS 	TCNTI
-/*TODO*/// ***********************************/
-/*TODO*///INLINE void dis_tcnti(void)
-/*TODO*///{
-/*TODO*///	ENABLE &= ~TCNTI;	/* disable timer/counter interrupt */
-/*TODO*///}
-/*TODO*///
+    /***********************************
+     *	0011 0101
+     *	DIS 	TCNTI
+     ***********************************/
+    public static void dis_tcnti()
+    {
+            i8x41.enable &= ~TCNTI;	/* disable timer/counter interrupt */
+    }
+
 /*TODO*////***********************************
 /*TODO*/// *	0111 1rrr 7654 3210
 /*TODO*/// *	DJNZ	Rr,addr
@@ -645,18 +645,18 @@ public class i8x41  extends cpu_interface {
 /*TODO*///	if( PSW & F0 )
 /*TODO*///		PC = (PC & 0x700) | adr;
 /*TODO*///}
-/*TODO*///
-/*TODO*////***********************************
-/*TODO*/// *	0111 0110
-/*TODO*/// *	JF1 	addr
-/*TODO*/// ***********************************/
-/*TODO*///INLINE void jf1_i(void)
-/*TODO*///{
-/*TODO*///	UINT8 adr = ROP_ARG(PC);
-/*TODO*///	PC += 1;
-/*TODO*///	if( PSW & F1 )
-/*TODO*///		PC = (PC & 0x700) | adr;
-/*TODO*///}
+    
+    /***********************************
+     *	0111 0110
+     *	JF1 	addr
+     ***********************************/
+    public static void jf1_i()
+    {
+    	int adr = ROP_ARG(i8x41.pc);
+    	i8x41.pc += 1;
+    	if(( i8x41.psw & F1 ) != 0)
+    		i8x41.pc = (i8x41.pc & 0x700) | adr;
+    }
 
     /***********************************
      *	aaa0 0100
@@ -719,18 +719,18 @@ public class i8x41  extends cpu_interface {
                     i8x41.pc = (i8x41.pc & 0x700) | adr;
     }
 
-/*TODO*////***********************************
-/*TODO*/// *	0100 0110
-/*TODO*/// *	JNT1	addr
-/*TODO*/// ***********************************/
-/*TODO*///INLINE void jnt1_i(void)
-/*TODO*///{
-/*TODO*///	UINT8 adr = ROP_ARG(PC);
-/*TODO*///	PC += 1;
-/*TODO*///	if( !(STATE & TEST1) )
-/*TODO*///		PC = (PC & 0x700) | adr;
-/*TODO*///}
-/*TODO*///
+    /***********************************
+     *	0100 0110
+     *	JNT1	addr
+     ***********************************/
+    public static void jnt1_i()
+    {
+            int adr = ROP_ARG(i8x41.pc);
+            i8x41.pc += 1;
+            if( (i8x41.state & TEST1) == 0 )
+                    i8x41.pc = (i8x41.pc & 0x700) | adr;
+    }
+
 /*TODO*////***********************************
 /*TODO*/// *	1001 0110
 /*TODO*/// *	JNZ 	addr
@@ -742,18 +742,18 @@ public class i8x41  extends cpu_interface {
 /*TODO*///	if( A )
 /*TODO*///		PC = (PC & 0x700) | adr;
 /*TODO*///}
-/*TODO*///
-/*TODO*////***********************************
-/*TODO*/// *	1000 0110
-/*TODO*/// *	JOBF	addr
-/*TODO*/// ***********************************/
-/*TODO*///INLINE void jobf_i(void)
-/*TODO*///{
-/*TODO*///	UINT8 adr = ROP_ARG(PC);
-/*TODO*///	PC += 1;
-/*TODO*///	if( STATE & OBF )
-/*TODO*///		PC = (PC & 0x700) | adr;
-/*TODO*///}
+    
+    /***********************************
+     *	1000 0110
+     *	JOBF	addr
+     ***********************************/
+    public static void jobf_i()
+    {
+    	int adr = ROP_ARG(i8x41.pc);
+    	i8x41.pc += 1;
+    	if(( i8x41.state & OBF ) != 0)
+    		i8x41.pc = (i8x41.pc & 0x700) | adr;
+    }
 
     /***********************************
      *	0001 0110
@@ -768,30 +768,30 @@ public class i8x41  extends cpu_interface {
             i8x41.tovf = 0;
     }
 
-/*TODO*////***********************************
-/*TODO*/// *	0011 0110
-/*TODO*/// *	JT0 	addr
-/*TODO*/// ***********************************/
-/*TODO*///INLINE void jt0_i(void)
-/*TODO*///{
-/*TODO*///	UINT8 adr = ROP_ARG(PC);
-/*TODO*///	PC += 1;
-/*TODO*///	if( STATE & TEST0 )
-/*TODO*///		PC = (PC & 0x700) | adr;
-/*TODO*///}
-/*TODO*///
-/*TODO*////***********************************
-/*TODO*/// *	0101 0110
-/*TODO*/// *	JT1 	addr
-/*TODO*/// ***********************************/
-/*TODO*///INLINE void jt1_i(void)
-/*TODO*///{
-/*TODO*///	UINT8 adr = ROP_ARG(PC);
-/*TODO*///	PC += 1;
-/*TODO*///	if( STATE & TEST1 )
-/*TODO*///		PC = (PC & 0x700) | adr;
-/*TODO*///}
-/*TODO*///
+    /***********************************
+     *	0011 0110
+     *	JT0 	addr
+     ***********************************/
+    public static void jt0_i()
+    {
+            int adr = ROP_ARG(i8x41.pc);
+            i8x41.pc += 1;
+            if(( i8x41.enable & TEST0 ) != 0)
+                    i8x41.pc = (i8x41.pc & 0x700) | adr;
+    }
+
+    /***********************************
+     *	0101 0110
+     *	JT1 	addr
+     ***********************************/
+    public static void jt1_i()
+    {
+    	int adr = ROP_ARG(i8x41.pc);
+    	i8x41.pc += 1;
+    	if(( i8x41.state & TEST1 ) != 0)
+    		i8x41.pc = (i8x41.pc & 0x700) | adr;
+    }
+    
 /*TODO*////***********************************
 /*TODO*/// *	1100 0110
 /*TODO*/// *	JZ		addr
@@ -840,16 +840,16 @@ public class i8x41  extends cpu_interface {
 /*TODO*///{
 /*TODO*///	A = RM( M_IRAM + (R(r) & 0x3f) );
 /*TODO*///}
-/*TODO*///
-/*TODO*////***********************************
-/*TODO*/// *	0100 0010
-/*TODO*/// *	MOV 	A,T
-/*TODO*/// ***********************************/
-/*TODO*///INLINE void mov_a_t(void)
-/*TODO*///{
-/*TODO*///	A = (UINT8) (TIMER / 32);
-/*TODO*///}
-/*TODO*///
+
+    /***********************************
+     *	0100 0010
+     *	MOV 	A,T
+     ***********************************/
+    public static void mov_a_t()
+    {
+            i8x41.a = (i8x41.timer / 32);
+    }
+
 /*TODO*////***********************************
 /*TODO*/// *	1101 0111
 /*TODO*/// *	MOV 	PSW,A
@@ -907,15 +907,15 @@ public class i8x41  extends cpu_interface {
 /*TODO*///{
 /*TODO*///	STATE = (STATE & 0x0f) | (A & 0xf0);
 /*TODO*///}
-/*TODO*///
-/*TODO*////***********************************
-/*TODO*/// *	0110 0010
-/*TODO*/// *	MOV 	T,A
-/*TODO*/// ***********************************/
-/*TODO*///INLINE void mov_t_a(void)
-/*TODO*///{
-/*TODO*///	TIMER = A * 32;
-/*TODO*///}
+    
+    /***********************************
+     *	0110 0010
+     *	MOV 	T,A
+     ***********************************/
+    public static void mov_t_a()
+    {
+    	i8x41.timer = i8x41.a * 32;
+    }
 
     /***********************************
      *	0000 11pp
@@ -927,15 +927,15 @@ public class i8x41  extends cpu_interface {
             i8x41.a = val & 0x0f;
     }
 
-/*TODO*////***********************************
-/*TODO*/// *	0011 11pp
-/*TODO*/// *	MOVD	Pp,A
-/*TODO*/// ***********************************/
-/*TODO*///INLINE void movd_p_a(int p)
-/*TODO*///{
-/*TODO*///	cpu_writeport16(p, A & 0x0f);
-/*TODO*///}
-/*TODO*///
+    /***********************************
+     *	0011 11pp
+     *	MOVD	Pp,A
+     ***********************************/
+    public static void movd_p_a(int p)
+    {
+            cpu_writeport16(p, i8x41.a & 0x0f);
+    }
+
 /*TODO*////***********************************
 /*TODO*/// *	1010 0011
 /*TODO*/// *	MOVP	A,@A
@@ -964,35 +964,35 @@ public class i8x41  extends cpu_interface {
     {
     }
 
-/*TODO*////***********************************
-/*TODO*/// *	0100 1rrr
-/*TODO*/// *	ORL 	A,Rr
-/*TODO*/// ***********************************/
-/*TODO*///INLINE void orl_r(int r)
-/*TODO*///{
-/*TODO*///	A = A | R(r);
-/*TODO*///}
-/*TODO*///
-/*TODO*////***********************************
-/*TODO*/// *	0100 000r
-/*TODO*/// *	ORL 	A,@Rr
-/*TODO*/// ***********************************/
-/*TODO*///INLINE void orl_rm(int r)
-/*TODO*///{
-/*TODO*///	A = A | RM( M_IRAM + (R(r) & 0x3f) );
-/*TODO*///}
-/*TODO*///
-/*TODO*////***********************************
-/*TODO*/// *	0100 0011 7654 3210
-/*TODO*/// *	ORL 	A,#n
-/*TODO*/// ***********************************/
-/*TODO*///INLINE void orl_i(void)
-/*TODO*///{
-/*TODO*///	UINT8 val = ROP_ARG(PC);
-/*TODO*///	PC++;
-/*TODO*///	A = A | val;
-/*TODO*///}
-/*TODO*///
+    /***********************************
+     *	0100 1rrr
+     *	ORL 	A,Rr
+     ***********************************/
+    public static void orl_r(int r)
+    {
+            i8x41.a = i8x41.a | R(r);
+    }
+
+    /***********************************
+     *	0100 000r
+     *	ORL 	A,@Rr
+     ***********************************/
+    public static void orl_rm(int r)
+    {
+            i8x41.a = i8x41.a | RM( M_IRAM + (R(r) & 0x3f) );
+    }
+
+    /***********************************
+     *	0100 0011 7654 3210
+     *	ORL 	A,#n
+     ***********************************/
+    public static void orl_i()
+    {
+            int val = ROP_ARG(i8x41.pc);
+            i8x41.pc++;
+            i8x41.a = i8x41.a | val;
+    }
+
 /*TODO*////***********************************
 /*TODO*/// *	1000 10pp 7654 3210
 /*TODO*/// *	ORL 	Pp,#n
@@ -1026,28 +1026,28 @@ public class i8x41  extends cpu_interface {
             i8x41.state |= OBF;		/* assert the output buffer full flag */
     }
 
-/*TODO*////***********************************
-/*TODO*/// *	0011 10pp
-/*TODO*/// *	OUT 	Pp,A
-/*TODO*/// ***********************************/
-/*TODO*///INLINE void out_p_a(int p)
-/*TODO*///{
-/*TODO*///	cpu_writeport16(p, A);
-/*TODO*///}
-/*TODO*///
-/*TODO*////***********************************
-/*TODO*/// *	1000 0011
-/*TODO*/// *	RET
-/*TODO*/// ***********************************/
-/*TODO*///INLINE void ret(void)
-/*TODO*///{
-/*TODO*///	UINT8 msb;
-/*TODO*///	PSW = (PSW & ~SP) | ((PSW - 1) & SP);
-/*TODO*///	msb = RM(M_STACK + (PSW&SP) * 2 + 1);
-/*TODO*///	PC = RM(M_STACK + (PSW&SP) * 2 + 0);
-/*TODO*///	PC |= (msb << 8) & 0x700;
-/*TODO*///}
-/*TODO*///
+    /***********************************
+     *	0011 10pp
+     *	OUT 	Pp,A
+     ***********************************/
+    public static void out_p_a(int p)
+    {
+            cpu_writeport16(p, i8x41.a);
+    }
+
+    /***********************************
+     *	1000 0011
+     *	RET
+     ***********************************/
+    public static void ret()
+    {
+    	int msb;
+    	i8x41.psw = (i8x41.psw & ~SP) | ((i8x41.psw - 1) & SP);
+    	msb = RM(M_STACK + (i8x41.psw&SP) * 2 + 1);
+    	i8x41.pc = RM(M_STACK + (i8x41.psw&SP) * 2 + 0);
+    	i8x41.pc |= (msb << 8) & 0x700;
+    }
+    
 /*TODO*////***********************************
 /*TODO*/// *	1001 0011
 /*TODO*/// *	RETR
@@ -1081,27 +1081,27 @@ public class i8x41  extends cpu_interface {
 /*TODO*///	PSW = (PSW & ~FC) | (A >> 7);
 /*TODO*///	A = (A << 1) | c;
 /*TODO*///}
-/*TODO*///
-/*TODO*////***********************************
-/*TODO*/// *	0111 0111
-/*TODO*/// *	RR		A
-/*TODO*/// ***********************************/
-/*TODO*///INLINE void rr_a(void)
-/*TODO*///{
-/*TODO*///	A = (A >> 1) | (A << 7);
-/*TODO*///}
-/*TODO*///
-/*TODO*////***********************************
-/*TODO*/// *	0110 0111
-/*TODO*/// *	RRC 	A
-/*TODO*/// ***********************************/
-/*TODO*///INLINE void rrc_a(void)
-/*TODO*///{
-/*TODO*///	UINT8 c = PSW & 0x80;
-/*TODO*///	PSW = (PSW & ~FC) | (A << 7);
-/*TODO*///	A = (A >> 1) | c;
-/*TODO*///}
-/*TODO*///
+    
+    /***********************************
+     *	0111 0111
+     *	RR		A
+     ***********************************/
+    public static void rr_a()
+    {
+    	i8x41.a = (i8x41.a >> 1) | (i8x41.a << 7);
+    }
+    
+    /***********************************
+     *	0110 0111
+     *	RRC 	A
+     ***********************************/
+    public static void rrc_a()
+    {
+    	int c = i8x41.psw & 0x80;
+    	i8x41.psw = (i8x41.psw & ~FC) | (i8x41.a << 7);
+    	i8x41.a = (i8x41.a >> 1) | c;
+    }
+    
 /*TODO*////***********************************
 /*TODO*/// *	1100 0101
 /*TODO*/// *	SEL 	RB0
@@ -1119,53 +1119,54 @@ public class i8x41  extends cpu_interface {
 /*TODO*///{
 /*TODO*///	PSW |= F1;
 /*TODO*///}
-/*TODO*///
-/*TODO*////***********************************
-/*TODO*/// *	0110 0101
-/*TODO*/// *	STOP	TCNT
-/*TODO*/// ***********************************/
-/*TODO*///INLINE void stop_tcnt(void)
-/*TODO*///{
-/*TODO*///	ENABLE &= ~(T|CNT);
-/*TODO*///}
-/*TODO*///
-/*TODO*////***********************************
-/*TODO*/// *	0100 0101
-/*TODO*/// *	STRT	CNT
-/*TODO*/// ***********************************/
-/*TODO*///INLINE void strt_cnt(void)
-/*TODO*///{
-/*TODO*///	ENABLE |= CNT;
-/*TODO*///}
-/*TODO*///
-/*TODO*////***********************************
-/*TODO*/// *	0101 0101
-/*TODO*/// *	STRT	T
-/*TODO*/// ***********************************/
-/*TODO*///INLINE void strt_t(void)
-/*TODO*///{
-/*TODO*///	ENABLE |= T;
-/*TODO*///}
-/*TODO*///
-/*TODO*////***********************************
-/*TODO*/// *	0100 0111
-/*TODO*/// *	SWAP	A
-/*TODO*/// ***********************************/
-/*TODO*///INLINE void swap_a(void)
-/*TODO*///{
-/*TODO*///	A = (A << 4) | (A >> 4);
-/*TODO*///}
-/*TODO*///
-/*TODO*////***********************************
-/*TODO*/// *	0010 1rrr
-/*TODO*/// *	XCH 	A,Rr
-/*TODO*/// ***********************************/
-/*TODO*///INLINE void xch_a_r(int r)
-/*TODO*///{
-/*TODO*///	UINT8 tmp = R(r);
-/*TODO*///	R(r) = A;
-/*TODO*///	A = tmp;
-/*TODO*///}
+    
+    /***********************************
+     *	0110 0101
+     *	STOP	TCNT
+     ***********************************/
+    public static void stop_tcnt()
+    {
+    	i8x41.enable &= ~(T|CNT);
+    }
+
+    /***********************************
+     *	0100 0101
+     *	STRT	CNT
+     ***********************************/
+    public static void strt_cnt()
+    {
+            i8x41.enable |= CNT;
+    }
+
+    /***********************************
+     *	0101 0101
+     *	STRT	T
+     ***********************************/
+    public static void strt_t()
+    {
+    	i8x41.enable |= T;
+    }
+
+    /***********************************
+     *	0100 0111
+     *	SWAP	A
+     ***********************************/
+    public static void swap_a()
+    {
+            i8x41.a = (i8x41.a << 4) | (i8x41.a >> 4);
+    }
+
+    /***********************************
+     *	0010 1rrr
+     *	XCH 	A,Rr
+     ***********************************/
+    public static void xch_a_r(int r)
+    {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+/*TODO*///            UINT8 tmp = R(r);
+/*TODO*///            R(r) = A;
+/*TODO*///            A = tmp;
+    }
 
     /***********************************
      *	0010 000r
@@ -1179,18 +1180,18 @@ public class i8x41  extends cpu_interface {
             i8x41.a = tmp;
     }
 
-/*TODO*////***********************************
-/*TODO*/// *	0011 000r
-/*TODO*/// *	XCHD	A,@Rr
-/*TODO*/// ***********************************/
-/*TODO*///INLINE void xchd_a_rm(int r)
-/*TODO*///{
-/*TODO*///	UINT8 addr = M_IRAM + (R(r) & 0x3f);
-/*TODO*///	UINT8 tmp = RM(addr);
-/*TODO*///	WM( addr, (tmp & 0xf0) | (A & 0x0f) );
-/*TODO*///	A = (A & 0xf0) | (tmp & 0x0f);
-/*TODO*///}
-/*TODO*///
+    /***********************************
+     *	0011 000r
+     *	XCHD	A,@Rr
+     ***********************************/
+    public static void xchd_a_rm(int r)
+    {
+            int addr = M_IRAM + (R(r) & 0x3f);
+            int tmp = RM(addr);
+            WM( addr, (tmp & 0xf0) | (i8x41.a & 0x0f) );
+            i8x41.a = (i8x41.a & 0xf0) | (tmp & 0x0f);
+    }
+
 /*TODO*////***********************************
 /*TODO*/// *	1101 1rrr
 /*TODO*/// *	XRL 	A,Rr
