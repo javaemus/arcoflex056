@@ -574,7 +574,7 @@ public class phoenix
 		null,
 																		
 		/* video hardware */											
-		36*8, 32*8, new rectangle( 4*8, 36*8-1, 1*8, 32*8-1 ),
+		32*8, 32*8, new rectangle( 0*8, 32*8-1, 0*8, 32*8-1 ),
 		phoenix_gfxdecodeinfo,											
 		256,16*4+16*4,												
 		phoenix_vh_convert_color_prom,									
