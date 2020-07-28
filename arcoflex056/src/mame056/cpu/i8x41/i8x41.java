@@ -64,12 +64,12 @@ public class i8x41  extends cpu_interface {
 
     @Override
     public Object get_context() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return i8x41_get_context();
     }
 
     @Override
     public void set_context(Object reg) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        i8x41_set_context(reg);
     }
 
     @Override
@@ -89,22 +89,22 @@ public class i8x41  extends cpu_interface {
 
     @Override
     public int get_reg(int regnum) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return i8x41_get_reg(regnum);
     }
 
     @Override
     public void set_reg(int regnum, int val) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        i8x41_set_reg(regnum, val);
     }
 
     @Override
     public void set_irq_line(int irqline, int linestate) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        i8x41_set_irq_line(irqline, linestate);
     }
 
     @Override
     public void set_irq_callback(irqcallbacksPtr callback) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        i8x41_set_irq_callback(callback);
     }
 
     @Override
@@ -134,12 +134,12 @@ public class i8x41  extends cpu_interface {
 
     @Override
     public void set_op_base(int pc) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        cpu_setOPbase16.handler(pc);
     }
 
     @Override
     public int mem_address_bits_of_cpu() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return 16;
     }
     
     public static class I8X41_Regs {
@@ -1878,112 +1878,111 @@ public class i8x41  extends cpu_interface {
             return cycles - i8x41_ICount[0];
     }
 
-/*TODO*////* Get registers, return context size */
-/*TODO*///unsigned i8x41_get_context(void *dst)
-/*TODO*///{
-/*TODO*///	if( dst )
-/*TODO*///		memcpy(dst, &i8x41, sizeof(I8X41));
-/*TODO*///	return sizeof(I8X41);
-/*TODO*///}
-/*TODO*///
-/*TODO*////* Set registers */
-/*TODO*///void i8x41_set_context(void *src)
-/*TODO*///{
-/*TODO*///	if( src )
-/*TODO*///		memcpy(&i8x41, src, sizeof(I8X41));
-/*TODO*///}
-/*TODO*///
-/*TODO*///unsigned i8x41_get_reg(int regnum)
-/*TODO*///{
-/*TODO*///	switch( regnum )
-/*TODO*///	{
-/*TODO*///	case REG_PC:
-/*TODO*///	case I8X41_PC:	return PC;
-/*TODO*///	case REG_SP:
-/*TODO*///	case I8X41_SP:	return PSW & SP;
-/*TODO*///	case I8X41_PSW: return PSW;
-/*TODO*///	case I8X41_A:	return A;
-/*TODO*///	case I8X41_T:	return TIMER;
-/*TODO*///	case I8X41_R0:	return R(0);
-/*TODO*///	case I8X41_R1:	return R(1);
-/*TODO*///	case I8X41_R2:	return R(2);
-/*TODO*///	case I8X41_R3:	return R(3);
-/*TODO*///	case I8X41_R4:	return R(4);
-/*TODO*///	case I8X41_R5:	return R(5);
-/*TODO*///	case I8X41_R6:	return R(6);
-/*TODO*///	case I8X41_R7:	return R(7);
-/*TODO*///	case I8X41_DATA:
-/*TODO*///			STATE &= ~OBF;	/* reset the output buffer full flag */
-/*TODO*///			return DBBO;
-/*TODO*///	case I8X41_STAT:
-/*TODO*///			return STATE;
-/*TODO*///	case REG_PREVIOUSPC: return PPC;
-/*TODO*///	default:
-/*TODO*///		if( regnum <= REG_SP_CONTENTS )
-/*TODO*///		{
-/*TODO*///			unsigned offset = (PSW & SP) + (REG_SP_CONTENTS - regnum);
-/*TODO*///			if( offset < 8 )
-/*TODO*///				return RM( M_STACK + offset ) | ( RM( M_STACK + offset + 1 ) << 8 );
-/*TODO*///		}
-/*TODO*///	}
-/*TODO*///	return 0;
-/*TODO*///}
-/*TODO*///
-/*TODO*///void i8x41_set_reg (int regnum, unsigned val)
-/*TODO*///{
-/*TODO*///	switch( regnum )
-/*TODO*///	{
-/*TODO*///	case REG_PC:
-/*TODO*///	case I8X41_PC:	PC = val & 0x7ff;
-/*TODO*///	case REG_SP:
-/*TODO*///	case I8X41_SP:	PSW = (PSW & ~SP) | (val & SP);
-/*TODO*///	case I8X41_PSW: PSW = val;
-/*TODO*///	case I8X41_A:	A = val;
-/*TODO*///	case I8X41_T:	TIMER = val & 0x1fff;
-/*TODO*///	case I8X41_R0:	R(0) = val; break;
-/*TODO*///	case I8X41_R1:	R(1) = val; break;
-/*TODO*///	case I8X41_R2:	R(2) = val; break;
-/*TODO*///	case I8X41_R3:	R(3) = val; break;
-/*TODO*///	case I8X41_R4:	R(4) = val; break;
-/*TODO*///	case I8X41_R5:	R(5) = val; break;
-/*TODO*///	case I8X41_R6:	R(6) = val; break;
-/*TODO*///	case I8X41_R7:	R(7) = val; break;
-/*TODO*///	case I8X41_DATA:
-/*TODO*///			PSW &= ~F1;
-/*TODO*///			DBBI = val;
-/*TODO*///			if (i8x41.subtype == 8041) /* plain 8041 had no split input/output DBB buffers */
-/*TODO*///				DBBO = val;
-/*TODO*///			if (ENABLE & IBFI)
-/*TODO*///				i8x41_set_irq_line(I8X41_INT_IBF, HOLD_LINE);
-/*TODO*///			else
-/*TODO*///				STATE |= IBF;
-/*TODO*///			break;
-/*TODO*///	case I8X41_CMND:
-/*TODO*///			PSW |= F1;
-/*TODO*///			DBBI = val;
-/*TODO*///			if (i8x41.subtype == 8041) /* plain 8041 had no split input/output DBB buffers */
-/*TODO*///				DBBO = val;
-/*TODO*///			if (ENABLE & IBFI)
-/*TODO*///				i8x41_set_irq_line(I8X41_INT_IBF, HOLD_LINE);
-/*TODO*///			else
-/*TODO*///				STATE |= IBF;
-/*TODO*///			break;
-/*TODO*///	case I8X41_STAT:
-/*TODO*///			/* writing status.. hmm, should we issue interrupts here too? */
-/*TODO*///			STATE = val;
-/*TODO*///			break;
-/*TODO*///	default:
-/*TODO*///		if( regnum <= REG_SP_CONTENTS )
-/*TODO*///		{
-/*TODO*///			unsigned offset = (PSW & SP) + (REG_SP_CONTENTS - regnum);
-/*TODO*///			if( offset < 8 )
-/*TODO*///			{
-/*TODO*///				WM( M_STACK + offset, val & 0xff );
-/*TODO*///				WM( M_STACK + offset + 1, (val >> 8) & 0xff );
-/*TODO*///			}
-/*TODO*///		}
-/*TODO*///	}
-/*TODO*///}
+    /* Get registers, return context size */
+    public static Object i8x41_get_context()
+    {
+            return i8x41;
+    }
+
+    /* Set registers */
+    public static void i8x41_set_context(Object src)
+    {
+            if( src != null )
+                i8x41 = (I8X41_Regs) src;
+                    //memcpy(&i8x41, src, sizeof(I8X41));
+    }
+
+    public static int i8x41_get_reg(int regnum)
+    {
+            switch( regnum )
+            {
+            case REG_PC:
+            case I8X41_PC:	return i8x41.pc;
+            case REG_SP:
+            case I8X41_SP:	return i8x41.psw & SP;
+            case I8X41_PSW:     return i8x41.psw;
+            case I8X41_A:	return i8x41.a;
+            case I8X41_T:	return i8x41.timer;
+            case I8X41_R0:	return R(0);
+            case I8X41_R1:	return R(1);
+            case I8X41_R2:	return R(2);
+            case I8X41_R3:	return R(3);
+            case I8X41_R4:	return R(4);
+            case I8X41_R5:	return R(5);
+            case I8X41_R6:	return R(6);
+            case I8X41_R7:	return R(7);
+            case I8X41_DATA:
+                            i8x41.state &= ~OBF;	/* reset the output buffer full flag */
+                            return i8x41.dbbo;
+            case I8X41_STAT:
+                            return i8x41.state;
+            case REG_PREVIOUSPC: return i8x41.ppc;
+            default:
+                    if( regnum <= REG_SP_CONTENTS )
+                    {
+                            int offset = (i8x41.psw & SP) + (REG_SP_CONTENTS - regnum);
+                            if( offset < 8 )
+                                    return RM( M_STACK + offset ) | ( RM( M_STACK + offset + 1 ) << 8 );
+                    }
+            }
+            return 0;
+    }
+
+    public static void i8x41_set_reg (int regnum, int val)
+    {
+            switch( regnum )
+            {
+            case REG_PC:
+            case I8X41_PC:	i8x41.pc = val & 0x7ff;
+            case REG_SP:
+            case I8X41_SP:	i8x41.psw = (i8x41.psw & ~SP) | (val & SP);
+            case I8X41_PSW:     i8x41.psw = val;
+            case I8X41_A:	i8x41.a = val;
+            case I8X41_T:	i8x41.timer = val & 0x1fff;
+            case I8X41_R0:	set_R(0, val); break;
+            case I8X41_R1:	set_R(1, val); break;
+            case I8X41_R2:	set_R(2, val); break;
+            case I8X41_R3:	set_R(3, val); break;
+            case I8X41_R4:	set_R(4, val); break;
+            case I8X41_R5:	set_R(5, val); break;
+            case I8X41_R6:	set_R(6, val); break;
+            case I8X41_R7:	set_R(7, val); break;
+            case I8X41_DATA:
+                            i8x41.psw &= ~F1;
+                            i8x41.dbbi = val;
+                            if (i8x41.subtype == 8041) /* plain 8041 had no split input/output DBB buffers */
+                                    i8x41.dbbo = val;
+                            if ((i8x41.enable & IBFI) != 0)
+                                    i8x41_set_irq_line(I8X41_INT_IBF, HOLD_LINE);
+                            else
+                                    i8x41.state |= IBF;
+                            break;
+            case I8X41_CMND:
+                            i8x41.psw |= F1;
+                            i8x41.dbbi = val;
+                            if (i8x41.subtype == 8041) /* plain 8041 had no split input/output DBB buffers */
+                                    i8x41.dbbo = val;
+                            if ((i8x41.enable & IBFI) != 0)
+                                    i8x41_set_irq_line(I8X41_INT_IBF, HOLD_LINE);
+                            else
+                                    i8x41.state |= IBF;
+                            break;
+            case I8X41_STAT:
+                            /* writing status.. hmm, should we issue interrupts here too? */
+                            i8x41.state = val;
+                            break;
+            default:
+                    if( regnum <= REG_SP_CONTENTS )
+                    {
+                            int offset = (i8x41.psw & SP) + (REG_SP_CONTENTS - regnum);
+                            if( offset < 8 )
+                            {
+                                    WM( M_STACK + offset, val & 0xff );
+                                    WM( M_STACK + offset + 1, (val >> 8) & 0xff );
+                            }
+                    }
+            }
+    }
 
     public static void i8x41_set_irq_line(int irqline, int state)
     {
@@ -2046,11 +2045,11 @@ public class i8x41  extends cpu_interface {
             }
     }
 
-/*TODO*///void i8x41_set_irq_callback(int (*callback)(int irqline))
-/*TODO*///{
-/*TODO*///	i8x41.irq_callback = callback;
-/*TODO*///}
-/*TODO*///
+    public static void i8x41_set_irq_callback(irqcallbacksPtr callback)
+    {
+            i8x41.irq_callback = callback;
+    }
+
 /*TODO*///void i8x41_state_save(void *file)
 /*TODO*///{
 /*TODO*///}

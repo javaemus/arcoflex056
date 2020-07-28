@@ -305,6 +305,7 @@ import static WIP.mame056.drivers.vendetta.*;
 import static WIP.mame056.drivers.chqflag.*;
 import static WIP.mame056.drivers.actfancr.*;
 import static WIP.mame056.drivers.battlera.*;
+import static WIP.mame056.drivers.decocass.*;
         
 public class driver {
 
@@ -2643,43 +2644,43 @@ public class driver {
         /*TODO*///	driver_puyopuy2,	/* (c) 1994 Compile + Sega license */
         /*TODO*///	driver_potopoto,	/* (c) 1994 Sega */
         /*TODO*///	driver_zunkyou,	/* (c) 1994 Sega */
-        /*TODO*///
-        /*TODO*///	/* cassette system, parent is decocass */
-        /*TODO*///	driver_ctsttape,	/* ? */
-        /*TODO*///	driver_cterrani,	/* 04 (c) 1981 */
-        /*TODO*///	driver_castfant,	/* 07 (c) 1981 */
-        /*TODO*///	driver_csuperas,	/* 09 (c) 1981 */
-        /*TODO*///	driver_clocknch,	/* 11 (c) 1981 */
-        /*TODO*///	driver_cprogolf,	/* 13 (c) 1981 */
-        /*TODO*///	driver_cluckypo,	/* 15 (c) 1981 */
-        /*TODO*///	driver_ctisland,	/* 16 (c) 1981 */
-        /*TODO*///	driver_ctislnd2,	/* 16 (c) 1981 */
-        /*TODO*///	driver_ctislnd3,	/* 16? (c) 1981 */
-        /*TODO*///	driver_cdiscon1,	/* 19 (c) 1982 */
-        /*TODO*///	driver_csweetht,	/* ?? (c) 1982, clone of disco no 1 */
-        /*TODO*///	driver_ctornado,	/* 20 (c) 1982 */
-        /*TODO*///	driver_cmissnx,	/* 21 (c) 1982 */
-        /*TODO*///	driver_cptennis,	/* 22 (c) 1982 */
-        /*TODO*///	driver_cexplore,	/* ?? (c) 1982 */
-        /*TODO*///	driver_cbtime,	/* 26 (c) 1982 */
-        /*TODO*///	driver_cburnrub,	/* ?? (c) 1982 */
-        /*TODO*///	driver_cburnrb2,	/* ?? (c) 1982 */
-        /*TODO*///	driver_cbnj,		/* 27 (c) 1982 */
-        /*TODO*///	driver_cgraplop,	/* 28 (c) 1983 */
-        /*TODO*///	driver_cgraplp2,	/* 28? (c) 1983 */
-        /*TODO*///	driver_clapapa,	/* 29 (c) 1983 */
-        /*TODO*///	driver_clapapa2,	/* 29 (c) 1983 */ /* this one doesn't display lapapa anyehere */
-        /*TODO*///	driver_cnightst,	/* 32 (c) 1983 */
-        /*TODO*///	driver_cnights2,	/* 32 (c) 1983 */
-        /*TODO*///	driver_cprosocc,	/* 33 (c) 1983 */
-        /*TODO*///	driver_cprobowl,	/* ?? (c) 1983 */
-        /*TODO*///	driver_cscrtry,	/* 38 (c) 1984 */
-        /*TODO*///	driver_cscrtry2,	/* 38 (c) 1984 */
-        /*TODO*///	driver_cppicf,	/* 39 (c) 1984 */
-        /*TODO*///	driver_cppicf2,	/* 39 (c) 1984 */
-        /*TODO*///	driver_cfghtice,	/* 40 (c) 1984 */
-        /*TODO*///	driver_cbdash,	/* 44 (c) 1985 */
-        /*TODO*///	/* the following don't work at all */
+        
+        /* cassette system, parent is decocass */
+        driver_ctsttape,	/* ? */
+        driver_cterrani,	/* 04 (c) 1981 */
+        driver_castfant,	/* 07 (c) 1981 */
+        driver_csuperas,	/* 09 (c) 1981 */
+        driver_clocknch,	/* 11 (c) 1981 */
+        driver_cprogolf,	/* 13 (c) 1981 */
+        driver_cluckypo,	/* 15 (c) 1981 */
+        driver_ctisland,	/* 16 (c) 1981 */
+        driver_ctislnd2,	/* 16 (c) 1981 */
+        driver_ctislnd3,	/* 16? (c) 1981 */
+        driver_cdiscon1,	/* 19 (c) 1982 */
+        driver_csweetht,	/* ?? (c) 1982, clone of disco no 1 */
+        driver_ctornado,	/* 20 (c) 1982 */
+        driver_cmissnx,	/* 21 (c) 1982 */
+        driver_cptennis,	/* 22 (c) 1982 */
+        driver_cexplore,	/* ?? (c) 1982 */
+        driver_cbtime,	/* 26 (c) 1982 */
+        driver_cburnrub,	/* ?? (c) 1982 */
+        driver_cburnrb2,	/* ?? (c) 1982 */
+        driver_cbnj,		/* 27 (c) 1982 */
+        driver_cgraplop,	/* 28 (c) 1983 */
+        driver_cgraplp2,	/* 28? (c) 1983 */
+        driver_clapapa,	/* 29 (c) 1983 */
+        driver_clapapa2,	/* 29 (c) 1983 */ /* this one doesn't display lapapa anyehere */
+        driver_cnightst,	/* 32 (c) 1983 */
+        driver_cnights2,	/* 32 (c) 1983 */
+        driver_cprosocc,	/* 33 (c) 1983 */
+        driver_cprobowl,	/* ?? (c) 1983 */
+        driver_cscrtry,	/* 38 (c) 1984 */
+        driver_cscrtry2,	/* 38 (c) 1984 */
+        driver_cppicf,	/* 39 (c) 1984 */
+        driver_cppicf2,	/* 39 (c) 1984 */
+        driver_cfghtice,	/* 40 (c) 1984 */
+        driver_cbdash,	/* 44 (c) 1985 */
+        /* the following don't work at all */
         /*TODO*///TESTDRIVER ( chwy,		/* ?? (c) 198? */
         /*TODO*///TESTDRIVER ( cflyball, /* ?? (c) 198? */
         /*TODO*///TESTDRIVER ( czeroize, /* ?? (c) 198? */
