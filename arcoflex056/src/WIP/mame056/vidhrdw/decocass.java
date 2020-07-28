@@ -640,11 +640,11 @@ public class decocass {
 		tilemap_set_transparent_pen( bg_tilemap_r, 0 );
 		tilemap_set_transparent_pen( fg_tilemap, 0 );
 	
-		clip = Machine.visible_area;
+		clip = new rectangle(Machine.visible_area);
 		clip.max_y = Machine.drv.screen_height / 2;
 		tilemap_set_clip(bg_tilemap_l, clip);
 	
-		clip = Machine.visible_area;
+		clip = new rectangle(Machine.visible_area);
 		clip.min_y = Machine.drv.screen_height / 2;
 		tilemap_set_clip(bg_tilemap_r, clip);
 	

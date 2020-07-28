@@ -1275,7 +1275,7 @@ public class i8x41  extends cpu_interface {
             /* default to 8041 behaviour for DBBI/DBBO and extended commands */
             i8x41.subtype = 8041;
             /* ugly hack.. excuse my lazyness */
-            i8x41.ram = memory_region(REGION_CPU1 + cpu_getactivecpu());
+            i8x41.ram = new UBytePtr(memory_region(REGION_CPU1 + cpu_getactivecpu()));
             i8x41.enable = IBFI | TCNTI;
             i8x41.dbbi = 0xff;
             i8x41.dbbo = 0xff;
