@@ -307,6 +307,7 @@ import static WIP.mame056.drivers.actfancr.*;
 import static WIP.mame056.drivers.battlera.*;
 import static WIP.mame056.drivers.decocass.*;
 import static WIP.mame056.drivers.shootout.*;
+import static WIP.mame056.drivers.sidepckt.*;
 
 public class driver {
 
@@ -2704,9 +2705,9 @@ public class driver {
         driver_shootout,	/* (c) 1985 Data East USA (US) */
         driver_shootouj,	/* (c) 1985 Data East USA (Japan) */
         driver_shootoub,	/* bootleg */
-        /*TODO*///	driver_sidepckt,	/* (c) 1986 Data East Corporation */
-        /*TODO*///	driver_sidepctj,	/* (c) 1986 Data East Corporation */
-        /*TODO*///	driver_sidepctb,	/* bootleg */
+        driver_sidepckt,	/* (c) 1986 Data East Corporation */
+        driver_sidepctj,	/* (c) 1986 Data East Corporation */
+        driver_sidepctb,	/* bootleg */
         driver_exprraid, /* (c) 1986 Data East USA (US) */
         driver_wexpress, /* (c) 1986 Data East Corporation (World?) */
         driver_wexpresb, /* bootleg */
