@@ -230,7 +230,7 @@ public class i8x41  extends cpu_interface {
 /*TODO*///#define DBBI	i8x41.dbbi
 /*TODO*///#define DBBO	i8x41.dbbo
     public static int R(int n){ return i8x41.ram.read(((i8x41.psw & F1)!=0 ? M_BANK1:M_BANK0)+(n)); }    
-    public static void set_R(int n, int newval){ i8x41.ram.write(((i8x41.psw & F1)!=0 ? M_BANK1:M_BANK0)+(n), newval); }    
+    public static void set_R(int n, int newval){ i8x41.ram.write(((i8x41.psw & F1)!=0 ? M_BANK1:M_BANK0)+(n), (newval&0xff)); }    
 /*TODO*///#define STATE	i8x41.state
 /*TODO*///#define ENABLE	i8x41.enable
 /*TODO*///#define TIMER	i8x41.timer
@@ -590,8 +590,11 @@ public class i8x41  extends cpu_interface {
      ***********************************/
     public static void in_a_dbb()
     {
-            if (i8x41.irq_callback != null)
+        //System.out.println("in_a_dbb");
+            if (i8x41.irq_callback != null){
+                
                     (i8x41.irq_callback).handler(I8X41_INT_IBF);	/* clear input buffer full flag */
+            }
             i8x41.state &= ~IBF;
             i8x41.a = i8x41.dbbi;				/* DBB input buffer */
     }
@@ -1295,6 +1298,7 @@ public class i8x41  extends cpu_interface {
             do
             {
                     int op = cpu_readop(i8x41.pc);
+                    //System.out.println(op);
 
                     i8x41.ppc = i8x41.pc;
 
@@ -1986,6 +1990,7 @@ public class i8x41  extends cpu_interface {
 
     public static void i8x41_set_irq_line(int irqline, int state)
     {
+        System.out.println("i8x41_set_irq_line");
             switch( irqline )
             {
             case I8X41_INT_IBF:
@@ -2047,6 +2052,7 @@ public class i8x41  extends cpu_interface {
 
     public static void i8x41_set_irq_callback(irqcallbacksPtr callback)
     {
+        System.out.println("i8x41_set_irq_callback");
             i8x41.irq_callback = callback;
     }
 

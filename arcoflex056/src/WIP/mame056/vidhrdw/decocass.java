@@ -334,19 +334,19 @@ public class decocass {
 	/* The watchdog is a 4bit counter counting down every frame */
 	public static WriteHandlerPtr decocass_watchdog_count_w = new WriteHandlerPtr() {public void handler(int offset, int data)
 	{
-		//LOG(1,("decocass_watchdog_count_w: $%02x\n", data));
+		logerror("decocass_watchdog_count_w: $%02x\n", data);
 		watchdog_count = data & 0x0f;
 	} };
 	
 	public static WriteHandlerPtr decocass_watchdog_flip_w = new WriteHandlerPtr() {public void handler(int offset, int data)
 	{
-		//LOG(1,("decocass_watchdog_flip_w: $%02x\n", data));
+		logerror("decocass_watchdog_flip_w: $%02x\n", data);
 		watchdog_flip = data;
 	} };
 	
 	public static WriteHandlerPtr decocass_color_missiles_w = new WriteHandlerPtr() {public void handler(int offset, int data)
 	{
-		//LOG(1,("decocass_color_missiles_w: $%02x\n", data));
+		logerror("decocass_color_missiles_w: $%02x\n", data);
 		/* only bits D0-D2 and D4-D6 are connected to
 		 * the color RAM demux:
 		 * D0-D2 to the IC0 inputs
@@ -380,6 +380,7 @@ public class decocass {
 		//	(data & 0x80) ? " part_h_enable" : ""));
 	
 		set_vh_global_attribute( mode_set, data );
+                mode_set[0] = data;
 	} };
 	
 	public static WriteHandlerPtr decocass_color_center_bot_w = new WriteHandlerPtr() {public void handler(int offset, int data)
@@ -398,6 +399,8 @@ public class decocass {
 		 * D0	CLD3
 		 */
 		set_vh_global_attribute( color_center_bot, data);
+                color_center_bot[0] = data;
+                
 	} };
 	
 	public static WriteHandlerPtr decocass_back_h_shift_w = new WriteHandlerPtr() {public void handler(int offset, int data)
@@ -694,20 +697,20 @@ public class decocass {
 			watchdog_reset_w.handler(0,0);
 	
 	/*TODO*///#if TAPE_UI_DISPLAY
-		if (tape_timer != null)
-		{
-			double tape_time = tape_time0 + tape_dir * timer_timeelapsed(tape_timer);
-			if (tape_time < 0.0)
-				tape_time = 0.0;
-			else if (tape_time > 999.9)
-				tape_time = 999.9;
-			usrintf_showmessage("%c%c [%05.1fs] %c%c",
-				(tape_dir < 0 && tape_speed!=0) ? '<' : ' ',
-				(tape_dir < 0) ? '<' : ' ',
-				tape_time,
-				(tape_dir > 0) ? '>' : ' ',
-				(tape_dir > 0 && tape_speed!=0) ? '>' : ' ');
-		}
+	/*TODO*///	if (tape_timer != null)
+	/*TODO*///	{
+	/*TODO*///		double tape_time = tape_time0 + tape_dir * timer_timeelapsed(tape_timer);
+	/*TODO*///		if (tape_time < 0.0)
+	/*TODO*///			tape_time = 0.0;
+	/*TODO*///		else if (tape_time > 999.9)
+	/*TODO*///			tape_time = 999.9;
+	/*TODO*///		usrintf_showmessage("%c%c [%05.1fs] %c%c",
+	/*TODO*///			(tape_dir < 0 && tape_speed!=0) ? '<' : ' ',
+	/*TODO*///			(tape_dir < 0) ? '<' : ' ',
+	/*TODO*///			tape_time,
+	/*TODO*///			(tape_dir > 0) ? '>' : ' ',
+	/*TODO*///			(tape_dir > 0 && tape_speed!=0) ? '>' : ' ');
+	/*TODO*///	}
 	/*TODO*///#endif
 	/*TODO*///#ifdef MAME_DEBUG
 	/*TODO*///	{

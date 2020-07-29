@@ -306,7 +306,8 @@ import static WIP.mame056.drivers.chqflag.*;
 import static WIP.mame056.drivers.actfancr.*;
 import static WIP.mame056.drivers.battlera.*;
 import static WIP.mame056.drivers.decocass.*;
-        
+import static WIP.mame056.drivers.shootout.*;
+
 public class driver {
 
     public static GameDriver driversArcadeFlex[] = {
@@ -2700,9 +2701,9 @@ public class driver {
         driver_brkthru, /* (c) 1986 Data East USA (US) */
         driver_brkthruj, /* (c) 1986 Data East Corporation (Japan) */
         driver_darwin, /* (c) 1986 Data East Corporation (Japan) */
-        /*TODO*///	driver_shootout,	/* (c) 1985 Data East USA (US) */
-        /*TODO*///	driver_shootouj,	/* (c) 1985 Data East USA (Japan) */
-        /*TODO*///	driver_shootoub,	/* bootleg */
+        driver_shootout,	/* (c) 1985 Data East USA (US) */
+        driver_shootouj,	/* (c) 1985 Data East USA (Japan) */
+        driver_shootoub,	/* bootleg */
         /*TODO*///	driver_sidepckt,	/* (c) 1986 Data East Corporation */
         /*TODO*///	driver_sidepctj,	/* (c) 1986 Data East Corporation */
         /*TODO*///	driver_sidepctb,	/* bootleg */
