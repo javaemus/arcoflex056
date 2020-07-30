@@ -685,6 +685,9 @@ public class z80fmly {
 			return (pio.in[ch]&pio.dir[ch])|(pio.out[ch]&~pio.dir[ch]);
 		}
 		logerror("PIO-%c data read,bad mode\n",'A'+ch );
+                
+                pios[which] = pio;
+                
 		return 0;
 	}
 	
@@ -759,6 +762,8 @@ public class z80fmly {
 			pio = z80pio_check_irq( pio , ch );
 			break;
 		}
+                
+                pios[which] = pio;
 	}
 	
 /*TODO*///	/* z80pio port read */
