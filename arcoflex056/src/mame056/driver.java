@@ -309,6 +309,7 @@ import static WIP.mame056.drivers.decocass.*;
 import static WIP.mame056.drivers.shootout.*;
 import static WIP.mame056.drivers.sidepckt.*;
 import static WIP.mame056.drivers.senjyo.*;
+import static WIP.mame056.drivers.cop01.*;
 
 public class driver {
 
@@ -620,9 +621,9 @@ public class driver {
         /*TODO*///TESTdriver_tubep,		/* (c) 1984 + Fujitek */
         /*TODO*///TESTdriver_rjammer,	/* (c) 1984 + Alice */
         /*TODO*///	driver_magmax,	/* (c) 1985 */
-        /*TODO*///	driver_cop01,		/* (c) 1985 */
-        /*TODO*///	driver_cop01a,	/* (c) 1985 */
-        /*TODO*///	driver_mightguy,	/* (c) 1986 */
+        driver_cop01,		/* (c) 1985 */
+        driver_cop01a,	/* (c) 1985 */
+        driver_mightguy,	/* (c) 1986 */
         /*TODO*///	driver_terracre,	/* (c) 1985 */
         /*TODO*///	driver_terracrb,	/* (c) 1985 */
         /*TODO*///	driver_terracra,	/* (c) 1985 */

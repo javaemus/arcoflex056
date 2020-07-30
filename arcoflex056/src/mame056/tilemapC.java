@@ -590,14 +590,14 @@ public class tilemapC {
 	if( Machine.game_colortable != null )
 	{
 		if (( tilemap.type & TILEMAP_BITMASK ) != 0) {
-                    System.out.println("HandleTransparencyBitmask_ind 1");
+                    System.out.println("NOT IMPLEMENTED HandleTransparencyBitmask_ind 1");
 			/*TODO*///tilemap.draw_tile = HandleTransparencyBitmask_ind;
                 } else if (( tilemap.type & TILEMAP_SPLIT_PENBIT ) != 0) {
-                    System.out.println("HandleTransparencyPenBit_ind 2");
+                    System.out.println("NOT IMPLEMENTED HandleTransparencyPenBit_ind 2");
 			/*TODO*///tilemap.draw_tile = HandleTransparencyPenBit_ind;
                 } else if (( tilemap.type & TILEMAP_SPLIT ) != 0) {
                     System.out.println("HandleTransparencyPens_ind 3");
-			/*TODO*///tilemap.draw_tile = HandleTransparencyPens_ind;
+			tilemap.draw_tile = HandleTransparencyPens_ind;
                 } else if ( tilemap.type==TILEMAP_TRANSPARENT ) {  
                     System.out.println("HandleTransparencyPen_ind 4");
 			tilemap.draw_tile = HandleTransparencyPen_ind;
@@ -2963,6 +2963,108 @@ public static void tilemap_draw_roz(mame_bitmap dest,struct_tilemap tilemap,
         }
         return 0;
     }
+    
+    public static DrawTileHandlerPtr HandleTransparencyPens_ind = new DrawTileHandlerPtr() {
+        public int handler(struct_tilemap tilemap, int x0, int y0, int flags) {
+            
+            	int tile_width = tilemap.cached_tile_width;
+		int tile_height = tilemap.cached_tile_height;
+		mame_bitmap pixmap = tilemap.pixmap;
+		mame_bitmap transparency_bitmap = tilemap.transparency_bitmap;
+		int pitch = tile_width + tile_info.skip;
+		PAL_INIT_ind();
+                IntArray pPenToPixel = new IntArray(tilemap.pPenToPixel[flags&(TILE_SWAPXY|TILE_FLIPY|TILE_FLIPX)]);
+                pPenToPixel.offset=0;
+                
+                UBytePtr pPenData = new UBytePtr(tile_info.pen_data);
+                UBytePtr pSource;
+                int code_transparent = tile_info.priority;
+                int code_opaque = tile_info.priority;
+                int tx;
+                int ty;
+                int data;
+                int yx;
+                int x;
+                int y;
+                int pen;
+                int transparent_pen = tilemap.transparent_pen;
+                int bWhollyOpaque;
+                int bWhollyTransparent;
+
+                bWhollyOpaque = 1;
+                bWhollyTransparent = 1;
+		int fgmask = tilemap.fgmask[(flags>>TILE_SPLIT_OFFSET)&3];
+		int bgmask = tilemap.bgmask[(flags>>TILE_SPLIT_OFFSET)&3];
+		int code;
+		int and_flags = ~0;
+		int or_flags = 0;
+	
+		if(( flags&TILE_4BPP ) != 0)
+		{
+                    System.out.println("NOT DEFINED!!!!");
+/*TODO*///
+/*TODO*///			for( ty=tile_height; ty!=0; ty-- )
+/*TODO*///			{
+/*TODO*///				pSource = pPenData;
+/*TODO*///				for( tx=tile_width/2; tx!=0; tx-- )
+/*TODO*///				{
+/*TODO*///					data = *pSource++;
+/*TODO*///	
+/*TODO*///					pen = data&0xf;
+/*TODO*///					yx = *pPenToPixel++;
+/*TODO*///					x = x0+(yx%MAX_TILESIZE);
+/*TODO*///					y = y0+(yx/MAX_TILESIZE);
+/*TODO*///					*(x+(UINT16 *)pixmap->line[y]) = PAL_GET(pen);
+/*TODO*///					code = code_transparent;
+/*TODO*///					if( !((1<<pen)&fgmask) ) code |= TILE_FLAG_FG_OPAQUE;
+/*TODO*///					if( !((1<<pen)&bgmask) ) code |= TILE_FLAG_BG_OPAQUE;
+/*TODO*///					and_flags &= code;
+/*TODO*///					or_flags |= code;
+/*TODO*///					((UINT8 *)transparency_bitmap->line[y])[x] = code;
+/*TODO*///	
+/*TODO*///					pen = data>>4;
+/*TODO*///					yx = *pPenToPixel++;
+/*TODO*///					x = x0+(yx%MAX_TILESIZE);
+/*TODO*///					y = y0+(yx/MAX_TILESIZE);
+/*TODO*///					*(x+(UINT16 *)pixmap->line[y]) = PAL_GET(pen);
+/*TODO*///					code = code_transparent;
+/*TODO*///					if( !((1<<pen)&fgmask) ) code |= TILE_FLAG_FG_OPAQUE;
+/*TODO*///					if( !((1<<pen)&bgmask) ) code |= TILE_FLAG_BG_OPAQUE;
+/*TODO*///					and_flags &= code;
+/*TODO*///					or_flags |= code;
+/*TODO*///					((UINT8 *)transparency_bitmap->line[y])[x] = code;
+/*TODO*///				}
+/*TODO*///				pPenData += pitch/2;
+/*TODO*///			}
+		}
+		else
+		{
+			for( ty=tile_height; ty!=0; ty-- )
+			{
+				pSource = new UBytePtr(pPenData);
+                                
+				for( tx=tile_width; tx!=0; tx-- )
+				{
+					pen = pSource.readinc();
+					yx = pPenToPixel.read();
+                                        pPenToPixel.offset++;
+					x = x0+(yx%MAX_TILESIZE);
+					y = y0+(yx/MAX_TILESIZE);
+                                        (new UShortPtr(pixmap.line[y])).write(x, (char) PAL_GET_ind(pen));
+					code = code_transparent;
+					if( ((1<<pen)&fgmask) == 0 ) code |= TILE_FLAG_FG_OPAQUE;
+					if( ((1<<pen)&bgmask) == 0 ) code |= TILE_FLAG_BG_OPAQUE;
+					and_flags &= code;
+					or_flags |= code;
+					(new UBytePtr(transparency_bitmap.line[y])).write(x, code);
+				}
+				pPenData.inc( pitch );
+			}
+		}
+		return and_flags ^ or_flags;
+	
+        }
+    };
     
     public static DrawTileHandlerPtr HandleTransparencyPen_ind = new DrawTileHandlerPtr() {
         public int handler(struct_tilemap tilemap, int x0, int y0, int flags) {
