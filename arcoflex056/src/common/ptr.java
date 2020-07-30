@@ -206,6 +206,10 @@ public class ptr {
         public byte read(int index) {
             return (memory[offset + index]);
         }
+        
+        public void write(int index, int _b) {
+            memory[offset + index] = (byte) (_b&0xff);
+        }
     }
 
     /**

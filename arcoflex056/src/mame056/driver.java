@@ -308,6 +308,7 @@ import static WIP.mame056.drivers.battlera.*;
 import static WIP.mame056.drivers.decocass.*;
 import static WIP.mame056.drivers.shootout.*;
 import static WIP.mame056.drivers.sidepckt.*;
+import static WIP.mame056.drivers.senjyo.*;
 
 public class driver {
 
@@ -2829,13 +2830,13 @@ public class driver {
         /*TODO*///	/* Chain Reaction      MCC (c) 1994 */
         /*TODO*///	/* Dunk Dream 95/Hoops MCE (c) 1995 */
         /*TODO*///	driver_sotsugyo,	/* (c) 1995 Mitchell (Atlus license) */
-        /*TODO*///
-        /*TODO*///	/* Tehkan / Tecmo games (Tehkan became Tecmo in 1986) */
-        /*TODO*///	driver_senjyo,	/* (c) 1983 Tehkan */
-        /*TODO*///	driver_starforc,	/* (c) 1984 Tehkan */
-        /*TODO*///	driver_starfore,	/* (c) 1984 Tehkan */
-        /*TODO*///	driver_megaforc,	/* (c) 1985 Tehkan + Video Ware license */
-        /*TODO*///	driver_baluba,	/* (c) 1986 Able Corp. */
+        
+        	/* Tehkan / Tecmo games (Tehkan became Tecmo in 1986) */
+        	driver_senjyo,	/* (c) 1983 Tehkan */
+        	driver_starforc,	/* (c) 1984 Tehkan */
+        	driver_starfore,	/* (c) 1984 Tehkan */
+        	driver_megaforc,	/* (c) 1985 Tehkan + Video Ware license */
+        	driver_baluba,	/* (c) 1986 Able Corp. */
         driver_pbaction, /* (c) 1985 Tehkan */
         driver_pbactio2, /* (c) 1985 Tehkan */
         /*TODO*///	/* 6009 Tank Busters */

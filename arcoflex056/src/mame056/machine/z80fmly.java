@@ -116,29 +116,30 @@ public class z80fmly {
 	}
 	
 	
-/*TODO*///	double z80ctc_getperiod (int which, int ch)
-/*TODO*///	{
-/*TODO*///		z80ctc *ctc = ctcs + which;
-/*TODO*///		double clock;
-/*TODO*///		int mode;
-/*TODO*///	
-/*TODO*///		/* keep channel within range, and get the current mode */
-/*TODO*///		ch &= 3;
-/*TODO*///		mode = ctc->mode[ch];
-/*TODO*///	
-/*TODO*///		/* if reset active */
-/*TODO*///		if( (mode & RESET) == RESET_ACTIVE) return 0;
-/*TODO*///		/* if counter mode */
-/*TODO*///		if( (mode & MODE) == MODE_COUNTER)
-/*TODO*///		{
-/*TODO*///			logerror("CTC %d is CounterMode : Can't calcrate period\n", ch );
-/*TODO*///			return 0;
-/*TODO*///		}
-/*TODO*///	
-/*TODO*///		/* compute the period */
-/*TODO*///		clock = ((mode & PRESCALER) == PRESCALER_16) ? ctc->invclock16 : ctc->invclock256;
-/*TODO*///		return clock * (double)ctc->tconst[ch];
-/*TODO*///	}
+	public static double z80ctc_getperiod (int which, int ch)
+	{
+		z80ctc ctc = ctcs[which];
+		double clock;
+		int mode;
+	
+		/* keep channel within range, and get the current mode */
+		ch &= 3;
+		mode = ctc.mode[ch];
+	
+		/* if reset active */
+		if( (mode & RESET) == RESET_ACTIVE) return 0;
+		/* if counter mode */
+		if( (mode & MODE) == MODE_COUNTER)
+		{
+			logerror("CTC %d is CounterMode : Can't calcrate period\n", ch );
+			return 0;
+		}
+	
+		/* compute the period */
+		clock = ((mode & PRESCALER) == PRESCALER_16) ? ctc.invclock16 : ctc.invclock256;
+                ctcs[which] = ctc;
+		return clock * (double)ctc.tconst[ch];
+	}
 	
 	/* interrupt request callback with daisy-chain circuit */
 	public static void z80ctc_interrupt_check( z80ctc ctc )
@@ -150,7 +151,7 @@ public class z80fmly {
 		{
 			/* if IEO disable , same and lower IRQ is masking */
 	/* ASG: changed this line because this state could have an interrupt pending as well! */
-	/*		if( ctc->int_state[ch] & Z80_INT_IEO ) state  = Z80_INT_IEO;*/
+	/*		if( ctc.int_state[ch] & Z80_INT_IEO ) state  = Z80_INT_IEO;*/
 			if(( ctc.int_state[ch] & Z80_INT_IEO )!=0 ) state  = ctc.int_state[ch];
 			else                                   state |= ctc.int_state[ch];
 		}
@@ -196,7 +197,7 @@ public class z80fmly {
 		/* if we're waiting for a time constant, this is it */
 		if ((mode & CONSTANT) == CONSTANT_LOAD)
 		{
-			/* set the time constant (0 -> 0x100) */
+			/* set the time constant (0 . 0x100) */
 			ctc.tconst[ch] = data!=0 ? data : 0x100;
 	
 			/* clear the internal mode -- we're no longer waiting */
@@ -446,298 +447,320 @@ public class z80fmly {
 /*TODO*///	/* ch.b not use */
 /*TODO*///	
 /*TODO*///	
-/*TODO*///	#define PIO_MODE0 0x00		/* output mode */
-/*TODO*///	#define PIO_MODE1 0x01		/* input  mode */
-/*TODO*///	#define PIO_MODE2 0x02		/* i/o    mode */
-/*TODO*///	#define PIO_MODE3 0x03		/* bit    mode */
+        public static final int PIO_MODE0 = 0x00;		/* output mode */
+        public static final int PIO_MODE1 = 0x01;		/* input  mode */
+        public static final int PIO_MODE2 = 0x02;		/* i/o    mode */
+        public static final int PIO_MODE3 = 0x03;		/* bit    mode */
 /*TODO*///	/* pio controll port operation (bit 0-3) */
-/*TODO*///	#define PIO_OP_MODE 0x0f	/* mode select        */
-/*TODO*///	#define PIO_OP_INTC 0x07	/* interrupt controll */
-/*TODO*///	#define PIO_OP_INTE 0x03	/* interrupt enable   */
+        public static final int PIO_OP_MODE = 0x0f;	/* mode select        */
+        public static final int PIO_OP_INTC = 0x07;	/* interrupt controll */
+        public static final int PIO_OP_INTE = 0x03;	/* interrupt enable   */
 /*TODO*///	#define PIO_OP_INTE 0x03	/* interrupt enable   */
 /*TODO*///	/* pio interrupt controll nit */
-/*TODO*///	#define PIO_INT_ENABLE 0x80  /* ENABLE : 0=disable , 1=enable */
-/*TODO*///	#define PIO_INT_AND    0x40  /* LOGIC  : 0=OR      , 1=AND    */
-/*TODO*///	#define PIO_INT_HIGH   0x20  /* LEVEL  : 0=low     , 1=high   */
-/*TODO*///	#define PIO_INT_MASK   0x10  /* MASK   : 0=off     , 1=on     */
-/*TODO*///	
-/*TODO*///	typedef struct
-/*TODO*///	{
-/*TODO*///		int vector[2];                        /* interrupt vector               */
-/*TODO*///		void (*intr)(int which);              /* interrupt callbacks            */
-/*TODO*///		void (*rdyr[2])(int data);            /* RDY active callback            */
-/*TODO*///		int mode[2];                          /* mode 00=in,01=out,02=i/o,03=bit*/
-/*TODO*///		int enable[2];                        /* interrupt enable               */
-/*TODO*///		int mask[2];                          /* mask folowers                  */
-/*TODO*///		int dir[2];                           /* direction (bit mode)           */
-/*TODO*///		int rdy[2];                           /* ready pin level                */
-/*TODO*///		int in[2];                            /* input port data                */
-/*TODO*///		int out[2];                           /* output port                    */
-/*TODO*///		int strobe[2];							/* strobe inputs */
-/*TODO*///		int int_state[2];                     /* interrupt status (daisy chain) */
-/*TODO*///	} z80pio;
-/*TODO*///	
-/*TODO*///	static z80pio pios[MAX_PIO];
-/*TODO*///	
-/*TODO*///	static void	z80pio_set_rdy(z80pio *pio, int ch, int state)
-/*TODO*///	{
-/*TODO*///		/* set state */
-/*TODO*///		pio->rdy[ch] = state;
-/*TODO*///	
-/*TODO*///		/* call callback with state */
-/*TODO*///		if (pio->rdyr[ch]!=0)
-/*TODO*///			pio->rdyr[ch](pio->rdy[ch]);
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	/* initialize pio emurator */
-/*TODO*///	void z80pio_init (z80pio_interface *intf)
-/*TODO*///	{
-/*TODO*///		int i;
-/*TODO*///	
-/*TODO*///		memset (pios, 0, sizeof (pios));
-/*TODO*///	
-/*TODO*///		for (i = 0; i < intf->num; i++)
-/*TODO*///		{
-/*TODO*///			pios[i].intr = intf->intr[i];
-/*TODO*///			pios[i].rdyr[0] = intf->rdyA[i];
-/*TODO*///			pios[i].rdyr[1] = intf->rdyB[i];
-/*TODO*///			z80pio_reset (i);
-/*TODO*///		}
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	static void z80pio_interrupt_check( z80pio *pio )
-/*TODO*///	{
-/*TODO*///		int state;
-/*TODO*///	
-/*TODO*///		if( pio->int_state[1] & Z80_INT_IEO ) state  = Z80_INT_IEO;
-/*TODO*///		else                                  state  = pio->int_state[1];
-/*TODO*///		if( pio->int_state[0] & Z80_INT_IEO ) state  = Z80_INT_IEO;
-/*TODO*///		else                                  state |= pio->int_state[0];
-/*TODO*///		/* change daisy chain status */
-/*TODO*///		if (pio->intr) (*pio->intr)(state);
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	static void z80pio_check_irq( z80pio *pio , int ch )
-/*TODO*///	{
-/*TODO*///		int irq = 0;
-/*TODO*///		int data;
-/*TODO*///		int old_state;
-/*TODO*///	
-/*TODO*///		if( pio->enable[ch] & PIO_INT_ENABLE )
-/*TODO*///		{
-/*TODO*///			if( pio->mode[ch] == PIO_MODE3 )
-/*TODO*///			{
-/*TODO*///				data  =  pio->in[ch] & pio->dir[ch]; /* input data only */
-/*TODO*///				data &= ~pio->mask[ch];              /* mask follow     */
-/*TODO*///				if( !(pio->enable[ch]&PIO_INT_HIGH) )/* active level    */
-/*TODO*///					data ^= pio->mask[ch];             /* active low  */
-/*TODO*///				if( pio->enable[ch]&PIO_INT_AND )    /* logic      */
-/*TODO*///				     { if( data == pio->mask[ch] ) irq = 1; }
-/*TODO*///				else { if( data == 0             ) irq = 1; }
-/*TODO*///				/* if portB , portA mode 2 check */
-/*TODO*///				if( ch && (pio->mode[0]==PIO_MODE2) )
-/*TODO*///				{
-/*TODO*///					if( pio->rdy[ch] == 0 ) irq = 1;
-/*TODO*///				}
-/*TODO*///			}
-/*TODO*///			else if( pio->rdy[ch] == 0 ) irq = 1;
-/*TODO*///		}
-/*TODO*///		old_state = pio->int_state[ch];
-/*TODO*///		if( irq ) pio->int_state[ch] |=  Z80_INT_REQ;
-/*TODO*///		else      pio->int_state[ch] &= ~Z80_INT_REQ;
-/*TODO*///	
-/*TODO*///		if( old_state != pio->int_state[ch] )
-/*TODO*///			z80pio_interrupt_check( pio );
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	void z80pio_reset (int which)
-/*TODO*///	{
-/*TODO*///		z80pio *pio = pios + which;
-/*TODO*///		int i;
-/*TODO*///	
-/*TODO*///		for( i = 0 ; i <= 1 ; i++){
-/*TODO*///			pio->mask[i]   = 0xff;	/* mask all on */
-/*TODO*///			pio->enable[i] = 0x00;	/* disable     */
-/*TODO*///			pio->mode[i]   = 0x01;	/* mode input  */
-/*TODO*///			pio->dir[i]    = 0x01;	/* dir  input  */
-/*TODO*///			z80pio_set_rdy(pio,i,0);	/* RDY = low   */
-/*TODO*///			pio->out[i]    = 0x00;	/* outdata = 0 */
-/*TODO*///			pio->int_state[i] = 0;
-/*TODO*///			pio->strobe[i] = 0;
-/*TODO*///		}
-/*TODO*///		z80pio_interrupt_check( pio );
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	/* pio data register write */
-/*TODO*///	void z80pio_d_w( int which , int ch , int data )
-/*TODO*///	{
-/*TODO*///		z80pio *pio = pios + which;
-/*TODO*///		if( ch ) ch = 1;
-/*TODO*///	
-/*TODO*///		pio->out[ch] = data;	/* latch out data */
-/*TODO*///		switch( pio->mode[ch] ){
-/*TODO*///		case PIO_MODE0:			/* mode 0 output */
-/*TODO*///		case PIO_MODE2:			/* mode 2 i/o */
-/*TODO*///			z80pio_set_rdy(pio, ch,1); /* ready = H */
-/*TODO*///			z80pio_check_irq( pio , ch );
-/*TODO*///			return;
-/*TODO*///		case PIO_MODE1:			/* mode 1 intput */
-/*TODO*///		case PIO_MODE3:			/* mode 0 bit */
-/*TODO*///			return;
-/*TODO*///		default:
-/*TODO*///			logerror("PIO-%c data write,bad mode\n",'A'+ch );
-/*TODO*///		}
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	/* pio controll register write */
-/*TODO*///	void z80pio_c_w( int which , int ch , int data )
-/*TODO*///	{
-/*TODO*///		z80pio *pio = pios + which;
-/*TODO*///		if( ch ) ch = 1;
-/*TODO*///	
-/*TODO*///		/* load direction phase ? */
-/*TODO*///		if( pio->mode[ch] == 0x13 ){
-/*TODO*///			pio->dir[ch] = data;
-/*TODO*///			pio->mode[ch] = 0x03;
-/*TODO*///			return;
-/*TODO*///		}
-/*TODO*///		/* load mask folows phase ? */
-/*TODO*///		if( pio->enable[ch] & PIO_INT_MASK ){	/* load mask folows */
-/*TODO*///			pio->mask[ch] = data;
-/*TODO*///			pio->enable[ch] &= ~PIO_INT_MASK;
-/*TODO*///			logerror("PIO-%c interrupt mask %02x\n",'A'+ch,data );
-/*TODO*///			return;
-/*TODO*///		}
-/*TODO*///		switch( data & 0x0f ){
-/*TODO*///		case PIO_OP_MODE:	/* mode select 0=out,1=in,2=i/o,3=bit */
-/*TODO*///			pio->mode[ch] = (data >> 6 );
-/*TODO*///			if( pio->mode[ch] == 0x03 ) pio->mode[ch] = 0x13;
-/*TODO*///			logerror("PIO-%c Mode %x\n",'A'+ch,pio->mode[ch] );
-/*TODO*///			break;
-/*TODO*///		case PIO_OP_INTC:		/* interrupt control */
-/*TODO*///			pio->enable[ch] = data & 0xf0;
-/*TODO*///			pio->mask[ch]   = 0x00;
-/*TODO*///			/* when interrupt enable , set vector request flag */
-/*TODO*///			logerror("PIO-%c Controll %02x\n",'A'+ch,data );
-/*TODO*///			break;
-/*TODO*///		case PIO_OP_INTE:		/* interrupt enable controll */
-/*TODO*///			pio->enable[ch] &= ~PIO_INT_ENABLE;
-/*TODO*///			pio->enable[ch] |= (data & PIO_INT_ENABLE);
-/*TODO*///			logerror("PIO-%c enable %02x\n",'A'+ch,data&0x80 );
-/*TODO*///			break;
-/*TODO*///		default:
-/*TODO*///				if( !(data&1) )
-/*TODO*///				{
-/*TODO*///					pio->vector[ch] = data;
-/*TODO*///					logerror("PIO-%c vector %02x\n",'A'+ch,data);
-/*TODO*///				}
-/*TODO*///				else logerror("PIO-%c illegal command %02x\n",'A'+ch,data );
-/*TODO*///		}
-/*TODO*///		/* interrupt check */
-/*TODO*///		z80pio_check_irq( pio , ch );
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	/* pio controll register read */
-/*TODO*///	int z80pio_c_r( int which , int ch )
-/*TODO*///	{
-/*TODO*///		if( ch ) ch = 1;
-/*TODO*///	
-/*TODO*///		logerror("PIO-%c controll read\n",'A'+ch );
-/*TODO*///		return 0;
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	/* pio data register read */
-/*TODO*///	int z80pio_d_r( int which , int ch )
-/*TODO*///	{
-/*TODO*///		z80pio *pio = pios + which;
-/*TODO*///		if( ch ) ch = 1;
-/*TODO*///	
-/*TODO*///		switch( pio->mode[ch] ){
-/*TODO*///		case PIO_MODE0:			/* mode 0 output */
-/*TODO*///			return pio->out[ch];
-/*TODO*///		case PIO_MODE1:			/* mode 1 intput */
-/*TODO*///			z80pio_set_rdy(pio, ch, 1);	/* ready = H */
-/*TODO*///			z80pio_check_irq( pio , ch );
-/*TODO*///			return pio->in[ch];
-/*TODO*///		case PIO_MODE2:			/* mode 2 i/o */
-/*TODO*///			if( ch ) logerror("PIO-B mode 2 \n");
-/*TODO*///			z80pio_set_rdy(pio, 1, 1); /* brdy = H */
-/*TODO*///			z80pio_check_irq( pio , ch );
-/*TODO*///			return pio->in[ch];
-/*TODO*///		case PIO_MODE3:			/* mode 3 bit */
-/*TODO*///			return (pio->in[ch]&pio->dir[ch])|(pio->out[ch]&~pio->dir[ch]);
-/*TODO*///		}
-/*TODO*///		logerror("PIO-%c data read,bad mode\n",'A'+ch );
-/*TODO*///		return 0;
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	int z80pio_interrupt( int which )
-/*TODO*///	{
-/*TODO*///		z80pio *pio = pios + which;
-/*TODO*///		int ch = 0;
-/*TODO*///	
-/*TODO*///		/* port A */
-/*TODO*///		if( pio->int_state[0] == Z80_INT_REQ )
-/*TODO*///		{
-/*TODO*///			pio->int_state[0] |= Z80_INT_IEO;
-/*TODO*///		} if( pio->int_state[0] == 0 )
-/*TODO*///		{
-/*TODO*///			/* port B */
-/*TODO*///			ch = 1;
-/*TODO*///			if( pio->int_state[1] == Z80_INT_REQ )
-/*TODO*///			{
-/*TODO*///				pio->int_state[1] |= Z80_INT_IEO;
-/*TODO*///			}
-/*TODO*///			else
-/*TODO*///			{
-/*TODO*///				logerror("PIO entry INT : non IRQ\n");
-/*TODO*///				ch = 0;
-/*TODO*///			}
-/*TODO*///		}
-/*TODO*///		z80pio_interrupt_check( pio );
-/*TODO*///		return pio->vector[ch];
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	void z80pio_reti( int which )
-/*TODO*///	{
-/*TODO*///		z80pio *pio = pios + which;
-/*TODO*///	
-/*TODO*///		if( pio->int_state[0] & Z80_INT_IEO )
-/*TODO*///		{
-/*TODO*///			pio->int_state[0] &= ~Z80_INT_IEO;
-/*TODO*///		} else if( pio->int_state[1] & Z80_INT_IEO )
-/*TODO*///		{
-/*TODO*///			pio->int_state[1] &= ~Z80_INT_IEO;
-/*TODO*///		}
-/*TODO*///		/* set next interrupt stattus */
-/*TODO*///		z80pio_interrupt_check( pio );
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	/* z80pio port write */
-/*TODO*///	void z80pio_p_w( int which , int ch , int data )
-/*TODO*///	{
-/*TODO*///		z80pio *pio = pios + which;
-/*TODO*///	
-/*TODO*///		if( ch ) ch = 1;
-/*TODO*///	
-/*TODO*///		pio->in[ch]  = data;
-/*TODO*///		switch( pio->mode[ch] ){
-/*TODO*///		case PIO_MODE0:
-/*TODO*///			logerror("PIO-%c OUTPUT mode and data write\n",'A'+ch );
-/*TODO*///			break;
-/*TODO*///		case PIO_MODE2:	/* only port A */
-/*TODO*///			ch = 1;		/* handshake and IRQ is use portB */
-/*TODO*///		case PIO_MODE1:
-/*TODO*///			z80pio_set_rdy(pio, ch, 0);
-/*TODO*///			z80pio_check_irq( pio , ch );
-/*TODO*///			break;
-/*TODO*///		case PIO_MODE3:
-/*TODO*///			/* irq check */
-/*TODO*///			z80pio_check_irq( pio , ch );
-/*TODO*///			break;
-/*TODO*///		}
-/*TODO*///	}
-/*TODO*///	
+        public static final int PIO_INT_ENABLE = 0x80;  /* ENABLE : 0=disable , 1=enable */
+        public static final int PIO_INT_AND    = 0x40;  /* LOGIC  : 0=OR      , 1=AND    */
+        public static final int PIO_INT_HIGH   = 0x20;  /* LEVEL  : 0=low     , 1=high   */
+        public static final int PIO_INT_MASK   = 0x10;  /* MASK   : 0=off     , 1=on     */
+	
+	public static class z80pio
+	{
+		int[] vector=new int[2];                        /* interrupt vector               */
+		Interrupt_retiPtr intr;              /* interrupt callbacks            */
+		Interrupt_retiPtr[] rdyr = new Interrupt_retiPtr[2];            /* RDY active callback            */
+		int[] mode=new int[2];                          /* mode 00=in,01=out,02=i/o,03=bit*/
+		int[] enable=new int[2];                        /* interrupt enable               */
+		int[] mask=new int[2];                          /* mask folowers                  */
+		int[] dir=new int[2];                           /* direction (bit mode)           */
+		int[] rdy=new int[2];                           /* ready pin level                */
+		int[] in=new int[2];                            /* input port data                */
+		int[] out=new int[2];                           /* output port                    */
+		int[] strobe=new int[2];							/* strobe inputs */
+		int[] int_state=new int[2];                     /* interrupt status (daisy chain) */
+	};
+	
+        static z80pio[] pios = new z80pio[MAX_PIO];
+
+	static z80pio z80pio_set_rdy(z80pio pio, int ch, int state)
+	{
+		/* set state */
+		pio.rdy[ch] = state;
+	
+		/* call callback with state */
+		if (pio.rdyr[ch]!=null)
+			pio.rdyr[ch].handler(pio.rdy[ch]);
+                        
+                return pio;
+	}
+	
+	/* initialize pio emurator */
+	public static void z80pio_init (z80pio_interface intf)
+	{
+		int i;
+	
+		//memset (pios, 0, sizeof (pios));
+                pios = new z80pio[MAX_PIO];
+	
+		for (i = 0; i < intf.num; i++)
+		{
+                        pios[i] = new z80pio();
+                        
+			pios[i].intr = intf.intr[i];
+			pios[i].rdyr[0] = intf.rdyA[i];
+			pios[i].rdyr[1] = intf.rdyB[i];
+			z80pio_reset.handler(i);
+		}
+	}
+	
+	static z80pio z80pio_interrupt_check( z80pio pio )
+	{
+		int state;
+	
+		if(( pio.int_state[1] & Z80_INT_IEO ) != 0) state  = Z80_INT_IEO;
+		else                                  state  = pio.int_state[1];
+		if(( pio.int_state[0] & Z80_INT_IEO ) != 0) state  = Z80_INT_IEO;
+		else                                  state |= pio.int_state[0];
+		/* change daisy chain status */
+		if (pio.intr != null) pio.intr.handler(state);
+                
+                return pio;
+	}
+	
+	static z80pio z80pio_check_irq( z80pio pio , int ch )
+	{
+		int irq = 0;
+		int data;
+		int old_state;
+	
+		if(( pio.enable[ch] & PIO_INT_ENABLE ) != 0)
+		{
+			if( pio.mode[ch] == PIO_MODE3 )
+			{
+				data  =  pio.in[ch] & pio.dir[ch]; /* input data only */
+				data &= ~pio.mask[ch];              /* mask follow     */
+				if( (pio.enable[ch]&PIO_INT_HIGH) == 0 )/* active level    */
+					data ^= pio.mask[ch];             /* active low  */
+				if(( pio.enable[ch]&PIO_INT_AND ) != 0)    /* logic      */
+				     { if( data == pio.mask[ch] ) irq = 1; }
+				else { if( data == 0             ) irq = 1; }
+				/* if portB , portA mode 2 check */
+				if( ch!=0 && (pio.mode[0]==PIO_MODE2) )
+				{
+					if( pio.rdy[ch] == 0 ) irq = 1;
+				}
+			}
+			else if( pio.rdy[ch] == 0 ) irq = 1;
+		}
+		old_state = pio.int_state[ch];
+		if( irq!=0 ) pio.int_state[ch] |=  Z80_INT_REQ;
+		else      pio.int_state[ch] &= ~Z80_INT_REQ;
+	
+		if( old_state != pio.int_state[ch] )
+			pio = z80pio_interrupt_check( pio );
+                
+                return pio;
+	}
+	
+	public static ResetPtr z80pio_reset = new ResetPtr() {
+            public void handler(int which) {
+                z80pio pio = pios[which];
+		int i;
+	
+		for( i = 0 ; i <= 1 ; i++){
+			pio.mask[i]   = 0xff;	/* mask all on */
+			pio.enable[i] = 0x00;	/* disable     */
+			pio.mode[i]   = 0x01;	/* mode input  */
+			pio.dir[i]    = 0x01;	/* dir  input  */
+			pio = z80pio_set_rdy(pio,i,0);	/* RDY = low   */
+			pio.out[i]    = 0x00;	/* outdata = 0 */
+			pio.int_state[i] = 0;
+			pio.strobe[i] = 0;
+		}
+		pio = z80pio_interrupt_check( pio );
+                
+                pios[which] = pio;
+            }
+        };
+            
+	/* pio data register write */
+	public static void z80pio_d_w( int which , int ch , int data )
+	{
+		z80pio pio = pios[which];
+		if( ch != 0 ) ch = 1;
+	
+		pio.out[ch] = data;	/* latch out data */
+		switch( pio.mode[ch] ){
+		case PIO_MODE0:			/* mode 0 output */
+		case PIO_MODE2:			/* mode 2 i/o */
+			pio = z80pio_set_rdy(pio, ch,1); /* ready = H */
+			pio = z80pio_check_irq( pio , ch );
+			return;
+		case PIO_MODE1:			/* mode 1 intput */
+		case PIO_MODE3:			/* mode 0 bit */
+			return;
+		default:
+			logerror("PIO-%c data write,bad mode\n",'A'+ch );
+		}
+                
+                pios[which] = pio;
+	}
+	
+	/* pio controll register write */
+	public static void z80pio_c_w( int which , int ch , int data )
+	{
+		z80pio pio = pios[which];
+		if( ch!=0 ) ch = 1;
+	
+		/* load direction phase ? */
+		if( pio.mode[ch] == 0x13 ){
+			pio.dir[ch] = data;
+			pio.mode[ch] = 0x03;
+			return;
+		}
+		/* load mask folows phase ? */
+		if(( pio.enable[ch] & PIO_INT_MASK ) != 0){	/* load mask folows */
+			pio.mask[ch] = data;
+			pio.enable[ch] &= ~PIO_INT_MASK;
+			logerror("PIO-%c interrupt mask %02x\n",'A'+ch,data );
+			return;
+		}
+		switch( data & 0x0f ){
+		case PIO_OP_MODE:	/* mode select 0=out,1=in,2=i/o,3=bit */
+			pio.mode[ch] = (data >> 6 );
+			if( pio.mode[ch] == 0x03 ) pio.mode[ch] = 0x13;
+			logerror("PIO-%c Mode %x\n",'A'+ch,pio.mode[ch] );
+			break;
+		case PIO_OP_INTC:		/* interrupt control */
+			pio.enable[ch] = data & 0xf0;
+			pio.mask[ch]   = 0x00;
+			/* when interrupt enable , set vector request flag */
+			logerror("PIO-%c Controll %02x\n",'A'+ch,data );
+			break;
+		case PIO_OP_INTE:		/* interrupt enable controll */
+			pio.enable[ch] &= ~PIO_INT_ENABLE;
+			pio.enable[ch] |= (data & PIO_INT_ENABLE);
+			logerror("PIO-%c enable %02x\n",'A'+ch,data&0x80 );
+			break;
+		default:
+				if( (data&1) == 0 )
+				{
+					pio.vector[ch] = data;
+					logerror("PIO-%c vector %02x\n",'A'+ch,data);
+				}
+				else logerror("PIO-%c illegal command %02x\n",'A'+ch,data );
+		}
+		/* interrupt check */
+		pio = z80pio_check_irq( pio , ch );
+                
+                pios[which] = pio;
+	}
+	
+	/* pio controll register read */
+	public static int z80pio_c_r( int which , int ch )
+	{
+		if( ch != 0 ) ch = 1;
+	
+		logerror("PIO-%c controll read\n",'A'+ch );
+		return 0;
+	}
+	
+	/* pio data register read */
+	public static int z80pio_d_r( int which , int ch )
+	{
+		z80pio pio = pios[which];
+		if( ch != 0 ) ch = 1;
+	
+		switch( pio.mode[ch] ){
+		case PIO_MODE0:			/* mode 0 output */
+			return pio.out[ch];
+		case PIO_MODE1:			/* mode 1 intput */
+			pio = z80pio_set_rdy(pio, ch, 1);	/* ready = H */
+			pio = z80pio_check_irq( pio , ch );
+			return pio.in[ch];
+		case PIO_MODE2:			/* mode 2 i/o */
+			if( ch!=0 ) logerror("PIO-B mode 2 \n");
+			pio = z80pio_set_rdy(pio, 1, 1); /* brdy = H */
+			pio = z80pio_check_irq( pio , ch );
+			return pio.in[ch];
+		case PIO_MODE3:			/* mode 3 bit */
+			return (pio.in[ch]&pio.dir[ch])|(pio.out[ch]&~pio.dir[ch]);
+		}
+		logerror("PIO-%c data read,bad mode\n",'A'+ch );
+		return 0;
+	}
+	
+	public static Interrupt_entryPtr z80pio_interrupt = new Interrupt_entryPtr() {
+            public int handler( int which ) {
+                z80pio pio = pios[which];
+		int ch = 0;
+	
+		/* port A */
+		if( pio.int_state[0] == Z80_INT_REQ )
+		{
+			pio.int_state[0] |= Z80_INT_IEO;
+		} if( pio.int_state[0] == 0 )
+		{
+			/* port B */
+			ch = 1;
+			if( pio.int_state[1] == Z80_INT_REQ )
+			{
+				pio.int_state[1] |= Z80_INT_IEO;
+			}
+			else
+			{
+				logerror("PIO entry INT : non IRQ\n");
+				ch = 0;
+			}
+		}
+		pio = z80pio_interrupt_check( pio );
+                pios[which] = pio;
+                
+		return pio.vector[ch];
+            }
+        };
+	
+	public static Interrupt_retiPtr z80pio_reti = new Interrupt_retiPtr() {
+            public void handler(int which) {
+                z80pio pio = pios[which];
+	
+		if(( pio.int_state[0] & Z80_INT_IEO ) != 0)
+		{
+			pio.int_state[0] &= ~Z80_INT_IEO;
+		} else if(( pio.int_state[1] & Z80_INT_IEO ) != 0)
+		{
+			pio.int_state[1] &= ~Z80_INT_IEO;
+		}
+		/* set next interrupt stattus */
+		pio = z80pio_interrupt_check( pio );
+                
+                pios[which] = pio;
+            }
+        };
+	
+	/* z80pio port write */
+	public static void z80pio_p_w( int which , int ch , int data )
+	{
+		z80pio pio = pios[which];
+	
+		if( ch!=0 ) ch = 1;
+	
+		pio.in[ch]  = data;
+		switch( pio.mode[ch] ){
+		case PIO_MODE0:
+			logerror("PIO-%c OUTPUT mode and data write\n",'A'+ch );
+			break;
+		case PIO_MODE2:	/* only port A */
+			ch = 1;		/* handshake and IRQ is use portB */
+		case PIO_MODE1:
+			pio = z80pio_set_rdy(pio, ch, 0);
+			pio = z80pio_check_irq( pio , ch );
+			break;
+		case PIO_MODE3:
+			/* irq check */
+			pio = z80pio_check_irq( pio , ch );
+			break;
+		}
+	}
+	
 /*TODO*///	/* z80pio port read */
 /*TODO*///	int z80pio_p_r( int which , int ch )
 /*TODO*///	{
@@ -745,7 +768,7 @@ public class z80fmly {
 /*TODO*///	
 /*TODO*///		if( ch ) ch = 1;
 /*TODO*///	
-/*TODO*///		switch( pio->mode[ch] ){
+/*TODO*///		switch( pio.mode[ch] ){
 /*TODO*///		case PIO_MODE2:		/* port A only */
 /*TODO*///		case PIO_MODE0:
 /*TODO*///			z80pio_set_rdy(pio, ch, 0);
@@ -756,27 +779,27 @@ public class z80fmly {
 /*TODO*///			break;
 /*TODO*///		case PIO_MODE3:
 /*TODO*///			/*     input bits                , output bits                */
-/*TODO*///			return (pio->in[ch]&pio->dir[ch])|(pio->out[ch]&~pio->dir[ch]);
+/*TODO*///			return (pio.in[ch]&pio.dir[ch])|(pio.out[ch]&~pio.dir[ch]);
 /*TODO*///		}
-/*TODO*///		return pio->out[ch];
+/*TODO*///		return pio.out[ch];
 /*TODO*///	}
-/*TODO*///	
-/*TODO*///	/* for mame interface */
-/*TODO*///	
-/*TODO*///	void z80pio_0_reset (void) { z80pio_reset (0); }
-/*TODO*///	
-/*TODO*///	public static WriteHandlerPtr z80pio_0_w = new WriteHandlerPtr() {public void handler(int offset, int data)
-/*TODO*///	{
-/*TODO*///		if(offset&1) z80pio_c_w(0,(offset/2)&1,data);
-/*TODO*///		else         z80pio_d_w(0,(offset/2)&1,data);
-/*TODO*///	} };
-/*TODO*///	
-/*TODO*///	public static ReadHandlerPtr z80pio_0_r  = new ReadHandlerPtr() { public int handler(int offset)
-/*TODO*///	{
-/*TODO*///		return (offset&1) ? z80pio_c_r(0,(offset/2)&1) : z80pio_d_r(0,(offset/2)&1);
-/*TODO*///	} };
-/*TODO*///	
-/*TODO*///	public static WriteHandlerPtr z80pioA_0_p_w = new WriteHandlerPtr() {public void handler(int offset, int data) { z80pio_p_w(0,0,data);   } };
+	
+	/* for mame interface */
+	
+	public static void z80pio_0_reset () { z80pio_reset.handler(0); }
+	
+	public static WriteHandlerPtr z80pio_0_w = new WriteHandlerPtr() {public void handler(int offset, int data)
+	{
+		if((offset&1)!=0) z80pio_c_w(0,(offset/2)&1,data);
+		else         z80pio_d_w(0,(offset/2)&1,data);
+	} };
+	
+	public static ReadHandlerPtr z80pio_0_r  = new ReadHandlerPtr() { public int handler(int offset)
+	{
+		return (offset&1)!=0 ? z80pio_c_r(0,(offset/2)&1) : z80pio_d_r(0,(offset/2)&1);
+	} };
+	
+    public static WriteHandlerPtr z80pioA_0_p_w = new WriteHandlerPtr() {public void handler(int offset, int data) { z80pio_p_w(0,0,data);   } };
 /*TODO*///	public static WriteHandlerPtr z80pioB_0_p_w = new WriteHandlerPtr() {public void handler(int offset, int data) { z80pio_p_w(0,1,data);   } };
 /*TODO*///	public static ReadHandlerPtr z80pioA_0_p_r  = new ReadHandlerPtr() { public int handler(int offset)           { return z80pio_p_r(0,0); } };
 /*TODO*///	public static ReadHandlerPtr z80pioB_0_p_r  = new ReadHandlerPtr() { public int handler(int offset)           { return z80pio_p_r(0,1); } };
@@ -787,7 +810,7 @@ public class z80fmly {
 /*TODO*///	
 /*TODO*///		if (ch) ch=1;
 /*TODO*///	
-/*TODO*///		switch (pio->mode[ch])
+/*TODO*///		switch (pio.mode[ch])
 /*TODO*///		{
 /*TODO*///			/* output mode */
 /*TODO*///			case PIO_MODE0:
@@ -796,7 +819,7 @@ public class z80fmly {
 /*TODO*///				state = state & 0x01;
 /*TODO*///	
 /*TODO*///				/* strobe changed state? */
-/*TODO*///				if ((pio->strobe[ch]^state)!=0)
+/*TODO*///				if ((pio.strobe[ch]^state)!=0)
 /*TODO*///				{
 /*TODO*///					/* yes */
 /*TODO*///					if (state!=0)
@@ -807,16 +830,16 @@ public class z80fmly {
 /*TODO*///						z80pio_set_rdy(pio, ch, 0);
 /*TODO*///	
 /*TODO*///						/* int enabled? */
-/*TODO*///						if (pio->enable[ch] & PIO_INT_ENABLE)
+/*TODO*///						if (pio.enable[ch] & PIO_INT_ENABLE)
 /*TODO*///						{
 /*TODO*///							/* trigger an int request */
-/*TODO*///							pio->int_state[ch] |= Z80_INT_REQ;
+/*TODO*///							pio.int_state[ch] |= Z80_INT_REQ;
 /*TODO*///						}
 /*TODO*///					}
 /*TODO*///				}
 /*TODO*///	
 /*TODO*///				/* store strobe state */
-/*TODO*///				pio->strobe[ch] = state;
+/*TODO*///				pio.strobe[ch] = state;
 /*TODO*///	
 /*TODO*///				/* check interrupt */
 /*TODO*///				z80pio_interrupt_check( pio );

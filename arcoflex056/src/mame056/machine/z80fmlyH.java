@@ -6,6 +6,7 @@
 package mame056.machine;
 
 import static arcadeflex056.fucPtr.*;
+import static mame056.cpuexecH.*;
 
 
 /**
@@ -15,11 +16,11 @@ import static arcadeflex056.fucPtr.*;
 public class z80fmlyH {
     /*  Z80 FMLY.H   Z80 FAMILY IC EMURATION */
     public static int MAX_CTC = 2;
-/*TODO*///
-/*TODO*///#define NOTIMER_0 (1<<0)
-/*TODO*///#define NOTIMER_1 (1<<1)
-/*TODO*///#define NOTIMER_2 (1<<2)
-/*TODO*///#define NOTIMER_3 (1<<3)
+
+    public static int NOTIMER_0 = (1<<0);
+    public static int NOTIMER_1 = (1<<1);
+    public static int NOTIMER_2 = (1<<2);
+    public static int NOTIMER_3 = (1<<3);
 
     public static class z80ctc_interface
     {
@@ -58,17 +59,24 @@ public class z80fmlyH {
 /*TODO*///int z80ctc_interrupt( int which );
 /*TODO*///void z80ctc_reti( int which );
 /*TODO*////*--------------------------------------------------------------------*/
-/*TODO*///#define MAX_PIO 1
-/*TODO*///
-/*TODO*///typedef struct
-/*TODO*///{
-/*TODO*///	int num;                                      /* number of PIOs to emulate */
-/*TODO*///	void (*intr[MAX_CTC])(int which);             /* callback when change interrupt status */
-/*TODO*///	void (*rdyA[MAX_PIO])(int data );             /* portA ready active callback (do not support yet)*/
-/*TODO*///	void (*rdyB[MAX_PIO])(int data );             /* portB ready active callback (do not support yet)*/
-/*TODO*///} z80pio_interface;
-/*TODO*///
-/*TODO*///
+    public static final int MAX_PIO = 1;
+
+    public static class z80pio_interface
+    {
+            int num;                                      /* number of PIOs to emulate */
+            Interrupt_retiPtr[] intr = new Interrupt_retiPtr[MAX_CTC];             /* callback when change interrupt status */
+            Interrupt_retiPtr[] rdyA = new Interrupt_retiPtr[MAX_PIO];             /* portA ready active callback (do not support yet)*/
+            Interrupt_retiPtr[] rdyB = new Interrupt_retiPtr[MAX_PIO];             /* portB ready active callback (do not support yet)*/
+            
+            public z80pio_interface(int num, Interrupt_retiPtr[] intr, Interrupt_retiPtr[] rdyA, Interrupt_retiPtr[] rdyB){
+                this.num = num;
+                this.intr = intr;
+                this.rdyA = rdyA;
+                this.rdyB = rdyB;
+            }
+    };
+
+
 /*TODO*///void z80pio_init (z80pio_interface *intf);
 /*TODO*///void z80pio_reset (int which);
 /*TODO*///void z80pio_d_w( int which , int ch , int data );
