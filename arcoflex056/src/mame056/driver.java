@@ -310,6 +310,7 @@ import static WIP.mame056.drivers.shootout.*;
 import static WIP.mame056.drivers.sidepckt.*;
 import static WIP.mame056.drivers.senjyo.*;
 import static WIP.mame056.drivers.cop01.*;
+import static WIP.mame056.drivers.skykid.*;
 
 public class driver {
 
@@ -814,9 +815,9 @@ public class driver {
         driver_pacland2, /* (c) 1984 */
         driver_pacland3, /* (c) 1984 */
         driver_paclandm, /* (c) 1984 Midway */
-        /*TODO*///	driver_drgnbstr,	/* (c) 1984 */
-        /*TODO*///	driver_skykid,	/* (c) 1985 */
-        /*TODO*///	driver_skykidb,	/* (c) 1985 */
+        driver_drgnbstr,	/* (c) 1984 */
+        driver_skykid,	/* (c) 1985 */
+        driver_skykidb,	/* (c) 1985 */
         driver_baraduke,	/* (c) 1985 */
         driver_metrocrs,	/* (c) 1985 */
         
