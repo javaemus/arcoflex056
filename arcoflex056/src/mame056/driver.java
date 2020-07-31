@@ -319,6 +319,8 @@ import static WIP.mame056.drivers.marvins.*;
 import static WIP.mame056.drivers.mystston.*;
 import static WIP.mame056.drivers.xain.*;
 import static WIP.mame056.drivers.appoooh.*;
+import static WIP.mame056.drivers.zaccaria.*;
+import static WIP.mame056.drivers.ninjakid.*;
 
 public class driver {
 
@@ -3485,14 +3487,14 @@ public class driver {
         driver_sia2650,
         driver_tinv2650,
         /*TODO*///TESTdriver_embargo,
-        /*TODO*///	driver_monymony,	/* (c) 1983 */
-        /*TODO*///	driver_jackrabt,	/* (c) 1984 */
-        /*TODO*///	driver_jackrab2,	/* (c) 1984 */
-        /*TODO*///	driver_jackrabs,	/* (c) 1984 */
-        /*TODO*///
-        /*TODO*///	/* UPL games */
-        /*TODO*///	/* Mouser              UPL-83001 */
-        /*TODO*///	driver_ninjakun,	/* UPL-84003 (c) 1984 Taito Corporation */
+        driver_monymony,	/* (c) 1983 */
+        driver_jackrabt,	/* (c) 1984 */
+        driver_jackrab2,	/* (c) 1984 */
+        driver_jackrabs,	/* (c) 1984 */
+        
+        /* UPL games */
+        /* Mouser              UPL-83001 */
+        driver_ninjakun,	/* UPL-84003 (c) 1984 Taito Corporation */
         driver_raiders5, /* UPL-85004 (c) 1985 */
         driver_raidrs5t,
         driver_xxmissio, /* UPL-86001 [1986] */

@@ -3274,14 +3274,14 @@ public class m6800 extends cpu_interface {
     /* $99 ADCA direct ***** */
     public opcode adca_di = new opcode() {
         public void handler() {
-            /*TODO*///UINT16 t, r;
-            /*TODO*///DIRBYTE(t);
-            /*TODO*///r = A + t + (CC & 0x01);
-            /*TODO*///CLR_HNZVC;
-            /*TODO*///SET_FLAGS8(A, t, r);
-            /*TODO*///SET_H(A, t, r);
-            /*TODO*///A = r;
-            throw new UnsupportedOperationException("Unsupported");
+            int t, r;
+            t=DIRBYTE();
+            r = m6800.a + t + (m6800.cc & 0x01);
+            CLR_HNZVC();
+            SET_FLAGS8(m6800.a, t, r);
+            SET_H(m6800.a, t, r);
+            m6800.a = r;
+            //throw new UnsupportedOperationException("Unsupported");
         }
     };
 
