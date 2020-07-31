@@ -316,6 +316,9 @@ import static WIP.mame056.drivers.suprloco.*;
 import static WIP.mame056.drivers.hexion.*;
 import static WIP.mame056.drivers.lasso.*;
 import static WIP.mame056.drivers.marvins.*;
+import static WIP.mame056.drivers.mystston.*;
+import static WIP.mame056.drivers.xain.*;
+import static WIP.mame056.drivers.appoooh.*;
 
 public class driver {
 
@@ -2483,7 +2486,7 @@ public class driver {
         driver_turbob, /* (c) 1981 Sega */
         /*TODO*///TESTdriver_kopunch,	/* 834-0103 (c) 1981 Sega */
         driver_suprloco,	/* (c) 1982 Sega */
-        /*TODO*///	driver_appoooh,	/* (c) 1984 Sega */
+        driver_appoooh,	/* (c) 1984 Sega */
         driver_dotrikun, /* cabinet test board */
         driver_dotriku2, /* cabinet test board */
         /*TODO*///
@@ -3431,8 +3434,8 @@ public class driver {
         driver_bigprowr, /* TA-0007 (c) 1983 */
         driver_tagteam, /* TA-0007 (c) 1983 + Data East license */
         driver_ssozumo,	/* TA-0008 (c) 1984 */
-        /*TODO*///	driver_mystston,	/* TA-0010 (c) 1984 */
-        /*TODO*///	/* TA-0011 Dog Fight (Data East) / Batten O'hara no Sucha-Raka Kuuchuu Sen 1985 */
+        driver_mystston,	/* TA-0010 (c) 1984 */
+        /* TA-0011 Dog Fight (Data East) / Batten O'hara no Sucha-Raka Kuuchuu Sen 1985 */
         driver_bogeyman, /* -0204-0 (Data East part number) (c) [1985?] */
         driver_matmania, /* TA-0015 (c) 1985 + Taito America license */
         driver_excthour, /* TA-0015 (c) 1985 + Taito license */
@@ -3441,9 +3444,9 @@ public class driver {
         driver_renegade, /* TA-0018 (c) 1986 + Taito America license */
         driver_kuniokun, /* TA-0018 (c) 1986 */
         driver_kuniokub, /* bootleg */
-        /*TODO*///	driver_xsleena,	/* TA-0019 (c) 1986 */
-        /*TODO*///	driver_xsleenab,	/* bootleg */
-        /*TODO*///	driver_solarwar,	/* TA-0019 (c) 1986 Taito + Memetron license */
+        driver_xsleena,	/* TA-0019 (c) 1986 */
+        driver_xsleenab,	/* bootleg */
+        driver_solarwar,	/* TA-0019 (c) 1986 Taito + Memetron license */
         driver_battlane, /* -0215, -0216 (Data East part number) (c) 1986 + Taito license */
         driver_battlan2, /* -0215, -0216 (Data East part number) (c) 1986 + Taito license */
         driver_battlan3, /* -0215, -0216 (Data East part number) (c) 1986 + Taito license */
