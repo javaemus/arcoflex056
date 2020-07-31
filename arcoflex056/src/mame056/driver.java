@@ -322,6 +322,7 @@ import static WIP.mame056.drivers.appoooh.*;
 import static WIP.mame056.drivers.zaccaria.*;
 import static WIP.mame056.drivers.ninjakid.*;
 import static WIP.mame056.drivers.argus.*;
+import static WIP.mame056.drivers.goindol.*;
 
 public class driver {
 
@@ -3917,9 +3918,9 @@ public class driver {
         /*TODO*///1998 Astra Super Stars (ST-V)
         /*TODO*///1998 Shanghai Mateki Buyuu (TPS)
         /*TODO*///*/
-        /*TODO*///
-        /*TODO*///	/* Suna games */
-        /*TODO*///	driver_goindol,	/* (c) 1987 Sun a Electronics */
+        
+        /* Suna games */
+        driver_goindol,	/* (c) 1987 Sun a Electronics */
         /*TODO*///	driver_rranger,	/* (c) 1988 SunA + Sharp Image license */
         /*TODO*///TESTdriver_sranger,	/* (c) 1988 SunA */
         /*TODO*///TESTdriver_srangerb,	/* bootleg */
@@ -4068,7 +4069,7 @@ public class driver {
         driver_ringkin3, /* (c) 1985 Data East USA */
         driver_ambush, /* (c) 1983 Nippon Amuse Co-Ltd */
         /*TODO*///	driver_starcrus,	/* [1977 Ramtek] */
-        /*TODO*///	driver_homo,		/* bootleg */
+        driver_homo,		/* bootleg */
         /*TODO*///TESTdriver_dlair,
         /*TODO*///	driver_aztarac,	/* (c) 1983 Centuri (vector game) */
         driver_mole, /* (c) 1982 Yachiyo Electronics, Ltd. */
