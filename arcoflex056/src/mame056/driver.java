@@ -311,6 +311,11 @@ import static WIP.mame056.drivers.sidepckt.*;
 import static WIP.mame056.drivers.senjyo.*;
 import static WIP.mame056.drivers.cop01.*;
 import static WIP.mame056.drivers.skykid.*;
+import static WIP.mame056.drivers.srumbler.*;
+import static WIP.mame056.drivers.suprloco.*;
+import static WIP.mame056.drivers.hexion.*;
+import static WIP.mame056.drivers.lasso.*;
+import static WIP.mame056.drivers.marvins.*;
 
 public class driver {
 
@@ -1950,9 +1955,9 @@ public class driver {
         driver_trojan,	/*  4/1986 (c) 1986 (US) */
         driver_trojanr,	/*  4/1986 (c) 1986 + Romstar */
         driver_trojanj,	/*  4/1986 (c) 1986 (Japan) */
-/*TODO*///        	driver_srumbler,	/*  9/1986 (c) 1986 */
-/*TODO*///        	driver_srumblr2,	/*  9/1986 (c) 1986 */
-/*TODO*///        	driver_rushcrsh,	/*  9/1986 (c) 1986 */
+        driver_srumbler,	/*  9/1986 (c) 1986 */
+        driver_srumblr2,	/*  9/1986 (c) 1986 */
+        driver_rushcrsh,	/*  9/1986 (c) 1986 */
         driver_lwings,	/* 11/1986 (c) 1986 */
         driver_lwings2,	/* 11/1986 (c) 1986 */
         driver_lwingsjp,	/* 11/1986 (c) 1986 */
@@ -2477,7 +2482,7 @@ public class driver {
         driver_turboa, /* (c) 1981 Sega */
         driver_turbob, /* (c) 1981 Sega */
         /*TODO*///TESTdriver_kopunch,	/* 834-0103 (c) 1981 Sega */
-        /*TODO*///	driver_suprloco,	/* (c) 1982 Sega */
+        driver_suprloco,	/* (c) 1982 Sega */
         /*TODO*///	driver_appoooh,	/* (c) 1984 Sega */
         driver_dotrikun, /* cabinet test board */
         driver_dotriku2, /* cabinet test board */
@@ -2994,7 +2999,7 @@ public class driver {
         driver_chqflag,	/* GX717 (c) 1988 */
         driver_chqflagj,	/* GX717 (c) 1988 (Japan) */
         /*TODO*///	driver_ultraman,	/* GX910 (c) 1991 Banpresto/Bandai */
-        /*TODO*///	driver_hexion,	/* GX122 (c) 1992 */
+        driver_hexion,	/* GX122 (c) 1992 */
         /*TODO*///
         /*TODO*///	/* Konami "Nemesis hardware" games */
         /*TODO*///	driver_nemesis,	/* GX456 (c) 1985 */
@@ -3339,17 +3344,17 @@ public class driver {
         driver_nibbler,	/* (c) 1982 Rock-ola */
         driver_nibblera,	/* (c) 1982 Rock-ola */
         
-        /*TODO*///	/* later SNK games, each game can be identified by PCB code and ROM
-        /*TODO*///	code, the ROM code is the same between versions, and usually based
-        /*TODO*///	upon the Japanese title. */
-        /*TODO*///	driver_lasso,		/*       'WM' (c) 1982 */
-        /*TODO*///	driver_chameleo,	/* (c) 1983 Jaleco */
-        /*TODO*///	driver_wwjgtin,	/* (c) 1984 Jaleco / Casio */
+        /* later SNK games, each game can be identified by PCB code and ROM
+        code, the ROM code is the same between versions, and usually based
+        upon the Japanese title. */
+        driver_lasso,		/*       'WM' (c) 1982 */
+        driver_chameleo,	/* (c) 1983 Jaleco */
+        driver_wwjgtin,	/* (c) 1984 Jaleco / Casio */
         driver_joyfulr, /* A2001      (c) 1983 */
         driver_mnchmobl, /* A2001      (c) 1983 + Centuri license */
-        /*TODO*///	driver_marvins,	/* A2003      (c) 1983 */
-        /*TODO*///	driver_madcrash,	/* A2005      (c) 1984 */
-        /*TODO*///	driver_vangrd2,	/*            (c) 1984 */
+        driver_marvins,	/* A2003      (c) 1983 */
+        driver_madcrash,	/* A2005      (c) 1984 */
+        driver_vangrd2,	/*            (c) 1984 */
         driver_sgladiat, /* A3006      (c) 1984 */
         driver_hal21, /*            (c) 1985 */
         driver_hal21j, /*            (c) 1985 (Japan) */
