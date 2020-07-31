@@ -321,6 +321,7 @@ import static WIP.mame056.drivers.xain.*;
 import static WIP.mame056.drivers.appoooh.*;
 import static WIP.mame056.drivers.zaccaria.*;
 import static WIP.mame056.drivers.ninjakid.*;
+import static WIP.mame056.drivers.argus.*;
 
 public class driver {
 
@@ -3677,9 +3678,9 @@ public class driver {
         driver_pinbo,		/* (c) 1984 Jaleco */
         driver_pinbos,	/* (c) 1985 Strike */
         driver_momoko, /* (c) 1986 Jaleco */
-        /*TODO*///	driver_argus,		/* (c) 1986 Jaleco */
-        /*TODO*///	driver_valtric,	/* (c) 1986 Jaleco */
-        /*TODO*///	driver_butasan,	/* (c) 1987 Jaleco */
+        driver_argus,		/* (c) 1986 Jaleco */
+        driver_valtric,	/* (c) 1986 Jaleco */
+        driver_butasan,	/* (c) 1987 Jaleco */
         driver_psychic5, /* (c) 1987 Jaleco */
         /*TODO*///	driver_ginganin,	/* (c) 1987 Jaleco */
         driver_skyfox,	/* (c) 1987 Jaleco + Nichibutsu USA license */
