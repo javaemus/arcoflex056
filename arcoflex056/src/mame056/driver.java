@@ -325,6 +325,7 @@ import static WIP.mame056.drivers.argus.*;
 import static WIP.mame056.drivers.goindol.*;
 import static WIP.mame056.drivers.suna8.*;
 import static WIP.mame056.drivers.holeland.*;
+import static WIP.mame056.drivers.yunsung8.*;
 
 public class driver {
 
@@ -4017,14 +4018,14 @@ public class driver {
         /*TODO*///	driver_looping,	/* (c) 1982 Venture Line + licensed from Video Games */
         /*TODO*///	driver_loopinga,	/* (c) 1982 Venture Line + licensed from Video Games */
         /*TODO*///	driver_skybump,	/* (c) 1982 Venture Line */
-        /*TODO*///
-        /*TODO*///	/* Yun Sung games */
-        /*TODO*///	driver_cannball,	/* (c) 1995 Yun Sung / Soft Visio */
-        /*TODO*///	driver_magix,		/* (c) 1995 Yun Sung */
+        
+        /* Yun Sung games */
+        driver_cannball,	/* (c) 1995 Yun Sung / Soft Visio */
+        driver_magix,		/* (c) 1995 Yun Sung */
         /*TODO*///	driver_magicbub,	/* (c) Yun Sung */
         /*TODO*///	driver_shocking,	/* (c) 1997 Yun Sung */
-        /*TODO*///
-        /*TODO*///
+        
+        
         /*TODO*///	/* Fuuki games */
         /*TODO*///	driver_gogomile,	/* (c) 1995 */
         /*TODO*///	driver_gogomilj,	/* (c) 1995 (Japan) */
