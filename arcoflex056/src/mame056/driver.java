@@ -323,6 +323,7 @@ import static WIP.mame056.drivers.zaccaria.*;
 import static WIP.mame056.drivers.ninjakid.*;
 import static WIP.mame056.drivers.argus.*;
 import static WIP.mame056.drivers.goindol.*;
+import static WIP.mame056.drivers.suna8.*;
 
 public class driver {
 
@@ -3921,12 +3922,12 @@ public class driver {
         
         /* Suna games */
         driver_goindol,	/* (c) 1987 Sun a Electronics */
-        /*TODO*///	driver_rranger,	/* (c) 1988 SunA + Sharp Image license */
+        driver_rranger,	/* (c) 1988 SunA + Sharp Image license */
         /*TODO*///TESTdriver_sranger,	/* (c) 1988 SunA */
         /*TODO*///TESTdriver_srangerb,	/* bootleg */
         /*TODO*///TESTdriver_srangerw,
-        /*TODO*///	driver_hardhead,	/* (c) 1988 SunA */
-        /*TODO*///	driver_hardhedb,	/* bootleg */
+        driver_hardhead,	/* (c) 1988 SunA */
+        driver_hardhedb,	/* bootleg */
         /*TODO*///TESTdriver_starfigh,
         /*TODO*///TESTdriver_hardhea2,
         /*TODO*///TESTdriver_brickzn,
