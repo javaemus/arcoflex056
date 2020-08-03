@@ -328,6 +328,7 @@ import static WIP.mame056.drivers.holeland.*;
 import static WIP.mame056.drivers.yunsung8.*;
 import static WIP.mame056.drivers.omegrace.*;
 import static WIP.mame056.drivers.dday.*;
+import static WIP.mame056.drivers.stactics.*;
 
 public class driver {
 
@@ -4066,7 +4067,7 @@ public class driver {
         driver_dday,		/* (c) 1982 Olympia */
         driver_ddayc,		/* (c) 1982 Olympia + Centuri license */
 
-        /*TODO*///	driver_stactics,	/* [1981 Sega] */
+        driver_stactics,	/* [1981 Sega] */
         /*TODO*///	driver_exterm,	/* (c) 1989 Premier Technology - a Gottlieb game */
         driver_kingofb, /* (c) 1985 Woodplace Inc. */
         driver_ringking, /* (c) 1985 Data East USA */
