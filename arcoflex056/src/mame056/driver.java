@@ -332,6 +332,7 @@ import static WIP.mame056.drivers.stactics.*;
 import static WIP.mame056.drivers.starcrus.*;
 import static WIP.mame056.drivers.travrusa.*;
 import static WIP.mame056.drivers.tsamurai.*;
+import static WIP.mame056.drivers.gionbana.*;
 
 public class driver {
 
@@ -686,25 +687,25 @@ public class driver {
         driver_crystal2,	/* (c) 1986 */
         driver_apparel,	/* (c) 1986 Central Denshi */
 
-        /*TODO*///	driver_hanamomo,	/* (c) 1988 */
-        /*TODO*///	driver_msjiken,	/* (c) 1988 */
-        /*TODO*///	driver_telmahjn,	/* (c) 1988 */
-        /*TODO*///	driver_gionbana,	/* (c) 1989 */
-        /*TODO*///	driver_mgmen89,	/* (c) 1989 */
-        /*TODO*///	driver_mjfocus,	/* (c) 1989 */
-        /*TODO*///	driver_mjfocusm,	/* (c) 1989 */
-        /*TODO*///	driver_peepshow,	/* (c) 1989 AC */
-        /*TODO*///	driver_scandal,	/* (c) 1989 */
-        /*TODO*///	driver_scandalm,	/* (c) 1989 */
-        /*TODO*///	driver_mjnanpas,	/* (c) 1989 BROOKS */
-        /*TODO*///	driver_mjnanpaa,	/* (c) 1989 BROOKS (old version) */
-        /*TODO*///	driver_bananadr,	/* (c) 1989 DIGITAL SOFT */
-        /*TODO*///	driver_club90s,	/* (c) 1990 */
-        /*TODO*///	driver_mladyhtr,	/* (c) 1990 */
-        /*TODO*///	driver_chinmoku,	/* (c) 1990 */
-        /*TODO*///	driver_maiko,		/* (c) 1990 */
-        /*TODO*///	driver_hanaoji,	/* (c) 1991 */
-        /*TODO*///
+        driver_hanamomo,	/* (c) 1988 */
+        driver_msjiken,	/* (c) 1988 */
+        driver_telmahjn,	/* (c) 1988 */
+        driver_gionbana,	/* (c) 1989 */
+        driver_mgmen89,	/* (c) 1989 */
+        driver_mjfocus,	/* (c) 1989 */
+        driver_mjfocusm,	/* (c) 1989 */
+        driver_peepshow,	/* (c) 1989 AC */
+        driver_scandal,	/* (c) 1989 */
+        driver_scandalm,	/* (c) 1989 */
+        driver_mjnanpas,	/* (c) 1989 BROOKS */
+        driver_mjnanpaa,	/* (c) 1989 BROOKS (old version) */
+        driver_bananadr,	/* (c) 1989 DIGITAL SOFT */
+        driver_club90s,	/* (c) 1990 */
+        driver_mladyhtr,	/* (c) 1990 */
+        driver_chinmoku,	/* (c) 1990 */
+        driver_maiko,		/* (c) 1990 */
+        driver_hanaoji,	/* (c) 1991 */
+        
         /*TODO*///	driver_pstadium,	/* (c) 1990 */
         /*TODO*///	driver_triplew1,	/* (c) 1989 */
         /*TODO*///	driver_triplew2,	/* (c) 1990 */
