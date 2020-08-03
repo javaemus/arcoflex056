@@ -324,6 +324,7 @@ import static WIP.mame056.drivers.ninjakid.*;
 import static WIP.mame056.drivers.argus.*;
 import static WIP.mame056.drivers.goindol.*;
 import static WIP.mame056.drivers.suna8.*;
+import static WIP.mame056.drivers.holeland.*;
 
 public class driver {
 
@@ -3978,10 +3979,10 @@ public class driver {
         driver_natodef,	/* (c) 1982 */
         driver_natodefa,	/* (c) 1982 */
         driver_mrflea, /* (c) 1982 */
-        /*TODO*///
-        /*TODO*///	/* Tecfri games */
-        /*TODO*///	driver_holeland,	/* (c) 1984 */
-        /*TODO*///	driver_crzrally,	/* (c) 1985 */
+        
+        /* Tecfri games */
+        driver_holeland,	/* (c) 1984 */
+        driver_crzrally,	/* (c) 1985 */
 
         driver_sauro, /* (c) 1987 */
         /*TODO*///
