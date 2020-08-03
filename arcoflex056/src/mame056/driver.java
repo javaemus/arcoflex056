@@ -331,6 +331,7 @@ import static WIP.mame056.drivers.dday.*;
 import static WIP.mame056.drivers.stactics.*;
 import static WIP.mame056.drivers.starcrus.*;
 import static WIP.mame056.drivers.travrusa.*;
+import static WIP.mame056.drivers.tsamurai.*;
 
 public class driver {
 
@@ -1471,15 +1472,15 @@ public class driver {
         driver_retofin2, /* bootleg */
         driver_fightrol, /* (c) 1983 Taito */
         driver_rollrace, /* (c) 1983 Williams */
-        /*TODO*///	driver_vsgongf,	/* (c) 1984 Kaneko */
-        /*TODO*///	driver_tsamurai,	/* A35 (c) 1985 Taito */
-        /*TODO*///	driver_tsamura2,	/* A35 (c) 1985 Taito */
-        /*TODO*///	driver_nunchaku,	/* ??? (c) 1985 Taito */
-        /*TODO*///	driver_yamagchi,	/* A38 (c) 1985 Taito */
-        /*TODO*///	driver_m660,      /* ??? (c) 1986 Taito America Corporation */
-        /*TODO*///	driver_m660j,     /* ??? (c) 1986 Taito Corporation (Japan) */
-        /*TODO*///	driver_m660b,     /* bootleg */
-        /*TODO*///	driver_alphaxz,   /* ??? (c) 1986 Ed/Wood Place */
+        driver_vsgongf,	/* (c) 1984 Kaneko */
+        driver_tsamurai,	/* A35 (c) 1985 Taito */
+        driver_tsamura2,	/* A35 (c) 1985 Taito */
+        driver_nunchaku,	/* ??? (c) 1985 Taito */
+        driver_yamagchi,	/* A38 (c) 1985 Taito */
+        driver_m660,      /* ??? (c) 1986 Taito America Corporation */
+        driver_m660j,     /* ??? (c) 1986 Taito Corporation (Japan) */
+        driver_m660b,     /* bootleg */
+        driver_alphaxz,   /* ??? (c) 1986 Ed/Wood Place */
 
         driver_flstory, /* A45 (c) 1985 Taito Corporation */
         driver_flstoryj, /* A45 (c) 1985 Taito Corporation (Japan) */
