@@ -532,7 +532,7 @@ public class yunsung8
 		yunsung8_init_machine,
 	
 		/* video hardware */
-		512, 256, new rectangle( 0+64, 512-64-1, 0+8, 256-8-1 ),
+		512, 256, new rectangle( 0+64, 512-1, 0+8, 256-8-1 ),
 		yunsung8_gfxdecodeinfo,
 		2048, 0,
 		null,

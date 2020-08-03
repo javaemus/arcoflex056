@@ -326,6 +326,7 @@ import static WIP.mame056.drivers.goindol.*;
 import static WIP.mame056.drivers.suna8.*;
 import static WIP.mame056.drivers.holeland.*;
 import static WIP.mame056.drivers.yunsung8.*;
+import static WIP.mame056.drivers.omegrace.*;
 
 public class driver {
 
@@ -4060,7 +4061,7 @@ public class driver {
         driver_spacefbb,	/* bootleg */
         driver_spacebrd,	/* bootleg */
         driver_spacedem,	/* (c) 1980 Fortrek + made by Nintendo */
-        /*TODO*///	driver_omegrace,	/* (c) 1981 Midway */
+        driver_omegrace,	/* (c) 1981 Midway */
         /*TODO*///	driver_dday,		/* (c) 1982 Olympia */
         /*TODO*///	driver_ddayc,		/* (c) 1982 Olympia + Centuri license */
 
