@@ -327,6 +327,7 @@ import static WIP.mame056.drivers.suna8.*;
 import static WIP.mame056.drivers.holeland.*;
 import static WIP.mame056.drivers.yunsung8.*;
 import static WIP.mame056.drivers.omegrace.*;
+import static WIP.mame056.drivers.dday.*;
 
 public class driver {
 
@@ -4062,8 +4063,8 @@ public class driver {
         driver_spacebrd,	/* bootleg */
         driver_spacedem,	/* (c) 1980 Fortrek + made by Nintendo */
         driver_omegrace,	/* (c) 1981 Midway */
-        /*TODO*///	driver_dday,		/* (c) 1982 Olympia */
-        /*TODO*///	driver_ddayc,		/* (c) 1982 Olympia + Centuri license */
+        driver_dday,		/* (c) 1982 Olympia */
+        driver_ddayc,		/* (c) 1982 Olympia + Centuri license */
 
         /*TODO*///	driver_stactics,	/* [1981 Sega] */
         /*TODO*///	driver_exterm,	/* (c) 1989 Premier Technology - a Gottlieb game */
