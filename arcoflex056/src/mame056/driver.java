@@ -330,6 +330,7 @@ import static WIP.mame056.drivers.omegrace.*;
 import static WIP.mame056.drivers.dday.*;
 import static WIP.mame056.drivers.stactics.*;
 import static WIP.mame056.drivers.starcrus.*;
+import static WIP.mame056.drivers.travrusa.*;
 
 public class driver {
 
@@ -1309,9 +1310,9 @@ public class driver {
         driver_yard, /* (c) 1983 */
         driver_vsyard, /* (c) 1983/1984 */
         driver_vsyard2, /* (c) 1983/1984 */
-        /*TODO*///	driver_travrusa,	/* (c) 1983 */
-        /*TODO*///	driver_motorace,	/* (c) 1983 Williams license */
-        /*TODO*///	/* M62 */
+        driver_travrusa,	/* (c) 1983 */
+        driver_motorace,	/* (c) 1983 Williams license */
+        /* M62 */
         driver_kungfum, /* (c) 1984 */
         driver_kungfud, /* (c) 1984 + Data East license */
         driver_spartanx, /* (c) 1984 (Japan) */
