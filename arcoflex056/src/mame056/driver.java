@@ -329,6 +329,7 @@ import static WIP.mame056.drivers.yunsung8.*;
 import static WIP.mame056.drivers.omegrace.*;
 import static WIP.mame056.drivers.dday.*;
 import static WIP.mame056.drivers.stactics.*;
+import static WIP.mame056.drivers.starcrus.*;
 
 public class driver {
 
@@ -4074,7 +4075,7 @@ public class driver {
         driver_ringkin2, /* (c) 1985 Data East USA */
         driver_ringkin3, /* (c) 1985 Data East USA */
         driver_ambush, /* (c) 1983 Nippon Amuse Co-Ltd */
-        /*TODO*///	driver_starcrus,	/* [1977 Ramtek] */
+        driver_starcrus,	/* [1977 Ramtek] */
         driver_homo,		/* bootleg */
         /*TODO*///TESTdriver_dlair,
         /*TODO*///	driver_aztarac,	/* (c) 1983 Centuri (vector game) */
