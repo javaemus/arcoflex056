@@ -336,6 +336,7 @@ import static WIP.mame056.drivers.gionbana.*;
 import static WIP.mame056.drivers.bottom9.*;
 import static WIP.mame056.drivers.pandoras.*;
 import static WIP.mame056.drivers.pstadium.*;
+import static WIP.mame056.drivers.fromance.*;
 
 public class driver {
 
@@ -3742,12 +3743,12 @@ public class driver {
         /*TODO*///	driver_svolleyk,	/* (c) 1989 V-System Co. (Japan) */
         /*TODO*///	driver_tail2nos,	/* [1989] V-System Co. */
         /*TODO*///	driver_sformula,	/* [1989] V-System Co. (Japan) */
-        /*TODO*///	driver_idolmj,	/* [1988] (c) System Service (Japan) */
-        /*TODO*///	driver_mjnatsu,	/* [1989] Video System presents (Japan) */
-        /*TODO*///	driver_mfunclub,	/* [1989] V-System (Japan) */
-        /*TODO*///	driver_daiyogen,	/* [1990] Video System Co. (Japan) */
-        /*TODO*///	driver_nmsengen,	/* (c) 1991 Video System (Japan) */
-        /*TODO*///	driver_fromance,	/* (c) 1991 Video System Co. (Japan) */
+        driver_idolmj,	/* [1988] (c) System Service (Japan) */
+        driver_mjnatsu,	/* [1989] Video System presents (Japan) */
+        driver_mfunclub,	/* [1989] V-System (Japan) */
+        driver_daiyogen,	/* [1990] Video System Co. (Japan) */
+        driver_nmsengen,	/* (c) 1991 Video System (Japan) */
+        driver_fromance,	/* (c) 1991 Video System Co. (Japan) */
         /*TODO*///	driver_pipedrm,	/* (c) 1990 Video System Co. (US) */
         /*TODO*///	driver_pipedrmj,	/* (c) 1990 Video System Co. (Japan) */
         /*TODO*///	driver_hatris,	/* (c) 1990 Video System Co. (Japan) */
