@@ -333,6 +333,8 @@ import static WIP.mame056.drivers.starcrus.*;
 import static WIP.mame056.drivers.travrusa.*;
 import static WIP.mame056.drivers.tsamurai.*;
 import static WIP.mame056.drivers.gionbana.*;
+import static WIP.mame056.drivers.bottom9.*;
+import static WIP.mame056.drivers.pandoras.*;
 
 public class driver {
 
@@ -2899,7 +2901,7 @@ public class driver {
         driver_psurge,	/* (c) 1988 unknown (NOT Konami) */
         driver_megazone, /* GX319 (c) 1983 */
         driver_megaznik, /* GX319 (c) 1983 + Interlogic / Kosuka */
-        /*TODO*///	driver_pandoras,	/* GX328 (c) 1984 + Interlogic */
+        driver_pandoras,	/* GX328 (c) 1984 + Interlogic */
         driver_gyruss, /* GX347 (c) 1983 */
         driver_gyrussce, /* GX347 (c) 1983 + Centuri license */
         driver_venus, /* bootleg */
@@ -2990,9 +2992,9 @@ public class driver {
         driver_crimfgt2,	/* GX821 (c) 1989 (World) */
         driver_crimfgtj,	/* GX821 (c) 1989 (Japan) */
         driver_spy,		/* GX857 (c) 1989 (US) */
-        /*TODO*///	driver_bottom9,	/* GX891 (c) 1989 */
-        /*TODO*///	driver_bottom9n,	/* GX891 (c) 1989 */
-        /*TODO*///	driver_mstadium,	/* GX891 (c) 1989 (Japan) */
+        driver_bottom9,	/* GX891 (c) 1989 */
+        driver_bottom9n,	/* GX891 (c) 1989 */
+        driver_mstadium,	/* GX891 (c) 1989 (Japan) */
         driver_blockhl,	/* GX973 (c) 1989 */
         driver_quarth,	/* GX973 (c) 1989 (Japan) */
         driver_aliens,	/* GX875 (c) 1990 (World) */
