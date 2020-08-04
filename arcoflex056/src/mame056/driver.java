@@ -337,6 +337,7 @@ import static WIP.mame056.drivers.bottom9.*;
 import static WIP.mame056.drivers.pandoras.*;
 import static WIP.mame056.drivers.pstadium.*;
 import static WIP.mame056.drivers.fromance.*;
+import static WIP.mame056.drivers.pipedrm.*;
 
 public class driver {
 
@@ -3749,9 +3750,9 @@ public class driver {
         driver_daiyogen,	/* [1990] Video System Co. (Japan) */
         driver_nmsengen,	/* (c) 1991 Video System (Japan) */
         driver_fromance,	/* (c) 1991 Video System Co. (Japan) */
-        /*TODO*///	driver_pipedrm,	/* (c) 1990 Video System Co. (US) */
-        /*TODO*///	driver_pipedrmj,	/* (c) 1990 Video System Co. (Japan) */
-        /*TODO*///	driver_hatris,	/* (c) 1990 Video System Co. (Japan) */
+        driver_pipedrm,	/* (c) 1990 Video System Co. (US) */
+        driver_pipedrmj,	/* (c) 1990 Video System Co. (Japan) */
+        driver_hatris,	/* (c) 1990 Video System Co. (Japan) */
         /*TODO*///	driver_pspikes,	/* (c) 1991 Video System Co. (Korea) */
         /*TODO*///	driver_svolly91,	/* (c) 1991 Video System Co. */
         /*TODO*///	driver_karatblz,	/* (c) 1991 Video System Co. */
