@@ -335,6 +335,7 @@ import static WIP.mame056.drivers.tsamurai.*;
 import static WIP.mame056.drivers.gionbana.*;
 import static WIP.mame056.drivers.bottom9.*;
 import static WIP.mame056.drivers.pandoras.*;
+import static WIP.mame056.drivers.pstadium.*;
 
 public class driver {
 
@@ -708,22 +709,22 @@ public class driver {
         driver_maiko,		/* (c) 1990 */
         driver_hanaoji,	/* (c) 1991 */
         
-        /*TODO*///	driver_pstadium,	/* (c) 1990 */
-        /*TODO*///	driver_triplew1,	/* (c) 1989 */
-        /*TODO*///	driver_triplew2,	/* (c) 1990 */
-        /*TODO*///	driver_ntopstar,	/* (c) 1990 */
-        /*TODO*///	driver_mjlstory,	/* (c) 1991 */
-        /*TODO*///	driver_vanilla,	/* (c) 1991 */
-        /*TODO*///	driver_finalbny,	/* (c) 1991 */
-        /*TODO*///	driver_qmhayaku,	/* (c) 1991 */
-        /*TODO*///	driver_galkoku,	/* (c) 1989 Nichibutsu/T.R.TEC */
-        /*TODO*///	driver_hyouban,	/* (c) 1989 Nichibutsu/T.R.TEC */
-        /*TODO*///	driver_galkaika,	/* (c) 1989 Nichibutsu/T.R.TEC */
-        /*TODO*///	driver_tokyogal,	/* (c) 1989 */
-        /*TODO*///	driver_tokimbsj,	/* (c) 1989 */
-        /*TODO*///	driver_mcontest,	/* (c) 1989 */
-        /*TODO*///	driver_av2mj1,	/* (c) 1991 MIKI SYOUJI/AV JAPAN */
-        /*TODO*///
+        driver_pstadium,	/* (c) 1990 */
+        driver_triplew1,	/* (c) 1989 */
+        driver_triplew2,	/* (c) 1990 */
+        driver_ntopstar,	/* (c) 1990 */
+        driver_mjlstory,	/* (c) 1991 */
+        driver_vanilla,	/* (c) 1991 */
+        driver_finalbny,	/* (c) 1991 */
+        driver_qmhayaku,	/* (c) 1991 */
+        driver_galkoku,	/* (c) 1989 Nichibutsu/T.R.TEC */
+        driver_hyouban,	/* (c) 1989 Nichibutsu/T.R.TEC */
+        driver_galkaika,	/* (c) 1989 Nichibutsu/T.R.TEC */
+        driver_tokyogal,	/* (c) 1989 */
+        driver_tokimbsj,	/* (c) 1989 */
+        driver_mcontest,	/* (c) 1989 */
+        driver_av2mj1,	/* (c) 1991 MIKI SYOUJI/AV JAPAN */
+
         /*TODO*///	driver_mjuraden,	/* (c) 1992 Nichibutsu/Yubis */
         /*TODO*///	driver_koinomp,	/* (c) 1992 */
         /*TODO*///	driver_patimono,	/* (c) 1992 */
