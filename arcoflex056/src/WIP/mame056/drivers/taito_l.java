@@ -52,6 +52,7 @@ TODO:
  */ 
 package WIP.mame056.drivers;
 
+import static WIP.mame056.sndhrdw.taitosnd.*;
 import static arcadeflex056.fucPtr.*;
 import static common.ptr.*;
 import static mame056.commonH.*;
@@ -70,8 +71,8 @@ import static mame056.memoryH.*;
 import static mame056.palette.*;
 import static mame056.sndintrf.*;
 import static mame056.sndintrfH.*;
-/*TODO*///import static mame056.sound._2610intf.*;
-/*TODO*///import static mame056.sound._2610intfH.*;
+import static mame056.sound._2610intf.*;
+import static mame056.sound._2610intfH.*;
 import static mame056.sound._2203intf.*;
 import static mame056.sound._2203intfH.*;
 import static mame056.sound.vlm5030.*;
@@ -691,7 +692,7 @@ public class taito_l
 		new Memory_ReadAddress( 0x0000, 0x7fff, MRA_ROM ),
 		new Memory_ReadAddress( 0x8000, 0xbfff, MRA_BANK6 ),
 		new Memory_ReadAddress( 0xc800, 0xc800, MRA_NOP ),
-/*TODO*///		new Memory_ReadAddress( 0xc801, 0xc801, taitosound_comm_r ),
+		new Memory_ReadAddress( 0xc801, 0xc801, taitosound_comm_r ),
 		new Memory_ReadAddress( 0xe000, 0xffff, shared_r ),
 		new Memory_ReadAddress( 0xd000, 0xd000, input_port_0_r ),
 		new Memory_ReadAddress( 0xd001, 0xd001, input_port_1_r ),
@@ -705,8 +706,8 @@ public class taito_l
 		new Memory_WriteAddress(MEMPORT_MARKER, MEMPORT_DIRECTION_WRITE | MEMPORT_TYPE_MEM | MEMPORT_WIDTH_8),
 		new Memory_WriteAddress( 0x0000, 0xbfff, MWA_ROM ),
 		new Memory_WriteAddress( 0xc000, 0xc000, rombank2switch_w ),
-/*TODO*///		new Memory_WriteAddress( 0xc800, 0xc800, taitosound_port_w ),
-/*TODO*///		new Memory_WriteAddress( 0xc801, 0xc801, taitosound_comm_w ),
+		new Memory_WriteAddress( 0xc800, 0xc800, taitosound_port_w ),
+		new Memory_WriteAddress( 0xc801, 0xc801, taitosound_comm_w ),
 		new Memory_WriteAddress( 0xd000, 0xd000, MWA_NOP ),	// Direct copy of input port 0
 		new Memory_WriteAddress( 0xd004, 0xd004, control2_w ),
 		new Memory_WriteAddress( 0xd005, 0xd006, MWA_NOP ),	// Always 0
@@ -720,7 +721,7 @@ public class taito_l
 		new Memory_ReadAddress( 0x4000, 0x7fff, MRA_BANK7 ),
 		new Memory_ReadAddress( 0x8000, 0x9fff, MRA_RAM ),
 		new Memory_ReadAddress( 0xe000, 0xe000, MRA_NOP ),
-/*TODO*///		new Memory_ReadAddress( 0xe001, 0xe001, taitosound_slave_comm_r ),
+		new Memory_ReadAddress( 0xe001, 0xe001, taitosound_slave_comm_r ),
 		new Memory_ReadAddress( 0xf000, 0xf000, YM2203_status_port_0_r ),
 		new Memory_ReadAddress(MEMPORT_MARKER, 0)
 	};
@@ -729,8 +730,8 @@ public class taito_l
 		new Memory_WriteAddress(MEMPORT_MARKER, MEMPORT_DIRECTION_WRITE | MEMPORT_TYPE_MEM | MEMPORT_WIDTH_8),
 		new Memory_WriteAddress( 0x0000, 0x7fff, MWA_ROM ),
 		new Memory_WriteAddress( 0x8000, 0x9fff, MWA_RAM ),
-/*TODO*///		new Memory_WriteAddress( 0xe000, 0xe000, taitosound_slave_port_w ),
-/*TODO*///		new Memory_WriteAddress( 0xe001, 0xe001, taitosound_slave_comm_w ),
+		new Memory_WriteAddress( 0xe000, 0xe000, taitosound_slave_port_w ),
+		new Memory_WriteAddress( 0xe001, 0xe001, taitosound_slave_comm_w ),
 		new Memory_WriteAddress( 0xf000, 0xf000, YM2203_control_port_0_w ),
 		new Memory_WriteAddress( 0xf001, 0xf001, YM2203_write_port_0_w ),
 		new Memory_WriteAddress(MEMPORT_MARKER, 0)
@@ -754,7 +755,7 @@ public class taito_l
 		new Memory_ReadAddress( 0x8800, 0x8800, mux_r ),
 		new Memory_ReadAddress( 0x8801, 0x8801, MRA_NOP ),	// Watchdog or interrupt ack (value ignored)
 		new Memory_ReadAddress( 0x8c00, 0x8c00, MRA_NOP ),
-/*TODO*///		new Memory_ReadAddress( 0x8c01, 0x8c01, taitosound_comm_r ),
+		new Memory_ReadAddress( 0x8c01, 0x8c01, taitosound_comm_r ),
 		new Memory_ReadAddress( 0xa000, 0xbfff, MRA_RAM ),
 		new Memory_ReadAddress(MEMPORT_MARKER, 0)
 	};
@@ -774,8 +775,8 @@ public class taito_l
 		new Memory_WriteAddress( 0x8000, 0x87ff, MWA_RAM, shared_ram ),
 		new Memory_WriteAddress( 0x8800, 0x8800, mux_w ),
 		new Memory_WriteAddress( 0x8801, 0x8801, mux_ctrl_w ),
-/*TODO*///		new Memory_WriteAddress( 0x8c00, 0x8c00, taitosound_port_w ),
-/*TODO*///		new Memory_WriteAddress( 0x8c01, 0x8c01, taitosound_comm_w ),
+		new Memory_WriteAddress( 0x8c00, 0x8c00, taitosound_port_w ),
+		new Memory_WriteAddress( 0x8c01, 0x8c01, taitosound_comm_w ),
 		new Memory_WriteAddress( 0xa000, 0xbfff, MWA_RAM ),
 		new Memory_WriteAddress(MEMPORT_MARKER, 0)
 	};
@@ -802,11 +803,11 @@ public class taito_l
 		new Memory_ReadAddress( 0x0000, 0x3fff, MRA_ROM ),
 		new Memory_ReadAddress( 0x4000, 0x7fff, MRA_BANK7 ),
 		new Memory_ReadAddress( 0xc000, 0xdfff, MRA_RAM ),
-/*TODO*///		new Memory_ReadAddress( 0xe000, 0xe000, YM2610_status_port_0_A_r ),
-/*TODO*///		new Memory_ReadAddress( 0xe001, 0xe001, YM2610_read_port_0_r ),
-/*TODO*///		new Memory_ReadAddress( 0xe002, 0xe002, YM2610_status_port_0_B_r ),
+		new Memory_ReadAddress( 0xe000, 0xe000, YM2610_status_port_0_A_r ),
+		new Memory_ReadAddress( 0xe001, 0xe001, YM2610_read_port_0_r ),
+		new Memory_ReadAddress( 0xe002, 0xe002, YM2610_status_port_0_B_r ),
 		new Memory_ReadAddress( 0xe200, 0xe200, MRA_NOP ),
-/*TODO*///		new Memory_ReadAddress( 0xe201, 0xe201, taitosound_slave_comm_r ),
+		new Memory_ReadAddress( 0xe201, 0xe201, taitosound_slave_comm_r ),
 		new Memory_ReadAddress(MEMPORT_MARKER, 0)
 	};
 	
@@ -822,12 +823,12 @@ public class taito_l
 		new Memory_WriteAddress(MEMPORT_MARKER, MEMPORT_DIRECTION_WRITE | MEMPORT_TYPE_MEM | MEMPORT_WIDTH_8),
 		new Memory_WriteAddress( 0x0000, 0x7fff, MWA_ROM ),
 		new Memory_WriteAddress( 0xc000, 0xdfff, MWA_RAM ),
-/*TODO*///		new Memory_WriteAddress( 0xe000, 0xe000, YM2610_control_port_0_A_w ),
-/*TODO*///		new Memory_WriteAddress( 0xe001, 0xe001, YM2610_data_port_0_A_w ),
-/*TODO*///		new Memory_WriteAddress( 0xe002, 0xe002, YM2610_control_port_0_B_w ),
-/*TODO*///		new Memory_WriteAddress( 0xe003, 0xe003, YM2610_data_port_0_B_w ),
-/*TODO*///		new Memory_WriteAddress( 0xe200, 0xe200, taitosound_slave_port_w ),
-/*TODO*///		new Memory_WriteAddress( 0xe201, 0xe201, taitosound_slave_comm_w ),
+                new Memory_WriteAddress( 0xe000, 0xe000, YM2610_control_port_0_A_w ),
+		new Memory_WriteAddress( 0xe001, 0xe001, YM2610_data_port_0_A_w ),
+		new Memory_WriteAddress( 0xe002, 0xe002, YM2610_control_port_0_B_w ),
+		new Memory_WriteAddress( 0xe003, 0xe003, YM2610_data_port_0_B_w ),
+		new Memory_WriteAddress( 0xe200, 0xe200, taitosound_slave_port_w ),
+		new Memory_WriteAddress( 0xe201, 0xe201, taitosound_slave_comm_w ),
 		new Memory_WriteAddress( 0xe400, 0xe403, MWA_NOP ), /* pan */
 		new Memory_WriteAddress( 0xe600, 0xe600, MWA_NOP ), /* ? */
 		new Memory_WriteAddress( 0xee00, 0xee00, MWA_NOP ), /* ? */
@@ -887,7 +888,7 @@ public class taito_l
 		new Memory_ReadAddress( 0xe007, 0xe007, input_port_4_r ),
 		new Memory_ReadAddress( 0xe008, 0xe00f, MRA_NOP ),
 		new Memory_ReadAddress( 0xe800, 0xe800, MRA_NOP ),
-/*TODO*///		new Memory_ReadAddress( 0xe801, 0xe801, taitosound_comm_r ),
+		new Memory_ReadAddress( 0xe801, 0xe801, taitosound_comm_r ),
 		new Memory_ReadAddress( 0xf000, 0xf000, rombank2switch_r ),
 		new Memory_ReadAddress(MEMPORT_MARKER, 0)
 	};
@@ -898,8 +899,8 @@ public class taito_l
 		new Memory_WriteAddress( 0xc000, 0xdfff, shared_w ),
 		new Memory_WriteAddress( 0xe000, 0xe000, MWA_NOP ),	// Watchdog
 		new Memory_WriteAddress( 0xe004, 0xe004, control2_w ),
-/*TODO*///		new Memory_WriteAddress( 0xe800, 0xe800, taitosound_port_w ),
-/*TODO*///		new Memory_WriteAddress( 0xe801, 0xe801, taitosound_comm_w ),
+		new Memory_WriteAddress( 0xe800, 0xe800, taitosound_port_w ),
+		new Memory_WriteAddress( 0xe801, 0xe801, taitosound_comm_w ),
 		new Memory_WriteAddress( 0xf000, 0xf000, rombank2switch_w ),
 		new Memory_WriteAddress(MEMPORT_MARKER, 0)
 	};
@@ -911,7 +912,7 @@ public class taito_l
 		new Memory_ReadAddress( 0x8000, 0x8fff, MRA_RAM ),
 		new Memory_ReadAddress( 0x9000, 0x9000, YM2203_status_port_0_r ),
 		new Memory_ReadAddress( 0xa000, 0xa000, MRA_NOP ),
-/*TODO*///		new Memory_ReadAddress( 0xa001, 0xa001, taitosound_slave_comm_r ),
+		new Memory_ReadAddress( 0xa001, 0xa001, taitosound_slave_comm_r ),
 		new Memory_ReadAddress(MEMPORT_MARKER, 0)
 	};
 	
@@ -921,8 +922,8 @@ public class taito_l
 		new Memory_WriteAddress( 0x8000, 0x8fff, MWA_RAM ),
 		new Memory_WriteAddress( 0x9000, 0x9000, YM2203_control_port_0_w ),
 		new Memory_WriteAddress( 0x9001, 0x9001, YM2203_write_port_0_w ),
-/*TODO*///		new Memory_WriteAddress( 0xa000, 0xa000, taitosound_slave_port_w ),
-/*TODO*///		new Memory_WriteAddress( 0xa001, 0xa001, taitosound_slave_comm_w ),
+		new Memory_WriteAddress( 0xa000, 0xa000, taitosound_slave_port_w ),
+		new Memory_WriteAddress( 0xa001, 0xa001, taitosound_slave_comm_w ),
 		new Memory_WriteAddress( 0xb000, 0xb000, champwr_adpcm_hi_w ),
 		new Memory_WriteAddress( 0xc000, 0xc000, champwr_adpcm_lo_w ),
 		new Memory_WriteAddress( 0xd000, 0xd000, MWA_NOP ),	/* ADPCM related */
@@ -2298,20 +2299,20 @@ public class taito_l
 	);
 	
 	
-/*TODO*///	static YM2610interface ym2610_interface = new YM2610interface
-/*TODO*///	(
-/*TODO*///		1,	/* 1 chip */
-/*TODO*///		8000000,	/* 8 MHz */
-/*TODO*///		new { 25 },
-/*TODO*///		{ 0 },
-/*TODO*///		{ 0 },
-/*TODO*///		{ 0 },
-/*TODO*///		{ 0 },
-/*TODO*///		{ irqhandler },
-/*TODO*///		{ REGION_SOUND1 },
-/*TODO*///		{ REGION_SOUND1 },
-/*TODO*///		{ YM3012_VOL(100,MIXER_PAN_LEFT,100,MIXER_PAN_RIGHT) }
-/*TODO*///	);
+	static YM2610interface ym2610_interface = new YM2610interface
+	(
+		1,	/* 1 chip */
+		8000000,	/* 8 MHz */
+		new int[]{ 25 },
+		new ReadHandlerPtr[]{ null },
+		new ReadHandlerPtr[]{ null },
+		new WriteHandlerPtr[]{ null },
+		new WriteHandlerPtr[]{ null },
+		new WriteYmHandlerPtr[]{ irqhandler },
+		new int[]{ REGION_SOUND1 },
+		new int[]{ REGION_SOUND1 },
+		new int[]{ YM3012_VOL(100,MIXER_PAN_LEFT,100,MIXER_PAN_RIGHT) }
+	);
 	
 	static YM2203interface ym2203_interface_double = new YM2203interface
 	(
@@ -2472,13 +2473,13 @@ public class taito_l
 		taitol_vh_screenrefresh,								
 																
 		0,0,0,0,												
-/*TODO*///		new MachineSound[] {														
-/*TODO*///			new MachineSound(													
-/*TODO*///				SOUND_YM2610,									
-/*TODO*///				ym2610_interface								
-/*TODO*///			)													
-/*TODO*///		}														
-                null
+		new MachineSound[] {														
+			new MachineSound(													
+				SOUND_YM2610,									
+				ym2610_interface								
+			)													
+		}														
+               
 	);
 	
 	static MachineDriver machine_driver_kurikint = new MachineDriver

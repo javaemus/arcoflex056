@@ -73,6 +73,12 @@ import static WIP.mame056.vidhrdw.wc90.*;
 import static mame056.sound.ay8910.*;
 import mame056.sound.ay8910H.AY8910interface;
 
+import static mame056.sound._2608intf.*;
+import static mame056.sound._2608intfH.*;
+import static mame056.sound._2151intf.*;
+import static mame056.sound._2151intfH.*;
+import static mame056.sound.mixerH.*;
+
 import static mame056.vidhrdw.generic.*;
 
 
@@ -197,8 +203,8 @@ public class wc90
 		new Memory_ReadAddress(MEMPORT_MARKER, MEMPORT_DIRECTION_READ | MEMPORT_TYPE_MEM | MEMPORT_WIDTH_8),
 		new Memory_ReadAddress( 0x0000, 0xbfff, MRA_ROM ),
 		new Memory_ReadAddress( 0xf000, 0xf7ff, MRA_RAM ),
-/*TODO*///		new Memory_ReadAddress( 0xf800, 0xf800, YM2608_status_port_0_A_r ),
-/*TODO*///		new Memory_ReadAddress( 0xf802, 0xf802, YM2608_status_port_0_B_r ),
+		new Memory_ReadAddress( 0xf800, 0xf800, YM2608_status_port_0_A_r ),
+		new Memory_ReadAddress( 0xf802, 0xf802, YM2608_status_port_0_B_r ),
 		new Memory_ReadAddress( 0xfc00, 0xfc00, MRA_NOP ), /* ??? adpcm ??? */
 		new Memory_ReadAddress( 0xfc10, 0xfc10, soundlatch_r ),
 		new Memory_ReadAddress(MEMPORT_MARKER, 0)
@@ -208,10 +214,10 @@ public class wc90
 		new Memory_WriteAddress(MEMPORT_MARKER, MEMPORT_DIRECTION_WRITE | MEMPORT_TYPE_MEM | MEMPORT_WIDTH_8),
 		new Memory_WriteAddress( 0x0000, 0xbfff, MWA_ROM ),
 		new Memory_WriteAddress( 0xf000, 0xf7ff, MWA_RAM ),
-/*TODO*///		new Memory_WriteAddress( 0xf800, 0xf800, YM2608_control_port_0_A_w ),
-/*TODO*///		new Memory_WriteAddress( 0xf801, 0xf801, YM2608_data_port_0_A_w ),
-/*TODO*///		new Memory_WriteAddress( 0xf802, 0xf802, YM2608_control_port_0_B_w ),
-/*TODO*///		new Memory_WriteAddress( 0xf803, 0xf803, YM2608_data_port_0_B_w ),
+		new Memory_WriteAddress( 0xf800, 0xf800, YM2608_control_port_0_A_w ),
+		new Memory_WriteAddress( 0xf801, 0xf801, YM2608_data_port_0_A_w ),
+		new Memory_WriteAddress( 0xf802, 0xf802, YM2608_control_port_0_B_w ),
+		new Memory_WriteAddress( 0xf803, 0xf803, YM2608_data_port_0_B_w ),
 		new Memory_WriteAddress(MEMPORT_MARKER, 0)
 	};
 	
@@ -351,24 +357,25 @@ public class wc90
 	
 	
 	/* handler called by the 2608 emulator when the internal timers cause an IRQ */
-	static void irqhandler(int irq)
-	{
+	static WriteYmHandlerPtr irqhandler = new WriteYmHandlerPtr() {
+            public void handler(int irq) {
 		cpu_set_irq_line(2,0,irq!=0 ? ASSERT_LINE : CLEAR_LINE);
-	}
+            }
+        };
 	
-/*TODO*///	static YM2608interface ym2608_interface =
-/*TODO*///	{
-/*TODO*///		1,
-/*TODO*///		8000000,
-/*TODO*///		{ 50 },
-/*TODO*///		{ 0 },
-/*TODO*///		{ 0 },
-/*TODO*///		{ 0 },
-/*TODO*///		{ 0 },
-/*TODO*///		{ irqhandler },
-/*TODO*///		{ REGION_SOUND1 },
-/*TODO*///		{ YM3012_VOL(50,MIXER_PAN_LEFT,50,MIXER_PAN_RIGHT) }
-/*TODO*///	};
+	static YM2608interface ym2608_interface = new YM2608interface
+	(
+		1,
+		8000000,
+		new int[]{ 50 },
+		new ReadHandlerPtr[]{ null },
+		new ReadHandlerPtr[]{ null },
+		new WriteHandlerPtr[]{ null },
+		new WriteHandlerPtr[]{ null },
+		new WriteYmHandlerPtr[] { irqhandler },
+		new int[]{ REGION_SOUND1 },
+		new int[]{ YM3012_VOL(50,MIXER_PAN_LEFT,50,MIXER_PAN_RIGHT) }
+	);
 	
 	static MachineDriver machine_driver_wc90 = new MachineDriver
 	(
@@ -412,13 +419,13 @@ public class wc90
 	
 		/* sound hardware */
 		0,0,0,0,
-/*TODO*///		new MachineSound[] {
-/*TODO*///			new MachineSound(
-/*TODO*///				SOUND_YM2608,
-/*TODO*///				ym2608_interface
-/*TODO*///			)
-/*TODO*///		}
-                null
+		new MachineSound[] {
+			new MachineSound(
+				SOUND_YM2608,
+				ym2608_interface
+			)
+		}
+                
 	);
 	
 	

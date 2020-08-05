@@ -2214,7 +2214,7 @@ pcmbufA[adpcm[c].start],pcmbufA[adpcm[c].start+1],pcmbufA[adpcm[c].start+2]));*/
 
     /* -------------------------- YM2608(OPNA) ---------------------------------- */
     public static int YM2608Init(int num, int clock, int rate,
-            UBytePtr[] pcmrom, int[] pcmsize, short[] rhythmrom, int[] rhythmpos,
+            UBytePtr[] pcmrom, int[] pcmsize, UBytePtr rhythmrom, int[] rhythmpos,
             FM_TIMERHANDLER_Ptr TimerHandler, FM_IRQHANDLER_Ptr IRQHandler) {
         int i, j;
 
@@ -2254,7 +2254,7 @@ pcmbufA[adpcm[c].start],pcmbufA[adpcm[c].start+1],pcmbufA[adpcm[c].start+2]));*/
             /*TODO*///FM2608[i].deltaT.memory = pcmrom[i];
             /*TODO*///FM2608[i].deltaT.memory_size = pcmsize[i];
             /* ADPCM(Rythm) */
-            /*TODO*///FM2608[i].pcmbuf = new UBytePtr(rhythmrom);
+            FM2608[i].pcmbuf = new UBytePtr(rhythmrom);
             /* rhythm sound setup (PCM) */
             for (j = 0; j < 6; j++) {
                 /* rhythm sound */

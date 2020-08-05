@@ -2386,7 +2386,7 @@ public class konamiic
 
     public static void K053247_sprites_draw(mame_bitmap bitmap) {
         //System.out.println("K053247_sprites_draw");
-        K053247_ram.offset=0;
+        //K053247_ram.offset=0;
         int NUM_SPRITES = 256;
         int offs,pri_code;
 		int[] sortedlist = new int[NUM_SPRITES];
@@ -2426,6 +2426,7 @@ public class konamiic
 			*/
 			int xoffset[] = { 0, 1, 4, 5, 16, 17, 20, 21 };
 			int yoffset[] = { 0, 2, 8, 10, 32, 34, 40, 42 };
+                        
 	
 	//System.out.println("B");
 			offs = sortedlist[pri_code];
@@ -2525,6 +2526,7 @@ public class konamiic
 					int c,fx,fy;
 	
 					sx = ox + ((zoomx * x + (1<<11)) >> 12);
+                                        //System.out.println("x="+sx);
 					zw = (ox + ((zoomx * (x+1) + (1<<11)) >> 12)) - sx;
 					c = code[0];
 					if (mirrorx!=0)
@@ -2578,7 +2580,7 @@ public class konamiic
 								color[0],
 								fx,fy,
 								sx,sy,
-								Machine.visible_area,shadow!=0 ? TRANSPARENCY_PEN_TABLE : TRANSPARENCY_PEN,0,pri[0]);
+								new rectangle(Machine.visible_area),shadow!=0 ? TRANSPARENCY_PEN_TABLE : TRANSPARENCY_PEN,0,pri[0]);
 					}
 					else
 					{
@@ -2588,7 +2590,7 @@ public class konamiic
 								color[0],
 								fx,fy,
 								sx,sy,
-								Machine.visible_area,shadow!=0 ? TRANSPARENCY_PEN_TABLE : TRANSPARENCY_PEN,0,
+								new rectangle(Machine.visible_area),shadow!=0 ? TRANSPARENCY_PEN_TABLE : TRANSPARENCY_PEN,0,
 								(zw << 16) / 16,(zh << 16) / 16,pri[0]);
 					}
 	
@@ -2602,7 +2604,7 @@ public class konamiic
 									color[0],
 									fx,fy!=0?0:1,
 									sx,sy,
-									Machine.visible_area,shadow!=0 ? TRANSPARENCY_PEN_TABLE : TRANSPARENCY_PEN,0,pri[0]);
+									new rectangle(Machine.visible_area),shadow!=0 ? TRANSPARENCY_PEN_TABLE : TRANSPARENCY_PEN,0,pri[0]);
 						}
 						else
 						{
@@ -2612,7 +2614,7 @@ public class konamiic
 									color[0],
 									fx,fy!=0?0:1,
 									sx,sy,
-									Machine.visible_area,shadow!=0 ? TRANSPARENCY_PEN_TABLE : TRANSPARENCY_PEN,0,
+									new rectangle(Machine.visible_area),shadow!=0 ? TRANSPARENCY_PEN_TABLE : TRANSPARENCY_PEN,0,
 									(zw << 16) / 16,(zh << 16) / 16,pri[0]);
 						}
 					}

@@ -47,6 +47,8 @@ import mame056.sound.k051649;
 import mame056.sound.upd7759;
 import mame056.sound.k007232;
 import mame056.sound.k053260;
+import mame056.sound._2610intf;
+import mame056.sound._2608intf;
 
 // MESS Sound Chips
 import mess056.sound.speaker;
@@ -401,32 +403,8 @@ public class sndintrf {
                 new ay8910(),
                 new _2203intf(),
                 new _2151intf(),
-                /*TODO*///#endif
-                /*TODO*///#if (HAS_YM2608)
-                /*TODO*///    {
-                /*TODO*///		SOUND_YM2608,
-                /*TODO*///		"YM2608",
-                /*TODO*///		YM2608_num,
-                /*TODO*///		YM2608_clock,
-                /*TODO*///		YM2608_sh_start,
-                /*TODO*///		YM2608_sh_stop,
-                /*TODO*///		0,
-                /*TODO*///		YM2608_sh_reset
-                /*TODO*///	},
-                new Dummy_snd(),
-                /*TODO*///#endif
-                /*TODO*///#if (HAS_YM2610)
-                /*TODO*///    {
-                /*TODO*///		SOUND_YM2610,
-                /*TODO*///		"YM2610",
-                /*TODO*///		YM2610_num,
-                /*TODO*///		YM2610_clock,
-                /*TODO*///		YM2610_sh_start,
-                /*TODO*///		YM2610_sh_stop,
-                /*TODO*///		0,
-                /*TODO*///		YM2610_sh_reset
-                /*TODO*///	},
-                new Dummy_snd(),
+                new _2608intf(),
+                new _2610intf(),
                 /*TODO*///#endif
                 /*TODO*///#if (HAS_YM2610B)
                 /*TODO*///    {

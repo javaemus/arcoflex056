@@ -57,12 +57,7 @@ public class simpsons
 	public static K053247_callbackProcPtr sprite_callback = new K053247_callbackProcPtr() { 
             public void handler(int[] code,int[] color,int[] priority_mask){
             
-		int pri = (color[0] & 0x0f80) >> 6;	/* ??????? */
-		if (pri <= layerpri[2])					priority_mask[0] = 0;
-		else if (pri > layerpri[2] && pri <= layerpri[1])	priority_mask[0] = 0xf0;
-		else if (pri > layerpri[1] && pri <= layerpri[0])	priority_mask[0] = 0xf0|0xcc;
-                else priority_mask[0] = 0xf0|0xcc|0xaa;
-	
+		priority_mask[0] = (color[0] & 0x0f80) >> 6;	/* ??????? */
 		color[0] = sprite_colorbase + (color[0] & 0x001f);
             }
         };
