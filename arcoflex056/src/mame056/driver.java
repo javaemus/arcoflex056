@@ -338,6 +338,7 @@ import static WIP.mame056.drivers.pandoras.*;
 import static WIP.mame056.drivers.pstadium.*;
 import static WIP.mame056.drivers.fromance.*;
 import static WIP.mame056.drivers.pipedrm.*;
+import static WIP.mame056.drivers.ttmahjng.*;
 
 public class driver {
 
@@ -3900,7 +3901,7 @@ public class driver {
         driver_stratvox,	/* [1980 Sun Electronics] Taito */
         driver_route16,	/* (c) 1981 Tehkan/Sun + Centuri license */
         driver_route16b,	/* bootleg */
-        /*TODO*///	driver_ttmahjng,	/* Taito */
+        driver_ttmahjng,	/* Taito */
         driver_fnkyfish, /* (c) 1981 Sun Electronics */
         driver_kangaroo, /* (c) 1982 Sun Electronics */
         driver_kangaroa, /* 136008			(c) 1982 Atari */
