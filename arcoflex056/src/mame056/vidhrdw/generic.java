@@ -30,7 +30,7 @@ public class generic {
     public static UBytePtr spriteram16 = new UBytePtr();		/* ... */
 /*TODO*///	data32_t *spriteram32;		/* ... */
     public static UBytePtr spriteram_2 = new UBytePtr();
-    /*TODO*///	data16_t *spriteram16_2;
+    public static UBytePtr spriteram16_2 = new UBytePtr();
 /*TODO*///	data32_t *spriteram32_2;
     public static UBytePtr spriteram_3 = new UBytePtr();
     /*TODO*///	data16_t *spriteram16_3;
@@ -39,7 +39,7 @@ public class generic {
     public static UBytePtr buffered_spriteram16 = new UBytePtr(1024 * 128);
 /*TODO*///	data32_t *buffered_spriteram32;
     public static UBytePtr buffered_spriteram_2 = new UBytePtr();
-    /*TODO*///	data16_t *buffered_spriteram16_2;
+    public static UBytePtr buffered_spriteram16_2 = new UBytePtr();
 /*TODO*///	data32_t *buffered_spriteram32_2;
     public static int[] spriteram_size = new int[1];/* ... here just for convenience */
     public static int[] spriteram_2_size = new int[1];/* ... here just for convenience */
@@ -266,11 +266,12 @@ public class generic {
     };
 
     /*TODO*///	
-/*TODO*///	WRITE16_HANDLER( buffer_spriteram16_2_w )
-/*TODO*///	{
-/*TODO*///		memcpy(buffered_spriteram16_2,spriteram16_2,spriteram_2_size);
-/*TODO*///	}
-/*TODO*///	
+    public static WriteHandlerPtr buffer_spriteram16_2_w = new WriteHandlerPtr() {
+        public void handler(int offset, int data) {
+		memcpy(buffered_spriteram16_2,spriteram16_2,spriteram_2_size[0]);
+	}
+    };
+
 /*TODO*///	WRITE32_HANDLER( buffer_spriteram32_2_w )
 /*TODO*///	{
 /*TODO*///		memcpy(buffered_spriteram32_2,spriteram32_2,spriteram_2_size);
@@ -283,4 +284,5 @@ public class generic {
     public static void buffer_spriteram_2(UBytePtr ptr, int length) {
         memcpy(buffered_spriteram_2, ptr, length);
     }
+    
 }

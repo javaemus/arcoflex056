@@ -778,11 +778,12 @@ public class palette {
         }
     };
 
-/*TODO*///READ16_HANDLER( paletteram16_word_r )
-/*TODO*///{
-/*TODO*///	return paletteram16[offset];
-/*TODO*///}
-/*TODO*///
+    public static ReadHandlerPtr paletteram16_word_r = new ReadHandlerPtr() {
+        public int handler(int offset) {
+            return paletteram16.read(offset);
+        }
+    };
+
 /*TODO*///READ16_HANDLER( paletteram16_2_word_r )
 /*TODO*///{
 /*TODO*///	return paletteram16_2[offset];

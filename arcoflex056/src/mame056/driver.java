@@ -339,6 +339,7 @@ import static WIP.mame056.drivers.pstadium.*;
 import static WIP.mame056.drivers.fromance.*;
 import static WIP.mame056.drivers.pipedrm.*;
 import static WIP.mame056.drivers.ttmahjng.*;
+import static WIP.mame056.drivers.srmp2.*;
 
 public class driver {
 
@@ -3852,10 +3853,10 @@ public class driver {
         
         /* Seta games */
         driver_hanaawas,	/* (c) SetaKikaku */
-        /*TODO*///	driver_srmp2,		/* UB or UC?? (c) 1987 */
-        /*TODO*///	driver_srmp3,		/* ZA-0? (c) 1988 */
-        /*TODO*///	driver_mjyuugi,	/* (c) 1990 Visco */
-        /*TODO*///	driver_mjyuugia,	/* (c) 1990 Visco */
+        driver_srmp2,		/* UB or UC?? (c) 1987 */
+        driver_srmp3,		/* ZA-0? (c) 1988 */
+        driver_mjyuugi,	/* (c) 1990 Visco */
+        driver_mjyuugia,	/* (c) 1990 Visco */
         /*TODO*///	driver_tndrcade,	/* UA-0 (c) 1987 Taito */
         /*TODO*///	driver_tndrcadj,	/* UA-0 (c) 1987 Taito */
         /*TODO*///	driver_twineagl,	/* UA-2 (c) 1988 + Taito license */

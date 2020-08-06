@@ -386,7 +386,10 @@ public class ay8910 extends snd_interface {
             return AY8910Read(4);
         }
     };
-    /*TODO*///READ16_HANDLER( AY8910_read_port_0_lsb_r ) { return AY8910Read(0); }
+    public static ReadHandlerPtr AY8910_read_port_0_lsb_r = new ReadHandlerPtr() {
+        public int handler(int offset) {
+            return AY8910Read(0);
+        } };
 /*TODO*///READ16_HANDLER( AY8910_read_port_1_lsb_r ) { return AY8910Read(1); }
 /*TODO*///READ16_HANDLER( AY8910_read_port_2_lsb_r ) { return AY8910Read(2); }
 /*TODO*///READ16_HANDLER( AY8910_read_port_3_lsb_r ) { return AY8910Read(3); }
@@ -423,7 +426,11 @@ public class ay8910 extends snd_interface {
         }
     };
 
-    /*TODO*///WRITE16_HANDLER( AY8910_control_port_0_lsb_w ) { if (ACCESSING_LSB) AY8910Write(0,0,data & 0xff); }
+    public static WriteHandlerPtr AY8910_control_port_0_lsb_w = new WriteHandlerPtr() {
+        public void handler(int offset, int data) {
+/*TODO*///            if (ACCESSING_LSB) 
+/*TODO*///                AY8910Write(0,0,data & 0xff);
+        } };
 /*TODO*///WRITE16_HANDLER( AY8910_control_port_1_lsb_w ) { if (ACCESSING_LSB) AY8910Write(1,0,data & 0xff); }
 /*TODO*///WRITE16_HANDLER( AY8910_control_port_2_lsb_w ) { if (ACCESSING_LSB) AY8910Write(2,0,data & 0xff); }
 /*TODO*///WRITE16_HANDLER( AY8910_control_port_3_lsb_w ) { if (ACCESSING_LSB) AY8910Write(3,0,data & 0xff); }
@@ -458,7 +465,10 @@ public class ay8910 extends snd_interface {
             AY8910Write(4, 1, data);
         }
     };
-    /*TODO*///WRITE16_HANDLER( AY8910_write_port_0_lsb_w ) { if (ACCESSING_LSB) AY8910Write(0,1,data & 0xff); }
+    public static WriteHandlerPtr AY8910_write_port_0_lsb_w = new WriteHandlerPtr() {
+        public void handler(int offset, int data) {
+/*TODO*///            if (ACCESSING_LSB) AY8910Write(0,1,data & 0xff);
+        } };
 /*TODO*///WRITE16_HANDLER( AY8910_write_port_1_lsb_w ) { if (ACCESSING_LSB) AY8910Write(1,1,data & 0xff); }
 /*TODO*///WRITE16_HANDLER( AY8910_write_port_2_lsb_w ) { if (ACCESSING_LSB) AY8910Write(2,1,data & 0xff); }
 /*TODO*///WRITE16_HANDLER( AY8910_write_port_3_lsb_w ) { if (ACCESSING_LSB) AY8910Write(3,1,data & 0xff); }
