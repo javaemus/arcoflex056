@@ -3505,7 +3505,7 @@ public class driver {
         /* Zaccaria games */
         driver_sia2650,
         driver_tinv2650,
-        /*TODO*///TESTdriver_embargo,
+        driver_embargo,
         driver_monymony,	/* (c) 1983 */
         driver_jackrabt,	/* (c) 1984 */
         driver_jackrab2,	/* (c) 1984 */

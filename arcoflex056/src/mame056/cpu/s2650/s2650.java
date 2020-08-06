@@ -383,24 +383,24 @@ public class s2650 extends cpu_interface {
 		}															
 	}
 	
-/*TODO*///	/***************************************************************
-/*TODO*///	 * _REL_ZERO
-/*TODO*///	 * build effective address with zero relative addressing
-/*TODO*///	 ***************************************************************/
-/*TODO*///	#define _REL_ZERO(page)											
-/*TODO*///	{																
-/*TODO*///		UINT8 hr = ARG();	/* get 'holding register' */            
-/*TODO*///		/* build effective address from 0 */						
-/*TODO*///		S.ea = (S2650_relative[hr] & PMSK);							
-/*TODO*///		if (hr & 0x80) { /* indirect bit set ? */					
-/*TODO*///			int addr = S.ea;										
-/*TODO*///			s2650_ICount -= 2;										
-/*TODO*///			/* build indirect 32K address */						
-/*TODO*///			S.ea = RDMEM(addr) << 8;								
-/*TODO*///			if( (++addr & PMSK) == 0 ) addr -= PLEN; /* page wrap */
-/*TODO*///			S.ea = (S.ea + RDMEM(addr)) & AMSK; 					
-/*TODO*///		}															
-/*TODO*///	}
+	/***************************************************************
+	 * _REL_ZERO
+	 * build effective address with zero relative addressing
+	 ***************************************************************/
+	public void REL_ZERO(int page)											
+	{																
+		int hr = ARG();	/* get 'holding register' */            
+		/* build effective address from 0 */						
+		S.ea = (S2650_relative[hr] & PMSK);							
+		if ((hr & 0x80)!=0) { /* indirect bit set ? */					
+			int addr = S.ea;										
+			s2650_ICount[0] -= 2;										
+			/* build indirect 32K address */						
+			S.ea = RDMEM(addr) << 8;								
+			if( (++addr & PMSK) == 0 ) addr -= PLEN; /* page wrap */
+			S.ea = (S.ea + RDMEM(addr)) & AMSK; 					
+		}															
+	}
 	
 	/***************************************************************
 	 * _ABS_EA
@@ -457,7 +457,8 @@ public class s2650 extends cpu_interface {
 		S.ea = ((hr << 8) + dr) & AMSK; 							
 		/* indirect addressing ? */ 								
 		if ((hr & 0x80) != 0) {											
-			int addr = S.ea;										
+			int addr = S.ea;
+                        System.out.println(S.ea);
 			s2650_ICount[0] -= 2;										
 			/* build indirect 32K address */						
 			S.ea = RDMEM(addr) << 8;								
@@ -466,24 +467,24 @@ public class s2650 extends cpu_interface {
 		}															
 	}
 	
-/*TODO*///	/***************************************************************
-/*TODO*///	 * SWAP_REGS
-/*TODO*///	 * Swap registers r1-r3 with r4-r6 (the second set)
-/*TODO*///	 * This is done everytime the RS bit in PSL changes
-/*TODO*///	 ***************************************************************/
-/*TODO*///	#define SWAP_REGS												
-/*TODO*///	{																
-/*TODO*///		UINT8 tmp;													
-/*TODO*///		tmp = S.reg[1]; 											
-/*TODO*///		S.reg[1] = S.reg[4];										
-/*TODO*///		S.reg[4] = tmp; 											
-/*TODO*///		tmp = S.reg[2]; 											
-/*TODO*///		S.reg[2] = S.reg[5];										
-/*TODO*///		S.reg[5] = tmp; 											
-/*TODO*///		tmp = S.reg[3]; 											
-/*TODO*///		S.reg[3] = S.reg[6];										
-/*TODO*///		S.reg[6] = tmp; 											
-/*TODO*///	}
+	/***************************************************************
+	 * SWAP_REGS
+	 * Swap registers r1-r3 with r4-r6 (the second set)
+	 * This is done everytime the RS bit in PSL changes
+	 ***************************************************************/
+	public void SWAP_REGS()
+	{																
+		int tmp;													
+		tmp = S.reg[1]; 											
+		S.reg[1] = S.reg[4];										
+		S.reg[4] = tmp; 											
+		tmp = S.reg[2]; 											
+		S.reg[2] = S.reg[5];										
+		S.reg[5] = tmp; 											
+		tmp = S.reg[3]; 											
+		S.reg[3] = S.reg[6];										
+		S.reg[6] = tmp; 											
+	}
 	
 	/***************************************************************
 	 * M_BRR
@@ -557,19 +558,19 @@ public class s2650 extends cpu_interface {
 		} else	S.iar = (S.iar + 1) & PMSK; 						
 	}
 	
-/*TODO*///	/***************************************************************
-/*TODO*///	 * M_ZBSR
-/*TODO*///	 * Branch to subroutine relative to page zero
-/*TODO*///	 ***************************************************************/
-/*TODO*///	#define M_ZBSR()												
-/*TODO*///	{																
-/*TODO*///		REL_ZERO(0); 											    
-/*TODO*///		S.psu  = (S.psu & ~SP) | ((S.psu + 1) & SP);				
-/*TODO*///		S.ras[S.psu & SP] = S.page + S.iar;							
-/*TODO*///		S.page = S.ea & PAGE;										
-/*TODO*///		S.iar  = S.ea & PMSK;										
-/*TODO*///		change_pc16(S.ea);											
-/*TODO*///	}
+	/***************************************************************
+	 * M_ZBSR
+	 * Branch to subroutine relative to page zero
+	 ***************************************************************/
+	public void M_ZBSR()												
+	{																
+		REL_ZERO(0); 											    
+		S.psu  = (S.psu & ~SP) | ((S.psu + 1) & SP);				
+		S.ras[S.psu & SP] = S.page + S.iar;							
+		S.page = S.ea & PAGE;										
+		S.iar  = S.ea & PMSK;										
+		change_pc16(S.ea);											
+	}
 	
 	/***************************************************************
 	 * M_BSA
@@ -818,55 +819,55 @@ public class s2650 extends cpu_interface {
 		SET_CC(s2650_get_reg(S2650_R0)); 												
 	}
 	
-/*TODO*///	/***************************************************************
-/*TODO*///	 * M_CPSU
-/*TODO*///	 * Clear processor status upper (PSU), selective
-/*TODO*///	 ***************************************************************/
-/*TODO*///	#define M_CPSU()												
-/*TODO*///	{																
-/*TODO*///		UINT8 cpsu = ARG(); 										
-/*TODO*///		S.psu = S.psu & ~cpsu;										
-/*TODO*///		CHECK_IRQ_LINE; 											
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	/***************************************************************
-/*TODO*///	 * M_CPSL
-/*TODO*///	 * Clear processor status lower (PSL), selective
-/*TODO*///	 ***************************************************************/
-/*TODO*///	#define M_CPSL()												
-/*TODO*///	{																
-/*TODO*///		UINT8 cpsl = ARG(); 										
-/*TODO*///		/* select other register set now ? */						
-/*TODO*///		if( (cpsl & RS) && (S.psl & RS) )							
-/*TODO*///			SWAP_REGS;												
-/*TODO*///		S.psl = S.psl & ~cpsl;										
-/*TODO*///		CHECK_IRQ_LINE; 											
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	/***************************************************************
-/*TODO*///	 * M_PPSU
-/*TODO*///	 * Preset processor status upper (PSU), selective
-/*TODO*///	 * Unused bits 3 and 4 can't be set
-/*TODO*///	 ***************************************************************/
-/*TODO*///	#define M_PPSU()												
-/*TODO*///	{																
-/*TODO*///		UINT8 ppsu = (ARG() & ~PSU34) & ~SI;						
-/*TODO*///		S.psu = S.psu | ppsu;										
-/*TODO*///	}
-/*TODO*///	
-/*TODO*///	/***************************************************************
-/*TODO*///	 * M_PPSL
-/*TODO*///	 * Preset processor status lower (PSL), selective
-/*TODO*///	 ***************************************************************/
-/*TODO*///	#define M_PPSL()												
-/*TODO*///	{																
-/*TODO*///		UINT8 ppsl = ARG(); 										
-/*TODO*///		/* select 2nd register set now ? */ 						
-/*TODO*///		if ((ppsl & RS) && !(S.psl & RS))							
-/*TODO*///			SWAP_REGS;												
-/*TODO*///		S.psl = S.psl | ppsl;										
-/*TODO*///	}
-/*TODO*///	
+	/***************************************************************
+	 * M_CPSU
+	 * Clear processor status upper (PSU), selective
+	 ***************************************************************/
+	public void M_CPSU()												
+	{																
+		int cpsu = ARG(); 										
+		S.psu = S.psu & ~cpsu;										
+		CHECK_IRQ_LINE(); 											
+	}
+	
+	/***************************************************************
+	 * M_CPSL
+	 * Clear processor status lower (PSL), selective
+	 ***************************************************************/
+	public void M_CPSL()												
+	{																
+		int cpsl = ARG(); 										
+		/* select other register set now ? */						
+		if( (cpsl & RS)!=0 && (S.psl & RS)!=0 )
+			SWAP_REGS();												
+		S.psl = S.psl & ~cpsl;										
+		CHECK_IRQ_LINE(); 											
+	}
+	
+	/***************************************************************
+	 * M_PPSU
+	 * Preset processor status upper (PSU), selective
+	 * Unused bits 3 and 4 can't be set
+	 ***************************************************************/
+	public void M_PPSU()												
+	{																
+		int ppsu = (ARG() & ~PSU34) & ~SI;						
+		S.psu = S.psu | ppsu;										
+	}
+	
+	/***************************************************************
+	 * M_PPSL
+	 * Preset processor status lower (PSL), selective
+	 ***************************************************************/
+	public void M_PPSL()												
+	{																
+		int ppsl = ARG(); 										
+		/* select 2nd register set now ? */ 						
+		if ((ppsl & RS)!=0 && (S.psl & RS)==0)
+			SWAP_REGS();												
+		S.psl = S.psl | ppsl;										
+	}
+	
 /*TODO*///	/***************************************************************
 /*TODO*///	 * M_TPSU
 /*TODO*///	 * Test processor status upper (PSU)
@@ -1035,7 +1036,7 @@ public class s2650 extends cpu_interface {
 		}
 	
 		S.irq_state = state;
-/*TODO*///		CHECK_IRQ_LINE;
+		CHECK_IRQ_LINE();
 	}
 	
 	public void s2650_set_irq_callback(irqcallbacksPtr callback)
@@ -1332,20 +1333,20 @@ public class s2650 extends cpu_interface {
 /*TODO*///					S.reg[S.r] = cpu_readport16(S2650_DATA_PORT);
 /*TODO*///					SET_CC(S.reg[S.r]);
 /*TODO*///					break;
-/*TODO*///	
-/*TODO*///				case 0x74:		/* CPSU */
-/*TODO*///					M_CPSU();
-/*TODO*///					break;
-/*TODO*///				case 0x75:		/* CPSL */
-/*TODO*///					M_CPSL();
-/*TODO*///					break;
-/*TODO*///				case 0x76:		/* PPSU */
-/*TODO*///					M_PPSU();
-/*TODO*///					break;
-/*TODO*///				case 0x77:		/* PPSL */
-/*TODO*///					M_PPSL();
-/*TODO*///					break;
-/*TODO*///	
+	
+				case 0x74:		/* CPSU */
+					M_CPSU();
+					break;
+				case 0x75:		/* CPSL */
+					M_CPSL();
+					break;
+				case 0x76:		/* PPSU */
+					M_PPSU();
+					break;
+				case 0x77:		/* PPSL */
+					M_PPSL();
+					break;
+	
 /*TODO*///				case 0x78:		/* BSNR,0 (*)a */
 /*TODO*///				case 0x79:		/* BSNR,1 (*)a */
 /*TODO*///				case 0x7a:		/* BSNR,2 (*)a */
@@ -1480,10 +1481,10 @@ public class s2650 extends cpu_interface {
 /*TODO*///				case 0xba:		/* BSFR,2 (*)a */
 /*TODO*///					M_BSR( (S.psl >> 6) != S.r );
 /*TODO*///					break;
-/*TODO*///				case 0xbb:		/* ZBSR    (*)a */
-/*TODO*///					M_ZBSR();
-/*TODO*///					break;
-/*TODO*///	
+				case 0xbb:		/* ZBSR    (*)a */
+					M_ZBSR();
+					break;
+	
 /*TODO*///				case 0xbc:		/* BSFA,0 (*)a */
 /*TODO*///				case 0xbd:		/* BSFA,1 (*)a */
 /*TODO*///				case 0xbe:		/* BSFA,2 (*)a */
@@ -1495,12 +1496,12 @@ public class s2650 extends cpu_interface {
 /*TODO*///	
 /*TODO*///				case 0xc0:		/* NOP */
 /*TODO*///					break;
-/*TODO*///				case 0xc1:		/* STRZ,1 */
-/*TODO*///				case 0xc2:		/* STRZ,2 */
-/*TODO*///				case 0xc3:		/* STRZ,3 */
-/*TODO*///					M_LOD( S.r, s2650_get_reg(S2650_R0) );
-/*TODO*///					break;
-/*TODO*///	
+				case 0xc1:		/* STRZ,1 */
+				case 0xc2:		/* STRZ,2 */
+				case 0xc3:		/* STRZ,3 */
+					M_LOD( S.r, s2650_get_reg(S2650_R0) );
+					break;
+	
 /*TODO*///				case 0xc4:		/* illegal */
 /*TODO*///				case 0xc5:		/* illegal */
 /*TODO*///				case 0xc6:		/* illegal */
@@ -1608,6 +1609,9 @@ public class s2650 extends cpu_interface {
 /*TODO*///				case 0xff:		/* BDRA,3 (*)a */
 /*TODO*///					M_BRA( --S.reg[S.r] );
 /*TODO*///					break;
+                                default:
+                                    System.out.println(S.ir+" Not implemented");
+                                    break;
 			}
 		} while( s2650_ICount[0] > 0 );
 	

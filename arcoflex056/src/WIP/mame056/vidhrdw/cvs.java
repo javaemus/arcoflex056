@@ -554,7 +554,7 @@ public class cvs
 	
 	public static VhUpdatePtr cvs_vh_screenrefresh = new VhUpdatePtr() { public void handler(mame_bitmap bitmap,int full_refresh) 
 	{
-            System.out.println("cvs_vh_screenrefresh!");
+            //System.out.println("cvs_vh_screenrefresh!");
 		int offs,character;
 		int sx,sy;
 	
@@ -584,7 +584,7 @@ public class cvs
 	                if(dirty_character.read(character)==1)
 	                {
 	                	dirty_character.write(character,2);
-/*TODO*///			   	decodechar(Machine.gfx[1],character,character_1_ram-1024,Machine.drv.gfxdecodeinfo[1].gfxlayout);
+			   	decodechar(Machine.gfx[1],character,new UBytePtr(character_1_ram, -1024),Machine.drv.gfxdecodeinfo[1].gfxlayout);
 	                }
 	
 	            	character_bank=1;

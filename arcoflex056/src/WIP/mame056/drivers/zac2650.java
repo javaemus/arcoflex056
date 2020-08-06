@@ -346,7 +346,7 @@ public class zac2650
 			new MachineCPU(
 				CPU_S2650,
 				625000,
-				emb_readmem,emb_writemem,0,0,
+				emb_readmem,emb_writemem,null,null,
 				ignore_interrupt,1
                         )
 		},
