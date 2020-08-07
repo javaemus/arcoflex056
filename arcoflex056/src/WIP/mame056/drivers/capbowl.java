@@ -378,7 +378,8 @@ public class capbowl
 		1,														
 		capbowl_init_machine,									
 																
-		/* video hardware */									
+		/* video hardware */
+                //384, 240, new rectangle( 16, 383,0, 239-16 ),
 		360, 256, new rectangle( 0, 359, 0, 244 ),						
 		null,														
 		4096, 0,												

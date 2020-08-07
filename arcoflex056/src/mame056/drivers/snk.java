@@ -1179,7 +1179,7 @@ public class snk
             100, /* CPU slices per frame */
             null, /* init machine */
             /* video hardware */
-            384, 240, new rectangle(16, 383, 0, 239 - 16),
+            384, 240, new rectangle( 16, 383,0, 239 ),
             gwar_gfxdecodeinfo,
             1024, 0,
             palette_RRRR_GGGG_BBBB_convert_prom,

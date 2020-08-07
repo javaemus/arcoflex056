@@ -340,6 +340,7 @@ import static WIP.mame056.drivers.fromance.*;
 import static WIP.mame056.drivers.pipedrm.*;
 import static WIP.mame056.drivers.ttmahjng.*;
 import static WIP.mame056.drivers.srmp2.*;
+import static WIP.mame056.drivers.sailorws.*;
 
 public class driver {
 
@@ -729,29 +730,29 @@ public class driver {
         driver_mcontest,	/* (c) 1989 */
         driver_av2mj1,	/* (c) 1991 MIKI SYOUJI/AV JAPAN */
 
-        /*TODO*///	driver_mjuraden,	/* (c) 1992 Nichibutsu/Yubis */
-        /*TODO*///	driver_koinomp,	/* (c) 1992 */
-        /*TODO*///	driver_patimono,	/* (c) 1992 */
-        /*TODO*///	driver_mjanbari,	/* (c) 1992 Nichibutsu/Yubis/AV JAPAN */
-        /*TODO*///	driver_gal10ren,	/* (c) 1993 FUJIC */
-        /*TODO*///	driver_mjlaman,	/* (c) 1993 Nichibutsu/AV JAPAN */
-        /*TODO*///	driver_mkeibaou,	/* (c) 1993 */
-        /*TODO*///	driver_pachiten,	/* (c) 1993 Nichibutsu/MIKI SYOUJI/AV JAPAN */
-        /*TODO*///	driver_sailorws,	/* (c) 1993 */
-        /*TODO*///	driver_sailorwr,	/* (c) 1993 */
-        /*TODO*///	driver_psailor1,	/* (c) 1994 SPHINX */
-        /*TODO*///	driver_psailor2,	/* (c) 1994 SPHINX */
-        /*TODO*///	driver_otatidai,	/* (c) 1995 SPHINX */
-        /*TODO*///	driver_ngpgal,	/* (c) 1991 */
-        /*TODO*///	driver_mjgottsu,	/* (c) 1991 */
-        /*TODO*///	driver_bakuhatu,	/* (c) 1991 */
-        /*TODO*///	driver_cmehyou,	/* (c) 1992 Nichibutsu/Kawakusu */
-        /*TODO*///	driver_mmehyou,	/* (c) 1992 Nichibutsu/Kawakusu */
-        /*TODO*///	driver_mjkoiura,	/* (c) 1992 */
-        /*TODO*///	driver_imekura,	/* (c) 1994 SPHINX/AV JAPAN */
-        /*TODO*///	driver_mscoutm,	/* (c) 1994 SPHINX/AV JAPAN */
-        /*TODO*///	driver_mjegolf,	/* (c) 1994 FUJIC/AV JAPAN */
-        /*TODO*///
+        driver_mjuraden,	/* (c) 1992 Nichibutsu/Yubis */
+        driver_koinomp,	/* (c) 1992 */
+        driver_patimono,	/* (c) 1992 */
+        driver_mjanbari,	/* (c) 1992 Nichibutsu/Yubis/AV JAPAN */
+        driver_gal10ren,	/* (c) 1993 FUJIC */
+        driver_mjlaman,	/* (c) 1993 Nichibutsu/AV JAPAN */
+        driver_mkeibaou,	/* (c) 1993 */
+        driver_pachiten,	/* (c) 1993 Nichibutsu/MIKI SYOUJI/AV JAPAN */
+        driver_sailorws,	/* (c) 1993 */
+        driver_sailorwr,	/* (c) 1993 */
+        driver_psailor1,	/* (c) 1994 SPHINX */
+        driver_psailor2,	/* (c) 1994 SPHINX */
+        driver_otatidai,	/* (c) 1995 SPHINX */
+        driver_ngpgal,	/* (c) 1991 */
+        driver_mjgottsu,	/* (c) 1991 */
+        driver_bakuhatu,	/* (c) 1991 */
+        driver_cmehyou,	/* (c) 1992 Nichibutsu/Kawakusu */
+        driver_mmehyou,	/* (c) 1992 Nichibutsu/Kawakusu */
+        driver_mjkoiura,	/* (c) 1992 */
+        driver_imekura,	/* (c) 1994 SPHINX/AV JAPAN */
+        driver_mscoutm,	/* (c) 1994 SPHINX/AV JAPAN */
+        driver_mjegolf,	/* (c) 1994 FUJIC/AV JAPAN */
+        
         /*TODO*///	driver_niyanpai,	/* (c) 1996 */
         
         /* "Phoenix hardware" (and variations) games */
