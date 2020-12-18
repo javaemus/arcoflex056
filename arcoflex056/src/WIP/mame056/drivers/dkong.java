@@ -200,7 +200,7 @@ import static WIP.mame056.vidhrdw.dkong.*;
 import static WIP.mame056.sndhrdw.dkong.*;
 import static mame056.cpu.i8039.i8039H.*;
 import static mame056.cpu.m6502.m6502H.N2A03_DEFAULTCLOCK;
-import static mame056.cpu.s2650.s2650H.S2650_SENSE_PORT;
+import static mame.v058.WIP.cpu.s2650.s2650H.S2650_SENSE_PORT;
 import static mame056.drivers.scramble.*;
 
 import static mame056.sound.nes_apuH.*;

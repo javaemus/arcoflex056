@@ -21,7 +21,7 @@ import static mame056.common.bitmap_alloc_depth;
 import static mame056.common.bitmap_free;
 import static mame056.common.flip_screen_x;
 import static mame056.common.flip_screen_y;
-import static mame056.cpu.s2650.s2650.s2650_get_flag;
+import static mame.v058.WIP.cpu.s2650.s2650.*;
 
 import arcadeflex036.libc_old.IntPtr;
 

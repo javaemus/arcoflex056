@@ -104,11 +104,7 @@ import static mame056.memoryH.*;
 import static mame056.memory.*;
 import static mame056.inptport.*;
 import static mame056.drawgfxH.*;
-import static mame056.inputH.*;
-import static mame056.sndintrfH.*;
 import static mame056.sndintrf.*;
-import static mame056.sound.samples.*;
-import static mame056.sound.samplesH.*;
 import static mame056.sound.dac.*;
 import static mame056.sound.dacH.*;
 import static mame056.sound.tms5110.*;
@@ -118,12 +114,8 @@ import static mame056.sound._5110intfH.*;
 
 import static mame056.vidhrdw.generic.*;
 
-import static arcadeflex056.fileio.*;
-import static mame056.palette.game_palette;
-import static mame056.inptport.*;
 import static arcadeflex056.osdepend.logerror;
-import static mame056.cpu.s2650.s2650H.*;
-import static mame056.cpu.s2650.s2650.*;
+import static mame.v058.WIP.cpu.s2650.s2650H.*;
 import static mame056.palette.*;
 
 

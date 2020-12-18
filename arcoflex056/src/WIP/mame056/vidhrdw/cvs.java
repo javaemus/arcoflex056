@@ -13,7 +13,7 @@
 package WIP.mame056.vidhrdw;
 
 import static WIP.mame056.vidhrdw.s2636.*;
-import static mame056.cpu.s2650.s2650.s2650_get_flag;
+import static mame.v058.WIP.cpu.s2650.s2650.s2650_get_flag;
 
 import arcadeflex036.libc_old.IntPtr;
 

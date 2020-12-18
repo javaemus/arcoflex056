@@ -46,7 +46,7 @@ import static mame056.vidhrdw.generic.*;
 
 import static arcadeflex056.fileio.*;
 import static mame056.palette.*;
-import static mame056.cpu.s2650.s2650H.*;
+import static mame.v058.WIP.cpu.s2650.s2650H.*;
 import static mame056.mame.*;
 
 public class zac2650

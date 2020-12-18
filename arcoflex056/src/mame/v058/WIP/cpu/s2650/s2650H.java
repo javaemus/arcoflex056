@@ -1,4 +1,5 @@
 /**
+ * ported to v0.58
  * ported to v0.56
  * ported to v0.37b7
  *
@@ -6,9 +7,10 @@
 /**
  * Changelog
  * ---------
+ * 18/12/2020 - ported to 0.58 (shadow)
  * 29/05/2019 - ported to 0.56 (shadow)
  */
-package mame056.cpu.s2650;
+package mame.v058.WIP.cpu.s2650;
 
 public class s2650H {
 
@@ -25,6 +27,9 @@ public class s2650H {
     public static final int S2650_IRQ_STATE = 11;
     public static final int S2650_SI = 12;
     public static final int S2650_FO = 13;
+
+    public static final int S2650_INT_NONE = 0;
+    public static final int S2650_INT_IRQ = 1;
 
     /* fake control port   M/~IO=0 D/~C=0 E/~NE=0 */
     public static final int S2650_CTRL_PORT = 0x100;

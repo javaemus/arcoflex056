@@ -82,7 +82,7 @@ import static mame056.common.*;
 import static mame056.mame.*;
 
 import static mame056.commonH.*;
-import static mame056.cpu.s2650.s2650H.*;
+import static mame.v058.WIP.cpu.s2650.s2650H.*;
 import static mame056.cpuexec.*;
 import static mame056.inptportH.*;
 import static mame056.cpuexecH.*;

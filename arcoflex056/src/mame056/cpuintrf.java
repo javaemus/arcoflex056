@@ -24,7 +24,7 @@ import mame056.cpu.m6805.m6805;
 import mame056.cpu.m6805.m68705;
 import mame056.cpu.m6805.HD63705;
 import mame056.cpu.m6800.m6808;
-import mame056.cpu.s2650.s2650;
+import mame.v058.WIP.cpu.s2650.s2650;
 import mame056.cpu.m6502.m6502;
 import mame056.cpu.m6502.n2a03;
 import mame056.cpu.i8085.i8085;
